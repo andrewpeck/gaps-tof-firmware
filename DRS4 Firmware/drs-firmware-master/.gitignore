@@ -1,0 +1,8 @@
+prj/*
+*.pyc
+mars_zx3_*
+ipcores/*/*
+!ipcores/*/*.xci
+
+!doc/latex/*.tex
+doc/latex/*

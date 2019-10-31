@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<node id="DRS"  address="0x0000"
+    description="Implements various control and monitoring functions of the DRS Logic"
+    fw_is_module="true"
+    fw_use_tmr="false"
+    fw_module_file="../src/daq_board_top.vhd"
+    fw_user_clock_signal="clock"
+    fw_bus_clock_signal="ipb_clk"
+    fw_bus_reset_signal="ipb_reset"
+    fw_master_bus_signal="ipb_mosi_arr(0)"
+    fw_slave_bus_signal="ipb_miso_arr(0)"
+    fw_reg_addr_msb="5"
+    fw_reg_addr_lsb="0">
+
+    <node id="CHIP" address="0x0" description="Registers for configuring the DRS ASIC Directly">
+        <node id="DMODE" address="0x0" permission="rw"
+            description="set 1 = continuous domino, 0=single shot"
+            mask="0x2"
+            fw_signal="dmode"
+            fw_default="0x1"/>
+        <node id="STANDBY_MODE" address="0x0" permission="rw"
+            description="set 1 = shutdown drs"
+            mask="0x4"
+            fw_signal="standby_mode"
+            fw_default="0x0"/>
+        <node id="TRANSPARENT_MODE" address="0x0" permission="rw"
+            description="set 1 = transparent mode"
+            mask="0x8"
+            fw_signal="transp_mode"
+            fw_default="0x0"/>
+        <node id="DRS_PLL_LOCK" address="0x0" permission="r"
+            description="DRS PLL Locked"
+            mask="0x10"
+            fw_signal="drs_plllock" />
+        <node id="CHANNEL_CONFIG" address="0x0" permission="rw"
+            description="Write Shift Register Configuration
+                        \n # of chn | # of cells per ch | bit pattern
+                        \n 8        | 1024              | 11111111b
+                        \n 4        | 2048              | 01010101b
+                        \n 2        | 4096              | 00010001b
+                        \n 1        | 8192              | 00000001b"
+
+            mask="0xff000000"
+            fw_signal="chn_config"
+            fw_default="0xff"/>
+        <node id="DTAP_HIGH_CNTS" address="0x1" permission="r"
+            description="Number of 33MHz clocks counted while DTAP was high. Should be equal to 33 Million (0x1f78a40) for 1.024 GHz sampling rate. Please see manual "
+            mask="0x1ffffff"
+            fw_signal="dtap_high_cnt_reg" />
+        <node id="DTAP_LOW_CNTS" address="0x2" permission="r"
+            description="Number of 33MHz clocks counted while DTAP was low. Should be equal to 33 Million (0x1f78a40) for 1.024 GHz sampling rate. Please see manual "
+            mask="0x1ffffff"
+            fw_signal="dtap_low_cnt_reg" />
+    </node> <!--CONFIG-->
+
+    <node id="READOUT" address="0x10" description="Registers for configuring the readout state machine">
+
+        <node id="ROI_MODE" address="0x0" permission="rw"
+            description="Set to 1 to enable Region of Interest Readout"
+            mask="0x1"
+            fw_signal="roi_mode"
+            fw_default="0x1"/>
+        <node id="BUSY" address="0x0" permission="r"
+            description="Readout is busy"
+            mask="0x2"
+            fw_signal="busy" />
+        <node id="ADC_LATENCY" address="0x0" permission="rw"
+            description="Latency from first sr clock to when ADC data should be valid"
+            mask="0x3f0"
+            fw_signal="adc_latency"
+            fw_default="0x0"/>
+        <node id="SAMPLE_COUNT" address="0x0" permission="rw"
+            description="Number of samples to read out"
+            mask="0x7ff000"
+            fw_signal="sample_count_max"
+            fw_default="0x400"/>
+
+
+        <node id="READOUT_MASK" address="0x1" permission="rw"
+            description="9 bit mask, set a bit to 1 to enable readout of that channel"
+            mask="0x1ff"
+            fw_signal="readout_mask"
+            fw_default="0x1ff"/>
+        <node id="START" address="0x2" permission="w"
+            description="Write 1 to take the state machine out of idle mode"
+            mask="0x1"
+            fw_write_pulse_signal="start" />
+
+        <node id="REINIT" address="0x3" permission="w"
+            description="Write 1 to reinitialize DRS state machine (restores to idle state)"
+            mask="0x1"
+            fw_write_pulse_signal="reinit" />
+
+        <node id="CONFIGURE" address="0x4" permission="w"
+            description="Write 1 to configure the DRS. Should be done before data taking"
+            mask="0x1"
+            fw_write_pulse_signal="configure" />
+
+        <node id="RESET" address="0x5" permission="w"
+            description="Write 1 to completely reset the DRS state machine logic"
+            mask="0x1"
+            fw_write_pulse_signal="drs_reset" />
+    </node> <!--READOUT-->
+
+
+    <node id="FPGA" address="0x020" description="FPGA Status">
+
+        <node id="DNA" address="0x0"
+            description="FPGA Device DNA">
+            <node id="DNA_LSBS" address="0x0" permission="r"
+                description="Device DNA [31:0]"
+                mask="0xffffffff"
+                fw_signal="dna (31 downto 0)" />
+
+            <node id="DNA_MSBS" address="0x1" permission="r"
+                description="Device DNA [56:32]"
+                mask="0x1ffffff"
+                fw_signal="dna (56 downto 32)" />
+        </node> <!--DNA-->
+
+        <node id="RELEASE" address="0x2"
+            description="DRS Firmware Release Date and Version">
+            <node id="DATE" address="0x0" permission="r"
+                mask="0xffffffff"
+                description="Release YYYY/MM/DD"
+                fw_signal="(RELEASE_YEAR &amp; RELEASE_MONTH &amp; RELEASE_DAY)"/>
+            <node id="VERSION" address="0x1" description="Firmware Release Version (XX.YY.ZZ)">
+                <node id="MAJOR" address="0x0" permission="r"
+                    mask="0xff"
+                    description="Release semantic version major"
+                    fw_signal="(MAJOR_VERSION)"/>
+                <node id="MINOR" address="0x0" permission="r"
+                    mask="0xff00"
+                    description="Release semantic version minor"
+                    fw_signal="(MINOR_VERSION)"/>
+                <node id="BUILD" address="0x0" permission="r"
+                    mask="0xff0000"
+                    description="Release semantic version build"
+                    fw_signal="(RELEASE_VERSION)"/>
+            </node> <!--Version-->
+
+        <node id="TIMESTAMP" address="0x4"
+            description="Timestamp">
+            <node id="TIMESTAMP_LSBS" address="0x0" permission="r"
+                description="Device TIMESTAMP [31:0]"
+                mask="0xffffffff"
+                fw_signal="std_logic_vector(timestamp (31 downto 0))" />
+
+            <node id="TIMESTAMP_MSBS" address="0x1" permission="r"
+                description="Device TIMESTAMP [47:32]"
+                mask="0x0000ffff"
+                fw_signal="std_logic_vector(timestamp (47 downto 32))" />
+        </node> <!--DNA-->
+
+        </node> <!--Release-->
+    </node> <!--FPGA-->
+
+
+    <node id="COUNTERS" address="0x30" description="Counters">
+        <node id="CNT_SEM_CORRECTION" address="0x0" permission="r"
+            description="Number of Single Event Errors corrected by the scrubber"
+            mask="0xffff"
+            fw_cnt_en_signal="sem_correction"
+            fw_signal="cnt_sem_corrected"/>
+
+        <node id="CNT_SEM_UNCORRECTABLE" address="0x1" permission="r"
+            description="Number of Critical Single Event Errors (uncorrectable by scrubber)"
+            mask="0xf0000"
+            fw_cnt_en_signal="sem_uncorrectable_error"
+            fw_signal="cnt_sem_uncorrectable"/>
+
+        <node id="CNT_READOUTS_COMPLETED" address="0x2" permission="r"
+            description="Number of readouts completed since reset"
+            mask="0xffff"
+            fw_cnt_en_signal="readout_complete"
+            fw_signal="cnt_readouts"/>
+
+        <node id="CNT_LOST_EVENT" address="0x3" permission="r"
+            description="Number of trigger lost due to deadtime"
+            mask="0xffff0000"
+            fw_cnt_en_signal="trigger and busy"
+            fw_signal="cnt_lost_events"/>
+
+        <node id="CNT_EVENT" address="0x4" permission="r"
+            description="Number of triggers received"
+            mask="0xffffffff"
+            fw_cnt_en_signal="trigger"
+            fw_signal="event_counter"/>
+    </node> <!--COUNTERS-->
+
+</node>
