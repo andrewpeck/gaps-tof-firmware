@@ -21,13 +21,13 @@
 		//Width of User Response Bus
 		parameter integer C_M_AXI_BUSER_WIDTH	= 0,
 		//FIFO Parameters
-		parameter integer C_FIFO_WR_DEPTH  = 16384,
+		parameter integer C_FIFO_WR_DEPTH  = 32768,
                
         parameter integer C_FIFO_DATA_SIZE = 32,
          
         parameter integer C_KB_SIZE = 4,
         //Address Write Boundary
-        parameter integer address_Complete = 8192 
+        parameter integer address_Complete = 36864 
         
 	)
 	(
@@ -106,11 +106,9 @@
         input wire [C_FIFO_DATA_SIZE - 1:0] fifo_data,
         //FIFO Read Count
         input wire [$clog2(C_FIFO_WR_DEPTH) - 1:0] fifo_rd_count,
-        //DMA Transfer Flag
-        output reg transfer_complete,
-        //DMA Burst Flag
-        output reg burst_transaction_complete,
-		output wire FourKB_Complete,
+         //DMA Burst Flag
+        output wire  burst_transaction_complete,
+		output wire FourMB_Complete,
         input wire [31:0] dma_status,
         input wire [31:0] dma_trigger_value	
 	);       
@@ -153,7 +151,12 @@
     
 	//FIFO READ DELAY
     reg [3:0] fifo_rd_en_delay;  
-	reg [2:0] KB_Counter;
+	reg [5:0] KB_Counter;
+	reg [11:0]MB_Counter;
+	
+	wire FourKB_Complete;
+	
+	reg transfer_complete;
   
 	//I/O Connections. Write Address (AW)
 	assign M_AXI_AWID	= 'b0;
@@ -185,10 +188,37 @@
 
 	assign burst_size_bytes	= C_M_AXI_WRITE_BURST_LEN * C_M_AXI_DATA_WIDTH/8;
     
-	/*Start DMA transfer when FIFO reaches 8192 
+	/*Start DMA transfer when FIFO reaches 9216 
       Modify fifo_rd_count threshold value if needed. 
 	*/
-	assign init_pulse = ((fifo_rd_count >= 14'h2000) && dma_state == DMA_IDLE)?1'b1:1'b0;
+	assign init_pulse = ((fifo_rd_count >= 14'd1024) && dma_state == DMA_IDLE)?1'b1:1'b0;
+	
+	assign burst_transaction_complete = writes_done;
+	
+	
+	
+    dma_ila debug_dma(
+    .clk(M_AXI_ACLK),
+    .probe0(M_AXI_AWADDR),
+    .probe1(M_AXI_AWREADY),
+    .probe2(M_AXI_AWVALID),
+    .probe3(M_AXI_WDATA),
+    .probe4(M_AXI_WREADY),
+    .probe5(M_AXI_WVALID),
+    .probe6(M_AXI_WLAST),
+    .probe7(M_AXI_BVALID),
+    .probe8(M_AXI_BREADY),
+    .probe9(fifo_rd_count),
+    .probe10(init_pulse),
+    .probe11(dma_state),
+    .probe12(fifo_ren),
+    .probe13(KB_Counter)
+    );
+	
+	
+	
+	
+	
 	/*
 	  ------------------------------------------------------------------------------------
 	                                       Start Transfer
@@ -480,7 +510,7 @@
 	        if(init_pulse)begin                                                                                         
 	          dma_state  <= DMA_WRITE;                                            
  	        end else begin 
- 	          fifo_rd_en_delay <= 0;
+ 	          //fifo_rd_en_delay <= 0;
   	          dma_state  <= DMA_IDLE;                                                       
 	        end                                                                                                 
 	      DMA_WRITE:                                                                                                                                                            
@@ -527,16 +557,24 @@
 	      DMA_active <= 0;                                                                              
 	  end               
 
-	assign FourKB_Complete = (KB_Counter >= 3'd4) ? 1'b1: 1'b0;
+	assign FourMB_Complete = (MB_Counter >= 20'd4000) ? 1'b1: 1'b0;
+	assign FourKB_Complete = (writes_done) ? 1'b1 : 1'b0;
 	  
 	always@(posedge M_AXI_ACLK)
 	  if(M_AXI_ARESETN == 0 || FourKB_Complete)
 	    KB_Counter <= 0;
-	  else if(M_AXI_BVALID && axi_bready  &&  KB_Counter < 3'd4)
+	  else if(M_AXI_BVALID && axi_bready  &&  KB_Counter < 20'd4)
 	    KB_Counter  <= KB_Counter + 1'b1;
 	  else
-	    KB_Counter <= KB_Counter;      
-	  
+	    KB_Counter <= KB_Counter; 
+	         
+	always@(posedge M_AXI_ACLK)
+          if(M_AXI_ARESETN == 0 || FourMB_Complete)
+            MB_Counter <= 0;
+          else if(M_AXI_BVALID && axi_bready  &&  MB_Counter < 20'd4000)
+            MB_Counter  <= MB_Counter + 1'b1;
+          else
+            MB_Counter <= MB_Counter;      
 	                                                                                                            
      /*
      ------------------------------------------------------------------------------------
@@ -567,7 +605,7 @@
 	    writes_done <= 1'b0;                                                                                                                                                                                       
 	    //The writes_done should be associated with a bready response                                           
 	  //else if (M_AXI_BVALID && (write_burst_counter[C_NO_BURSTS_REQ]) && axi_bready)
-	  else if (M_AXI_BVALID && axi_bready && KB_Counter == 3'd3)                          
+	  else if (M_AXI_BVALID && axi_bready && KB_Counter >= 6'd3)                          
 	    writes_done <= 1'b1;
 	    //Reset write_done flag when entering a state.
 	  else if(burst_state == 2'b00 || burst_state == 2'b01 )

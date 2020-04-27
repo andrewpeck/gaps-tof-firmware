@@ -46,11 +46,11 @@
  		//BUSER AXI width
  		parameter integer C_M00_AXI_BUSER_WIDTH	= 0,
  		//FIFO write depth
-		parameter integer C_FIFO_WR_DEPTH = 16384,
+		parameter integer C_FIFO_WR_DEPTH = 32768,
 		//FIFO data width
         parameter integer C_FIFO_DATA_SIZE = 32,
         //Address 1073741824 = 1GB
-        parameter integer address_Complete = 8192, //1GB,
+        parameter integer address_Complete = 8192000,  
         //AXI Lite address offset width
  		parameter integer S_AXI_LITE_SIZE = 5,
         //AXI Lite data size
@@ -126,7 +126,8 @@
 	     wire fifo_valid;
 	     wire [31:0] DMA_STATUS;
 	     wire [31:0] DMA_Trigger;
-	     wire transfer_complete;
+	     wire burst_transaction_complete;
+	     wire FourMB_Complete;
 	     
    // Instantiation of Axi Bus Interface M00_AXI
 	DMA_Write_v1_0_M00_AXI # ( 
@@ -173,49 +174,82 @@
         .fifo_valid(fifo_valid),
         .fifo_data(fifo_data),
         .fifo_rd_count(fifo_rd_count),
-        .transfer_complete(transfer_complete),
         //.burst_transaction_complete(burst_transaction_complete),
-        //.FourKB_Complete(FourKB_Complete),
+        .FourMB_Complete(FourMB_Complete),
         .dma_status(DMA_STATUS),
         .dma_trigger_value(DMA_Trigger));
         	 
-     
+     reg fifo_clk;
      wire [31:0] fifo_counter;
-     reg  [31:0] din_fifo;
+     reg  [31:0] fifo_din;
      reg  fifo_wr_en;
      wire [S_AXI_DATA_SIZE - 1:0] IRQ_STATUS;
      wire [S_AXI_DATA_SIZE - 1:0] FIFO_COUNTER_STATUS;
      wire fifo_counter_wen;
      
+     /*
      FIFO_Counter  fifo_counter_gen(
-     .clk(wr_aclk),
+     .clk(m00_axi_aclk),
      .rst(m00_axi_aresetn),
      .fifo_wen(fifo_counter_wen),
      .en_counter(FIFO_COUNTER_STATUS[1]),
      .fifo_counter(fifo_counter));
+     */
      
+     
+      ila_0 fifo_ila(
+       .clk(wr_aclk),
+       .probe0(wr_en),
+       .probe1(din_dma));
+     /*
+     ila_0 fifo_ila(
+       .clk(m00_axi_aclk),
+       .probe0(fifo_counter_wen),
+       .probe1(FIFO_COUNTER_STATUS[1]),
+       .probe2(fifo_counter));
+     */
+     /*
      //MUX FIFO Input
      always@(*)
      case(FIFO_COUNTER_STATUS[0])
      1'b0:begin
+             fifo_clk   = m00_axi_aclk;
              fifo_wr_en = fifo_counter_wen;
-             din_fifo = fifo_counter;
+             fifo_din   = fifo_counter;
      end
      1'b1: begin
+             fifo_clk   = wr_aclk;
              fifo_wr_en = wr_en;
-             din_fifo = din_dma;
+             fifo_din   = din_dma;
      end
-     default: din_fifo = 0;
+     default: fifo_din = 0;
      endcase
+      */
       
      wire fifo_rst;
      assign  fifo_rst = ~m00_axi_aresetn;
-      
+
        fifo_generator_1 DMA_FIFO(
         .rst(fifo_rst),
         .wr_clk(wr_aclk),
         .rd_clk(m00_axi_aclk),
-        .din(din_fifo),
+        .din(din_dma),
+        .wr_en(wr_en),
+        .rd_en(fifo_ren),
+        .dout(fifo_data),
+        .empty(fifo_empty),
+        .valid(fifo_valid),
+        .rd_data_count(fifo_rd_count),
+        //.wr_data_count(fifo_wr_count),
+        .prog_full(fifo_full)
+       );
+
+      /*
+       fifo_generator_1 DMA_FIFO(
+        .rst(fifo_rst),
+        .wr_clk(fifo_clk),
+        .rd_clk(m00_axi_aclk),
+        .din(fifo_din),
         .wr_en(fifo_wr_en),
         .rd_en(fifo_ren),
         .dout(fifo_data),
@@ -225,7 +259,7 @@
         //.wr_data_count(fifo_wr_count),
         .prog_full(fifo_full)
      );
-     
+     */
         	
      
    
@@ -266,7 +300,7 @@
         .M_AXI_ACLK(m00_axi_aclk),
         //Global Reset Singal. This Signal is Active Low
         .M_AXI_ARESETN(m00_axi_aresetn),
-        .D(transfer_complete),
+        .D(FourMB_Complete),
         .IRQ_STATUS(IRQ_STATUS), 
         .Q(dma_irq)
         //.irq_latency(irq_latency)
