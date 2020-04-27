@@ -10,9 +10,9 @@ add_files -norecurse ../hdl/DMA_WRITE_v1_0_IRQ.v
 
 
 
-read_ip ../ip_sources/dma_ila/dma_ila.xci
-read_ip ../ip_sources/fifo_generator_1/fifo_generator_1.xci
-read_ip ../ip_sources/ila_0/ila_0.xci
+read_ip ../ip/dma_ila/dma_ila.xci
+read_ip ../ip/fifo_generator_1/fifo_generator_1.xci
+read_ip ../ip/ila_0/ila_0.xci
 
 
  
