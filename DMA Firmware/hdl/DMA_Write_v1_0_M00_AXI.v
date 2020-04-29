@@ -24,10 +24,15 @@
 		parameter integer C_FIFO_WR_DEPTH  = 32768,
                
         parameter integer C_FIFO_DATA_SIZE = 32,
-         
-        parameter integer C_KB_SIZE = 4,
-        //Address Write Boundary
-        parameter integer address_Complete = 36864 
+        
+		parameter integer four_kilobyte = 4, //
+		
+		//Address Write Boundary
+        parameter integer address_Complete = 36864,
+		
+		parameter integer interrupt_treshold = 100,
+		
+		parameter integer interrupt_burst_treshold = interrupt_treshold*four_kilobyte
         
 	)
 	(
@@ -108,7 +113,7 @@
         input wire [$clog2(C_FIFO_WR_DEPTH) - 1:0] fifo_rd_count,
          //DMA Burst Flag
         output wire  burst_transaction_complete,
-		output wire FourMB_Complete,
+		output wire trigger_interrupt,
         input wire [31:0] dma_status,
         input wire [31:0] dma_trigger_value	
 	);       
@@ -151,8 +156,8 @@
     
 	//FIFO READ DELAY
     reg [3:0] fifo_rd_en_delay;  
-	reg [5:0] KB_Counter;
-	reg [11:0]MB_Counter;
+	reg [5:0]  KB_Counter;
+	reg [31:0] burst_counter;
 	
 	wire FourKB_Complete;
 	
@@ -557,11 +562,11 @@
 	      DMA_active <= 0;                                                                              
 	  end               
 
-	assign FourMB_Complete = (MB_Counter >= 20'd4000) ? 1'b1: 1'b0;
-	assign FourKB_Complete = (writes_done) ? 1'b1 : 1'b0;
+	assign trigger_interrupt = (burst_counter >= interrupt_burst_treshold) ? 1'b1: 1'b0;
+	assign FourKB_Complete   = (writes_done) ? 1'b1 : 1'b0;
 	  
 	always@(posedge M_AXI_ACLK)
-	  if(M_AXI_ARESETN == 0 || FourKB_Complete)
+	  if(M_AXI_ARESETN == 0 || FourKB_Complete == 1'b1)
 	    KB_Counter <= 0;
 	  else if(M_AXI_BVALID && axi_bready  &&  KB_Counter < 20'd4)
 	    KB_Counter  <= KB_Counter + 1'b1;
@@ -569,12 +574,12 @@
 	    KB_Counter <= KB_Counter; 
 	         
 	always@(posedge M_AXI_ACLK)
-          if(M_AXI_ARESETN == 0 || FourMB_Complete)
-            MB_Counter <= 0;
-          else if(M_AXI_BVALID && axi_bready  &&  MB_Counter < 20'd4000)
-            MB_Counter  <= MB_Counter + 1'b1;
+          if(M_AXI_ARESETN == 0 || trigger_interrupt == 1'b1)
+            burst_counter <= 0;
+          else if(M_AXI_BVALID && axi_bready  &&  burst_counter < interrupt_burst_treshold)
+            burst_counter  <= burst_counter + 1'b1;
           else
-            MB_Counter <= MB_Counter;      
+            burst_counter <= burst_counter;      
 	                                                                                                            
      /*
      ------------------------------------------------------------------------------------

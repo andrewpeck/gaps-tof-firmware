@@ -1,9 +1,9 @@
 module DMA_WRITE_v1_0_STATUS#(
-		parameter integer S_AXI_LITE_SIZE = 5,
-		parameter integer S_AXI_DATA_SIZE = 32 
-		)(
-		input S_AXI_ACLK,
-		input S_AXI_ARESETN,
+        parameter integer S_AXI_LITE_SIZE = 5,
+        parameter integer S_AXI_DATA_SIZE = 32 
+        )(
+        input S_AXI_ACLK,
+        input S_AXI_ARESETN,
         //AR
         input  [ 31 : 0] S_AXI_LITE_ARADDR,
         output S_AXI_LITE_ARREADY,
@@ -24,21 +24,21 @@ module DMA_WRITE_v1_0_STATUS#(
         //output [1:0] S_AXI_LITE_BRESP,
         output S_AXI_LITE_BVALID,
         input S_AXI_LITE_BREADY,
-		output [S_AXI_DATA_SIZE - 1: 0] IRQ_STATUS,
+        output [S_AXI_DATA_SIZE - 1: 0] IRQ_STATUS,
         output [S_AXI_DATA_SIZE - 1: 0] DMA_STATUS,
         output [S_AXI_DATA_SIZE - 1: 0] DMA_Trigger,
         output [S_AXI_DATA_SIZE - 1: 0] FIFO_COUNTER_STATUS
-		);
+        );
 
 
-		//AXI LITE Register instantiation
-		reg [S_AXI_DATA_SIZE - 1: 0] axi_reg0;
-		reg [S_AXI_DATA_SIZE - 1: 0] axi_reg1;
-		reg [S_AXI_DATA_SIZE - 1: 0] axi_reg2;
-		reg [S_AXI_DATA_SIZE - 1: 0] axi_reg3;
-		reg [S_AXI_DATA_SIZE - 1: 0] axi_reg4;
-		reg [S_AXI_DATA_SIZE - 1: 0] axi_reg5;
-		
+        //AXI LITE Register instantiation
+        reg [S_AXI_DATA_SIZE - 1: 0] axi_reg0;
+        reg [S_AXI_DATA_SIZE - 1: 0] axi_reg1;
+        reg [S_AXI_DATA_SIZE - 1: 0] axi_reg2;
+        reg [S_AXI_DATA_SIZE - 1: 0] axi_reg3;
+        reg [S_AXI_DATA_SIZE - 1: 0] axi_reg4;
+        reg [S_AXI_DATA_SIZE - 1: 0] axi_reg5;
+        
         reg [ 31 : 0] axi_araddr ;
         reg [ 31 : 0] axi_awaddr ;
 
@@ -66,7 +66,7 @@ module DMA_WRITE_v1_0_STATUS#(
         assign FIFO_COUNTER_STATUS  = axi_reg3;
                 
 
-		//Assert bvalid when BBREADY is available to indicate a successful write.
+        //Assert bvalid when BBREADY is available to indicate a successful write.
         always@(posedge S_AXI_ACLK)
           if(S_AXI_ARESETN == 'b0)
             bvalid <= 0;
@@ -76,7 +76,7 @@ module DMA_WRITE_v1_0_STATUS#(
             bvalid <= 'b0;
 
 
-		//Assert awready when AWADDR and WVALID are present.
+        //Assert awready when AWADDR and WVALID are present.
         always@(posedge S_AXI_ACLK)
           if(S_AXI_ARESETN == 'b0)
             awready <= 'b0;
@@ -88,7 +88,7 @@ module DMA_WRITE_v1_0_STATUS#(
             awready <= awready;
 
 
-		//latch write address when awready is asserted.
+        //latch write address when awready is asserted.
         always@(posedge S_AXI_ACLK)
             if(S_AXI_ARESETN == 'b0)
                 axi_awaddr <= 0;
@@ -98,7 +98,7 @@ module DMA_WRITE_v1_0_STATUS#(
                 axi_awaddr <= axi_awaddr;
 
 
-		//Assert wready when WVALID is asserted and awready is present.
+        //Assert wready when WVALID is asserted and awready is present.
         always@(posedge S_AXI_ACLK)
           if(S_AXI_ARESETN == 'b0)
             wready <= 0;
@@ -108,7 +108,7 @@ module DMA_WRITE_v1_0_STATUS#(
             wready <= 'b0;
 
 
-		//latch data when wready is asserted.
+        //latch data when wready is asserted.
         always@(posedge S_AXI_ACLK)
           if(S_AXI_ARESETN == 'b0) begin
             axi_wdata <= 0;
@@ -124,35 +124,35 @@ module DMA_WRITE_v1_0_STATUS#(
           end
 
 
-		//Write into registers when a valid address and valid data is present.
+        //Write into registers when a valid address and valid data is present.
         always@(posedge S_AXI_ACLK)
           if(S_AXI_ARESETN == 'b0)begin
-		    axi_reg0 <= 0;
-		    axi_reg1 <= 0;
-		    axi_reg2 <= 0;
-		    axi_reg3 <= 0;
-		    axi_reg4 <= 0;
-		    axi_reg5 <= 0;
-		  end else if(axi_wen) begin
-		  case (axi_awaddr[ S_AXI_LITE_SIZE - 1 :0])
-			6'h00:  axi_reg0<= axi_wdata;
-			6'h04:  axi_reg1<= axi_wdata;
-			6'h08:  axi_reg2<= axi_wdata;
-			6'h0C:  axi_reg3<= axi_wdata;
-			6'h10:  axi_reg4<= axi_wdata;
-			6'h14:  axi_reg5<= axi_wdata;
-		  default: begin
-		    axi_reg0 <= axi_reg0;
-			axi_reg1 <= axi_reg1;
-			axi_reg2 <= axi_reg2;
-			axi_reg3 <= axi_reg3;
-			axi_reg4 <= axi_reg4;
-			axi_reg5 <= axi_reg5;
-		   end endcase
-		  end
+            axi_reg0 <= 0;
+            axi_reg1 <= 0;
+            axi_reg2 <= 0;
+            axi_reg3 <= 0;
+            axi_reg4 <= 0;
+            axi_reg5 <= 0;
+          end else if(axi_wen) begin
+          case (axi_awaddr[ S_AXI_LITE_SIZE - 1 :0])
+            6'h00:  axi_reg0<= axi_wdata;
+            6'h04:  axi_reg1<= axi_wdata;
+            6'h08:  axi_reg2<= axi_wdata;
+            6'h0C:  axi_reg3<= axi_wdata;
+            6'h10:  axi_reg4<= axi_wdata;
+            6'h14:  axi_reg5<= axi_wdata;
+          default: begin
+            axi_reg0 <= axi_reg0;
+            axi_reg1 <= axi_reg1;
+            axi_reg2 <= axi_reg2;
+            axi_reg3 <= axi_reg3;
+            axi_reg4 <= axi_reg4;
+            axi_reg5 <= axi_reg5;
+           end endcase
+          end
 
 
-		//Assert arready when ARVALID is asserted, indicating a valid address to read.
+        //Assert arready when ARVALID is asserted, indicating a valid address to read.
         always@(posedge  S_AXI_ACLK)
           if(S_AXI_ARESETN == 'b0)
             arready <= 'b0;
@@ -161,7 +161,7 @@ module DMA_WRITE_v1_0_STATUS#(
           else
             arready <= 'b0;
 
-		//Latch ARADDR to axi_aradddr register
+        //Latch ARADDR to axi_aradddr register
         always@(posedge S_AXI_ACLK)
           if(S_AXI_ARESETN == 'b0)
             axi_araddr <= 0;
@@ -170,7 +170,7 @@ module DMA_WRITE_v1_0_STATUS#(
           else
             axi_araddr <= axi_araddr;
 
-		//Assert rvalid when RREADY and arready are asserted.
+        //Assert rvalid when RREADY and arready are asserted.
         always@(posedge  S_AXI_ACLK)
           if(S_AXI_ARESETN == 'b0)
             rvalid <= 'b0;
@@ -179,26 +179,26 @@ module DMA_WRITE_v1_0_STATUS#(
           else
             rvalid <= 'b0;
             
-		//read from registers
+        //read from registers
         always@(posedge S_AXI_ACLK)
           if(S_AXI_ARESETN == 'b0)begin
             axi_rvalid <= 'b0;
             axi_rdata <= 'b0;
-		  end else if(rvalid) begin
-		    axi_rvalid <= 'b1;
-		  case(axi_araddr[ S_AXI_LITE_SIZE - 1 :0])
-		    6'h00:  axi_rdata <= axi_reg0;
-			6'h04:  axi_rdata <= axi_reg1; 
-			6'h08:  axi_rdata <= axi_reg2;
-			6'h0C:  axi_rdata <= axi_reg3;
-			6'h10:  axi_rdata <= axi_reg4;
-			6'h14:  axi_rdata <= axi_reg5;
-		  default: begin 
-		    axi_rdata <= axi_rdata;
-		    axi_rvalid <= 0;
-		  end endcase
-	      end else
-			 axi_rvalid <= 'b0;
-			
-		   
+          end else if(rvalid) begin
+            axi_rvalid <= 'b1;
+          case(axi_araddr[ S_AXI_LITE_SIZE - 1 :0])
+            6'h00:  axi_rdata <= axi_reg0;
+            6'h04:  axi_rdata <= axi_reg1; 
+            6'h08:  axi_rdata <= axi_reg2;
+            6'h0C:  axi_rdata <= axi_reg3;
+            6'h10:  axi_rdata <= axi_reg4;
+            6'h14:  axi_rdata <= axi_reg5;
+          default: begin 
+            axi_rdata <= axi_rdata;
+            axi_rvalid <= 0;
+          end endcase
+          end else
+             axi_rvalid <= 'b0;
+            
+           
 endmodule

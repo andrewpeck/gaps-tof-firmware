@@ -27,38 +27,41 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 
-	module DMA_Write_v1_0 #
-	(
-		//AXI base address 
-		parameter  C_M00_AXI_TARGET_SLAVE_BASE_ADDR	= 32'h10000000,
-		//AXI Burst Length
-		parameter integer C_M00_AXI_BURST_LEN	= 256,
-		//AXI ID width
-		parameter integer C_M00_AXI_ID_WIDTH	= 1,
-		//Master AXI address width
-		parameter integer C_M00_AXI_ADDR_WIDTH	= 32,
-		//BUSER AXI width
-		parameter integer C_M00_AXI_DATA_WIDTH	= 32,
-		//WUSER AXI width
-		parameter integer C_M00_AXI_AWUSER_WIDTH	= 0,
-		//WUSER AXI width
- 		parameter integer C_M00_AXI_WUSER_WIDTH	= 0,
- 		//BUSER AXI width
- 		parameter integer C_M00_AXI_BUSER_WIDTH	= 0,
- 		//FIFO write depth
-		parameter integer C_FIFO_WR_DEPTH = 32768,
-		//FIFO data width
+    module DMA_Write_v1_0 #
+    (
+        //AXI base address 
+        parameter  C_M00_AXI_TARGET_SLAVE_BASE_ADDR = 32'h10000000,
+        //AXI Burst Length
+        parameter integer C_M00_AXI_BURST_LEN   = 256,
+        //AXI ID width
+        parameter integer C_M00_AXI_ID_WIDTH    = 1,
+        //Master AXI address width
+        parameter integer C_M00_AXI_ADDR_WIDTH  = 32,
+        //BUSER AXI width
+        parameter integer C_M00_AXI_DATA_WIDTH  = 32,
+        //WUSER AXI width
+        parameter integer C_M00_AXI_AWUSER_WIDTH    = 0,
+        //WUSER AXI width
+        parameter integer C_M00_AXI_WUSER_WIDTH = 0,
+        //BUSER AXI width
+        parameter integer C_M00_AXI_BUSER_WIDTH = 0,
+        //FIFO write depth
+        parameter integer C_FIFO_WR_DEPTH = 32768,
+        //FIFO data width
         parameter integer C_FIFO_DATA_SIZE = 32,
         //Address 1073741824 = 1GB
         parameter integer address_Complete = 8192000,  
+        //period interrupt when data transfer meets treshold. 
+        parameter integer interrupt_treshold = 100,//400KB triggers an interrupt
+        
         //AXI Lite address offset width
- 		parameter integer S_AXI_LITE_SIZE = 5,
+        parameter integer S_AXI_LITE_SIZE = 5,
         //AXI Lite data size
         parameter integer S_AXI_DATA_SIZE = 32 
         
-	)
-	( 
-		// Ports of Axi Master Bus Interface M00_AXI
+    )
+    ( 
+        // Ports of Axi Master Bus Interface M00_AXI
         input wire  m00_axi_aclk,
         input wire  m00_axi_aresetn,
         output wire [C_M00_AXI_ID_WIDTH-1 : 0] m00_axi_awid,
@@ -117,68 +120,69 @@
         /*output wire FourKB_Complete,
         output wire [31:0] irq_latency
         */    
-	);
-	
-	     wire [C_FIFO_DATA_SIZE - 1:0] fifo_data;
-	     wire [$clog2(C_FIFO_WR_DEPTH) - 1:0] fifo_rd_count;
-	     wire fifo_ren;
-	     wire fifo_empty;
-	     wire fifo_valid;
-	     wire [31:0] DMA_STATUS;
-	     wire [31:0] DMA_Trigger;
-	     wire burst_transaction_complete;
-	     wire FourMB_Complete;
-	     
+    );
+    
+         wire [C_FIFO_DATA_SIZE - 1:0] fifo_data;
+         wire [$clog2(C_FIFO_WR_DEPTH) - 1:0] fifo_rd_count;
+         wire fifo_ren;
+         wire fifo_empty;
+         wire fifo_valid;
+         wire [31:0] DMA_STATUS;
+         wire [31:0] DMA_Trigger;
+         wire burst_transaction_complete;
+         wire trigger_interrupt;
+         
    // Instantiation of Axi Bus Interface M00_AXI
-	DMA_Write_v1_0_M00_AXI # ( 
-		.C_M_TARGET_SLAVE_BASE_ADDR(C_M00_AXI_TARGET_SLAVE_BASE_ADDR),
-		.C_M_AXI_WRITE_BURST_LEN(C_M00_AXI_BURST_LEN),
-		.C_M_AXI_ID_WIDTH(C_M00_AXI_ID_WIDTH),
-		.C_M_AXI_ADDR_WIDTH(C_M00_AXI_ADDR_WIDTH),
-		.C_M_AXI_DATA_WIDTH(C_M00_AXI_DATA_WIDTH),
-		.C_M_AXI_AWUSER_WIDTH(C_M00_AXI_AWUSER_WIDTH),
-		.C_M_AXI_WUSER_WIDTH(C_M00_AXI_WUSER_WIDTH),
-		.C_M_AXI_BUSER_WIDTH(C_M00_AXI_BUSER_WIDTH),
-		.C_FIFO_WR_DEPTH(C_FIFO_WR_DEPTH),
+    DMA_Write_v1_0_M00_AXI # ( 
+        .C_M_TARGET_SLAVE_BASE_ADDR(C_M00_AXI_TARGET_SLAVE_BASE_ADDR),
+        .C_M_AXI_WRITE_BURST_LEN(C_M00_AXI_BURST_LEN),
+        .C_M_AXI_ID_WIDTH(C_M00_AXI_ID_WIDTH),
+        .C_M_AXI_ADDR_WIDTH(C_M00_AXI_ADDR_WIDTH),
+        .C_M_AXI_DATA_WIDTH(C_M00_AXI_DATA_WIDTH),
+        .C_M_AXI_AWUSER_WIDTH(C_M00_AXI_AWUSER_WIDTH),
+        .C_M_AXI_WUSER_WIDTH(C_M00_AXI_WUSER_WIDTH),
+        .C_M_AXI_BUSER_WIDTH(C_M00_AXI_BUSER_WIDTH),
+        .C_FIFO_WR_DEPTH(C_FIFO_WR_DEPTH),
         .C_FIFO_DATA_SIZE(C_FIFO_DATA_SIZE),   
-        .address_Complete(address_Complete)
-		
-	) DMA_Write_v1_0_M00_AXI_inst (
-		.M_AXI_ACLK(m00_axi_aclk),
-		.M_AXI_ARESETN(m00_axi_aresetn),
-		.M_AXI_AWID(m00_axi_awid),
-		.M_AXI_AWADDR(m00_axi_awaddr),
-		.M_AXI_AWLEN(m00_axi_awlen),
-		.M_AXI_AWSIZE(m00_axi_awsize),
-		.M_AXI_AWBURST(m00_axi_awburst),
-		.M_AXI_AWLOCK(m00_axi_awlock),
-		.M_AXI_AWCACHE(m00_axi_awcache),
-		.M_AXI_AWPROT(m00_axi_awprot),
-		.M_AXI_AWQOS(m00_axi_awqos),
-		.M_AXI_AWUSER(m00_axi_awuser),
-		.M_AXI_AWVALID(m00_axi_awvalid),
-		.M_AXI_AWREADY(m00_axi_awready),
-		.M_AXI_WDATA(m00_axi_wdata),
-		.M_AXI_WSTRB(m00_axi_wstrb),
-		.M_AXI_WLAST(m00_axi_wlast),
-		.M_AXI_WUSER(m00_axi_wuser),
-		.M_AXI_WVALID(m00_axi_wvalid),
-		.M_AXI_WREADY(m00_axi_wready),
-		.M_AXI_BID(m00_axi_bid),
-		.M_AXI_BRESP(m00_axi_bresp),
-		.M_AXI_BUSER(m00_axi_buser),
-		.M_AXI_BVALID(m00_axi_bvalid),
-		.M_AXI_BREADY(m00_axi_bready),
-		.fifo_ren(fifo_ren),
+        .address_Complete(address_Complete),
+		 .interrupt_treshold(interrupt_treshold)
+        
+    ) DMA_Write_v1_0_M00_AXI_inst (
+        .M_AXI_ACLK(m00_axi_aclk),
+        .M_AXI_ARESETN(m00_axi_aresetn),
+        .M_AXI_AWID(m00_axi_awid),
+        .M_AXI_AWADDR(m00_axi_awaddr),
+        .M_AXI_AWLEN(m00_axi_awlen),
+        .M_AXI_AWSIZE(m00_axi_awsize),
+        .M_AXI_AWBURST(m00_axi_awburst),
+        .M_AXI_AWLOCK(m00_axi_awlock),
+        .M_AXI_AWCACHE(m00_axi_awcache),
+        .M_AXI_AWPROT(m00_axi_awprot),
+        .M_AXI_AWQOS(m00_axi_awqos),
+        .M_AXI_AWUSER(m00_axi_awuser),
+        .M_AXI_AWVALID(m00_axi_awvalid),
+        .M_AXI_AWREADY(m00_axi_awready),
+        .M_AXI_WDATA(m00_axi_wdata),
+        .M_AXI_WSTRB(m00_axi_wstrb),
+        .M_AXI_WLAST(m00_axi_wlast),
+        .M_AXI_WUSER(m00_axi_wuser),
+        .M_AXI_WVALID(m00_axi_wvalid),
+        .M_AXI_WREADY(m00_axi_wready),
+        .M_AXI_BID(m00_axi_bid),
+        .M_AXI_BRESP(m00_axi_bresp),
+        .M_AXI_BUSER(m00_axi_buser),
+        .M_AXI_BVALID(m00_axi_bvalid),
+        .M_AXI_BREADY(m00_axi_bready),
+        .fifo_ren(fifo_ren),
          .fifo_empty(fifo_empty),
         .fifo_valid(fifo_valid),
         .fifo_data(fifo_data),
         .fifo_rd_count(fifo_rd_count),
-        //.burst_transaction_complete(burst_transaction_complete),
-        .FourMB_Complete(FourMB_Complete),
-        .dma_status(DMA_STATUS),
+        .trigger_interrupt(trigger_interrupt),
+		.dma_status(DMA_STATUS),
         .dma_trigger_value(DMA_Trigger));
-        	 
+		
+             
      reg fifo_clk;
      wire [31:0] fifo_counter;
      reg  [31:0] fifo_din;
@@ -260,7 +264,7 @@
         .prog_full(fifo_full)
      );
      */
-        	
+            
      
    
      
@@ -300,9 +304,9 @@
         .M_AXI_ACLK(m00_axi_aclk),
         //Global Reset Singal. This Signal is Active Low
         .M_AXI_ARESETN(m00_axi_aresetn),
-        .D(FourMB_Complete),
+        .D(trigger_interrupt),
         .IRQ_STATUS(IRQ_STATUS), 
         .Q(dma_irq)
         //.irq_latency(irq_latency)
      );
-	endmodule
+    endmodule
