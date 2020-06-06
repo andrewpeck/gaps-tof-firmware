@@ -1,0 +1,22 @@
+# -*- mode: TCL;-*-
+
+# IP Cores
+ip/clock_wizard/clock_wizard.xci
+ip/sem_core/sem_core.xci
+
+# DRS4 Controller
+drs/src/axi_ipbus_bridge.vhd
+drs/src/axi_pkg.vhd
+drs/src/counter_snap.vhd
+drs/src/daq_board_top.vhd
+drs/src/ipbus_pkg.vhd
+drs/src/ipbus_slave.vhd
+drs/src/ps_interface.vhd
+drs/src/registers.vhd
+drs/src/sem.vhd
+drs/src/synchonizer.vhd
+drs/src/types_pkg.vhd
+
+drs/src/drs.v
+drs/src/crc22.v
+drs/src/dna.v
