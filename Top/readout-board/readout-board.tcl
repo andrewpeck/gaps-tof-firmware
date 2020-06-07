@@ -5,10 +5,12 @@ set use_questa_simulator 0
 
 ## FPGA and Vivado strategies and flows
 set FPGA xc7z010clg400-1
+
+regexp -- {Vivado v([0-9]{4})\.[0-9]} [version] -> VIVADO_YEAR
 set SYNTH_STRATEGY "Vivado Synthesis Defaults"
-set SYNTH_FLOW "Vivado Synthesis 2019"
+set SYNTH_FLOW "Vivado Synthesis $VIVADO_YEAR"
 set IMPL_STRATEGY "Vivado Implementation Defaults"
-set IMPL_FLOW "Vivado Implementation 2019"
+set IMPL_FLOW "Vivado Implementation $VIVADO_YEAR"
 
 ### Set Vivado Runs Properties ###
 #
