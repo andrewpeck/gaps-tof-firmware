@@ -48,6 +48,36 @@ A more streamlined HDL based project organization is forthcoming...
 
 **To use any of these commands you need to make sure that vivado is in your path**, i.e. if you type vivado into the terminal it should open vivado. The scripts use only very primitive bash and otherwise use the vivado TCL shell, so there should be no external dependencies. 
 
+## Block Design Creation
+
+HOG wrappers provide facilities for creation of TCL files from Block Designs, and Block Designs from TCL.
+
+#### To export a TCL file from a block design: 
+
+    Hog/CreateProject.sh bd-to-tcl 
+
+#### To generate a block design from a TCL file:
+
+    Hog/CreateProject.sh tcl-to-bd
+
+Block designs are easier to work with, but do not play well with diff and have more issues with version lock-in. 
+
+Both tcl and bd should be committed to the repository. For working with the same (or close) vivado versions the bd file can just be opened directly (and the tcl should be exported after any changes are made).
+
+The tcl-to-bd flow can be used when changing versions. There is still some version-lock-in but efforts were made to minimize it. 
+
+### 2018.2 Compatibility
+
+One note. Newer versions of Vivado add the flag ```force``` onto the end of the ```assign_bd_address``` commands in the ```readout-board-bd.tcl``` file. 
+
+The force flag does not exist in Vivado 2018.2 for example. To keep the TCL file compatible between versions you can change the lines from:
+
+    assign_bd_address -offset 0x80000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs drs_top_0/S_AXI_LITE/reg0] -force
+    
+to 
+
+    assign_bd_address -offset 0x80000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs drs_top_0/S_AXI_LITE/reg0] 
+
 ## CCZE
 
 If you have the program [ccze](https://github.com/cornet/ccze) installed, it is very useful for viewing log files since it provides reasonably good syntax highlighting. 

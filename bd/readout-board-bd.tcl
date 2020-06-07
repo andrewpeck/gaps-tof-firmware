@@ -25,9 +25,8 @@ set current_vivado_version [version -short]
 
 if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
    puts ""
-   catch {common::send_msg_id "BD_TCL-109" "ERROR" "This script was generated using Vivado <$scripts_vivado_version> and is being run in <$current_vivado_version> of Vivado. Please run the script in Vivado <$scripts_vivado_version> then open the design in Vivado <$current_vivado_version>. Upgrade the design by running \"Tools => Report => Report IP Status...\", then run write_bd_tcl to create an updated script."}
+   common::send_msg_id "BD_TCL-1002" "WARNING" "This script was generated using Vivado <$scripts_vivado_version> without IP versions in the create_bd_cell commands, but is now being run in <$current_vivado_version> of Vivado. There may have been major IP version changes between Vivado <$scripts_vivado_version> and <$current_vivado_version>, which could impact the parameter settings of the IPs."
 
-   return 1
 }
 
 ################################################################
@@ -51,70 +50,68 @@ if { $list_projs eq "" } {
 variable design_name
 set design_name GAPSReadoutv2_0
 
-# If you do not already have an existing IP Integrator design open,
-# you can create a design using the following command:
-#    create_bd_design $design_name
+# This script was generated for a remote BD. To create a non-remote design,
+# change the variable <run_remote_bd_flow> to <0>.
 
-# Creating design if needed
-set errMsg ""
-set nRet 0
+set run_remote_bd_flow 1
+if { $run_remote_bd_flow == 1 } {
+  # Set the reference directory for source file relative paths (by default 
+  # the value is script directory path)
+  set origin_dir ./readout-firmware/bd
 
-set cur_design [current_bd_design -quiet]
-set list_cells [get_bd_cells -quiet]
+  # Use origin directory path location variable, if specified in the tcl shell
+  if { [info exists ::origin_dir_loc] } {
+     set origin_dir $::origin_dir_loc
+  }
 
-if { ${design_name} eq "" } {
-   # USE CASES:
-   #    1) Design_name not set
+  set str_bd_folder [file normalize ${origin_dir}]
+  set str_bd_filepath ${str_bd_folder}/${design_name}/${design_name}.bd
 
-   set errMsg "Please set the variable <design_name> to a non-empty value."
-   set nRet 1
+  # Check if remote design exists on disk
+  if { [file exists $str_bd_filepath ] == 1 } {
+     catch {common::send_msg_id "BD_TCL-110" "ERROR" "The remote BD file path <$str_bd_filepath> already exists!"}
+     common::send_msg_id "BD_TCL-008" "INFO" "To create a non-remote BD, change the variable <run_remote_bd_flow> to <0>."
+     common::send_msg_id "BD_TCL-009" "INFO" "Also make sure there is no design <$design_name> existing in your current project."
 
-} elseif { ${cur_design} ne "" && ${list_cells} eq "" } {
-   # USE CASES:
-   #    2): Current design opened AND is empty AND names same.
-   #    3): Current design opened AND is empty AND names diff; design_name NOT in project.
-   #    4): Current design opened AND is empty AND names diff; design_name exists in project.
+     return 1
+  }
 
-   if { $cur_design ne $design_name } {
-      common::send_msg_id "BD_TCL-001" "INFO" "Changing value of <design_name> from <$design_name> to <$cur_design> since current design is empty."
-      set design_name [get_property NAME $cur_design]
-   }
-   common::send_msg_id "BD_TCL-002" "INFO" "Constructing design in IPI design <$cur_design>..."
+  # Check if design exists in memory
+  set list_existing_designs [get_bd_designs -quiet $design_name]
+  if { $list_existing_designs ne "" } {
+     catch {common::send_msg_id "BD_TCL-111" "ERROR" "The design <$design_name> already exists in this project! Will not create the remote BD <$design_name> at the folder <$str_bd_folder>."}
 
-} elseif { ${cur_design} ne "" && $list_cells ne "" && $cur_design eq $design_name } {
-   # USE CASES:
-   #    5) Current design opened AND has components AND same names.
+     common::send_msg_id "BD_TCL-010" "INFO" "To create a non-remote BD, change the variable <run_remote_bd_flow> to <0> or please set a different value to variable <design_name>."
 
-   set errMsg "Design <$design_name> already exists in your project, please set the variable <design_name> to another value."
-   set nRet 1
-} elseif { [get_files -quiet ${design_name}.bd] ne "" } {
-   # USE CASES: 
-   #    6) Current opened design, has components, but diff names, design_name exists in project.
-   #    7) No opened design, design_name exists in project.
+     return 1
+  }
 
-   set errMsg "Design <$design_name> already exists in your project, please set the variable <design_name> to another value."
-   set nRet 2
+  # Check if design exists on disk within project
+  set list_existing_designs [get_files -quiet */${design_name}.bd]
+  if { $list_existing_designs ne "" } {
+     catch {common::send_msg_id "BD_TCL-112" "ERROR" "The design <$design_name> already exists in this project at location:
+    $list_existing_designs"}
+     catch {common::send_msg_id "BD_TCL-113" "ERROR" "Will not create the remote BD <$design_name> at the folder <$str_bd_folder>."}
 
+     common::send_msg_id "BD_TCL-011" "INFO" "To create a non-remote BD, change the variable <run_remote_bd_flow> to <0> or please set a different value to variable <design_name>."
+
+     return 1
+  }
+
+  # Now can create the remote BD
+  # NOTE - usage of <-dir> will create <$str_bd_folder/$design_name/$design_name.bd>
+  create_bd_design -dir $str_bd_folder $design_name
 } else {
-   # USE CASES:
-   #    8) No opened design, design_name not in project.
-   #    9) Current opened design, has components, but diff names, design_name not in project.
 
-   common::send_msg_id "BD_TCL-003" "INFO" "Currently there is no design <$design_name> in project, so creating one..."
+  # Create regular design
+  if { [catch {create_bd_design $design_name} errmsg] } {
+     common::send_msg_id "BD_TCL-012" "INFO" "Please set a different value to variable <design_name>."
 
-   create_bd_design $design_name
-
-   common::send_msg_id "BD_TCL-004" "INFO" "Making design <$design_name> as current_bd_design."
-   current_bd_design $design_name
-
+     return 1
+  }
 }
 
-common::send_msg_id "BD_TCL-005" "INFO" "Currently the variable <design_name> is equal to \"$design_name\"."
-
-if { $nRet != 0 } {
-   catch {common::send_msg_id "BD_TCL-114" "ERROR" $errMsg}
-   return $nRet
-}
+current_bd_design $design_name
 
 set bCheckIPsPassed 1
 ##################################################################
@@ -123,16 +120,16 @@ set bCheckIPsPassed 1
 set bCheckIPs 1
 if { $bCheckIPs == 1 } {
    set list_check_ips "\ 
-UCLA:GAPSFW:GAPS_WDMA:1.0\
-UCLA:GAPSFW:DWrite_Trigger:1.0\
-xilinx.com:ip:axi_vip:1.1\
-UCLA:GAPSFW:GAPS_DRS4:1.0\
-xilinx.com:ip:ila:6.2\
-xilinx.com:ip:proc_sys_reset:5.0\
-xilinx.com:ip:processing_system7:5.5\
-xilinx.com:ip:smartconnect:1.0\
-xilinx.com:ip:util_ds_buf:2.1\
-xilinx.com:ip:xlconstant:1.1\
+UCLA:GAPSFW:GAPS_WDMA:*\
+UCLA:GAPSFW:DWrite_Trigger:*\
+xilinx.com:ip:axi_vip:*\
+UCLA:GAPSFW:GAPS_DRS4:*\
+xilinx.com:ip:ila:*\
+xilinx.com:ip:proc_sys_reset:*\
+xilinx.com:ip:processing_system7:*\
+xilinx.com:ip:smartconnect:*\
+xilinx.com:ip:util_ds_buf:*\
+xilinx.com:ip:xlconstant:*\
 "
 
    set list_ips_missing ""
@@ -219,7 +216,7 @@ proc create_root_design { parentCell } {
   set gpio_p_0 [ create_bd_port -dir IO -from 10 -to 0 gpio_p_0 ]
 
   # Create instance: DMA_Write_0, and set properties
-  set DMA_Write_0 [ create_bd_cell -type ip -vlnv UCLA:GAPSFW:GAPS_WDMA:1.0 DMA_Write_0 ]
+  set DMA_Write_0 [ create_bd_cell -type ip -vlnv UCLA:GAPSFW:GAPS_WDMA DMA_Write_0 ]
   set_property -dict [ list \
    CONFIG.C_FIFO_WR_DEPTH {16384} \
    CONFIG.C_M00_AXI_AWUSER_WIDTH {32} \
@@ -229,24 +226,24 @@ proc create_root_design { parentCell } {
  ] $DMA_Write_0
 
   # Create instance: DWrite_Trigger_0, and set properties
-  set DWrite_Trigger_0 [ create_bd_cell -type ip -vlnv UCLA:GAPSFW:DWrite_Trigger:1.0 DWrite_Trigger_0 ]
+  set DWrite_Trigger_0 [ create_bd_cell -type ip -vlnv UCLA:GAPSFW:DWrite_Trigger DWrite_Trigger_0 ]
 
   # Create instance: axi_interconnect_0, and set properties
-  set axi_interconnect_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 axi_interconnect_0 ]
+  set axi_interconnect_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect axi_interconnect_0 ]
   set_property -dict [ list \
    CONFIG.NUM_MI {1} \
    CONFIG.NUM_SI {2} \
  ] $axi_interconnect_0
 
   # Create instance: axi_interconnect_1, and set properties
-  set axi_interconnect_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 axi_interconnect_1 ]
+  set axi_interconnect_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect axi_interconnect_1 ]
   set_property -dict [ list \
    CONFIG.NUM_MI {2} \
    CONFIG.NUM_SI {2} \
  ] $axi_interconnect_1
 
   # Create instance: axi_vip_0, and set properties
-  set axi_vip_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip:1.1 axi_vip_0 ]
+  set axi_vip_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip axi_vip_0 ]
   set_property -dict [ list \
    CONFIG.ADDR_WIDTH {32} \
    CONFIG.ARUSER_WIDTH {0} \
@@ -274,7 +271,7 @@ proc create_root_design { parentCell } {
  ] $axi_vip_0
 
   # Create instance: axi_vip_1, and set properties
-  set axi_vip_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip:1.1 axi_vip_1 ]
+  set axi_vip_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip axi_vip_1 ]
   set_property -dict [ list \
    CONFIG.ADDR_WIDTH {32} \
    CONFIG.ARUSER_WIDTH {0} \
@@ -302,22 +299,22 @@ proc create_root_design { parentCell } {
  ] $axi_vip_1
 
   # Create instance: drs_top_0, and set properties
-  set drs_top_0 [ create_bd_cell -type ip -vlnv UCLA:GAPSFW:GAPS_DRS4:1.0 drs_top_0 ]
+  set drs_top_0 [ create_bd_cell -type ip -vlnv UCLA:GAPSFW:GAPS_DRS4 drs_top_0 ]
 
   # Create instance: ila_0, and set properties
-  set ila_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:ila:6.2 ila_0 ]
+  set ila_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:ila ila_0 ]
   set_property -dict [ list \
    CONFIG.C_DATA_DEPTH {1024} \
  ] $ila_0
 
   # Create instance: proc_sys_reset_0, and set properties
-  set proc_sys_reset_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 proc_sys_reset_0 ]
+  set proc_sys_reset_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset proc_sys_reset_0 ]
 
   # Create instance: proc_sys_reset_1, and set properties
-  set proc_sys_reset_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 proc_sys_reset_1 ]
+  set proc_sys_reset_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset proc_sys_reset_1 ]
 
   # Create instance: processing_system7_0, and set properties
-  set processing_system7_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7:5.5 processing_system7_0 ]
+  set processing_system7_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7 processing_system7_0 ]
   set_property -dict [ list \
    CONFIG.PCW_ACT_APU_PERIPHERAL_FREQMHZ {666.666687} \
    CONFIG.PCW_ACT_CAN_PERIPHERAL_FREQMHZ {10.000000} \
@@ -399,8 +396,6 @@ proc create_root_design { parentCell } {
    CONFIG.PCW_FCLK3_PERIPHERAL_DIVISOR1 {1} \
    CONFIG.PCW_FCLK_CLK0_BUF {TRUE} \
    CONFIG.PCW_FCLK_CLK1_BUF {TRUE} \
-   CONFIG.PCW_FCLK_CLK2_BUF {FALSE} \
-   CONFIG.PCW_FCLK_CLK3_BUF {FALSE} \
    CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {250} \
    CONFIG.PCW_FPGA1_PERIPHERAL_FREQMHZ {33} \
    CONFIG.PCW_FPGA_FCLK0_ENABLE {1} \
@@ -410,8 +405,6 @@ proc create_root_design { parentCell } {
    CONFIG.PCW_GP0_EN_MODIFIABLE_TXN {0} \
    CONFIG.PCW_GP1_EN_MODIFIABLE_TXN {0} \
    CONFIG.PCW_GPIO_EMIO_GPIO_ENABLE {0} \
-   CONFIG.PCW_GPIO_EMIO_GPIO_IO {<Select>} \
-   CONFIG.PCW_GPIO_EMIO_GPIO_WIDTH {64} \
    CONFIG.PCW_GPIO_MIO_GPIO_ENABLE {1} \
    CONFIG.PCW_GPIO_MIO_GPIO_IO {MIO} \
    CONFIG.PCW_I2C0_GRP_INT_ENABLE {1} \
@@ -688,10 +681,8 @@ proc create_root_design { parentCell } {
    CONFIG.PCW_QSPI_PERIPHERAL_FREQMHZ {125} \
    CONFIG.PCW_QSPI_QSPI_IO {MIO 1 .. 6} \
    CONFIG.PCW_SD0_GRP_CD_ENABLE {0} \
-   CONFIG.PCW_SD0_GRP_CD_IO {<Select>} \
    CONFIG.PCW_SD0_GRP_POW_ENABLE {0} \
    CONFIG.PCW_SD0_GRP_WP_ENABLE {0} \
-   CONFIG.PCW_SD0_GRP_WP_IO {<Select>} \
    CONFIG.PCW_SD0_PERIPHERAL_ENABLE {1} \
    CONFIG.PCW_SD0_SD0_IO {MIO 40 .. 45} \
    CONFIG.PCW_SDIO_PERIPHERAL_DIVISOR0 {63} \
@@ -701,8 +692,6 @@ proc create_root_design { parentCell } {
    CONFIG.PCW_SMC_PERIPHERAL_DIVISOR0 {1} \
    CONFIG.PCW_SPI_PERIPHERAL_DIVISOR0 {1} \
    CONFIG.PCW_S_AXI_HP0_DATA_WIDTH {32} \
-   CONFIG.PCW_S_AXI_HP1_DATA_WIDTH {32} \
-   CONFIG.PCW_S_AXI_HP3_DATA_WIDTH {32} \
    CONFIG.PCW_TPIU_PERIPHERAL_DIVISOR0 {1} \
    CONFIG.PCW_TTC0_CLK0_PERIPHERAL_FREQMHZ {133.333333} \
    CONFIG.PCW_TTC0_CLK1_PERIPHERAL_FREQMHZ {133.333333} \
@@ -715,7 +704,6 @@ proc create_root_design { parentCell } {
    CONFIG.PCW_UART0_UART0_IO {MIO 46 .. 47} \
    CONFIG.PCW_UART1_GRP_FULL_ENABLE {0} \
    CONFIG.PCW_UART1_PERIPHERAL_ENABLE {0} \
-   CONFIG.PCW_UART1_UART1_IO {<Select>} \
    CONFIG.PCW_UART_PERIPHERAL_DIVISOR0 {10} \
    CONFIG.PCW_UART_PERIPHERAL_FREQMHZ {100} \
    CONFIG.PCW_UART_PERIPHERAL_VALID {1} \
@@ -762,7 +750,6 @@ proc create_root_design { parentCell } {
    CONFIG.PCW_USB0_PERIPHERAL_ENABLE {0} \
    CONFIG.PCW_USB0_PERIPHERAL_FREQMHZ {60} \
    CONFIG.PCW_USB0_RESET_ENABLE {0} \
-   CONFIG.PCW_USB0_USB0_IO {<Select>} \
    CONFIG.PCW_USB1_RESET_ENABLE {0} \
    CONFIG.PCW_USB_RESET_ENABLE {0} \
    CONFIG.PCW_USE_FABRIC_INTERRUPT {1} \
@@ -777,19 +764,19 @@ proc create_root_design { parentCell } {
  ] $processing_system7_0
 
   # Create instance: smartconnect_0, and set properties
-  set smartconnect_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 smartconnect_0 ]
+  set smartconnect_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect smartconnect_0 ]
   set_property -dict [ list \
    CONFIG.NUM_SI {1} \
  ] $smartconnect_0
 
   # Create instance: util_ds_buf_2, and set properties
-  set util_ds_buf_2 [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_ds_buf:2.1 util_ds_buf_2 ]
+  set util_ds_buf_2 [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_ds_buf util_ds_buf_2 ]
   set_property -dict [ list \
    CONFIG.C_BUF_TYPE {BUFH} \
  ] $util_ds_buf_2
 
   # Create instance: xlconstant_0, and set properties
-  set xlconstant_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 xlconstant_0 ]
+  set xlconstant_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant xlconstant_0 ]
   set_property -dict [ list \
    CONFIG.CONST_VAL {0} \
  ] $xlconstant_0
@@ -838,19 +825,17 @@ connect_bd_intf_net -intf_net [get_bd_intf_nets DMA_Write_0_DMA_AXI] [get_bd_int
   connect_bd_net -net xlconstant_0_dout [get_bd_pins drs_top_0/reset_i] [get_bd_pins xlconstant_0/dout]
 
   # Create address segments
-  assign_bd_address -offset 0x00000000 -range 0x20000000 -target_address_space [get_bd_addr_spaces DMA_Write_0/m00_axi] [get_bd_addr_segs processing_system7_0/S_AXI_HP0/HP0_DDR_LOWOCM] -force
-  assign_bd_address -offset 0xA0000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces axi_vip_0/Master_AXI] [get_bd_addr_segs DWrite_Trigger_0/S_AXI_LITE/reg0] -force
-  assign_bd_address -offset 0x80000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces axi_vip_0/Master_AXI] [get_bd_addr_segs drs_top_0/S_AXI_LITE/reg0] -force
-  assign_bd_address -offset 0x43C00000 -range 0x00001000 -target_address_space [get_bd_addr_spaces axi_vip_1/Master_AXI] [get_bd_addr_segs DMA_Write_0/s_axi_lite/reg0] -force
-  assign_bd_address -offset 0x43C00000 -range 0x00001000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs DMA_Write_0/s_axi_lite/reg0] -force
-  assign_bd_address -offset 0xA0000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs DWrite_Trigger_0/S_AXI_LITE/reg0] -force
-  assign_bd_address -offset 0x80000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs drs_top_0/S_AXI_LITE/reg0] -force
-
+  assign_bd_address -offset 0x00000000 -range 0x20000000 -target_address_space [get_bd_addr_spaces DMA_Write_0/m00_axi] [get_bd_addr_segs processing_system7_0/S_AXI_HP0/HP0_DDR_LOWOCM]
+  assign_bd_address -offset 0xA0000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces axi_vip_0/Master_AXI] [get_bd_addr_segs DWrite_Trigger_0/S_AXI_LITE/reg0]
+  assign_bd_address -offset 0x80000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces axi_vip_0/Master_AXI] [get_bd_addr_segs drs_top_0/S_AXI_LITE/reg0]
+  assign_bd_address -offset 0x43C00000 -range 0x00001000 -target_address_space [get_bd_addr_spaces axi_vip_1/Master_AXI] [get_bd_addr_segs DMA_Write_0/s_axi_lite/reg0]
+  assign_bd_address -offset 0x43C00000 -range 0x00001000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs DMA_Write_0/s_axi_lite/reg0]
+  assign_bd_address -offset 0xA0000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs DWrite_Trigger_0/S_AXI_LITE/reg0]
+  assign_bd_address -offset 0x80000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs drs_top_0/S_AXI_LITE/reg0]
 
   # Restore current instance
   current_bd_instance $oldCurInst
 
-  validate_bd_design
   save_bd_design
 }
 # End of create_root_design()
@@ -861,5 +846,3 @@ connect_bd_intf_net -intf_net [get_bd_intf_nets DMA_Write_0_DMA_AXI] [get_bd_int
 ##################################################################
 
 create_root_design ""
-
-
