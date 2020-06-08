@@ -44,9 +44,4 @@ set PATH_REPO "[file normalize [file dirname [info script]]]/../../"
 
 source $PATH_REPO/Hog/Tcl/create_project.tcl
 
-
-set PRJ_PATH [get_property DIRECTORY [current_project]]
-set PRJ_NAME [get_property NAME      [current_project]]
-
-set_property top DMA_Write_v1_0 [current_fileset]
 source $PATH_REPO/tcl/build_ip_dma_write.tcl
