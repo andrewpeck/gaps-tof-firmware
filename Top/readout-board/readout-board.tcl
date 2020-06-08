@@ -43,42 +43,14 @@ set PROPERTIES [dict create \
 set DESIGN    "[file rootname [file tail [info script]]]"
 set PATH_REPO "[file normalize [file dirname [info script]]]/../../"
 
-set_param general.maxThreads 8
-
 source $PATH_REPO/Hog/Tcl/create_project.tcl
-
-#set PRJ_PATH [get_property DIRECTORY [current_project]]
-#set PRJ_NAME [get_property NAME      [current_project]]
-#
-#set_property top dwrite_trigger [current_fileset]
-#close_project
-#open_project $PRJ_PATH/$PRJ_NAME.xpr
-#source $PATH_REPO/tcl/build_ip_dwrite_trigger.tcl
-#
-#set_property top DMA_Write_v1_0 [current_fileset]
-#close_project
-#open_project $PRJ_PATH/$PRJ_NAME.xpr
-#source $PATH_REPO/tcl/build_ip_dma_write.tcl
-#
-#set_property top drs_top [current_fileset]
-#close_project
-#open_project $PRJ_PATH/$PRJ_NAME.xpr
-#source $PATH_REPO/tcl/build_ip_drs.tcl
-
-#close_project
-#source $PATH_REPO/bd/readout-board-bd.tcl
 
 set_property  ip_repo_paths  $PATH_REPO/ip [current_project]
 update_ip_catalog
 
 update_compile_order -fileset sources_1
-make_wrapper -files [get_files $PATH_REPO/bd/GAPSReadoutv2_0.bd] -top
-add_files -norecurse $PATH_REPO/bd/hdl/GAPSReadoutv2_0_wrapper.vhd
+make_wrapper -files [get_files $PATH_REPO/bd/GAPSReadoutv2_0/GAPSReadoutv2_0.bd] -top
+add_files -norecurse $PATH_REPO/bd/GAPSReadoutv2_0/hdl/GAPSReadoutv2_0_wrapper.vhd
 update_compile_order -fileset sources_1
 set_property top GAPSReadoutv2_0_wrapper [current_fileset]
 update_compile_order -fileset sources_1
-
-# remove_files  /tmp/readout-firmware/VivadoProject/readout-board/readout-board.srcs/sources_1/bd/GAPSReadoutv2_0/GAPSReadoutv2_0.bd
-set origin_dir_loc $PATH_REPO
-write_bd_tcl -no_ip_version -include_layout -force $PATH_REPO/bd/readout-board-bd.tcl
-source $PATH_REPO/bd/readout-board-bd.tcl

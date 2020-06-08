@@ -48,6 +48,16 @@ A more streamlined HDL based project organization is forthcoming...
 
 **To use any of these commands you need to make sure that vivado is in your path**, i.e. if you type vivado into the terminal it should open vivado. The scripts use only very primitive bash and otherwise use the vivado TCL shell, so there should be no external dependencies. 
 
+A complete set of commands which should build the project, tested on Vivado 2018.2 and 2019.2 is: 
+
+    Hog/CreateProject.sh trg-ip 
+    Hog/CreateProject.sh dma-ip 
+    Hog/CreateProject.sh drs-ip 
+    Hog/CreateProject.sh tcl-to-bd
+    Hog/CreateProject.sh readout-board
+    Hog/LaunchSynthesis.sh readout-board
+    Hog/LaunchImplementation.sh readout-board
+
 ## Block Design Creation
 
 HOG wrappers provide facilities for creation of TCL files from Block Designs, and Block Designs from TCL.
