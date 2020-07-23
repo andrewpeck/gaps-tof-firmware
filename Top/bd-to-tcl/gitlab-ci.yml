@@ -1,0 +1,41 @@
+create_project:l0mdt:
+    extends: .create_project
+    variables:
+      extends: .vars
+      PROJECT_NAME: l0mdt
+
+# simulate_project:l0mdt:
+#     extends: .simulate_project
+#     variables:
+#       extends: .vars
+#       PROJECT_NAME: l0mdt
+# 
+# synthesise_ips:l0mdt:
+#     extends: .synthesise_ips
+#     variables:
+#       extends: .vars
+#       PROJECT_NAME: l0mdt
+#       IP_PATH: IP
+#     dependencies:
+#         - create_project:l0mdt
+#
+# synthesise_project:l0mdt:
+#     extends: .synthesise_project
+#     variables:
+#       extends: .vars
+#       PROJECT_NAME: l0mdt
+#     dependencies:
+#         # - synthesise_ips:l0mdt
+#         - create_project:l0mdt
+# 
+# implement_project:l0mdt:
+#     extends: .implement_project
+#     variables: 
+#       extends: .vars
+#       PROJECT_NAME: l0mdt
+#       HOG_NO_BITSTREAM_STAGE: 1
+#     dependencies:
+#       - create_project:l0mdt
+#       #  - synthesise_ips:l0mdt
+#       - synthesise_project:l0mdt
+
