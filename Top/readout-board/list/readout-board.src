@@ -1,0 +1,8 @@
+# -*- mode: TCL;-*-
+
+#drs/list/drs.src
+#dma/list/dma.src
+#trg/list/trg.src
+
+# Block Design
+bd/GAPSReadoutv2_0/GAPSReadoutv2_0.bd
