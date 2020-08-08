@@ -926,7 +926,7 @@ always @(posedge clock) begin
     // initialize read shift register by putting a single '1' bit into the read shift register
     //
     // To start the full readout mode, the Read Shift Register has to be
-    // initialized by clocking a â€œ1â€? into the first cell. This is achieved by
+    // initialized by clocking a "1" into the first cell. This is achieved by
     // applying address 1011 b at the address input A3-A0 and issuing 1024
     // clock cycles of SRCLK, where only during the last one SRIN=1 is applied
     //
