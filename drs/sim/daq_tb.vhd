@@ -21,7 +21,7 @@ architecture test of daq_tb is
   constant clk_period : time := 30.0 ns;
   constant sim_period : time := 40000 ns;
 
-  signal reset : std_logic := '0';
+  signal reset : std_logic := '1';
   signal clock : std_logic := '0';
 
   signal debug_packet_inject_i : std_logic                      := '0';
@@ -53,6 +53,7 @@ begin
 
   proc_reset : process
   begin
+    reset <= '1';
     wait for 100 ns;
     wait until rising_edge(clock);
     reset <= '0';
