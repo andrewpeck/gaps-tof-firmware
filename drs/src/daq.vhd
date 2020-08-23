@@ -93,7 +93,7 @@ architecture behavioral of daq is
 
   type state_t is (IDLE_state, ERR_state, HEAD_state, STATUS_state, LENGTH_state,
                    DNA_state, ID_state, CHMASK_state, EVENT_CNT_state,
-                   TIMESTAMP_state, CALC_CH_CRC_state, CH_CRC_state, PAYLOAD_state, CRC32_state, TAIL_state);
+                   TIMESTAMP_state, CALC_CH_CRC_state, CH_CRC_state, PAYLOAD_state, CALC_CRC32_state, CRC32_state, TAIL_state);
 
   signal state : state_t := IDLE_state;
 
@@ -182,10 +182,11 @@ architecture behavioral of daq is
 
 begin
 
+  packet_crc_en   <= if_then_else ((dav and state /= TAIL_state and state /= CRC32_state), '1', '0');
+
   process (clock) is
   begin
     if (rising_edge(clock)) then
-      packet_crc_en   <= if_then_else ((dav and state /= IDLE_state and state /= TAIL_state and state /= CRC32_state), '1', '0');
       channel_crc_en  <= if_then_else ((dav and state = PAYLOAD_state), '1', '0');
       packet_crc_rst  <= if_then_else ((state = IDLE_state or state = TAIL_state), '1', '0');
       channel_crc_rst <= if_then_else (((state = CH_CRC_state and state_word_cnt = 0) or state = IDLE_state), '1', '0');
@@ -225,7 +226,7 @@ begin
           debug        <= true;
           dropped      <= '0';
           num_channels <= 9;
-          mask         <= (others => '1');
+          mask         <= x"00FF";
           dna          <= x"FEDCBA9876543210";
           event_cnt    <= x"76543210";
           timestamp    <= x"BA9876543210";
@@ -368,10 +369,9 @@ begin
             end if;
 
             -- ROI size + 2 (CRC[15:0] + CRC[31:16])
-            if (num_channels = 0 or (state_word_cnt = roi_size and channel_cnt+1 = num_channels)) then
+            if (num_channels = 0) then
               state          <= CRC32_state;
               state_word_cnt <= 0;
-              channel_cnt    <= 0;
             elsif (state_word_cnt = roi_size) then
               state          <= CALC_CH_CRC_state;
               state_word_cnt <= 0;
@@ -381,7 +381,7 @@ begin
             if (debug) then
               dav  <= true;
               data <= to_slv(state_word_cnt, g_WORD_SIZE);
-            else
+            elsif (num_channels > 0) then
 
               -- TODO: need the guts of the thing
               -- dav should connect to !empty output of the adc fifo
@@ -396,6 +396,7 @@ begin
             end if;
 
           when CALC_CH_CRC_state =>
+
             -- need 1 extra clock to calculate the channel crc
             state <= CH_CRC_state;
             dav   <= false;
@@ -404,7 +405,11 @@ begin
           when CH_CRC_state =>
 
             if (state_word_cnt = CHANNEL_CRC'length / 16 - 1) then
-              state          <= PAYLOAD_state;
+              if (channel_cnt = num_channels) then
+                state          <= CALC_CRC32_state;
+              else
+                state          <= PAYLOAD_state;
+              end if;
               state_word_cnt <= 0;
             else
               state_word_cnt <= state_word_cnt + 1;
@@ -413,6 +418,14 @@ begin
             data <= channel_crc(g_WORD_SIZE*(CHANNEL_CRC_WORDS -state_word_cnt)-1
                                 downto g_WORD_SIZE*(CHANNEL_CRC_WORDS -state_word_cnt-1));
             dav <= true;
+
+          when CALC_CRC32_state =>
+
+            -- need 1 extra clock to calculate the crc
+            state <= CRC32_state;
+            dav   <= false;
+            data  <= (others => '0');
+
 
           when CRC32_state =>
 
