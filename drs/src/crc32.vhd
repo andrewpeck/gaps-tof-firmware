@@ -48,38 +48,38 @@ package body PCK_CRC32_D16 is
     d := Data;
     c := crc;
 
-    newcrc(0)  := d(12) xor d(10) xor d(9) xor d(6) xor d(0) xor c(16) xor c(22) xor c(25) xor c(26) xor c(28);
-    newcrc(1)  := d(13) xor d(12) xor d(11) xor d(9) xor d(7) xor d(6) xor d(1) xor d(0) xor c(16) xor c(17) xor c(22) xor c(23) xor c(25) xor c(27) xor c(28) xor c(29);
-    newcrc(2)  := d(14) xor d(13) xor d(9) xor d(8) xor d(7) xor d(6) xor d(2) xor d(1) xor d(0) xor c(16) xor c(17) xor c(18) xor c(22) xor c(23) xor c(24) xor c(25) xor c(29) xor c(30);
-    newcrc(3)  := d(15) xor d(14) xor d(10) xor d(9) xor d(8) xor d(7) xor d(3) xor d(2) xor d(1) xor c(17) xor c(18) xor c(19) xor c(23) xor c(24) xor c(25) xor c(26) xor c(30) xor c(31);
-    newcrc(4)  := d(15) xor d(12) xor d(11) xor d(8) xor d(6) xor d(4) xor d(3) xor d(2) xor d(0) xor c(16) xor c(18) xor c(19) xor c(20) xor c(22) xor c(24) xor c(27) xor c(28) xor c(31);
-    newcrc(5)  := d(13) xor d(10) xor d(7) xor d(6) xor d(5) xor d(4) xor d(3) xor d(1) xor d(0) xor c(16) xor c(17) xor c(19) xor c(20) xor c(21) xor c(22) xor c(23) xor c(26) xor c(29);
-    newcrc(6)  := d(14) xor d(11) xor d(8) xor d(7) xor d(6) xor d(5) xor d(4) xor d(2) xor d(1) xor c(17) xor c(18) xor c(20) xor c(21) xor c(22) xor c(23) xor c(24) xor c(27) xor c(30);
-    newcrc(7)  := d(15) xor d(10) xor d(8) xor d(7) xor d(5) xor d(3) xor d(2) xor d(0) xor c(16) xor c(18) xor c(19) xor c(21) xor c(23) xor c(24) xor c(26) xor c(31);
-    newcrc(8)  := d(12) xor d(11) xor d(10) xor d(8) xor d(4) xor d(3) xor d(1) xor d(0) xor c(16) xor c(17) xor c(19) xor c(20) xor c(24) xor c(26) xor c(27) xor c(28);
-    newcrc(9)  := d(13) xor d(12) xor d(11) xor d(9) xor d(5) xor d(4) xor d(2) xor d(1) xor c(17) xor c(18) xor c(20) xor c(21) xor c(25) xor c(27) xor c(28) xor c(29);
-    newcrc(10) := d(14) xor d(13) xor d(9) xor d(5) xor d(3) xor d(2) xor d(0) xor c(16) xor c(18) xor c(19) xor c(21) xor c(25) xor c(29) xor c(30);
-    newcrc(11) := d(15) xor d(14) xor d(12) xor d(9) xor d(4) xor d(3) xor d(1) xor d(0) xor c(16) xor c(17) xor c(19) xor c(20) xor c(25) xor c(28) xor c(30) xor c(31);
-    newcrc(12) := d(15) xor d(13) xor d(12) xor d(9) xor d(6) xor d(5) xor d(4) xor d(2) xor d(1) xor d(0) xor c(16) xor c(17) xor c(18) xor c(20) xor c(21) xor c(22) xor c(25) xor c(28) xor c(29) xor c(31);
-    newcrc(13) := d(14) xor d(13) xor d(10) xor d(7) xor d(6) xor d(5) xor d(3) xor d(2) xor d(1) xor c(17) xor c(18) xor c(19) xor c(21) xor c(22) xor c(23) xor c(26) xor c(29) xor c(30);
-    newcrc(14) := d(15) xor d(14) xor d(11) xor d(8) xor d(7) xor d(6) xor d(4) xor d(3) xor d(2) xor c(18) xor c(19) xor c(20) xor c(22) xor c(23) xor c(24) xor c(27) xor c(30) xor c(31);
-    newcrc(15) := d(15) xor d(12) xor d(9) xor d(8) xor d(7) xor d(5) xor d(4) xor d(3) xor c(19) xor c(20) xor c(21) xor c(23) xor c(24) xor c(25) xor c(28) xor c(31);
-    newcrc(16) := d(13) xor d(12) xor d(8) xor d(5) xor d(4) xor d(0) xor c(0) xor c(16) xor c(20) xor c(21) xor c(24) xor c(28) xor c(29);
-    newcrc(17) := d(14) xor d(13) xor d(9) xor d(6) xor d(5) xor d(1) xor c(1) xor c(17) xor c(21) xor c(22) xor c(25) xor c(29) xor c(30);
-    newcrc(18) := d(15) xor d(14) xor d(10) xor d(7) xor d(6) xor d(2) xor c(2) xor c(18) xor c(22) xor c(23) xor c(26) xor c(30) xor c(31);
-    newcrc(19) := d(15) xor d(11) xor d(8) xor d(7) xor d(3) xor c(3) xor c(19) xor c(23) xor c(24) xor c(27) xor c(31);
-    newcrc(20) := d(12) xor d(9) xor d(8) xor d(4) xor c(4) xor c(20) xor c(24) xor c(25) xor c(28);
-    newcrc(21) := d(13) xor d(10) xor d(9) xor d(5) xor c(5) xor c(21) xor c(25) xor c(26) xor c(29);
-    newcrc(22) := d(14) xor d(12) xor d(11) xor d(9) xor d(0) xor c(6) xor c(16) xor c(25) xor c(27) xor c(28) xor c(30);
-    newcrc(23) := d(15) xor d(13) xor d(9) xor d(6) xor d(1) xor d(0) xor c(7) xor c(16) xor c(17) xor c(22) xor c(25) xor c(29) xor c(31);
-    newcrc(24) := d(14) xor d(10) xor d(7) xor d(2) xor d(1) xor c(8) xor c(17) xor c(18) xor c(23) xor c(26) xor c(30);
-    newcrc(25) := d(15) xor d(11) xor d(8) xor d(3) xor d(2) xor c(9) xor c(18) xor c(19) xor c(24) xor c(27) xor c(31);
-    newcrc(26) := d(10) xor d(6) xor d(4) xor d(3) xor d(0) xor c(10) xor c(16) xor c(19) xor c(20) xor c(22) xor c(26);
-    newcrc(27) := d(11) xor d(7) xor d(5) xor d(4) xor d(1) xor c(11) xor c(17) xor c(20) xor c(21) xor c(23) xor c(27);
-    newcrc(28) := d(12) xor d(8) xor d(6) xor d(5) xor d(2) xor c(12) xor c(18) xor c(21) xor c(22) xor c(24) xor c(28);
-    newcrc(29) := d(13) xor d(9) xor d(7) xor d(6) xor d(3) xor c(13) xor c(19) xor c(22) xor c(23) xor c(25) xor c(29);
-    newcrc(30) := d(14) xor d(10) xor d(8) xor d(7) xor d(4) xor c(14) xor c(20) xor c(23) xor c(24) xor c(26) xor c(30);
-    newcrc(31) := d(15) xor d(11) xor d(9) xor d(8) xor d(5) xor c(15) xor c(21) xor c(24) xor c(25) xor c(27) xor c(31);
+    newcrc(0)  := d(12) xor d(10) xor d(9)  xor d(6) xor d(0) xor c(16) xor c(22) xor c(25) xor c(26)  xor c(28);
+    newcrc(1)  := d(13) xor d(12) xor d(11) xor d(9) xor d(7) xor d(6)  xor d(1)  xor d(0)  xor c(16)  xor c(17)  xor c(22)  xor c(23) xor c(25)  xor c(27)  xor c(28) xor c(29);
+    newcrc(2)  := d(14) xor d(13) xor d(9)  xor d(8) xor d(7) xor d(6)  xor d(2)  xor d(1)  xor d(0)   xor c(16)  xor c(17)  xor c(18) xor c(22)  xor c(23)  xor c(24) xor c(25)  xor c(29) xor c(30);
+    newcrc(3)  := d(15) xor d(14) xor d(10) xor d(9) xor d(8) xor d(7)  xor d(3)  xor d(2)  xor d(1)   xor c(17)  xor c(18)  xor c(19) xor c(23)  xor c(24)  xor c(25) xor c(26)  xor c(30) xor c(31);
+    newcrc(4)  := d(15) xor d(12) xor d(11) xor d(8) xor d(6) xor d(4)  xor d(3)  xor d(2)  xor d(0)   xor c(16)  xor c(18)  xor c(19) xor c(20)  xor c(22)  xor c(24) xor c(27)  xor c(28) xor c(31);
+    newcrc(5)  := d(13) xor d(10) xor d(7)  xor d(6) xor d(5) xor d(4)  xor d(3)  xor d(1)  xor d(0)   xor c(16)  xor c(17)  xor c(19) xor c(20)  xor c(21)  xor c(22) xor c(23)  xor c(26) xor c(29);
+    newcrc(6)  := d(14) xor d(11) xor d(8)  xor d(7) xor d(6) xor d(5)  xor d(4)  xor d(2)  xor d(1)   xor c(17)  xor c(18)  xor c(20) xor c(21)  xor c(22)  xor c(23) xor c(24)  xor c(27) xor c(30);
+    newcrc(7)  := d(15) xor d(10) xor d(8)  xor d(7) xor d(5) xor d(3)  xor d(2)  xor d(0)  xor c(16)  xor c(18)  xor c(19)  xor c(21) xor c(23)  xor c(24)  xor c(26) xor c(31);
+    newcrc(8)  := d(12) xor d(11) xor d(10) xor d(8) xor d(4) xor d(3)  xor d(1)  xor d(0)  xor c(16)  xor c(17)  xor c(19)  xor c(20) xor c(24)  xor c(26)  xor c(27) xor c(28);
+    newcrc(9)  := d(13) xor d(12) xor d(11) xor d(9) xor d(5) xor d(4)  xor d(2)  xor d(1)  xor c(17)  xor c(18)  xor c(20)  xor c(21) xor c(25)  xor c(27)  xor c(28) xor c(29);
+    newcrc(10) := d(14) xor d(13) xor d(9)  xor d(5) xor d(3) xor d(2)  xor d(0)  xor c(16) xor c(18)  xor c(19)  xor c(21)  xor c(25) xor c(29)  xor c(30);
+    newcrc(11) := d(15) xor d(14) xor d(12) xor d(9) xor d(4) xor d(3)  xor d(1)  xor d(0)  xor c(16)  xor c(17)  xor c(19)  xor c(20) xor c(25)  xor c(28)  xor c(30) xor c(31);
+    newcrc(12) := d(15) xor d(13) xor d(12) xor d(9) xor d(6) xor d(5)  xor d(4)  xor d(2)  xor d(1)   xor d(0)   xor c(16)  xor c(17) xor c(18)  xor c(20)  xor c(21) xor c(22)  xor c(25) xor c(28)  xor c(29) xor c(31);
+    newcrc(13) := d(14) xor d(13) xor d(10) xor d(7) xor d(6) xor d(5)  xor d(3)  xor d(2)  xor d(1)   xor c(17)  xor c(18)  xor c(19) xor c(21)  xor c(22)  xor c(23) xor c(26)  xor c(29) xor c(30);
+    newcrc(14) := d(15) xor d(14) xor d(11) xor d(8) xor d(7) xor d(6)  xor d(4)  xor d(3)  xor d(2)   xor c(18)  xor c(19)  xor c(20) xor c(22)  xor c(23)  xor c(24) xor c(27)  xor c(30) xor c(31);
+    newcrc(15) := d(15) xor d(12) xor d(9)  xor d(8) xor d(7) xor d(5)  xor d(4)  xor d(3)  xor c(19)  xor c(20)  xor c(21)  xor c(23) xor c(24)  xor c(25)  xor c(28) xor c(31);
+    newcrc(16) := d(13) xor d(12) xor d(8)  xor d(5) xor d(4) xor d(0)  xor c(0)  xor c(16) xor c(20)  xor c(21)  xor c(24)  xor c(28) xor c(29);
+    newcrc(17) := d(14) xor d(13) xor d(9)  xor d(6) xor d(5) xor d(1)  xor c(1)  xor c(17) xor c(21)  xor c(22)  xor c(25)  xor c(29) xor c(30);
+    newcrc(18) := d(15) xor d(14) xor d(10) xor d(7) xor d(6) xor d(2)  xor c(2)  xor c(18) xor c(22)  xor c(23)  xor c(26)  xor c(30) xor c(31);
+    newcrc(19) := d(15) xor d(11) xor d(8)  xor d(7) xor d(3) xor c(3)  xor c(19) xor c(23) xor c(24)  xor c(27)  xor c(31);
+    newcrc(20) := d(12) xor d(9)  xor d(8)  xor d(4) xor c(4) xor c(20) xor c(24) xor c(25) xor c(28);
+    newcrc(21) := d(13) xor d(10) xor d(9)  xor d(5) xor c(5) xor c(21) xor c(25) xor c(26) xor c(29);
+    newcrc(22) := d(14) xor d(12) xor d(11) xor d(9) xor d(0) xor c(6)  xor c(16) xor c(25) xor c(27)  xor c(28)  xor c(30);
+    newcrc(23) := d(15) xor d(13) xor d(9)  xor d(6) xor d(1) xor d(0)  xor c(7)  xor c(16) xor c(17)  xor c(22)  xor c(25)  xor c(29) xor c(31);
+    newcrc(24) := d(14) xor d(10) xor d(7)  xor d(2) xor d(1) xor c(8)  xor c(17) xor c(18) xor c(23)  xor c(26)  xor c(30);
+    newcrc(25) := d(15) xor d(11) xor d(8)  xor d(3) xor d(2) xor c(9)  xor c(18) xor c(19) xor c(24)  xor c(27)  xor c(31);
+    newcrc(26) := d(10) xor d(6)  xor d(4)  xor d(3) xor d(0) xor c(10) xor c(16) xor c(19) xor c(20)  xor c(22)  xor c(26);
+    newcrc(27) := d(11) xor d(7)  xor d(5)  xor d(4) xor d(1) xor c(11) xor c(17) xor c(20) xor c(21)  xor c(23)  xor c(27);
+    newcrc(28) := d(12) xor d(8)  xor d(6)  xor d(5) xor d(2) xor c(12) xor c(18) xor c(21) xor c(22)  xor c(24)  xor c(28);
+    newcrc(29) := d(13) xor d(9)  xor d(7)  xor d(6) xor d(3) xor c(13) xor c(19) xor c(22) xor c(23)  xor c(25)  xor c(29);
+    newcrc(30) := d(14) xor d(10) xor d(8)  xor d(7) xor d(4) xor c(14) xor c(20) xor c(23) xor c(24)  xor c(26)  xor c(30);
+    newcrc(31) := d(15) xor d(11) xor d(9)  xor d(8) xor d(5) xor c(15) xor c(21) xor c(24) xor c(25)  xor c(27)  xor c(31);
     return newcrc;
   end nextCRC32_D16;
 
@@ -104,18 +104,32 @@ entity crc32 is
 end crc32;
 
 architecture behavioral of crc32 is
-    signal int_crc : std_logic_vector (31 downto 0);
+
+  signal int_crc : std_logic_vector (31 downto 0) := x"FFFFFFFF";
+
+  function reverse_vector (a : std_logic_vector)
+    return std_logic_vector is
+    variable result : std_logic_vector(a'range);
+    alias aa        : std_logic_vector(a'reverse_range) is a;
+  begin
+    for i in aa'range loop
+      result(i) := aa(i);
+    end loop;
+    return result;
+  end;  -- function reverse_vector
+
 begin
 
-  crc <= int_crc;
+  crc <= x"FFFFFFFF" xor reverse_vector(int_crc);
 
   process (clock) is
   begin
     if (rising_edge(clock)) then
       if (reset = '1') then
-        int_crc <= (others => '0');
+        int_crc <= (others => '1');
       elsif (enable = '1') then
-        int_crc <= nextCRC32_D16(data, int_crc);
+        int_crc <= nextCRC32_D16(
+          reverse_vector(data(15 downto 8)) & reverse_vector(data(7 downto 0)), int_crc);
       end if;
     end if;
   end process;
