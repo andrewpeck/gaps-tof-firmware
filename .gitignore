@@ -1,2 +1,5 @@
 *~undo-tree~
 tags
+*.o
+daq_tb
+*.cf
