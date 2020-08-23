@@ -69,6 +69,8 @@ architecture behavioral of daq is
   -- |-----------+--------+------------------------------------------------|
   -- | LEN       | [15:0] | length of packet, need to precalculate         |
   -- |-----------+--------+------------------------------------------------|
+  -- | ROI       | [15:0] | size of region of interest                     |
+  -- |-----------+--------+------------------------------------------------|
   -- | DNA       | [63:0] | Zynq7000 Device DNA                            |
   -- |-----------+--------+------------------------------------------------|
   -- | ID        | [15:0] | [15:8] = readout board ID                      |
@@ -81,19 +83,23 @@ architecture behavioral of daq is
   -- |-----------+--------+------------------------------------------------|
   -- | TIMESTAMP | [47:0] | # of 33MHz clocks elapsed since resync         |
   -- |-----------+--------+------------------------------------------------|
-  -- | PAYLOAD   |        | 0 to 9216 words                                |
+  -- | PAYLOAD   |        | 0 to XXXX words                                |
   -- |           |        |                                                |
-  -- |           |        | bits [13:0] = ADC data                         |
-  -- |           |        | bits [15:14] parity                            |
+  -- |           |        | HEADER[15:0] = Channel ID                      |
+  -- |           |        | data bits [13:0] = ADC data                    |
+  -- |           |        | data bits [15:14] parity                       |
+  -- |           |        | trailer[31:0] = crc32                          |
   -- |-----------+--------+------------------------------------------------|
   -- | CRC32     | [31:0] | Packet CRC (excluding Trailer)                 |
   -- |-----------+--------+------------------------------------------------|
   -- | TAIL      | [15:0] | 0x5555                                         |
   -- |-----------+--------+------------------------------------------------|
 
-  type state_t is (IDLE_state, ERR_state, HEAD_state, STATUS_state, LENGTH_state,
-                   DNA_state, ID_state, CHMASK_state, EVENT_CNT_state,
-                   TIMESTAMP_state, CALC_CH_CRC_state, CH_CRC_state, PAYLOAD_state, CALC_CRC32_state, CRC32_state, TAIL_state);
+  -- packet processing in python 15% faster by adding a channel header!!
+  type state_t is (IDLE_state, ERR_state, HEAD_state, STATUS_state, LENGTH_state, ROI_state,
+                   DNA_state, ID_state, CHMASK_state, EVENT_CNT_state, TIMESTAMP_state,
+                   CALC_CH_CRC_state, CH_CRC_state, CH_HEADER_state, PAYLOAD_state,
+                   CALC_CRC32_state, CRC32_state, TAIL_state);
 
   signal state : state_t := IDLE_state;
 
@@ -157,7 +163,7 @@ architecture behavioral of daq is
         --      etc..
         -- Then multiply by roi_size + 1 + 2 (for the crc)
         ((count_ones(id_mask and ch_mask)) +to_int(or_reduce(id_mask and ch_mask)))
-        * (1+packet_roi_size + channel_crc'length / g_WORD_SIZE)
+        * (1+1+packet_roi_size + channel_crc'length / g_WORD_SIZE)
         );
     end if;
   end function;
@@ -170,6 +176,7 @@ architecture behavioral of daq is
       + status'length / g_WORD_SIZE
       + packet_length'length / g_WORD_SIZE
       + dna'length / g_WORD_SIZE
+      + data'length / g_WORD_SIZE -- roi
       + id'length / g_WORD_SIZE
       + mask'length / g_WORD_SIZE
       + event_cnt'length / g_WORD_SIZE
@@ -295,9 +302,16 @@ begin
 
           when LENGTH_state =>
 
-            state <= DNA_state;
+            state <= ROI_state;
 
             data <= packet_length;
+            dav  <= true;
+
+          when ROI_state =>
+
+            state <= DNA_state;
+
+            data <= to_slv(roi_size, data'length);
             dav  <= true;
 
           when DNA_state =>
@@ -347,7 +361,7 @@ begin
               if (dropped = '1') then
                 state <= CRC32_state;
               else
-                state <= PAYLOAD_state;
+                state <= CH_HEADER_state;
               end if;
 
               state_word_cnt <= 0;
@@ -359,6 +373,19 @@ begin
                               downto g_WORD_SIZE*(TIMESTAMP_WORDS -state_word_cnt-1));
             dav <= true;
 
+          when CH_HEADER_state =>
+
+            if (num_channels = 0) then
+              state          <= CRC32_state;
+              state_word_cnt <= 0;
+            else
+              state          <= PAYLOAD_state;
+              state_word_cnt <= 0;
+            end if;
+
+            data <= to_slv (channel_cnt, data'length);
+            dav <= true;
+
           when PAYLOAD_state =>
 
             if (debug) then
@@ -368,7 +395,6 @@ begin
               state_word_cnt <= state_word_cnt + 1;
             end if;
 
-            -- ROI size + 2 (CRC[15:0] + CRC[31:16])
             if (num_channels = 0) then
               state          <= CRC32_state;
               state_word_cnt <= 0;
@@ -408,7 +434,7 @@ begin
               if (channel_cnt = num_channels) then
                 state          <= CALC_CRC32_state;
               else
-                state          <= PAYLOAD_state;
+                state          <= CH_HEADER_state;
               end if;
               state_word_cnt <= 0;
             else

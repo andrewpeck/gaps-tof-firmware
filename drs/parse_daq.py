@@ -1,178 +1,137 @@
 #!/usr/bin/env python3
-from enum import Enum, auto
+import numpy as np
 import libscrc
 
-def read_test_packet():
-    dna_length = 4
-    event_cnt_length = 2
-    ch_crc_length = 2
-    crc32_length = 2
-    timestamp_length = 3
-    dna = 0
-    ch_crc = 0
-    ch_crc_calc = 0
-    packet_crc_calc = 0
-    crc32 = 0
-    ch_cnt = 0
-    event_cnt = 0
-    timestamp = 0
-    state_word_cnt = 0
-    packet_length = 0
-    payload_size = 0
-    num_channels = 0
+class DRSWaveform():
+    def __init__(self, array, crc, channel):
+        self.data = array #np.zeros(size)
+        self.crc = crc
+        self.channel = channel
 
-    class State(Enum):
-        IDLE = auto()
-        ERR = auto()
-        HEAD = auto()
-        STATUS = auto()
-        LENGTH = auto()
-        DNA = auto()
-        ID = auto()
-        CHMASK = auto()
-        EVENT_CNT = auto()
-        TIMESTAMP = auto()
-        CALC_CH_CRC = auto()
-        CH_CRC = auto()
-        PAYLOAD = auto()
-        CRC32 = auto()
-        TAIL = auto()
+    def __str__(self):
+        ret = ""
+        ret += "Waveform : " + self.data.__str__() + "\n"
+        ret += "CRC      : 0x%0*X" % (2, self.crc)
+        return ret
 
-    daq_file = open("daq_packet.txt", "r")
-    lines = daq_file.readlines()
+    def check_crc(self):
+        crc = libscrc.crc32(self.data)
 
-    state = State.HEAD
+        if crc != self.crc:
+            print("CH%d CRC FAIL calc=0x%08X, read=0x%08X" % (self.channel, crc, self.crc))
+            return 1
 
-    for line in lines:
+        return 0
 
-        data = int(line, 16)
+class DAQReadout():
+    header = np.uint16(0)
+    trailer = np.uint16(0)
+    status = np.uint16(0)
+    dna = np.uint64(0)
+    channels = np.uint16(0)
+    roi_size = np.uint16(0)
+    board_id = np.uint16(0)
+    ch_mask = np.uint16(0)
+    event_cnt = np.uint32(0)
+    timestamp = np.uint64(0)
+    crc = np.uint32(0)
 
-        if state not in (State.CRC32, State.TAIL):
-            packet_crc_calc = libscrc.crc32((data).to_bytes(2, byteorder='big'), packet_crc_calc)
-            #print("      > data = 0x%04X, Calculate crc = 0x%08X" % (data,packet_crc_calc))
+    waveforms = []
 
-        if state == State.HEAD:
-            print("HEAD      : 0x%X" % data)
-            state = State.STATUS
-            continue
-
-        if state == State.STATUS:
-            print("STATUS    : 0x%X" % data)
-            state = State.LENGTH
-            continue
-
-        if state == State.LENGTH:
-            print("LENGTH    : 0x%X" % data)
-            state = State.DNA
-            packet_length = data
-            continue
-
-        if state == State.DNA:
-            if state_word_cnt == 0:
-                dna = 0
-            dna |= (data << (16*(dna_length-state_word_cnt-1)))
-            if state_word_cnt == dna_length-1:
-                print("DNA       : 0x%0*X" % (16, dna))
-                state = State.ID
-                state_word_cnt = 0
-                continue
-            state_word_cnt += 1
-
-        if state == State.ID:
-            print("ID        : 0x%X" % data)
-            state = State.CHMASK
-            continue
-
-        if state == State.CHMASK:
+    def count_channels(self):
+        # NOTE: this needs to change if a single daq modules wants to support both drs chips
+        if self.ch_mask == 0x00ff:
+            self.channels = 9
+        elif self.ch_mask == 0xff00:
+            self.channels = 9
+        else:
+            count = 0
             for i in range(16):
-                if 0x1&(data>>i):
-                    num_channels += 1
-            if num_channels > 0:
-                num_channels += 1
+                count += (self.ch_mask>>i)&0x1
+            if count > 0:
+                count += 1
+            self.channels = count
 
-            state = State.EVENT_CNT
-            payload_size = (packet_length-15)/num_channels-2
-            print("CHMASK    : 0x%X (calculate payload size=%d)" % (data, payload_size))
-            continue
+    def get_channel_index(self, index):
+        cnt = 0
+        # NOTE: this needs to change if a single daq modules wants to support both drs chips
+        if self.ch_mask == 0xFF:
+            return index
+        for i in range(16):
+            if 0x1 & (self.ch_mask>> i):
+                if cnt == index:
+                    return i
+                cnt += 1
 
-        if state == State.EVENT_CNT:
-            if state_word_cnt == 0:
-                event_cnt = 0
-            event_cnt |= (data << (16*(event_cnt_length-state_word_cnt-1)))
-            state_word_cnt += 1
+    def __str__(self):
+        ret = ""
+        ret += ("HEADER    : 0x%0*X\n" % (2, self.header))
+        ret += ("STATUS    : 0x%0*X\n" % (2, self.status))
+        ret += ("LENGTH    : 0x%0*X\n" % (2, self.length))
+        ret += ("ROI_SIZE  : %d\n"     % (self.roi_size))
+        ret += ("DNA       : 0x%0*X\n" % (16, self.dna))
+        ret += ("BOARD     : 0x%0*X\n" % (2, self.board_id))
+        ret += ("MASK      : 0x%0*X\n" % (2, self.ch_mask))
+        ret += ("NUM_CH    : %d\n"     % (self.channels))
+        ret += ("EVENT_CNT : 0x%0*X\n" % (8, self.event_cnt))
+        ret += ("TIMESTAMP : 0x%0*X\n" % (12, self.timestamp))
+        ret += ("CRC       : 0x%0*X\n" % (2, self.crc))
+        ret += ("TRAILER   : 0x%0*X\n" % (2, self.trailer))
+        return ret
 
-            if state_word_cnt == event_cnt_length:
-                print("EVENT_CNT : 0x%0*X" % (8, event_cnt))
-                state = State.TIMESTAMP
-                state_word_cnt = 0
-                continue
+def read_packet (data, verbose=False):
 
-        if state == State.TIMESTAMP:
-            if state_word_cnt == 0:
-                timestamp = 0
-            timestamp |= (data << (16*(timestamp_length-state_word_cnt-1)))
-            state_word_cnt += 1
+    drs = DAQReadout()
+    drs.header = data[0]
+    drs.status = data[1]
+    drs.length = data[2]
+    drs.roi_size = data[3]+1 # daq report counts from zero, we count from 1
+    drs.dna = int.from_bytes(data[4:8], byteorder="big")
+    drs.board_id = data[8]
+    drs.ch_mask = data[9]
+    drs.count_channels()
+    drs.event_cnt = int.from_bytes(data[10:12], byteorder="big")
+    drs.timestamp = int.from_bytes(data[12:15], byteorder="big")
 
-            if state_word_cnt == timestamp_length:
-                print("TIMESTAMP : 0x%0*X" % (12, timestamp))
-                state = State.PAYLOAD
-                state_word_cnt = 0
-                continue
+    for ch in range(drs.channels):
 
-        if state == State.PAYLOAD:
-            if data != state_word_cnt:
-                print("Ch%d ERROR %04X!=%04X" % (ch_cnt+1, data, state_word_cnt))
-            state_word_cnt += 1
 
-            ch_crc_calc = libscrc.crc32((data).to_bytes(2, byteorder='big'), ch_crc_calc)
+        START = 16+ch*(drs.roi_size+3)
+        END = 16+ch*(drs.roi_size+3) + drs.roi_size
 
-            if state_word_cnt >= (payload_size-1):
-                state = State.CH_CRC
-                state_word_cnt = 0
-                continue
+        drs.waveforms.append(DRSWaveform(data[START:END], \
+                                    int.from_bytes(data[END:END+2], byteorder="big"), \
+                                            data[START-1]))
+                                    #drs.get_channel_index(ch)))
 
-        if state == State.CH_CRC:
-            if state_word_cnt == 0:
-                ch_crc = 0
-            ch_crc |= (data << (16*(ch_crc_length-state_word_cnt-1)))
-            if state_word_cnt == ch_crc_length-1:
-                if ch_crc_calc == ch_crc:
-                    print("    > Ch%d Payload OK CRC=0x%08X" % ((ch_cnt+1), ch_crc))
-                else:
-                    print("    > Ch%d Payload CRC Fail" % (ch_cnt+1))
-                    print("      > Calculate crc = 0x%08X" % ch_crc_calc)
-                    print("      > Received  crc = 0x%0*X" % (8, ch_crc))
-                if ch_cnt == num_channels-1:
-                    state = State.CRC32
-                    ch_cnt = 0
-                else:
-                    state = State.PAYLOAD
-                    ch_cnt += 1
+        drs.waveforms[ch].check_crc()
 
-                ch_crc_calc = 0
-                state_word_cnt = 0
-                continue
-            state_word_cnt += 1
+    drs.crc = int.from_bytes(data[drs.length-3:drs.length-1], byteorder="big")
+    drs.trailer = data[drs.length-1]
 
-        if state == State.CRC32:
-            if state_word_cnt == 0:
-                crc32 = 0
-            crc32 |= (data << (16*(crc32_length-state_word_cnt-1)))
-            state_word_cnt += 1
+    if (verbose):
+        print(drs)
 
-            if state_word_cnt == crc32_length:
-                print("CRC32     : 0x%0*X" % (8, crc32))
-                if crc32 == packet_crc_calc:
-                    print("    > Packet CRC OK")
-                else:
-                    print("    > Packet CRC FAIL expect=0x%08X" % packet_crc_calc)
-                state = State.TAIL
-                state_word_cnt = 0
-                continue
+    packet_crc = libscrc.crc32(data[0:drs.length-3]) # subtract trailer + crc
 
-        if state == State.TAIL:
-            print("TAIL      : 0x%X" % data)
-            state = State.IDLE
-            continue
+    if packet_crc != drs.crc:
+        print ("Packet  CRC fail")
+        print ("calc=%08X data=%08X" % (packet_crc, drs.crc))
 
-read_test_packet()
+if __name__ == "__main__":
+    a = np.fromfile("daq_packet.dat", dtype='>u2', count=-1, sep='', offset=0)
+    np.set_printoptions(formatter={'int':hex})
+    PROFILE=True
+    if PROFILE:
+        def loop_read(a):
+            for i in range(100000):
+                read_packet(a,False)
+
+        import cProfile
+        cProfile.run('loop_read(a)', "stats")
+        import pstats
+        p = pstats.Stats('stats')
+        p.strip_dirs().sort_stats('time').print_stats(20)
+        read_packet(a,True)
+    else:
+        read_packet(a,True)
