@@ -60,11 +60,11 @@ begin
     wait;
   end process;
 
-  proc_sim_period : process
-  begin
-    wait for sim_period/10;
-    report integer'image(integer(floor((100.0 * real(now / ns) / (real (sim_period / ns)))))) & "% complete";
-  end process;
+  --proc_sim_period : process
+  --begin
+  --  wait for sim_period/10;
+  --  report integer'image(integer(floor((100.0 * real(now / ns) / (real (sim_period / ns)))))) & "% complete";
+  --end process;
 
   proc_finish : process
   begin
@@ -120,7 +120,7 @@ begin
   begin
     wait until rising_edge(clock);
     if (valid_o = '1') then
-      assert false report "data" & integer'image(to_integer(unsigned(data_o))) severity note;
+      --assert false report "data" & integer'image(to_integer(unsigned(data_o))) severity note;
       write(file_RESULTS, "0x" & to_hstring(unsigned(data_o)) & LF);  -- Hexadecimal representation
 
     end if;
