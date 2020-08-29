@@ -182,4 +182,8 @@ assign_bd_address -offset 0x80000000 -range 0x00010000 -target_address_space [ge
 |----------+--------+-----------------------------------------|
 
 ** Address Table
-[[file:./regmap/address_table.org]]
+
+The address table is defined in a "templated" XML file: [[registers.xml]]
+
+A convenient document describing the address table can be seen at:
+- [[file:regmap/address_table.org][DRS Address Table]]
