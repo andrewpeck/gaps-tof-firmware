@@ -37,27 +37,27 @@ constructed as standalone IP cores, they go through the entire out-of-context sy
 the time of project creation. No further action is required with these IPs.
 
 #+BEGIN_EXAMPLE
-  Hog/CreateProject.sh trg-ip 
-  Hog/CreateProject.sh dma-ip 
-  Hog/CreateProject.sh drs-ip 
+Hog/CreateProject.sh trg-ip
+Hog/CreateProject.sh dma-ip
+Hog/CreateProject.sh drs-ip
 #+END_EXAMPLE
 
 After that, the combined project can be created with the command
 
 #+BEGIN_EXAMPLE
-  Hog/CreateProject.sh readout-board
+Hog/CreateProject.sh readout-board
 #+END_EXAMPLE
 
 Synthesis can be launched with the command
 
 #+BEGIN_EXAMPLE
-  Hog/LaunchSynthesis.sh readout-board
+Hog/LaunchSynthesis.sh readout-board
 #+END_EXAMPLE
 
 Implementation can be launched with the command
 
 #+BEGIN_EXAMPLE
-  Hog/LaunchImplementation.sh readout-board
+Hog/LaunchImplementation.sh readout-board
 #+END_EXAMPLE
 
 A more streamlined HDL based project organization is forthcoming...
@@ -68,18 +68,11 @@ otherwise use the vivado TCL shell, so there should be no external dependencies.
 
 A complete set of commands which should build the project, tested on Vivado 2018.2 and 2019.2 is:
 
-#+BEGIN_EXAMPLE
-  git clone https://uhhepvcs.phys.hawaii.edu/gaps-ucla/readout-firmware.git
-
-  cd readout-firmware && git checkout hog && git submodule update --init 
-
-  Hog/CreateProject.sh trg-ip 
-  Hog/CreateProject.sh dma-ip 
-  Hog/CreateProject.sh drs-ip 
-  Hog/CreateProject.sh tcl-to-bd
-  Hog/CreateProject.sh readout-board
-  Hog/LaunchSynthesis.sh readout-board
-  Hog/LaunchImplementation.sh readout-board
+#+BEGIN_EXAMPLE bash
+git clone https://gitlab.com/ucla-gaps-tof/firmware
+cd firmware
+git submodule update --init
+make
 #+END_EXAMPLE
 
 Best practice is for released builds the entire repo should be cloned from scratch and built from
@@ -94,13 +87,13 @@ TCL.
 **** To export a TCL file from a block design:
 
 #+BEGIN_EXAMPLE
-  Hog/CreateProject.sh bd-to-tcl 
+Hog/CreateProject.sh bd-to-tcl
 #+END_EXAMPLE
 
 **** To generate a block design from a TCL file:
 
 #+BEGIN_EXAMPLE
-  Hog/CreateProject.sh tcl-to-bd
+Hog/CreateProject.sh tcl-to-bd
 #+END_EXAMPLE
 
 Block designs are easier to work with, but do not play well with diff and have more issues with
@@ -181,7 +174,7 @@ assign_bd_address -offset 0x80000000 -range 0x00010000 -target_address_space [ge
 | CMD      | [0]    | 1'b0 = resync                           |
 |          |        | 1'b1 = trigger                          |
 |----------+--------+-----------------------------------------|
-| RO_FLAG  | [15:0] | bitfield set to '1' to readout a chanel |
+| CH_MASK  | [15:0] | bitfield set to '1' to readout a chanel |
 |          |        | [7:0]=DRS0 channels 7:0                 |
 |          |        | [15:8]=DRS1 channels 7:0                |
 |----------+--------+-----------------------------------------|

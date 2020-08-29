@@ -1,41 +1,41 @@
-create_project:l0mdt:
+# #################### READOUT-BOARD Project ###########################
+
+create_project:readout-board:
     extends: .create_project
     variables:
       extends: .vars
-      PROJECT_NAME: l0mdt
+      PROJECT_NAME: readout-board
 
-# simulate_project:l0mdt:
+# simulate_project:readout-board:
 #     extends: .simulate_project
 #     variables:
 #       extends: .vars
-#       PROJECT_NAME: l0mdt
-# 
-# synthesise_ips:l0mdt:
-#     extends: .synthesise_ips
-#     variables:
-#       extends: .vars
-#       PROJECT_NAME: l0mdt
-#       IP_PATH: IP
-#     dependencies:
-#         - create_project:l0mdt
-#
-# synthesise_project:l0mdt:
-#     extends: .synthesise_project
-#     variables:
-#       extends: .vars
-#       PROJECT_NAME: l0mdt
-#     dependencies:
-#         # - synthesise_ips:l0mdt
-#         - create_project:l0mdt
-# 
-# implement_project:l0mdt:
-#     extends: .implement_project
-#     variables: 
-#       extends: .vars
-#       PROJECT_NAME: l0mdt
-#       HOG_NO_BITSTREAM_STAGE: 1
-#     dependencies:
-#       - create_project:l0mdt
-#       #  - synthesise_ips:l0mdt
-#       - synthesise_project:l0mdt
+#       PROJECT_NAME: readout-board
 
+synthesise_ips:readout-board:
+    extends: .synthesise_ips
+    variables:
+      extends: .vars
+      PROJECT_NAME: readout-board
+      IP_PATH: IP
+    dependencies:
+        - create_project:readout-board
+
+synthesise_project:readout-board:
+    extends: .synthesise_project
+    variables:
+      extends: .vars
+      PROJECT_NAME: readout-board
+    dependencies:
+        - synthesise_ips:readout-board
+        - create_project:readout-board
+
+implement_project:readout-board:
+    extends: .implement_project
+    variables:
+      extends: .vars
+      PROJECT_NAME: readout-board
+    dependencies:
+       - create_project:readout-board
+       - synthesise_ips:readout-board
+       - synthesise_project:readout-board
