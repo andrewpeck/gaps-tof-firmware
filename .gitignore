@@ -1,4 +1,6 @@
 *~undo-tree~
+*.pyc
+*.org~
 tags
 *.o
 daq_tb

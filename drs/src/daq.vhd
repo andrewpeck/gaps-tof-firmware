@@ -21,7 +21,7 @@ use ieee.numeric_std.all;
 -- out triggers to the daq blocks as needed
 --
 -- Each daq block handles only 1 DRS chip
---
+
 entity daq is
   generic(
     g_DRS_ID    : integer := 0;
@@ -57,43 +57,6 @@ entity daq is
 end daq;
 
 architecture behavioral of daq is
-
-  -- |-----------+--------+------------------------------------------------|
-  -- | Field     | Len    | Description                                    |
-  -- |-----------+--------+------------------------------------------------|
-  -- | HEAD      | [15:0] | 0xAAAA                                         |
-  -- |-----------+--------+------------------------------------------------|
-  -- | STATUS    | [15:0] | [0] =sync_err                                  |
-  -- |           |        | [1] = drs was busy (lost trigger)              |
-  -- |           |        | [15:1]=reserved                                |
-  -- |-----------+--------+------------------------------------------------|
-  -- | LEN       | [15:0] | length of packet, need to precalculate         |
-  -- |-----------+--------+------------------------------------------------|
-  -- | ROI       | [15:0] | size of region of interest                     |
-  -- |-----------+--------+------------------------------------------------|
-  -- | DNA       | [63:0] | Zynq7000 Device DNA                            |
-  -- |-----------+--------+------------------------------------------------|
-  -- | ID        | [15:0] | [15:8] = readout board ID                      |
-  -- |           |        | [7:1] = reserved                               |
-  -- |           |        | [0] = drs #0 or #1                             |
-  -- |-----------+--------+------------------------------------------------|
-  -- | CH_MASK   | [15:0] | Channel Enable Mask '1'=ON                     |
-  -- |-----------+--------+------------------------------------------------|
-  -- | EVENT_CNT | [31:0] | Event ID Received From Trigger                 |
-  -- |-----------+--------+------------------------------------------------|
-  -- | TIMESTAMP | [47:0] | # of 33MHz clocks elapsed since resync         |
-  -- |-----------+--------+------------------------------------------------|
-  -- | PAYLOAD   |        | 0 to XXXX words                                |
-  -- |           |        |                                                |
-  -- |           |        | HEADER[15:0] = Channel ID                      |
-  -- |           |        | data bits [13:0] = ADC data                    |
-  -- |           |        | data bits [15:14] parity                       |
-  -- |           |        | trailer[31:0] = crc32                          |
-  -- |-----------+--------+------------------------------------------------|
-  -- | CRC32     | [31:0] | Packet CRC (excluding Trailer)                 |
-  -- |-----------+--------+------------------------------------------------|
-  -- | TAIL      | [15:0] | 0x5555                                         |
-  -- |-----------+--------+------------------------------------------------|
 
   -- packet processing in python 15% faster by adding a channel header!!
   type state_t is (IDLE_state, ERR_state, HEAD_state, STATUS_state, LENGTH_state, ROI_state,
