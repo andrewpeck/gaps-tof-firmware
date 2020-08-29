@@ -1,0 +1,193 @@
+\documentclass[9pt,letterpaper]{article}
+\usepackage[left=1.5cm, right=1.5cm, top=2cm]{geometry}
+\usepackage{ltablex}
+\usepackage{makecell}
+\usepackage{tabularx}
+\renewcommand\familydefault{\sfdefault}
+\usepackage[T1]{fontenc}
+\usepackage[usenames, dvipsnames]{color}
+\definecolor{parentcolor}{rgb}{0.325, 0.408, 0.584}
+\definecolor{modulecolor}{rgb}{1.000, 1.000, 1.000}
+
+\date{}
+
+\renewcommand{\contentsname}{Modules}
+
+\usepackage{hyperref}
+\setcounter{tocdepth}{4}
+\hypersetup{
+    colorlinks=true, %set true if you want colored links
+    linktoc=all,     %set to all if you want both sections and subsections linked
+    linkcolor=black, %choose some color if you want links to stand out
+}
+
+\title{UCLA DRS DAQ Address Table}
+% START: ADDRESS_TABLE_VERSION :: DO NOT EDIT
+    \author{\\ v03.02.05.0C \\ 20190611}
+% END: ADDRESS_TABLE_VERSION :: DO NOT EDIT
+\begin{document}
+
+\maketitle
+%tableofcontents
+
+% START: ADDRESS_TABLE :: DO NOT EDIT
+
+    \pagebreak
+    \section{Module: DRS \hfill \texttt{0x0}}
+
+    Implements various control and monitoring functions of the DRS Logic\\
+
+    \renewcommand{\arraystretch}{1.3}
+    \noindent
+    \subsection*{\textcolor{parentcolor}{\textbf{DRS.CHIP}}}
+
+    \vspace{4mm}
+    \noindent
+    Registers for configuring the DRS ASIC Directly
+    \noindent
+
+    \keepXColumns
+    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
+    \hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Dir} & \textbf{Def} & \textbf{Description} \\\hline
+    \nopagebreak
+    DMODE & \texttt{0x0} & \texttt{[1:1]} & rw & \texttt{0x1} & set 1 = continuous domino, 0=single shot \\\hline
+    STANDBY\_MODE & \texttt{0x0} & \texttt{[2:2]} & rw & \texttt{0x0} & set 1 = shutdown drs \\\hline
+    TRANSPARENT\_MODE & \texttt{0x0} & \texttt{[3:3]} & rw & \texttt{0x0} & set 1 = transparent mode \\\hline
+    DRS\_PLL\_LOCK & \texttt{0x0} & \texttt{[4:4]} & r & \texttt{} & DRS PLL Locked \\\hline
+    CHANNEL\_CONFIG & \texttt{0x0} & \texttt{[31:24]} & rw & \texttt{0xFF} & Write Shift Register Configuration                         \\ & & & & & \# of chn | \# of cells per ch | bit pattern                         \\ & & & & & 8        | 1024              | 11111111b                         \\ & & & & & 4        | 2048              | 01010101b                         \\ & & & & & 2        | 4096              | 00010001b                         \\ & & & & & 1        | 8192              | 00000001b \\\hline
+    DTAP\_HIGH\_CNTS & \texttt{0x1} & \texttt{[24:0]} & r & \texttt{} & Number of 33MHz clocks counted while DTAP was high. Should be equal to 33 Million (0x1f78a40) for 1.024 GHz sampling rate. Please see manual  \\\hline
+    DTAP\_LOW\_CNTS & \texttt{0x2} & \texttt{[24:0]} & r & \texttt{} & Number of 33MHz clocks counted while DTAP was low. Should be equal to 33 Million (0x1f78a40) for 1.024 GHz sampling rate. Please see manual  \\\hline
+    \end{tabularx}
+    \vspace{5mm}
+
+
+    \noindent
+    \subsection*{\textcolor{parentcolor}{\textbf{DRS.READOUT}}}
+
+    \vspace{4mm}
+    \noindent
+    Registers for configuring the readout state machine
+    \noindent
+
+    \keepXColumns
+    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
+    \hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Dir} & \textbf{Def} & \textbf{Description} \\\hline
+    \nopagebreak
+    ROI\_MODE & \texttt{0x10} & \texttt{[0:0]} & rw & \texttt{0x1} & Set to 1 to enable Region of Interest Readout \\\hline
+    BUSY & \texttt{0x10} & \texttt{[1:1]} & r & \texttt{} & Readout is busy \\\hline
+    ADC\_LATENCY & \texttt{0x10} & \texttt{[9:4]} & rw & \texttt{0x0} & Latency from first sr clock to when ADC data should be valid \\\hline
+    SAMPLE\_COUNT & \texttt{0x10} & \texttt{[22:12]} & rw & \texttt{0x400} & Number of samples to read out \\\hline
+    READOUT\_MASK & \texttt{0x11} & \texttt{[8:0]} & rw & \texttt{0x1FF} & 9 bit mask, set a bit to 1 to enable readout of that channel \\\hline
+    START & \texttt{0x12} & \texttt{[0:0]} & w & Pulsed & Write 1 to take the state machine out of idle mode \\\hline
+    REINIT & \texttt{0x13} & \texttt{[0:0]} & w & Pulsed & Write 1 to reinitialize DRS state machine (restores to idle state) \\\hline
+    CONFIGURE & \texttt{0x14} & \texttt{[0:0]} & w & Pulsed & Write 1 to configure the DRS. Should be done before data taking \\\hline
+    RESET & \texttt{0x15} & \texttt{[0:0]} & w & Pulsed & Write 1 to completely reset the DRS state machine logic \\\hline
+    \end{tabularx}
+    \vspace{5mm}
+
+
+    \noindent
+    \subsection*{\textcolor{parentcolor}{\textbf{DRS.FPGA.DNA}}}
+
+    \vspace{4mm}
+    \noindent
+    FPGA Device DNA
+    \noindent
+
+    \keepXColumns
+    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
+    \hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Dir} & \textbf{Def} & \textbf{Description} \\\hline
+    \nopagebreak
+    DNA\_LSBS & \texttt{0x20} & \texttt{[31:0]} & r & \texttt{} & Device DNA [31:0] \\\hline
+    DNA\_MSBS & \texttt{0x21} & \texttt{[24:0]} & r & \texttt{} & Device DNA [56:32] \\\hline
+    \end{tabularx}
+    \vspace{5mm}
+
+
+    \noindent
+    \subsection*{\textcolor{parentcolor}{\textbf{DRS.FPGA.RELEASE}}}
+
+    \vspace{4mm}
+    \noindent
+    DRS Firmware Release Date and Version
+    \noindent
+
+    \keepXColumns
+    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
+    \hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Dir} & \textbf{Def} & \textbf{Description} \\\hline
+    \nopagebreak
+    DATE & \texttt{0x22} & \texttt{[31:0]} & r & \texttt{} & Release YYYY/MM/DD \\\hline
+    \end{tabularx}
+    \vspace{5mm}
+
+
+    \noindent
+    \subsection*{\textcolor{parentcolor}{\textbf{DRS.FPGA.RELEASE.VERSION}}}
+
+    \vspace{4mm}
+    \noindent
+    Firmware Release Version (XX.YY.ZZ)
+    \noindent
+
+    \keepXColumns
+    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
+    \hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Dir} & \textbf{Def} & \textbf{Description} \\\hline
+    \nopagebreak
+    MAJOR & \texttt{0x23} & \texttt{[7:0]} & r & \texttt{} & Release semantic version major \\\hline
+    MINOR & \texttt{0x23} & \texttt{[15:8]} & r & \texttt{} & Release semantic version minor \\\hline
+    BUILD & \texttt{0x23} & \texttt{[23:16]} & r & \texttt{} & Release semantic version build \\\hline
+    \end{tabularx}
+    \vspace{5mm}
+
+
+    \noindent
+    \subsection*{\textcolor{parentcolor}{\textbf{DRS.FPGA.RELEASE.TIMESTAMP}}}
+
+    \vspace{4mm}
+    \noindent
+    Timestamp
+    \noindent
+
+    \keepXColumns
+    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
+    \hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Dir} & \textbf{Def} & \textbf{Description} \\\hline
+    \nopagebreak
+    TIMESTAMP\_LSBS & \texttt{0x26} & \texttt{[31:0]} & r & \texttt{} & Device TIMESTAMP [31:0] \\\hline
+    TIMESTAMP\_MSBS & \texttt{0x27} & \texttt{[15:0]} & r & \texttt{} & Device TIMESTAMP [47:32] \\\hline
+    \end{tabularx}
+    \vspace{5mm}
+
+
+    \noindent
+    \subsection*{\textcolor{parentcolor}{\textbf{DRS.COUNTERS}}}
+
+    \vspace{4mm}
+    \noindent
+    Counters
+    \noindent
+
+    \keepXColumns
+    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
+    \hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Dir} & \textbf{Def} & \textbf{Description} \\\hline
+    \nopagebreak
+    CNT\_SEM\_CORRECTION & \texttt{0x30} & \texttt{[15:0]} & r & \texttt{} & Number of Single Event Errors corrected by the scrubber \\\hline
+    CNT\_SEM\_UNCORRECTABLE & \texttt{0x31} & \texttt{[19:16]} & r & \texttt{} & Number of Critical Single Event Errors (uncorrectable by scrubber) \\\hline
+    CNT\_READOUTS\_COMPLETED & \texttt{0x32} & \texttt{[15:0]} & r & \texttt{} & Number of readouts completed since reset \\\hline
+    CNT\_LOST\_EVENT & \texttt{0x33} & \texttt{[31:16]} & r & \texttt{} & Number of trigger lost due to deadtime \\\hline
+    CNT\_EVENT & \texttt{0x34} & \texttt{[31:0]} & r & \texttt{} & Number of triggers received \\\hline
+    \end{tabularx}
+    \vspace{5mm}
+
+
+% END: ADDRESS_TABLE :: DO NOT EDIT
+
+\end{document}
+
+
