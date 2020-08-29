@@ -18,6 +18,8 @@ use UNISIM.vcomponents.all;
 
 entity drs_top is
   generic (
+    EN_TMR_IPB_SLAVE_DRS : integer := 1;
+
     -- these generics get set by hog at synthesis
     GLOBAL_FWDATE       : std_logic_vector (31 downto 0) := x"00000000";
     GLOBAL_FWTIME       : std_logic_vector (31 downto 0) := x"00000000";
@@ -66,9 +68,11 @@ entity drs_top is
     fifo_data_out  : out std_logic_vector (15 downto 0);
     fifo_clock_out : out std_logic;
     fifo_data_wen :  out std_logic;
-    --fifo_fifo_busy : in std_logic;
+  --fifo_fifo_busy : in std_logic;
+
     -- AXI CLK--
     clk33_axi : out std_logic;
+
     -- AXI For Slow Control
     S_AXI_LITE_ACLK    : in std_logic;
     S_AXI_LITE_ARESETN : in std_logic;
@@ -106,6 +110,11 @@ architecture Behavioral of drs_top is
   signal locked : std_logic;
   signal reset  : std_logic;
 
+  --signal adc_data, adc_data_iob : std_logic_vector (13 downto 0) := (others => '0');
+
+  signal drs_data  : std_logic_vector (15 downto 0);
+  signal drs_data_valid  : std_logic;
+  signal daq_busy : std_logic := '0';
   signal trigger : std_logic := '0';
   signal force_trig : std_logic := '0';
   --signal trigger_i : std_logic;
@@ -266,6 +275,7 @@ architecture Behavioral of drs_top is
       drs_ctl_configure_drs    : in  std_logic;
       drs_ctl_chn_config       : in  std_logic_vector;
       drs_ctl_readout_mask     : in  std_logic_vector;
+      drs_ctl_wait_vdd_clocks  : in  std_logic_vector;
       drs_srout_i              : in  std_logic;
       drs_addr_o               : out std_logic_vector;
       drs_nreset_o             : out std_logic;
@@ -322,6 +332,23 @@ begin
   ipb_axi_mosi.rready                                    <= S_AXI_LITE_RREADY;   -- in
   ipb_axi_mosi.wstrb                                     <= S_AXI_LITE_WSTRB;    -- in
 
+
+  ---- TODO: do this outside the drs module for TMR
+  ------ take data in on negedge of clock, assuming that adc and fpga clocks are synchronous
+  --process (clock) is
+  --begin
+  --  if (falling_edge(clock)) then
+  --    adc_data_iob <= adc_data_i;
+  --  end if;
+  --end process;
+
+  ---- transfer on flops from negedge to posedge before fifo
+  --process (clock) is
+  --begin
+  --  if (rising_edge(clock)) then
+  --    adc_data <= adc_data_iob;
+  --  end if;
+  --end process;
 
   ------------------------------------------------------------------------------------------------------------------------
   -- MMCM / PLL
@@ -444,9 +471,9 @@ begin
     end if;
   end process;
 
-------------------------------------------------------------------------------------------------------------------------
--- Timestamp
-------------------------------------------------------------------------------------------------------------------------
+  ------------------------------------------------------------------------------------------------------------------------
+  -- Timestamp
+  ------------------------------------------------------------------------------------------------------------------------
 
   process (clock)
   begin
@@ -479,6 +506,7 @@ begin
       dna_i           => dna(15 downto 0),
       event_counter_i => event_counter,
 
+      --adc_data => adc_data,
       adc_data_i => adc_data_i,
 
       drs_ctl_roi_mode         => roi_mode,  -- 1 bit roi input
@@ -493,6 +521,7 @@ begin
       drs_ctl_configure_drs    => configure,
       drs_ctl_chn_config       => chn_config(7 downto 0),
       drs_ctl_readout_mask     => readout_mask(8 downto 0),
+      drs_ctl_wait_vdd_clocks  => x"4000",
 
       drs_srout_i => drs_srout_i,
 
@@ -504,14 +533,42 @@ begin
       drs_srclk_en_o => drs_srclk_en,
       drs_srin_o     => drs_srin_o,
 
-      fifo_wdata_o => fifo_data_out(15 downto 0),
-      fifo_wen_o   => fifo_data_wen,
-      fifo_clock_o => fifo_clock_out,
+
+      fifo_wdata_o => drs_data,
+      fifo_wen_o   => drs_data_valid,
+      fifo_clock_o => open,
 
       readout_complete => readout_complete,
 
       busy_o => busy
 
+      );
+
+  fifo_clock_out <= clock;
+
+  daq_inst: entity work.daq
+    generic map (
+      g_DRS_ID    => 0,
+      g_WORD_SIZE => 16
+      )
+    port map (
+      clock                 => clock,
+      reset                 => '0',
+      debug_packet_inject_i => debug_packet_inject,
+      trigger_i             => trigger,
+      event_cnt_i           => event_counter,
+      mask_i                => (others => '0'),
+      board_id              => (others => '0'),
+      sync_err_i            => '0',
+      dna_i                 => (others => '0'),
+      timestamp_i           => (others => '0'),
+      roi_size_i            => (others => '0'),
+      drs_busy_i            => '0',
+      drs_data_i            => drs_data,
+      drs_valid_i           => drs_data_valid,
+      data_o                => fifo_data_out,
+      valid_o               => fifo_data_wen,
+      busy_o                => daq_busy
       );
 
   --trigger_delay trigger_delay (
