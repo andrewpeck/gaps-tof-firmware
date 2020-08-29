@@ -49,15 +49,15 @@
     \keepXColumns
     \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
     \hline
-    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Dir} & \textbf{Def} & \textbf{Description} \\\hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
     \nopagebreak
     DMODE & \texttt{0x0} & \texttt{[1:1]} & rw & \texttt{0x1} & set 1 = continuous domino, 0=single shot \\\hline
     STANDBY\_MODE & \texttt{0x0} & \texttt{[2:2]} & rw & \texttt{0x0} & set 1 = shutdown drs \\\hline
     TRANSPARENT\_MODE & \texttt{0x0} & \texttt{[3:3]} & rw & \texttt{0x0} & set 1 = transparent mode \\\hline
     DRS\_PLL\_LOCK & \texttt{0x0} & \texttt{[4:4]} & r & \texttt{} & DRS PLL Locked \\\hline
-    CHANNEL\_CONFIG & \texttt{0x0} & \texttt{[31:24]} & rw & \texttt{0xFF} & Write Shift Register Configuration                         \\ & & & & & \# of chn | \# of cells per ch | bit pattern                         \\ & & & & & 8        | 1024              | 11111111b                         \\ & & & & & 4        | 2048              | 01010101b                         \\ & & & & & 2        | 4096              | 00010001b                         \\ & & & & & 1        | 8192              | 00000001b \\\hline
-    DTAP\_HIGH\_CNTS & \texttt{0x1} & \texttt{[24:0]} & r & \texttt{} & Number of 33MHz clocks counted while DTAP was high. Should be equal to 33 Million (0x1f78a40) for 1.024 GHz sampling rate. Please see manual  \\\hline
-    DTAP\_LOW\_CNTS & \texttt{0x2} & \texttt{[24:0]} & r & \texttt{} & Number of 33MHz clocks counted while DTAP was low. Should be equal to 33 Million (0x1f78a40) for 1.024 GHz sampling rate. Please see manual  \\\hline
+    CHANNEL\_CONFIG & \texttt{0x0} & \texttt{[31:24]} & rw & \texttt{0xFF} & Write Shift Register Configuration                         \\\\ \# of chn - \# of cells per ch - bit pattern                         \\\\ 8        - 1024              - 11111111b                         \\\\ 4        - 2048              - 01010101b                         \\\\ 2        - 4096              - 00010001b                         \\\\ 1        - 8192              - 00000001b \\\hline
+    DTAP\_HIGH\_CNTS & \texttt{0x1} & \texttt{[24:0]} & r & \texttt{} & Number of 33MHz clocks counted while DTAP was high.                          \\\\ Should be equal to 33 Million (0x1f78a40) for 1.024 GHz sampling rate.                          \\\\ Please see manual  \\\hline
+    DTAP\_LOW\_CNTS & \texttt{0x2} & \texttt{[24:0]} & r & \texttt{} & Number of 33MHz clocks counted while DTAP was low.                          \\\\ Should be equal to 33 Million (0x1f78a40) for 1.024 GHz sampling rate.                          \\\\ Please see manual  \\\hline
     \end{tabularx}
     \vspace{5mm}
 
@@ -73,17 +73,17 @@
     \keepXColumns
     \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
     \hline
-    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Dir} & \textbf{Def} & \textbf{Description} \\\hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
     \nopagebreak
     ROI\_MODE & \texttt{0x10} & \texttt{[0:0]} & rw & \texttt{0x1} & Set to 1 to enable Region of Interest Readout \\\hline
     BUSY & \texttt{0x10} & \texttt{[1:1]} & r & \texttt{} & Readout is busy \\\hline
     ADC\_LATENCY & \texttt{0x10} & \texttt{[9:4]} & rw & \texttt{0x0} & Latency from first sr clock to when ADC data should be valid \\\hline
     SAMPLE\_COUNT & \texttt{0x10} & \texttt{[22:12]} & rw & \texttt{0x400} & Number of samples to read out \\\hline
     READOUT\_MASK & \texttt{0x11} & \texttt{[8:0]} & rw & \texttt{0x1FF} & 9 bit mask, set a bit to 1 to enable readout of that channel \\\hline
-    START & \texttt{0x12} & \texttt{[0:0]} & w & Pulsed & Write 1 to take the state machine out of idle mode \\\hline
-    REINIT & \texttt{0x13} & \texttt{[0:0]} & w & Pulsed & Write 1 to reinitialize DRS state machine (restores to idle state) \\\hline
-    CONFIGURE & \texttt{0x14} & \texttt{[0:0]} & w & Pulsed & Write 1 to configure the DRS. Should be done before data taking \\\hline
-    RESET & \texttt{0x15} & \texttt{[0:0]} & w & Pulsed & Write 1 to completely reset the DRS state machine logic \\\hline
+    START & \texttt{0x12} & \texttt{[0:0]} & w & Pulse & Write 1 to take the state machine out of idle mode \\\hline
+    REINIT & \texttt{0x13} & \texttt{[0:0]} & w & Pulse & Write 1 to reinitialize DRS state machine (restores to idle state) \\\hline
+    CONFIGURE & \texttt{0x14} & \texttt{[0:0]} & w & Pulse & Write 1 to configure the DRS. Should be done before data taking \\\hline
+    RESET & \texttt{0x15} & \texttt{[0:0]} & w & Pulse & Write 1 to completely reset the DRS state machine logic \\\hline
     \end{tabularx}
     \vspace{5mm}
 
@@ -99,7 +99,7 @@
     \keepXColumns
     \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
     \hline
-    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Dir} & \textbf{Def} & \textbf{Description} \\\hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
     \nopagebreak
     DNA\_LSBS & \texttt{0x20} & \texttt{[31:0]} & r & \texttt{} & Device DNA [31:0] \\\hline
     DNA\_MSBS & \texttt{0x21} & \texttt{[24:0]} & r & \texttt{} & Device DNA [56:32] \\\hline
@@ -118,7 +118,7 @@
     \keepXColumns
     \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
     \hline
-    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Dir} & \textbf{Def} & \textbf{Description} \\\hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
     \nopagebreak
     DATE & \texttt{0x22} & \texttt{[31:0]} & r & \texttt{} & Release YYYY/MM/DD \\\hline
     \end{tabularx}
@@ -136,7 +136,7 @@
     \keepXColumns
     \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
     \hline
-    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Dir} & \textbf{Def} & \textbf{Description} \\\hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
     \nopagebreak
     MAJOR & \texttt{0x23} & \texttt{[7:0]} & r & \texttt{} & Release semantic version major \\\hline
     MINOR & \texttt{0x23} & \texttt{[15:8]} & r & \texttt{} & Release semantic version minor \\\hline
@@ -156,10 +156,46 @@
     \keepXColumns
     \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
     \hline
-    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Dir} & \textbf{Def} & \textbf{Description} \\\hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
     \nopagebreak
     TIMESTAMP\_LSBS & \texttt{0x26} & \texttt{[31:0]} & r & \texttt{} & Device TIMESTAMP [31:0] \\\hline
     TIMESTAMP\_MSBS & \texttt{0x27} & \texttt{[15:0]} & r & \texttt{} & Device TIMESTAMP [47:32] \\\hline
+    \end{tabularx}
+    \vspace{5mm}
+
+
+    \noindent
+    \subsection*{\textcolor{parentcolor}{\textbf{DRS.DAQ}}}
+
+    \vspace{4mm}
+    \noindent
+    DAQ
+    \noindent
+
+    \keepXColumns
+    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
+    \hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
+    \nopagebreak
+    INJECT\_DEBUG\_PACKET & \texttt{0x30} & \texttt{[0:0]} & w & Pulse & Injects a fixed format debug packet into the DAQ \\\hline
+    \end{tabularx}
+    \vspace{5mm}
+
+
+    \noindent
+    \subsection*{\textcolor{parentcolor}{\textbf{DRS.Trigger}}}
+
+    \vspace{4mm}
+    \noindent
+    Trigger
+    \noindent
+
+    \keepXColumns
+    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
+    \hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
+    \nopagebreak
+    FORCE\_TRIGGER & \texttt{0x40} & \texttt{[0:0]} & w & Pulse & Generates a trigger \\\hline
     \end{tabularx}
     \vspace{5mm}
 
@@ -175,13 +211,13 @@
     \keepXColumns
     \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
     \hline
-    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Dir} & \textbf{Def} & \textbf{Description} \\\hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
     \nopagebreak
-    CNT\_SEM\_CORRECTION & \texttt{0x30} & \texttt{[15:0]} & r & \texttt{} & Number of Single Event Errors corrected by the scrubber \\\hline
-    CNT\_SEM\_UNCORRECTABLE & \texttt{0x31} & \texttt{[19:16]} & r & \texttt{} & Number of Critical Single Event Errors (uncorrectable by scrubber) \\\hline
-    CNT\_READOUTS\_COMPLETED & \texttt{0x32} & \texttt{[15:0]} & r & \texttt{} & Number of readouts completed since reset \\\hline
-    CNT\_LOST\_EVENT & \texttt{0x33} & \texttt{[31:16]} & r & \texttt{} & Number of trigger lost due to deadtime \\\hline
-    CNT\_EVENT & \texttt{0x34} & \texttt{[31:0]} & r & \texttt{} & Number of triggers received \\\hline
+    CNT\_SEM\_CORRECTION & \texttt{0x50} & \texttt{[15:0]} & r & \texttt{} & Number of Single Event Errors corrected by the scrubber \\\hline
+    CNT\_SEM\_UNCORRECTABLE & \texttt{0x51} & \texttt{[19:16]} & r & \texttt{} & Number of Critical Single Event Errors (uncorrectable by scrubber) \\\hline
+    CNT\_READOUTS\_COMPLETED & \texttt{0x52} & \texttt{[15:0]} & r & \texttt{} & Number of readouts completed since reset \\\hline
+    CNT\_LOST\_EVENT & \texttt{0x53} & \texttt{[31:16]} & r & \texttt{} & Number of trigger lost due to deadtime \\\hline
+    CNT\_EVENT & \texttt{0x54} & \texttt{[31:0]} & r & \texttt{} & Number of triggers received \\\hline
     \end{tabularx}
     \vspace{5mm}
 
