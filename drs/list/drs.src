@@ -11,6 +11,7 @@ drs/src/counter_snap.vhd
 drs/src/daq_board_top.vhd
 drs/src/ipbus_pkg.vhd
 drs/src/ipbus_slave.vhd
+drs/src/ipbus_slave_tmr.vhd
 drs/src/ps_interface.vhd
 drs/src/registers.vhd
 drs/src/sem.vhd
@@ -18,5 +19,6 @@ drs/src/synchonizer.vhd
 drs/src/types_pkg.vhd
 
 drs/src/drs.v
-drs/src/crc22.v
+drs/src/crc32.vhd
 drs/src/dna.v
+drs/src/daq.vhd

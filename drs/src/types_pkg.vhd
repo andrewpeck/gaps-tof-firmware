@@ -29,6 +29,12 @@ package types_pkg is
   function shift_left (data : std_logic; shift : integer; size : integer)
     return std_logic_vector;
 
+  function majority (a : std_logic_vector; b : std_logic_vector; c : std_logic_vector)
+    return std_logic_vector ;
+
+  function majority (a : std_logic; b : std_logic; c : std_logic)
+    return std_logic;
+
   --============--
   --== Common ==--
   --============--
@@ -122,5 +128,20 @@ package body types_pkg is
     end if;
   end if_then_else;
 
+  function majority (a : std_logic_vector; b : std_logic_vector; c : std_logic_vector)
+    return std_logic_vector is
+    variable tmp : std_logic_vector (a'length-1 downto 0);
+  begin
+    tmp := (a and b) or (b and c) or (a and c);
+    return tmp;
+  end function;
+
+  function majority (a : std_logic; b : std_logic; c : std_logic)
+    return std_logic is
+    variable tmp : std_logic;
+  begin
+    tmp := (a and b) or (b and c) or (a and c);
+    return tmp;
+  end function;
 
 end package body;
