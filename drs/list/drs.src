@@ -5,20 +5,20 @@ ip/clock_wizard/clock_wizard.xci
 ip/sem_core/sem_core.xci
 
 # DRS4 Controller
-drs/src/axi_ipbus_bridge.vhd
-drs/src/axi_pkg.vhd
-drs/src/counter_snap.vhd
-drs/src/daq_board_top.vhd
-drs/src/ipbus_pkg.vhd
-drs/src/ipbus_slave.vhd
-drs/src/ipbus_slave_tmr.vhd
-drs/src/ps_interface.vhd
-drs/src/registers.vhd
-drs/src/sem.vhd
-drs/src/synchonizer.vhd
-drs/src/types_pkg.vhd
+drs/src/axi_ipbus_bridge.vhd 93
+drs/src/axi_pkg.vhd 93
+drs/src/counter_snap.vhd 93
+drs/src/daq_board_top.vhd 93
+drs/src/ipbus_pkg.vhd 93
+drs/src/ipbus_slave.vhd 93
+drs/src/ipbus_slave_tmr.vhd 93
+drs/src/ps_interface.vhd 93
+drs/src/registers.vhd 93
+drs/src/sem.vhd 93
+drs/src/synchonizer.vhd 93
+drs/src/types_pkg.vhd 93
 
 drs/src/drs.v
-drs/src/crc32.vhd
+drs/src/crc32.vhd 93
 drs/src/dna.v
-drs/src/daq.vhd
+drs/src/daq.vhd 93

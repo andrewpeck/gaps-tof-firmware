@@ -1,7 +1,7 @@
 #vivado
 ############# modify these to match project ################
-set bin_file 1
-set use_questa_simulator 0
+set BIN_FILE 0
+set SIMULATOR  xsim
 
 ## FPGA and Vivado strategies and flows
 set FPGA xc7z010clg400-1
@@ -49,8 +49,10 @@ set_property  ip_repo_paths  $PATH_REPO/ip [current_project]
 update_ip_catalog
 
 update_compile_order -fileset sources_1
-make_wrapper -files [get_files $PATH_REPO/bd/GAPSReadoutv2_0/GAPSReadoutv2_0.bd] -top
-add_files -norecurse $PATH_REPO/bd/GAPSReadoutv2_0/hdl/GAPSReadoutv2_0_wrapper.vhd
+open_bd_design [get_files $PATH_REPO/bd/top_readout_board/top_readout_board.bd]
+upgrade_bd_cells [get_bd_cells {*}]
+make_wrapper -files [get_files $PATH_REPO/bd/top_readout_board/top_readout_board.bd] -top
+add_files -norecurse $PATH_REPO/bd/top_readout_board/hdl/top_readout_board_wrapper.vhd
 update_compile_order -fileset sources_1
-set_property top GAPSReadoutv2_0_wrapper [current_fileset]
+set_property top top_readout_board_wrapper [current_fileset]
 update_compile_order -fileset sources_1

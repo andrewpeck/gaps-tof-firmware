@@ -1,7 +1,7 @@
 #vivado
 ############# modify these to match project ################
-set bin_file 1
-set use_questa_simulator 0
+set BIN_FILE 0
+set SIMULATOR  xsim
 
 ## FPGA and Vivado strategies and flows
 set FPGA xc7z010clg400-1
@@ -44,4 +44,5 @@ set PATH_REPO "[file normalize [file dirname [info script]]]/../../"
 
 source $PATH_REPO/Hog/Tcl/create_project.tcl
 
-source $PATH_REPO/tcl/build_ip_dma_write.tcl
+set_property top dwrite_trigger [current_fileset]
+source $PATH_REPO/tcl/build_ip_dwrite_trigger.tcl

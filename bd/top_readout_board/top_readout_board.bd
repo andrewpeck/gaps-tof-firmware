@@ -3,7 +3,7 @@
     "design_info": {
       "boundary_crc": "0x48690B181D299088",
       "device": "xc7z010clg400-1",
-      "name": "GAPSReadoutv2_0",
+      "name": "top_readout_board",
       "synth_flow_mode": "Hierarchical",
       "tool_version": "2019.2.1",
       "validated": "true"
@@ -165,7 +165,7 @@
     "components": {
       "DMA_Write_0": {
         "vlnv": "UCLA:GAPSFW:GAPS_WDMA:1.0",
-        "xci_name": "GAPSReadoutv2_0_DMA_Write_0_0",
+        "xci_name": "top_readout_board_DMA_Write_0_0",
         "parameters": {
           "C_FIFO_WR_DEPTH": {
             "value": "16384"
@@ -186,11 +186,11 @@
       },
       "DWrite_Trigger_0": {
         "vlnv": "UCLA:GAPSFW:DWrite_Trigger:1.0",
-        "xci_name": "GAPSReadoutv2_0_DWrite_Trigger_0_0"
+        "xci_name": "top_readout_board_DWrite_Trigger_0_0"
       },
       "axi_interconnect_0": {
         "vlnv": "xilinx.com:ip:axi_interconnect:2.1",
-        "xci_name": "GAPSReadoutv2_0_axi_interconnect_0_0",
+        "xci_name": "top_readout_board_axi_interconnect_0_0",
         "parameters": {
           "NUM_MI": {
             "value": "1"
@@ -279,7 +279,7 @@
         "components": {
           "xbar": {
             "vlnv": "xilinx.com:ip:axi_crossbar:2.1",
-            "xci_name": "GAPSReadoutv2_0_xbar_0",
+            "xci_name": "top_readout_board_xbar_0",
             "parameters": {
               "NUM_MI": {
                 "value": "1"
@@ -340,7 +340,7 @@
             "components": {
               "auto_pc": {
                 "vlnv": "xilinx.com:ip:axi_protocol_converter:2.1",
-                "xci_name": "GAPSReadoutv2_0_auto_pc_0",
+                "xci_name": "top_readout_board_auto_pc_0",
                 "parameters": {
                   "MI_PROTOCOL": {
                     "value": "AXI4LITE"
@@ -556,7 +556,7 @@
       },
       "axi_interconnect_1": {
         "vlnv": "xilinx.com:ip:axi_interconnect:2.1",
-        "xci_name": "GAPSReadoutv2_0_axi_interconnect_1_0",
+        "xci_name": "top_readout_board_axi_interconnect_1_0",
         "parameters": {
           "NUM_MI": {
             "value": "2"
@@ -665,7 +665,7 @@
         "components": {
           "xbar": {
             "vlnv": "xilinx.com:ip:axi_crossbar:2.1",
-            "xci_name": "GAPSReadoutv2_0_xbar_1",
+            "xci_name": "top_readout_board_xbar_1",
             "parameters": {
               "NUM_MI": {
                 "value": "2"
@@ -726,7 +726,7 @@
             "components": {
               "auto_pc": {
                 "vlnv": "xilinx.com:ip:axi_protocol_converter:2.1",
-                "xci_name": "GAPSReadoutv2_0_auto_pc_1",
+                "xci_name": "top_readout_board_auto_pc_1",
                 "parameters": {
                   "MI_PROTOCOL": {
                     "value": "AXI4LITE"
@@ -814,7 +814,7 @@
             "components": {
               "auto_pc": {
                 "vlnv": "xilinx.com:ip:axi_protocol_converter:2.1",
-                "xci_name": "GAPSReadoutv2_0_auto_pc_2",
+                "xci_name": "top_readout_board_auto_pc_2",
                 "parameters": {
                   "MI_PROTOCOL": {
                     "value": "AXI4LITE"
@@ -1046,7 +1046,7 @@
       },
       "axi_vip_0": {
         "vlnv": "xilinx.com:ip:axi_vip:1.1",
-        "xci_name": "GAPSReadoutv2_0_axi_vip_0_0",
+        "xci_name": "top_readout_board_axi_vip_0_0",
         "parameters": {
           "ADDR_WIDTH": {
             "value": "32"
@@ -1121,7 +1121,7 @@
       },
       "axi_vip_1": {
         "vlnv": "xilinx.com:ip:axi_vip:1.1",
-        "xci_name": "GAPSReadoutv2_0_axi_vip_1_0",
+        "xci_name": "top_readout_board_axi_vip_1_0",
         "parameters": {
           "ADDR_WIDTH": {
             "value": "32"
@@ -1154,11 +1154,11 @@
       },
       "drs_top_0": {
         "vlnv": "UCLA:GAPSFW:GAPS_DRS4:1.0",
-        "xci_name": "GAPSReadoutv2_0_drs_top_0_0"
+        "xci_name": "top_readout_board_drs_top_0_0"
       },
       "ila_0": {
         "vlnv": "xilinx.com:ip:ila:6.2",
-        "xci_name": "GAPSReadoutv2_0_ila_0_0",
+        "xci_name": "top_readout_board_ila_0_0",
         "parameters": {
           "C_DATA_DEPTH": {
             "value": "1024"
@@ -1167,15 +1167,15 @@
       },
       "proc_sys_reset_0": {
         "vlnv": "xilinx.com:ip:proc_sys_reset:5.0",
-        "xci_name": "GAPSReadoutv2_0_proc_sys_reset_0_0"
+        "xci_name": "top_readout_board_proc_sys_reset_0_0"
       },
       "proc_sys_reset_1": {
         "vlnv": "xilinx.com:ip:proc_sys_reset:5.0",
-        "xci_name": "GAPSReadoutv2_0_proc_sys_reset_1_0"
+        "xci_name": "top_readout_board_proc_sys_reset_1_0"
       },
       "processing_system7_0": {
         "vlnv": "xilinx.com:ip:processing_system7:5.5",
-        "xci_name": "GAPSReadoutv2_0_processing_system7_0_0",
+        "xci_name": "top_readout_board_processing_system7_0_0",
         "parameters": {
           "PCW_ACT_APU_PERIPHERAL_FREQMHZ": {
             "value": "666.666687"
@@ -2129,7 +2129,7 @@
       },
       "smartconnect_0": {
         "vlnv": "xilinx.com:ip:smartconnect:1.0",
-        "xci_name": "GAPSReadoutv2_0_smartconnect_0_0",
+        "xci_name": "top_readout_board_smartconnect_0_0",
         "parameters": {
           "NUM_SI": {
             "value": "1"
@@ -2179,7 +2179,7 @@
       },
       "util_ds_buf_2": {
         "vlnv": "xilinx.com:ip:util_ds_buf:2.1",
-        "xci_name": "GAPSReadoutv2_0_util_ds_buf_2_0",
+        "xci_name": "top_readout_board_util_ds_buf_2_0",
         "parameters": {
           "C_BUF_TYPE": {
             "value": "BUFH"
@@ -2188,7 +2188,7 @@
       },
       "xlconstant_0": {
         "vlnv": "xilinx.com:ip:xlconstant:1.1",
-        "xci_name": "GAPSReadoutv2_0_xlconstant_0_0",
+        "xci_name": "top_readout_board_xlconstant_0_0",
         "parameters": {
           "CONST_VAL": {
             "value": "0"

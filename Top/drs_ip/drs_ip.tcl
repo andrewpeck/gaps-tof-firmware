@@ -1,10 +1,9 @@
 #vivado
 ############# modify these to match project ################
-set bin_file 1
-set use_questa_simulator 0
-
 ## FPGA and Vivado strategies and flows
 set FPGA xc7z010clg400-1
+set BIN_FILE 0
+set SIMULATOR  xsim
 
 regexp -- {Vivado v([0-9]{4})\.[0-9]} [version] -> VIVADO_YEAR
 set SYNTH_STRATEGY "Vivado Synthesis Defaults"

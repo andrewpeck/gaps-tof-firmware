@@ -48,6 +48,6 @@ source $PATH_REPO/Hog/Tcl/create_project.tcl
 set_property  ip_repo_paths  $PATH_REPO/ip [current_project]
 update_ip_catalog
 
-set origin_dir_loc $PATH_REPO
-open_bd_design [get_files -filter {NAME =~ *GAPSReadoutv2_0.bd}]
-write_bd_tcl -no_ip_version -include_layout -force $PATH_REPO/bd/readout-board-bd.tcl
+file delete $PATH_REPO/bd/top_readout_board/top_readout_board.bd
+set origin_dir_loc $PATH_REPO/bd/
+source $PATH_REPO/bd/readout-board-bd.tcl
