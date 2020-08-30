@@ -15,19 +15,24 @@ init:
 reg:
 	cd regmap && make
 
-drs-ip:
-	Hog/CreateProject.sh drs-ip $(COLORIZE)
-create: drs-ip
-	Hog/CreateProject.sh trg-ip $(COLORIZE)
-	Hog/CreateProject.sh dma-ip $(COLORIZE)
-	Hog/CreateProject.sh tcl-to-bd $(COLORIZE)
-	Hog/CreateProject.sh readout-board $(COLORIZE)
+drs_ip:
+	Hog/CreateProject.sh drs_ip $(COLORIZE)
 
-synth:
-	Hog/LaunchSynthesis.sh readout-board $(COLORIZE)
+trg_ip:
+	Hog/CreateProject.sh trg_ip $(COLORIZE)
+
+dma_ip:
+	Hog/CreateProject.sh dma_ip $(COLORIZE)
+
+tcl_to_bd:
+	Hog/CreateProject.sh tcl_to_bd $(COLORIZE)
+
+create: drs_ip trg_ip dma_ip tcl_to_bd
+	Hog/CreateProject.sh readout_board $(COLORIZE)
 
 impl:
-	Hog/LaunchImplementation.sh readout-board $(COLORIZE)
+	Hog/LaunchSynthesis.sh readout_board $(COLORIZE)
+	Hog/LaunchImplementation.sh readout_board $(COLORIZE)
 
 clean:
 	rm -rf VivadoProject/

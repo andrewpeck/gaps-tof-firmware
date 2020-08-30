@@ -1,7 +1,7 @@
 #vivado
 ############# modify these to match project ################
-set bin_file 1
-set use_questa_simulator 0
+set BIN_FILE 0
+set SIMULATOR  xsim
 
 ## FPGA and Vivado strategies and flows
 set FPGA xc7z010clg400-1
@@ -35,7 +35,6 @@ set PROPERTIES [dict create \
                                 STEPS.POST_ROUTE_PHYS_OPT_DESIGN.ARGS.DIRECTIVE Default \
                                ]\
                    ]
-
 ############################################################
 
 
@@ -45,9 +44,4 @@ set PATH_REPO "[file normalize [file dirname [info script]]]/../../"
 
 source $PATH_REPO/Hog/Tcl/create_project.tcl
 
-set_property  ip_repo_paths  $PATH_REPO/ip [current_project]
-update_ip_catalog
-
-file delete $PATH_REPO/bd/GAPSReadoutv2_0/GAPSReadoutv2_0.bd
-set origin_dir_loc $PATH_REPO/bd/
-source $PATH_REPO/bd/readout-board-bd.tcl
+source $PATH_REPO/tcl/build_ip_dma_write.tcl

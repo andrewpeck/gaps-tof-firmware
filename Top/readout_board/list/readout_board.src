@@ -5,4 +5,4 @@
 #trg/list/trg.src
 
 # Block Design
-bd/GAPSReadoutv2_0/GAPSReadoutv2_0.bd
+bd/top_readout_board/top_readout_board.bd
