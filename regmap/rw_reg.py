@@ -2,7 +2,9 @@ import xml.etree.ElementTree as xml
 import sys, os, subprocess
 
 DEBUG = True
-ADDRESS_TABLE_TOP = '/mnt/persistent/texas/gem_amc_top.xml'
+ADDRESS_TABLE_TOP = '../registers.xml'
+BASE_ADDRESS = 0x64000000
+
 nodes = []
 
 class Node:
@@ -81,7 +83,7 @@ def makeTree(node,baseName,baseAddress,nodes,parentNode,vars,isGenerated,num_of_
     if node.get('address') is not None:
         address = baseAddress + parseInt(node.get('address'))
     newNode.address = address
-    newNode.real_address = (address<<2)+0x64000000
+    newNode.real_address = (address<<2)+BASE_ADDRESS
     newNode.permission = node.get('permission')
     newNode.mask = parseInt(node.get('mask'))
     newNode.isModule = node.get('fw_is_module') is not None and node.get('fw_is_module') == 'true'
@@ -94,7 +96,6 @@ def makeTree(node,baseName,baseAddress,nodes,parentNode,vars,isGenerated,num_of_
         newNode.level = parentNode.level+1
     for child in node:
         makeTree(child,name,address,nodes,newNode,vars,False,num_of_oh)
-
 
 def getAllChildren(node,kids=[]):
     if node.children==[]:
@@ -131,7 +132,7 @@ def readAddress(address):
 
 def readRawAddress(raw_address):
     try:
-        address = (parseInt(raw_address) << 2)+0x64000000
+        address = (parseInt(raw_address) << 2)+BASE_ADDRESS
         return readAddress(address)
     except:
         return 'Error reading address. (rw_reg)'
