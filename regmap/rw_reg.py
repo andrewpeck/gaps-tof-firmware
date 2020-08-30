@@ -3,7 +3,7 @@ import sys, os, subprocess
 
 DEBUG = True
 ADDRESS_TABLE_TOP = '../registers.xml'
-BASE_ADDRESS = 0x64000000
+BASE_ADDRESS = 0x80000000
 
 nodes = []
 
