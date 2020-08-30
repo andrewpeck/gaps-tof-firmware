@@ -12,15 +12,16 @@
 
 #+BEGIN_EXAMPLE
   readout-firmware/
-    ├── Hog : Submodule containing the HOG project
-    ├── Top : Top level project configuration files for HOG
-    ├── bd  : Block diagram files
-    ├── tcl : TCL scripts for ip core creation
-    ├── ip  : Holds both user and Vivado IP cores
-    ├── dma : Files for DMA driver
-    ├── drs : Files for DRS4 control
-    ├── trg : Files for AXI-SLAVE trigger interface 
-    └── xdc : Xilinx XDC constraint files
+    ├── Hog    : Submodule containing the HOG project
+    ├── Top    : Top level project configuration files for HOG
+    ├── bd     : Block diagram files
+    ├── regmap : Register XML to VHDL tools
+    ├── tcl    : TCL scripts for ip core creation
+    ├── ip     : Holds both user and Vivado IP cores
+    ├── dma    : Files for DMA driver
+    ├── drs    : Files for DRS4 control
+    ├── trg    : Files for AXI-SLAVE trigger interface
+    └── xdc    : Xilinx XDC constraint files
 #+END_EXAMPLE
 
 ** Building the Firmware
