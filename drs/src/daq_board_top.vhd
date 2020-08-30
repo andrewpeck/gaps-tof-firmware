@@ -102,7 +102,6 @@ end drs_top;
 architecture Behavioral of drs_top is
 
   signal clk33  : std_logic;
-  signal clk264 : std_logic;
   signal clock  : std_logic;
   signal locked : std_logic;
   signal reset  : std_logic;
@@ -290,9 +289,9 @@ architecture Behavioral of drs_top is
     port
       (                                 -- Clock in ports
         -- Clock out ports
-        clk33     : out std_logic;
-        clk264    : out std_logic;
-        clk33_axi : out std_logic;
+        drs_clk : out std_logic;
+        trg_clk : out std_logic;
+        daq_clk : out std_logic;
         -- Status and control signals
         locked    : out std_logic;
         clk_in1_p : in  std_logic;
@@ -348,11 +347,14 @@ begin
   -- MMCM / PLL
   ------------------------------------------------------------------------------------------------------------------------
 
+  -- AXI CLK--
+  clk33_axi <= clk33;
+
   clock_wizard_inst : clock_wizard
     port map (
-      clk33     => clk33,
-      clk33_axi => clk33_axi,
-      clk264    => clk264,
+      drs_clk  => clk33,
+      trg_clk  => open,
+      daq_clk  => open,
       locked    => locked,
       clk_in1_p => clock_i_p,
       clk_in1_n => clock_i_n
@@ -402,7 +404,6 @@ begin
       --    f = 1/2048 * f_domino =
 
       dtap_last <= drs_dtap;
-
 
       -- high state counter
       if (drs_dtap = '1') then
