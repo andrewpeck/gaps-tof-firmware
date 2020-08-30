@@ -1,4 +1,4 @@
-.PHONY: create synth impl
+.PHONY: create synth impl reg init
 
 CCZE := $(shell command -v ccze 2> /dev/null)
 ifndef CCZE
@@ -8,6 +8,9 @@ COLORIZE = | ccze -A
 endif
 
 all: create synth impl
+
+init:
+	git submodule update --init
 
 reg:
 	cd regmap && make

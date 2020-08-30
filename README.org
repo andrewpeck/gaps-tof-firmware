@@ -1,12 +1,12 @@
 #+OPTIONS: toc:5
 #+OPTIONS: ^:nil
-* Table of Contents :TOC_2:
+* DRS4 Readout Board Firmware :TOC_2:
   - [[#organization][Organization]]
+  - [[#register-access][Register Access]]
   - [[#building-the-firmware][Building the Firmware]]
   - [[#block-design-creation][Block Design Creation]]
   - [[#dataformat][Dataformat]]
   - [[#trigger-data-format][Trigger Data Format]]
-  - [[#address-table][Address Table]]
 
 ** Organization
 
@@ -23,6 +23,22 @@
     ├── trg    : Files for AXI-SLAVE trigger interface
     └── xdc    : Xilinx XDC constraint files
 #+END_EXAMPLE
+
+** Register Access
+
+Firmware registers mapped to a Wishbone-like A32/D32 interface, which is accessed through an AXI⟷Wishbone Bridge
+
+From the Zynq, it appears as a memory-mapped into an address space, starting at ~Base Address=0x8000_0000~ (with a maximum address of 0x8000_FFFF, giving an effective address space of 16 bits or 65536 registers).
+
+An interactive client can read and write from registers, by calling reg_interface.py
+
+A python library ~rw_reg.py~ allows for register access by name
+*** Address Table
+
+The address table is defined in a "templated" XML file: [[registers.xml]]
+
+A convenient document describing the address table can be seen at:
+- [[file:regmap/address_table.org][DRS Address Table]]
 
 ** Building the Firmware
 
@@ -126,6 +142,7 @@ assign_bd_address -offset 0x80000000 -range 0x00010000 -target_address_space [ge
 #+END_EXAMPLE
 
 ** Dataformat
+
   |-----------+--------+------------------------------------------|
   | Field     | Len    | Description                              |
   |-----------+--------+------------------------------------------|
@@ -182,9 +199,3 @@ assign_bd_address -offset 0x80000000 -range 0x00010000 -target_address_space [ge
 | EVENT_ID | [31:0] | Event ID                                |
 |----------+--------+-----------------------------------------|
 
-** Address Table
-
-The address table is defined in a "templated" XML file: [[registers.xml]]
-
-A convenient document describing the address table can be seen at:
-- [[file:regmap/address_table.org][DRS Address Table]]
