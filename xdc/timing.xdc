@@ -1,5 +1,4 @@
-create_clock -period 10.0 -name clock33   [get_ports clock_i_p]
-
+create_clock -period 30.0 -name clock33   [get_ports clock_i_p]
 
 # 33MHz inputs
 set_input_delay -clock [get_clocks clock33] 5.000 [get_ports -filter { NAME =~  "*adc*" && DIRECTION == "IN" }]
