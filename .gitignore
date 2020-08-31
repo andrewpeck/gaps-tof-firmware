@@ -1,2 +1,11 @@
 *~undo-tree~
+*.pyc
+*.org~
 tags
+*.o
+daq_tb
+*.cf
+ip/*/*
+!ip/*/*.xci
+bd/*
+!bd/*.bd
