@@ -1,6 +1,7 @@
 -- TODO: ADC clock phase??
 -- TODO: ADC setup/hold constraints
--- Data outputs are available one propagation delay (tPD = 2ns -- 6ns) after the rising edge of the clock signal.
+-- Data outputs are available one propagation delay (tPD = 2ns -- 6ns)
+-- after the rising edge of the clock signal.
 
 library work;
 use work.ipbus_pkg.all;
@@ -18,19 +19,17 @@ use UNISIM.vcomponents.all;
 
 entity drs_top is
   generic (
+    EN_TMR_IPB_SLAVE_DRS : integer := 1;
+
     -- these generics get set by hog at synthesis
-    GLOBAL_FWDATE       : std_logic_vector (31 downto 0) := x"00000000";
-    GLOBAL_FWTIME       : std_logic_vector (31 downto 0) := x"00000000";
-    OFFICIAL            : std_logic_vector (31 downto 0) := x"00000000";
-    GLOBAL_FWHASH       : std_logic_vector (31 downto 0) := x"00000000";
-    TOP_FWHASH          : std_logic_vector (31 downto 0) := x"00000000";
-    XML_HASH            : std_logic_vector (31 downto 0) := x"00000000";
-    GLOBAL_FWVERSION    : std_logic_vector (31 downto 0) := x"00000000";
-    TOP_FWVERSION       : std_logic_vector (31 downto 0) := x"00000000";
-    XML_VERSION         : std_logic_vector (31 downto 0) := x"00000000";
-    HOG_FWHASH          : std_logic_vector (31 downto 0) := x"00000000";
-    FRAMEWORK_FWVERSION : std_logic_vector (31 downto 0) := x"00000000";
-    FRAMEWORK_FWHASH    : std_logic_vector (31 downto 0) := x"00000000"
+    GLOBAL_DATE : std_logic_vector (31 downto 0) := x"00000000";
+    GLOBAL_TIME : std_logic_vector (31 downto 0) := x"00000000";
+    GLOBAL_VER  : std_logic_vector (31 downto 0) := x"00000000";
+    GLOBAL_SHA  : std_logic_vector (31 downto 0) := x"00000000";
+    TOP_VER     : std_logic_vector (31 downto 0) := x"00000000";
+    TOP_SHA     : std_logic_vector (31 downto 0) := x"00000000";
+    HOG_SHA     : std_logic_vector (31 downto 0) := x"00000000";
+    HOG_VER     : std_logic_vector (31 downto 0) := x"00000000"
     );
   port (
 
@@ -65,32 +64,34 @@ entity drs_top is
     -- ADC Readout
     fifo_data_out  : out std_logic_vector (15 downto 0);
     fifo_clock_out : out std_logic;
-    fifo_data_wen :  out std_logic;
+    fifo_data_wen  : out std_logic;
     --fifo_fifo_busy : in std_logic;
+
     -- AXI CLK--
     clk33_axi : out std_logic;
+
     -- AXI For Slow Control
-    S_AXI_LITE_ACLK    : in std_logic;
-    S_AXI_LITE_ARESETN : in std_logic;
-    S_AXI_LITE_AWADDR  : in std_logic_vector (C_IPB_AXI_ADDR_WIDTH-1 downto 0);
-    S_AXI_LITE_AWPROT  : in std_logic_vector (2 downto 0);
-    S_AXI_LITE_AWVALID : in std_logic;
+    S_AXI_LITE_ACLK    : in  std_logic;
+    S_AXI_LITE_ARESETN : in  std_logic;
+    S_AXI_LITE_AWADDR  : in  std_logic_vector (C_IPB_AXI_ADDR_WIDTH-1 downto 0);
+    S_AXI_LITE_AWPROT  : in  std_logic_vector (2 downto 0);
+    S_AXI_LITE_AWVALID : in  std_logic;
     S_AXI_LITE_AWREADY : out std_logic;
-    S_AXI_LITE_WDATA   : in std_logic_vector (C_IPB_AXI_DATA_WIDTH-1 downto 0);
-    S_AXI_LITE_WSTRB   : in std_logic_vector((32/8)-1 downto 0); -- 32 = C_S_AXI_DATA_WIDTH
-    S_AXI_LITE_WVALID  : in std_logic;
+    S_AXI_LITE_WDATA   : in  std_logic_vector (C_IPB_AXI_DATA_WIDTH-1 downto 0);
+    S_AXI_LITE_WSTRB   : in  std_logic_vector((32/8)-1 downto 0);  -- 32 = C_S_AXI_DATA_WIDTH
+    S_AXI_LITE_WVALID  : in  std_logic;
     S_AXI_LITE_WREADY  : out std_logic;
     S_AXI_LITE_BRESP   : out std_logic_vector (1 downto 0);
     S_AXI_LITE_BVALID  : out std_logic;
-    S_AXI_LITE_BREADY  : in std_logic;
-    S_AXI_LITE_ARADDR  : in std_logic_vector (C_IPB_AXI_ADDR_WIDTH-1 downto 0);
-    S_AXI_LITE_ARPROT  : in std_logic_vector (2 downto 0);
-    S_AXI_LITE_ARVALID : in std_logic;
+    S_AXI_LITE_BREADY  : in  std_logic;
+    S_AXI_LITE_ARADDR  : in  std_logic_vector (C_IPB_AXI_ADDR_WIDTH-1 downto 0);
+    S_AXI_LITE_ARPROT  : in  std_logic_vector (2 downto 0);
+    S_AXI_LITE_ARVALID : in  std_logic;
     S_AXI_LITE_ARREADY : out std_logic;
     S_AXI_LITE_RDATA   : out std_logic_vector (C_IPB_AXI_DATA_WIDTH-1 downto 0);
     S_AXI_LITE_RRESP   : out std_logic_vector(1 downto 0);
     S_AXI_LITE_RVALID  : out std_logic;
-    S_AXI_LITE_RREADY  : in std_logic;
+    S_AXI_LITE_RREADY  : in  std_logic;
 
     gpio_p : inout std_logic_vector (10 downto 0);
     gpio_n : inout std_logic_vector (10 downto 0)
@@ -101,13 +102,19 @@ end drs_top;
 architecture Behavioral of drs_top is
 
   signal clk33  : std_logic;
-  signal clk264 : std_logic;
   signal clock  : std_logic;
   signal locked : std_logic;
   signal reset  : std_logic;
 
-  signal trigger : std_logic := '0';
+  --signal adc_data, adc_data_iob : std_logic_vector (13 downto 0) := (others => '0');
+
+  signal drs_data            : std_logic_vector (13 downto 0);
+  signal drs_data_valid      : std_logic;
+  signal daq_busy            : std_logic := '0';
+  signal trigger             : std_logic := '0';
+  signal force_trig          : std_logic := '0';
   --signal trigger_i : std_logic;
+  signal debug_packet_inject : std_logic;
 
   signal drs_srclk_en            : std_logic;
   signal sem_correction          : std_logic;
@@ -176,22 +183,21 @@ architecture Behavioral of drs_top is
   --fifo_fifo_busy : in std_logic;
 
   ------ Register signals begin (this section is generated by generate_registers.py -- do not edit)
-  signal regs_read_arr         : t_std32_array(REG_DRS_NUM_REGS - 1 downto 0)    := (others => (others => '0'));
-  signal regs_write_arr        : t_std32_array(REG_DRS_NUM_REGS - 1 downto 0)    := (others => (others => '0'));
-  signal regs_addresses        : t_std32_array(REG_DRS_NUM_REGS - 1 downto 0)    := (others => (others => '0'));
-  signal regs_defaults         : t_std32_array(REG_DRS_NUM_REGS - 1 downto 0)    := (others => (others => '0'));
-  signal regs_write_arr_sump   : std_logic_vector(REG_DRS_NUM_REGS - 1 downto 0);
-  signal regs_read_pulse_arr   : std_logic_vector(REG_DRS_NUM_REGS - 1 downto 0) := (others => '0');
-  signal regs_write_pulse_arr  : std_logic_vector(REG_DRS_NUM_REGS - 1 downto 0) := (others => '0');
-  signal regs_read_ready_arr   : std_logic_vector(REG_DRS_NUM_REGS - 1 downto 0) := (others => '1');
-  signal regs_write_done_arr   : std_logic_vector(REG_DRS_NUM_REGS - 1 downto 0) := (others => '1');
-  signal regs_writable_arr     : std_logic_vector(REG_DRS_NUM_REGS - 1 downto 0) := (others => '0');
-  -- Connect counter signal declarations
-  signal cnt_sem_corrected     : std_logic_vector (15 downto 0)                  := (others => '0');
-  signal cnt_sem_uncorrectable : std_logic_vector (3 downto 0)                   := (others => '0');
-  signal cnt_readouts          : std_logic_vector (15 downto 0)                  := (others => '0');
-  signal cnt_lost_events       : std_logic_vector (15 downto 0)                  := (others => '0');
-  signal event_counter         : std_logic_vector (31 downto 0)                  := (others => '0');
+    signal regs_read_arr        : t_std32_array(REG_DRS_NUM_REGS - 1 downto 0) := (others => (others => '0'));
+    signal regs_write_arr       : t_std32_array(REG_DRS_NUM_REGS - 1 downto 0) := (others => (others => '0'));
+    signal regs_addresses       : t_std32_array(REG_DRS_NUM_REGS - 1 downto 0) := (others => (others => '0'));
+    signal regs_defaults        : t_std32_array(REG_DRS_NUM_REGS - 1 downto 0) := (others => (others => '0'));
+    signal regs_read_pulse_arr  : std_logic_vector(REG_DRS_NUM_REGS - 1 downto 0) := (others => '0');
+    signal regs_write_pulse_arr : std_logic_vector(REG_DRS_NUM_REGS - 1 downto 0) := (others => '0');
+    signal regs_read_ready_arr  : std_logic_vector(REG_DRS_NUM_REGS - 1 downto 0) := (others => '1');
+    signal regs_write_done_arr  : std_logic_vector(REG_DRS_NUM_REGS - 1 downto 0) := (others => '1');
+    signal regs_writable_arr    : std_logic_vector(REG_DRS_NUM_REGS - 1 downto 0) := (others => '0');
+    -- Connect counter signal declarations
+    signal cnt_sem_corrected : std_logic_vector (15 downto 0) := (others => '0');
+    signal cnt_sem_uncorrectable : std_logic_vector (3 downto 0) := (others => '0');
+    signal cnt_readouts : std_logic_vector (15 downto 0) := (others => '0');
+    signal cnt_lost_events : std_logic_vector (15 downto 0) := (others => '0');
+    signal event_counter : std_logic_vector (31 downto 0) := (others => '0');
   ------ Register signals end ----------------------------------------------
 
   -------------------------- AXI-IPbus bridge ---------------------------------
@@ -248,9 +254,6 @@ architecture Behavioral of drs_top is
     port(
       clock                    : in  std_logic;
       reset                    : in  std_logic;
-      timestamp_i              : in  std_logic_vector;
-      event_counter_i          : in  std_logic_vector;
-      dna_i                    : in  std_logic_vector;
       trigger_i                : in  std_logic;
       adc_data_i               : in  std_logic_vector;
       drs_ctl_roi_mode         : in  std_logic;
@@ -265,6 +268,7 @@ architecture Behavioral of drs_top is
       drs_ctl_configure_drs    : in  std_logic;
       drs_ctl_chn_config       : in  std_logic_vector;
       drs_ctl_readout_mask     : in  std_logic_vector;
+      drs_ctl_wait_vdd_clocks  : in  std_logic_vector;
       drs_srout_i              : in  std_logic;
       drs_addr_o               : out std_logic_vector;
       drs_nreset_o             : out std_logic;
@@ -281,14 +285,13 @@ architecture Behavioral of drs_top is
       busy_o                   : out std_logic
       );
   end component;
-
   component clock_wizard
     port
       (                                 -- Clock in ports
         -- Clock out ports
-        clk33     : out std_logic;
-        clk264    : out std_logic;
-        clk33_axi : out std_logic;
+        drs_clk : out std_logic;
+        trg_clk : out std_logic;
+        daq_clk : out std_logic;
         -- Status and control signals
         locked    : out std_logic;
         clk_in1_p : in  std_logic;
@@ -323,15 +326,35 @@ begin
   ipb_axi_mosi.wstrb                                     <= S_AXI_LITE_WSTRB;    -- in
 
 
+  ---- TODO: do this outside the drs module for TMR
+  ------ take data in on negedge of clock, assuming that adc and fpga clocks are synchronous
+  --process (clock) is
+  --begin
+  --  if (falling_edge(clock)) then
+  --    adc_data_iob <= adc_data_i;
+  --  end if;
+  --end process;
+
+  ---- transfer on flops from negedge to posedge before fifo
+  --process (clock) is
+  --begin
+  --  if (rising_edge(clock)) then
+  --    adc_data <= adc_data_iob;
+  --  end if;
+  --end process;
+
   ------------------------------------------------------------------------------------------------------------------------
   -- MMCM / PLL
   ------------------------------------------------------------------------------------------------------------------------
 
+  -- AXI CLK--
+  clk33_axi <= clk33;
+
   clock_wizard_inst : clock_wizard
     port map (
-      clk33     => clk33,
-      clk33_axi => clk33_axi,
-      clk264    => clk264,
+      drs_clk  => clk33,
+      trg_clk  => open,
+      daq_clk  => open,
       locked    => locked,
       clk_in1_p => clock_i_p,
       clk_in1_n => clock_i_n
@@ -358,7 +381,7 @@ begin
   process (clock)
   begin
     if (rising_edge(clock)) then
-      trigger <= trigger_i;
+      trigger <= trigger_i or force_trig;
     end if;
   end process;
 
@@ -381,7 +404,6 @@ begin
       --    f = 1/2048 * f_domino =
 
       dtap_last <= drs_dtap;
-
 
       -- high state counter
       if (drs_dtap = '1') then
@@ -444,9 +466,9 @@ begin
     end if;
   end process;
 
-------------------------------------------------------------------------------------------------------------------------
--- Timestamp
-------------------------------------------------------------------------------------------------------------------------
+  ------------------------------------------------------------------------------------------------------------------------
+  -- Timestamp
+  ------------------------------------------------------------------------------------------------------------------------
 
   process (clock)
   begin
@@ -472,13 +494,11 @@ begin
 
   drs_inst : drs
     port map (
-      clock           => clock,
-      reset           => reset or drs_reset,
-      trigger_i       => trigger,
-      timestamp_i     => std_logic_vector(timestamp),
-      dna_i           => dna(15 downto 0),
-      event_counter_i => event_counter,
+      clock     => clock,
+      reset     => reset or drs_reset,
+      trigger_i => trigger,
 
+      --adc_data => adc_data,
       adc_data_i => adc_data_i,
 
       drs_ctl_roi_mode         => roi_mode,  -- 1 bit roi input
@@ -493,6 +513,7 @@ begin
       drs_ctl_configure_drs    => configure,
       drs_ctl_chn_config       => chn_config(7 downto 0),
       drs_ctl_readout_mask     => readout_mask(8 downto 0),
+      drs_ctl_wait_vdd_clocks  => x"4000",
 
       drs_srout_i => drs_srout_i,
 
@@ -504,14 +525,62 @@ begin
       drs_srclk_en_o => drs_srclk_en,
       drs_srin_o     => drs_srin_o,
 
-      fifo_wdata_o => fifo_data_out(15 downto 0),
-      fifo_wen_o   => fifo_data_wen,
-      fifo_clock_o => fifo_clock_out,
+
+      fifo_wdata_o => drs_data,
+      fifo_wen_o   => drs_data_valid,
+      fifo_clock_o => open,
 
       readout_complete => readout_complete,
 
       busy_o => busy
 
+      );
+
+  --fifo_async_1: entity work.fifo_async
+  --  generic map (
+  --    DEPTH    => DEPTH,
+  --    WR_WIDTH => WR_WIDTH,
+  --    RD_WIDTH => RD_WIDTH)
+  --  port map (
+  --    rst     => rst,
+  --    wr_clk  => wr_clk,
+  --    rd_clk  => rd_clk,
+  --    wr_en   => wr_en,
+  --    rd_en   => rd_en,
+  --    din     => din,
+  --    dout    => dout,
+  --    valid   => valid,
+  --    full    => full,
+  --    empty   => empty,
+  --    sbiterr => sbiterr,
+  --    dbiterr => dbiterr
+  --    );
+
+  fifo_clock_out <= clock;
+
+  daq_inst : entity work.daq
+    generic map (
+      g_DRS_ID    => 0,
+      g_WORD_SIZE => 16
+      )
+    port map (
+      clock                 => clock,
+      reset                 => '0',
+      debug_packet_inject_i => debug_packet_inject,
+      trigger_i             => trigger,
+      event_cnt_i           => event_counter,
+      mask_i                => (others => '0'),
+      board_id              => (others => '0'),
+      sync_err_i            => '0',
+      dna_i                 => (others => '0'),
+      timestamp_i           => (others => '0'),
+      roi_size_i            => (others => '0'),
+      drs_busy_i            => '0',
+      drs_data_i            => drs_data(13 downto 0),
+      drs_valid_i           => drs_data_valid,
+      data_o                => fifo_data_out,
+      valid_o               => fifo_data_wen,
+      busy_o                => daq_busy
       );
 
   --trigger_delay trigger_delay (
@@ -622,15 +691,7 @@ begin
 
   ------------------------------------------------------------------------------------------------------------------------
   ------------------------------------------------------------------------------------------------------------------------
-  ------------------------------------------------------------------------------------------------------------------------
-  ------------------------------------------------------------------------------------------------------------------------
-  ------------------------------------------------------------------------------------------------------------------------
-  ------------------------------------------------------------------------------------------------------------------------
   -- BEWARE: AUTO GENERATED CODE LIES BELOW
-  ------------------------------------------------------------------------------------------------------------------------
-  ------------------------------------------------------------------------------------------------------------------------
-  ------------------------------------------------------------------------------------------------------------------------
-  ------------------------------------------------------------------------------------------------------------------------
   ------------------------------------------------------------------------------------------------------------------------
   ------------------------------------------------------------------------------------------------------------------------
 
@@ -638,193 +699,207 @@ begin
   -- (this section is generated by tools/generate_registers.py -- do not edit)
   --==== Registers begin ==========================================================================
 
-  -- IPbus slave instanciation
-  ipbus_slave_inst : entity work.ipbus_slave
-    generic map(
-      g_NUM_REGS             => REG_DRS_NUM_REGS,
-      g_ADDR_HIGH_BIT        => REG_DRS_ADDRESS_MSB,
-      g_ADDR_LOW_BIT         => REG_DRS_ADDRESS_LSB,
-      g_USE_INDIVIDUAL_ADDRS => true
-      )
-    port map(
-      ipb_reset_i            => ipb_reset,
-      ipb_clk_i              => ipb_clk,
-      ipb_mosi_i             => ipb_mosi_arr(0),
-      ipb_miso_o             => ipb_miso_arr(0),
-      usr_clk_i              => clock,
-      regs_read_arr_i        => regs_read_arr,
-      regs_write_arr_o       => regs_write_arr,
-      read_pulse_arr_o       => regs_read_pulse_arr,
-      write_pulse_arr_o      => regs_write_pulse_arr,
-      regs_read_ready_arr_i  => regs_read_ready_arr,
-      regs_write_done_arr_i  => regs_write_done_arr,
-      individual_addrs_arr_i => regs_addresses,
-      regs_defaults_arr_i    => regs_defaults,
-      writable_regs_i        => regs_writable_arr
+    -- IPbus slave instanciation
+    ipbus_slave_inst : entity work.ipbus_slave_tmr
+        generic map(
+           g_ENABLE_TMR           => EN_TMR_IPB_SLAVE_DRS,
+           g_NUM_REGS             => REG_DRS_NUM_REGS,
+           g_ADDR_HIGH_BIT        => REG_DRS_ADDRESS_MSB,
+           g_ADDR_LOW_BIT         => REG_DRS_ADDRESS_LSB,
+           g_USE_INDIVIDUAL_ADDRS => true
+       )
+       port map(
+           ipb_reset_i            => ipb_reset,
+           ipb_clk_i              => ipb_clk,
+           ipb_mosi_i             => ipb_mosi_arr(0),
+           ipb_miso_o             => ipb_miso_arr(0),
+           usr_clk_i              => clock,
+           regs_read_arr_i        => regs_read_arr,
+           regs_write_arr_o       => regs_write_arr,
+           read_pulse_arr_o       => regs_read_pulse_arr,
+           write_pulse_arr_o      => regs_write_pulse_arr,
+           regs_read_ready_arr_i  => regs_read_ready_arr,
+           regs_write_done_arr_i  => regs_write_done_arr,
+           individual_addrs_arr_i => regs_addresses,
+           regs_defaults_arr_i    => regs_defaults,
+           writable_regs_i        => regs_writable_arr
       );
 
+    -- Addresses
+    regs_addresses(0)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "000" & x"0";
+    regs_addresses(1)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "000" & x"1";
+    regs_addresses(2)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "000" & x"2";
+    regs_addresses(3)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "001" & x"0";
+    regs_addresses(4)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "001" & x"1";
+    regs_addresses(5)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "001" & x"2";
+    regs_addresses(6)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "001" & x"3";
+    regs_addresses(7)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "001" & x"4";
+    regs_addresses(8)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "001" & x"5";
+    regs_addresses(9)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "010" & x"0";
+    regs_addresses(10)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "010" & x"1";
+    regs_addresses(11)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "010" & x"2";
+    regs_addresses(12)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "010" & x"3";
+    regs_addresses(13)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "010" & x"6";
+    regs_addresses(14)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "010" & x"7";
+    regs_addresses(15)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "011" & x"0";
+    regs_addresses(16)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "100" & x"0";
+    regs_addresses(17)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "101" & x"0";
+    regs_addresses(18)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "101" & x"1";
+    regs_addresses(19)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "101" & x"2";
+    regs_addresses(20)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "101" & x"3";
+    regs_addresses(21)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "101" & x"4";
+    regs_addresses(22)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "110" & x"0";
+    regs_addresses(23)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "110" & x"1";
+    regs_addresses(24)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "110" & x"2";
+    regs_addresses(25)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "110" & x"3";
+    regs_addresses(26)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "110" & x"4";
+    regs_addresses(27)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "110" & x"5";
+    regs_addresses(28)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "110" & x"6";
+    regs_addresses(29)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "110" & x"7";
 
+    -- Connect read signals
+    regs_read_arr(0)(REG_CHIP_DMODE_BIT) <= dmode;
+    regs_read_arr(0)(REG_CHIP_STANDBY_MODE_BIT) <= standby_mode;
+    regs_read_arr(0)(REG_CHIP_TRANSPARENT_MODE_BIT) <= transp_mode;
+    regs_read_arr(0)(REG_CHIP_DRS_PLL_LOCK_BIT) <= drs_plllock;
+    regs_read_arr(0)(REG_CHIP_CHANNEL_CONFIG_MSB downto REG_CHIP_CHANNEL_CONFIG_LSB) <= chn_config;
+    regs_read_arr(1)(REG_CHIP_DTAP_HIGH_CNTS_MSB downto REG_CHIP_DTAP_HIGH_CNTS_LSB) <= dtap_high_cnt_reg;
+    regs_read_arr(2)(REG_CHIP_DTAP_LOW_CNTS_MSB downto REG_CHIP_DTAP_LOW_CNTS_LSB) <= dtap_low_cnt_reg;
+    regs_read_arr(3)(REG_READOUT_ROI_MODE_BIT) <= roi_mode;
+    regs_read_arr(3)(REG_READOUT_BUSY_BIT) <= busy;
+    regs_read_arr(3)(REG_READOUT_ADC_LATENCY_MSB downto REG_READOUT_ADC_LATENCY_LSB) <= adc_latency;
+    regs_read_arr(3)(REG_READOUT_SAMPLE_COUNT_MSB downto REG_READOUT_SAMPLE_COUNT_LSB) <= sample_count_max;
+    regs_read_arr(4)(REG_READOUT_READOUT_MASK_MSB downto REG_READOUT_READOUT_MASK_LSB) <= readout_mask;
+    regs_read_arr(9)(REG_FPGA_DNA_DNA_LSBS_MSB downto REG_FPGA_DNA_DNA_LSBS_LSB) <= dna (31 downto 0);
+    regs_read_arr(10)(REG_FPGA_DNA_DNA_MSBS_MSB downto REG_FPGA_DNA_DNA_MSBS_LSB) <= dna (56 downto 32);
+    regs_read_arr(11)(REG_FPGA_RELEASE_DATE_MSB downto REG_FPGA_RELEASE_DATE_LSB) <= (RELEASE_YEAR & RELEASE_MONTH & RELEASE_DAY);
+    regs_read_arr(12)(REG_FPGA_RELEASE_VERSION_MAJOR_MSB downto REG_FPGA_RELEASE_VERSION_MAJOR_LSB) <= (MAJOR_VERSION);
+    regs_read_arr(12)(REG_FPGA_RELEASE_VERSION_MINOR_MSB downto REG_FPGA_RELEASE_VERSION_MINOR_LSB) <= (MINOR_VERSION);
+    regs_read_arr(12)(REG_FPGA_RELEASE_VERSION_BUILD_MSB downto REG_FPGA_RELEASE_VERSION_BUILD_LSB) <= (RELEASE_VERSION);
+    regs_read_arr(13)(REG_FPGA_RELEASE_TIMESTAMP_TIMESTAMP_LSBS_MSB downto REG_FPGA_RELEASE_TIMESTAMP_TIMESTAMP_LSBS_LSB) <= std_logic_vector(timestamp (31 downto 0));
+    regs_read_arr(14)(REG_FPGA_RELEASE_TIMESTAMP_TIMESTAMP_MSBS_MSB downto REG_FPGA_RELEASE_TIMESTAMP_TIMESTAMP_MSBS_LSB) <= std_logic_vector(timestamp (47 downto 32));
+    regs_read_arr(17)(REG_COUNTERS_CNT_SEM_CORRECTION_MSB downto REG_COUNTERS_CNT_SEM_CORRECTION_LSB) <= cnt_sem_corrected;
+    regs_read_arr(18)(REG_COUNTERS_CNT_SEM_UNCORRECTABLE_MSB downto REG_COUNTERS_CNT_SEM_UNCORRECTABLE_LSB) <= cnt_sem_uncorrectable;
+    regs_read_arr(19)(REG_COUNTERS_CNT_READOUTS_COMPLETED_MSB downto REG_COUNTERS_CNT_READOUTS_COMPLETED_LSB) <= cnt_readouts;
+    regs_read_arr(20)(REG_COUNTERS_CNT_LOST_EVENT_MSB downto REG_COUNTERS_CNT_LOST_EVENT_LSB) <= cnt_lost_events;
+    regs_read_arr(21)(REG_COUNTERS_CNT_EVENT_MSB downto REG_COUNTERS_CNT_EVENT_LSB) <= event_counter;
+    regs_read_arr(22)(REG_HOG_GLOBAL_DATE_MSB downto REG_HOG_GLOBAL_DATE_LSB) <= GLOBAL_DATE;
+    regs_read_arr(23)(REG_HOG_GLOBAL_TIME_MSB downto REG_HOG_GLOBAL_TIME_LSB) <= GLOBAL_TIME;
+    regs_read_arr(24)(REG_HOG_GLOBAL_VER_MSB downto REG_HOG_GLOBAL_VER_LSB) <= GLOBAL_VER;
+    regs_read_arr(25)(REG_HOG_GLOBAL_SHA_MSB downto REG_HOG_GLOBAL_SHA_LSB) <= GLOBAL_SHA;
+    regs_read_arr(26)(REG_HOG_TOP_SHA_MSB downto REG_HOG_TOP_SHA_LSB) <= TOP_SHA;
+    regs_read_arr(27)(REG_HOG_TOP_VER_MSB downto REG_HOG_TOP_VER_LSB) <= TOP_VER;
+    regs_read_arr(28)(REG_HOG_HOG_SHA_MSB downto REG_HOG_HOG_SHA_LSB) <= HOG_SHA;
+    regs_read_arr(29)(REG_HOG_HOG_VER_MSB downto REG_HOG_HOG_VER_LSB) <= HOG_VER;
 
-  -- Addresses
-  regs_addresses(0)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB)  <= "00" & x"0";
-  regs_addresses(1)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB)  <= "00" & x"1";
-  regs_addresses(2)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB)  <= "00" & x"2";
-  regs_addresses(3)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB)  <= "01" & x"0";
-  regs_addresses(4)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB)  <= "01" & x"1";
-  regs_addresses(5)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB)  <= "01" & x"2";
-  regs_addresses(6)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB)  <= "01" & x"3";
-  regs_addresses(7)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB)  <= "01" & x"4";
-  regs_addresses(8)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB)  <= "01" & x"5";
-  regs_addresses(9)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB)  <= "10" & x"0";
-  regs_addresses(10)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "10" & x"1";
-  regs_addresses(11)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "10" & x"2";
-  regs_addresses(12)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "10" & x"3";
-  regs_addresses(13)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "10" & x"6";
-  regs_addresses(14)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "10" & x"7";
-  regs_addresses(15)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "11" & x"0";
-  regs_addresses(16)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "11" & x"1";
-  regs_addresses(17)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "11" & x"2";
-  regs_addresses(18)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "11" & x"3";
-  regs_addresses(19)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "11" & x"4";
+    -- Connect write signals
+    dmode <= regs_write_arr(0)(REG_CHIP_DMODE_BIT);
+    standby_mode <= regs_write_arr(0)(REG_CHIP_STANDBY_MODE_BIT);
+    transp_mode <= regs_write_arr(0)(REG_CHIP_TRANSPARENT_MODE_BIT);
+    chn_config <= regs_write_arr(0)(REG_CHIP_CHANNEL_CONFIG_MSB downto REG_CHIP_CHANNEL_CONFIG_LSB);
+    roi_mode <= regs_write_arr(3)(REG_READOUT_ROI_MODE_BIT);
+    adc_latency <= regs_write_arr(3)(REG_READOUT_ADC_LATENCY_MSB downto REG_READOUT_ADC_LATENCY_LSB);
+    sample_count_max <= regs_write_arr(3)(REG_READOUT_SAMPLE_COUNT_MSB downto REG_READOUT_SAMPLE_COUNT_LSB);
+    readout_mask <= regs_write_arr(4)(REG_READOUT_READOUT_MASK_MSB downto REG_READOUT_READOUT_MASK_LSB);
 
-  -- Connect read signals
-  regs_read_arr(0)(REG_CHIP_DMODE_BIT)                                                                                  <= dmode;
-  regs_read_arr(0)(REG_CHIP_STANDBY_MODE_BIT)                                                                           <= standby_mode;
-  regs_read_arr(0)(REG_CHIP_TRANSPARENT_MODE_BIT)                                                                       <= transp_mode;
-  regs_read_arr(0)(REG_CHIP_DRS_PLL_LOCK_BIT)                                                                           <= drs_plllock;
-  regs_read_arr(0)(REG_CHIP_CHANNEL_CONFIG_MSB downto REG_CHIP_CHANNEL_CONFIG_LSB)                                      <= chn_config;
-  regs_read_arr(1)(REG_CHIP_DTAP_HIGH_CNTS_MSB downto REG_CHIP_DTAP_HIGH_CNTS_LSB)                                      <= dtap_high_cnt_reg;
-  regs_read_arr(2)(REG_CHIP_DTAP_LOW_CNTS_MSB downto REG_CHIP_DTAP_LOW_CNTS_LSB)                                        <= dtap_low_cnt_reg;
-  regs_read_arr(3)(REG_READOUT_ROI_MODE_BIT)                                                                            <= roi_mode;
-  regs_read_arr(3)(REG_READOUT_BUSY_BIT)                                                                                <= busy;
-  regs_read_arr(3)(REG_READOUT_ADC_LATENCY_MSB downto REG_READOUT_ADC_LATENCY_LSB)                                      <= adc_latency;
-  regs_read_arr(3)(REG_READOUT_SAMPLE_COUNT_MSB downto REG_READOUT_SAMPLE_COUNT_LSB)                                    <= sample_count_max;
-  regs_read_arr(4)(REG_READOUT_READOUT_MASK_MSB downto REG_READOUT_READOUT_MASK_LSB)                                    <= readout_mask;
-  regs_read_arr(9)(REG_FPGA_DNA_DNA_LSBS_MSB downto REG_FPGA_DNA_DNA_LSBS_LSB)                                          <= dna (31 downto 0);
-  regs_read_arr(10)(REG_FPGA_DNA_DNA_MSBS_MSB downto REG_FPGA_DNA_DNA_MSBS_LSB)                                         <= dna (56 downto 32);
-  regs_read_arr(11)(REG_FPGA_RELEASE_DATE_MSB downto REG_FPGA_RELEASE_DATE_LSB)                                         <= (RELEASE_YEAR & RELEASE_MONTH & RELEASE_DAY);
-  regs_read_arr(12)(REG_FPGA_RELEASE_VERSION_MAJOR_MSB downto REG_FPGA_RELEASE_VERSION_MAJOR_LSB)                       <= (MAJOR_VERSION);
-  regs_read_arr(12)(REG_FPGA_RELEASE_VERSION_MINOR_MSB downto REG_FPGA_RELEASE_VERSION_MINOR_LSB)                       <= (MINOR_VERSION);
-  regs_read_arr(12)(REG_FPGA_RELEASE_VERSION_BUILD_MSB downto REG_FPGA_RELEASE_VERSION_BUILD_LSB)                       <= (RELEASE_VERSION);
-  regs_read_arr(13)(REG_FPGA_RELEASE_TIMESTAMP_TIMESTAMP_LSBS_MSB downto REG_FPGA_RELEASE_TIMESTAMP_TIMESTAMP_LSBS_LSB) <= std_logic_vector(timestamp (31 downto 0));
-  regs_read_arr(14)(REG_FPGA_RELEASE_TIMESTAMP_TIMESTAMP_MSBS_MSB downto REG_FPGA_RELEASE_TIMESTAMP_TIMESTAMP_MSBS_LSB) <= std_logic_vector(timestamp (47 downto 32));
-  regs_read_arr(15)(REG_COUNTERS_CNT_SEM_CORRECTION_MSB downto REG_COUNTERS_CNT_SEM_CORRECTION_LSB)                     <= cnt_sem_corrected;
-  regs_read_arr(16)(REG_COUNTERS_CNT_SEM_UNCORRECTABLE_MSB downto REG_COUNTERS_CNT_SEM_UNCORRECTABLE_LSB)               <= cnt_sem_uncorrectable;
-  regs_read_arr(17)(REG_COUNTERS_CNT_READOUTS_COMPLETED_MSB downto REG_COUNTERS_CNT_READOUTS_COMPLETED_LSB)             <= cnt_readouts;
-  regs_read_arr(18)(REG_COUNTERS_CNT_LOST_EVENT_MSB downto REG_COUNTERS_CNT_LOST_EVENT_LSB)                             <= cnt_lost_events;
-  regs_read_arr(19)(REG_COUNTERS_CNT_EVENT_MSB downto REG_COUNTERS_CNT_EVENT_LSB)                                       <= event_counter;
+    -- Connect write pulse signals
+    start <= regs_write_pulse_arr(5);
+    reinit <= regs_write_pulse_arr(6);
+    configure <= regs_write_pulse_arr(7);
+    drs_reset <= regs_write_pulse_arr(8);
+    debug_packet_inject <= regs_write_pulse_arr(15);
+    force_trig <= regs_write_pulse_arr(16);
 
-  -- Connect write signals
-  dmode            <= regs_write_arr(0)(REG_CHIP_DMODE_BIT);
-  standby_mode     <= regs_write_arr(0)(REG_CHIP_STANDBY_MODE_BIT);
-  transp_mode      <= regs_write_arr(0)(REG_CHIP_TRANSPARENT_MODE_BIT);
-  chn_config       <= regs_write_arr(0)(REG_CHIP_CHANNEL_CONFIG_MSB downto REG_CHIP_CHANNEL_CONFIG_LSB);
-  roi_mode         <= regs_write_arr(3)(REG_READOUT_ROI_MODE_BIT);
-  adc_latency      <= regs_write_arr(3)(REG_READOUT_ADC_LATENCY_MSB downto REG_READOUT_ADC_LATENCY_LSB);
-  sample_count_max <= regs_write_arr(3)(REG_READOUT_SAMPLE_COUNT_MSB downto REG_READOUT_SAMPLE_COUNT_LSB);
-  readout_mask     <= regs_write_arr(4)(REG_READOUT_READOUT_MASK_MSB downto REG_READOUT_READOUT_MASK_LSB);
+    -- Connect write done signals
 
-  -- Connect write pulse signals
-  start     <= regs_write_pulse_arr(5);
-  reinit    <= regs_write_pulse_arr(6);
-  configure <= regs_write_pulse_arr(7);
-  drs_reset <= regs_write_pulse_arr(8);
+    -- Connect read pulse signals
 
-  -- Connect write done signals
+    -- Connect counter instances
 
-  -- Connect read pulse signals
-
-  -- Connect counter instances
-
-  COUNTER_COUNTERS_CNT_SEM_CORRECTION : entity work.counter_snap
+    COUNTER_COUNTERS_CNT_SEM_CORRECTION : entity work.counter_snap
     generic map (
-      g_COUNTER_WIDTH => 16
-      )
+        g_COUNTER_WIDTH  => 16
+    )
     port map (
-      clk_i   => clock,
-      rst_i   => ipb_reset,
-      en_i    => sem_correction,
-      snap_i  => '1',
-      count_o => cnt_sem_corrected
-      );
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => sem_correction,
+        snap_i    => '1',
+        count_o   => cnt_sem_corrected
+    );
 
 
-  COUNTER_COUNTERS_CNT_SEM_UNCORRECTABLE : entity work.counter_snap
+    COUNTER_COUNTERS_CNT_SEM_UNCORRECTABLE : entity work.counter_snap
     generic map (
-      g_COUNTER_WIDTH => 4
-      )
+        g_COUNTER_WIDTH  => 4
+    )
     port map (
-      clk_i   => clock,
-      rst_i   => ipb_reset,
-      en_i    => sem_uncorrectable_error,
-      snap_i  => '1',
-      count_o => cnt_sem_uncorrectable
-      );
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => sem_uncorrectable_error,
+        snap_i    => '1',
+        count_o   => cnt_sem_uncorrectable
+    );
 
 
-  COUNTER_COUNTERS_CNT_READOUTS_COMPLETED : entity work.counter_snap
+    COUNTER_COUNTERS_CNT_READOUTS_COMPLETED : entity work.counter_snap
     generic map (
-      g_COUNTER_WIDTH => 16
-      )
+        g_COUNTER_WIDTH  => 16
+    )
     port map (
-      clk_i   => clock,
-      rst_i   => ipb_reset,
-      en_i    => readout_complete,
-      snap_i  => '1',
-      count_o => cnt_readouts
-      );
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => readout_complete,
+        snap_i    => '1',
+        count_o   => cnt_readouts
+    );
 
 
-  COUNTER_COUNTERS_CNT_LOST_EVENT : entity work.counter_snap
+    COUNTER_COUNTERS_CNT_LOST_EVENT : entity work.counter_snap
     generic map (
-      g_COUNTER_WIDTH => 16
-      )
+        g_COUNTER_WIDTH  => 16
+    )
     port map (
-      clk_i   => clock,
-      rst_i   => ipb_reset,
-      en_i    => trigger and busy,
-      snap_i  => '1',
-      count_o => cnt_lost_events
-      );
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => trigger and busy,
+        snap_i    => '1',
+        count_o   => cnt_lost_events
+    );
 
 
-  COUNTER_COUNTERS_CNT_EVENT : entity work.counter_snap
+    COUNTER_COUNTERS_CNT_EVENT : entity work.counter_snap
     generic map (
-      g_COUNTER_WIDTH => 32
-      )
+        g_COUNTER_WIDTH  => 32
+    )
     port map (
-      clk_i   => clock,
-      rst_i   => ipb_reset,
-      en_i    => trigger,
-      snap_i  => '1',
-      count_o => event_counter
-      );
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => trigger,
+        snap_i    => '1',
+        count_o   => event_counter
+    );
 
 
-  -- Connect rate instances
+    -- Connect rate instances
 
-  -- Connect read ready signals
+    -- Connect read ready signals
 
-  -- Defaults
-  regs_defaults(0)(REG_CHIP_DMODE_BIT)                                               <= REG_CHIP_DMODE_DEFAULT;
-  regs_defaults(0)(REG_CHIP_STANDBY_MODE_BIT)                                        <= REG_CHIP_STANDBY_MODE_DEFAULT;
-  regs_defaults(0)(REG_CHIP_TRANSPARENT_MODE_BIT)                                    <= REG_CHIP_TRANSPARENT_MODE_DEFAULT;
-  regs_defaults(0)(REG_CHIP_CHANNEL_CONFIG_MSB downto REG_CHIP_CHANNEL_CONFIG_LSB)   <= REG_CHIP_CHANNEL_CONFIG_DEFAULT;
-  regs_defaults(3)(REG_READOUT_ROI_MODE_BIT)                                         <= REG_READOUT_ROI_MODE_DEFAULT;
-  regs_defaults(3)(REG_READOUT_ADC_LATENCY_MSB downto REG_READOUT_ADC_LATENCY_LSB)   <= REG_READOUT_ADC_LATENCY_DEFAULT;
-  regs_defaults(3)(REG_READOUT_SAMPLE_COUNT_MSB downto REG_READOUT_SAMPLE_COUNT_LSB) <= REG_READOUT_SAMPLE_COUNT_DEFAULT;
-  regs_defaults(4)(REG_READOUT_READOUT_MASK_MSB downto REG_READOUT_READOUT_MASK_LSB) <= REG_READOUT_READOUT_MASK_DEFAULT;
+    -- Defaults
+    regs_defaults(0)(REG_CHIP_DMODE_BIT) <= REG_CHIP_DMODE_DEFAULT;
+    regs_defaults(0)(REG_CHIP_STANDBY_MODE_BIT) <= REG_CHIP_STANDBY_MODE_DEFAULT;
+    regs_defaults(0)(REG_CHIP_TRANSPARENT_MODE_BIT) <= REG_CHIP_TRANSPARENT_MODE_DEFAULT;
+    regs_defaults(0)(REG_CHIP_CHANNEL_CONFIG_MSB downto REG_CHIP_CHANNEL_CONFIG_LSB) <= REG_CHIP_CHANNEL_CONFIG_DEFAULT;
+    regs_defaults(3)(REG_READOUT_ROI_MODE_BIT) <= REG_READOUT_ROI_MODE_DEFAULT;
+    regs_defaults(3)(REG_READOUT_ADC_LATENCY_MSB downto REG_READOUT_ADC_LATENCY_LSB) <= REG_READOUT_ADC_LATENCY_DEFAULT;
+    regs_defaults(3)(REG_READOUT_SAMPLE_COUNT_MSB downto REG_READOUT_SAMPLE_COUNT_LSB) <= REG_READOUT_SAMPLE_COUNT_DEFAULT;
+    regs_defaults(4)(REG_READOUT_READOUT_MASK_MSB downto REG_READOUT_READOUT_MASK_LSB) <= REG_READOUT_READOUT_MASK_DEFAULT;
 
-  -- Define writable regs
-  regs_writable_arr(0) <= '1';
-  regs_writable_arr(3) <= '1';
-  regs_writable_arr(4) <= '1';
+    -- Define writable regs
+    regs_writable_arr(0) <= '1';
+    regs_writable_arr(3) <= '1';
+    regs_writable_arr(4) <= '1';
 
-  -- Create a sump for unused write signals
-  sump_loop : for I in 0 to (REG_DRS_NUM_REGS-1) generate
-  begin
-    regs_write_arr_sump (I) <= or_reduce (regs_write_arr(I));
-  end generate;
   --==== Registers end ============================================================================
 
 end Behavioral;

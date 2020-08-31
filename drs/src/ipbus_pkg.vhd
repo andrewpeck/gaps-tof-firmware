@@ -79,7 +79,7 @@ package body ipbus_pkg is
         -- highest are used as the module ID (wishbone slave #)
 
         -- START: IPBUS_ADDR_SEL :: DO NOT EDIT
-        if   (std_match(addr, "----------------------" & std_logic_vector(to_unsigned(IPB_SLAVE.DRS, 2))  & "--------")) then sel := IPB_SLAVE.DRS;
+        if   (std_match(addr, std_logic_vector(to_unsigned(IPB_SLAVE.            DRS,     4))  & "------------")) then sel := IPB_SLAVE.DRS;
         -- END: IPBUS_ADDR_SEL :: DO NOT EDIT
 
         else sel := 99;
