@@ -30,8 +30,10 @@ tcl_to_bd:
 create: drs_ip trg_ip dma_ip tcl_to_bd
 	Hog/CreateProject.sh readout_board $(COLORIZE)
 
-impl:
+synth:
 	Hog/LaunchSynthesis.sh readout_board $(COLORIZE)
+
+impl:
 	Hog/LaunchImplementation.sh readout_board $(COLORIZE)
 
 clean:
