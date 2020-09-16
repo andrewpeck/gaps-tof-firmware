@@ -121,7 +121,7 @@ def read_packet (data, verbose=False):
 if __name__ == "__main__":
     a = np.fromfile("daq_packet.dat", dtype='>u2', count=-1, sep='', offset=0)
     np.set_printoptions(formatter={'int':hex})
-    PROFILE=True
+    PROFILE=False
     if PROFILE:
         def loop_read(a):
             for i in range(100000):

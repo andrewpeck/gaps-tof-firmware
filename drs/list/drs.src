@@ -5,6 +5,7 @@ ip/clock_wizard/clock_wizard.xci
 ip/sem_core/sem_core.xci
 
 # DRS4 Controller
+drs/src/fifo_async.vhd 93
 drs/src/axi_ipbus_bridge.vhd 93
 drs/src/axi_pkg.vhd 93
 drs/src/counter_snap.vhd 93
