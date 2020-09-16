@@ -247,6 +247,27 @@
     \vspace{5mm}
 
 
+    \noindent
+    \subsection*{\textcolor{parentcolor}{\textbf{DRS.SPY}}}
+
+    \vspace{4mm}
+    \noindent
+    Spy Buffer
+    \noindent
+
+    \keepXColumns
+    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
+    \hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
+    \nopagebreak
+    RESET & \texttt{0x70} & \texttt{[0:0]} & w & Pulse & Spy Buffer Reset \\\hline
+    DATA & \texttt{0x71} & \texttt{[31:0]} & r & \texttt{} & Spy Read Data \\\hline
+    FULL & \texttt{0x72} & \texttt{[0:0]} & r & \texttt{} & Spy Buffer Full \\\hline
+    EMPTY & \texttt{0x72} & \texttt{[1:1]} & r & \texttt{} & Spy Buffer Empty \\\hline
+    \end{tabularx}
+    \vspace{5mm}
+
+
 % END: ADDRESS_TABLE :: DO NOT EDIT
 
 \end{document}
