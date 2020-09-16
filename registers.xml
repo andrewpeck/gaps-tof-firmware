@@ -209,14 +209,22 @@
     </node> <!--COUNTERS-->
 
     <node id="HOG" address="0x60" description = "HOG Parameters">
-        <node id="GLOBAL_DATE" permission="r" address="0x0" description="HOG Global Date"    fw_signal="GLOBAL_DATE"/>
-        <node id="GLOBAL_TIME" permission="r" address="0x1" description="HOG Global Time"    fw_signal="GLOBAL_TIME"/>
-        <node id="GLOBAL_VER"  permission="r" address="0x2" description="HOG Global Version" fw_signal="GLOBAL_VER"/>
-        <node id="GLOBAL_SHA"  permission="r" address="0x3" description="HOG Global SHA"     fw_signal="GLOBAL_SHA"/>
-        <node id="TOP_SHA"     permission="r" address="0x4" description="HOG Top SHA"        fw_signal="TOP_SHA"/>
-        <node id="TOP_VER"     permission="r" address="0x5" description="HOG Top Version"    fw_signal="TOP_VER"/>
-        <node id="HOG_SHA"     permission="r" address="0x6" description="HOG SHA"            fw_signal="HOG_SHA"/>
-        <node id="HOG_VER"     permission="r" address="0x7" description="HOG Version"        fw_signal="HOG_VER"/>
+        <node id="GLOBAL_DATE" mask="0xFFFFFFFF" permission="r" address="0x0" description="HOG Global Date"    fw_signal="GLOBAL_DATE"/>
+        <node id="GLOBAL_TIME" mask="0xFFFFFFFF" permission="r" address="0x1" description="HOG Global Time"    fw_signal="GLOBAL_TIME"/>
+        <node id="GLOBAL_VER"  mask="0xFFFFFFFF" permission="r" address="0x2" description="HOG Global Version" fw_signal="GLOBAL_VER"/>
+        <node id="GLOBAL_SHA"  mask="0xFFFFFFFF" permission="r" address="0x3" description="HOG Global SHA"     fw_signal="GLOBAL_SHA"/>
+        <node id="TOP_SHA"     mask="0xFFFFFFFF" permission="r" address="0x4" description="HOG Top SHA"        fw_signal="TOP_SHA"/>
+        <node id="TOP_VER"     mask="0xFFFFFFFF" permission="r" address="0x5" description="HOG Top Version"    fw_signal="TOP_VER"/>
+        <node id="HOG_SHA"     mask="0xFFFFFFFF" permission="r" address="0x6" description="HOG SHA"            fw_signal="HOG_SHA"/>
+        <node id="HOG_VER"     mask="0xFFFFFFFF" permission="r" address="0x7" description="HOG Version"        fw_signal="HOG_VER"/>
     </node> <!--HOG-->
+
+    <node id="SPY" address="0x70" description = "Spy Buffer">
+        <node id="RESET" permission="w" address="0x0" mask="0x00000001" description="Spy Buffer Reset" fw_write_pulse_signal="spy_reset"/>
+        <node id="DATA"  permission="r" address="0x1" mask="0xFFFFFFFF" description="Spy Read Data"
+              fw_signal="spy_data" fw_read_pulse_signal="spy_rd_en" fw_read_ready_signal="spy_valid"/>
+        <node id="FULL"  permission="r" address="0x2" mask="0x00000001" description="Spy Buffer Full"  fw_signal="spy_full"/>
+        <node id="EMPTY" permission="r" address="0x2" mask="0x00000002" description="Spy Buffer Empty" fw_signal="spy_empty"/>
+    </node>
 
 </node>

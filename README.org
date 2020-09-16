@@ -171,7 +171,6 @@ assign_bd_address -offset 0x80000000 -range 0x00010000 -target_address_space [ge
   | TIMESTAMP | [47:0] | # of 33MHz clocks elapsed since resync   |
   |-----------+--------+------------------------------------------|
   | PAYLOAD   |        | 0 to XXXX words                          |
-  |           |        |                                          |
   |           |        | HEADER[15:0] = Channel ID                |
   |           |        | data bits [13:0] = ADC data              |
   |           |        | data bits [15:14] parity                 |
