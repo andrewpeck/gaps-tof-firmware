@@ -152,6 +152,7 @@ architecture Behavioral of drs_top is
 
   signal readout_mask     : std_logic_vector (8 downto 0);
   signal drs_reset        : std_logic;
+  signal daq_reset        : std_logic;
   signal drs_config       : std_logic_vector (7 downto 0);
   signal chn_config       : std_logic_vector (7 downto 0);
   signal dna              : std_logic_vector (56 downto 0);
@@ -551,18 +552,18 @@ begin
       )
     port map (
       clock                 => clock,
-      reset                 => '0',
+      reset                 => daq_reset or reset,
       debug_packet_inject_i => debug_packet_inject,
       trigger_i             => trigger,
       event_cnt_i           => event_counter,
-      mask_i                => (others => '0'),
+      mask_i                => x"00" & readout_mask,
       board_id              => (others => '0'),
       sync_err_i            => '0',
-      dna_i                 => (others => '0'),
-      timestamp_i           => (others => '0'),
-      roi_size_i            => (others => '0'),
-      drs_busy_i            => '0',
+      dna_i                 => "0000000" & dna,
       hash_i                => GLOBAL_SHA,
+      timestamp_i           => std_logic_vector(timestamp),
+      roi_size_i            => to_slv(1023, 10),  -- TODO: connect to axi, make all of this count from 0
+      drs_busy_i            => busy,
       drs_data_i            => drs_data(13 downto 0),
       drs_valid_i           => drs_data_valid,
       data_o                => fifo_data_out_int,
@@ -827,6 +828,7 @@ begin
     debug_packet_inject <= regs_write_pulse_arr(15);
     force_trig <= regs_write_pulse_arr(16);
     spy_reset <= regs_write_pulse_arr(30);
+    daq_reset <= regs_write_pulse_arr(9);
 
     -- Connect write done signals
 
