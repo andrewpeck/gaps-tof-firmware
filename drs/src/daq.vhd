@@ -52,7 +52,8 @@ entity daq is
 
     data_o  : out std_logic_vector (g_WORD_SIZE-1 downto 0);  -- receive 16 bits / bx
     valid_o : out std_logic;
-    busy_o  : out std_logic
+    busy_o  : out std_logic;
+    done_o  : out std_logic
 
     );
 end daq;
@@ -155,7 +156,7 @@ architecture behavioral of daq is
 
 begin
 
-  packet_crc_en   <= if_then_else ((dav and state /= TAIL_state and state /= CRC32_state), '1', '0');
+  packet_crc_en <= if_then_else ((dav and state /= TAIL_state and state /= CRC32_state), '1', '0');
 
   process (clock) is
   begin
@@ -185,6 +186,11 @@ begin
       );
 
   busy_o <= '0' when state = IDLE_state else '1';
+  done_o <= '1' when state = TAIL_state else '0';
+
+  --------------------------------------------------------------------------------
+  -- Packet Formatter
+  --------------------------------------------------------------------------------
 
   process (clock) is
   begin

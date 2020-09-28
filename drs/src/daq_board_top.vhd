@@ -536,7 +536,7 @@ begin
       fifo_wen_o   => drs_data_valid,
       fifo_clock_o => open,
 
-      readout_complete => readout_complete,
+      readout_complete => open,
 
       busy_o => busy
 
@@ -567,7 +567,8 @@ begin
       drs_valid_i           => drs_data_valid,
       data_o                => fifo_data_out_int,
       valid_o               => fifo_data_wen_int,
-      busy_o                => daq_busy
+      busy_o                => daq_busy,
+      done_o                => readout_complete
       );
 
   fifo_data_out <=  fifo_data_out_int;
