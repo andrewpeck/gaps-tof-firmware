@@ -562,6 +562,7 @@ begin
       timestamp_i           => (others => '0'),
       roi_size_i            => (others => '0'),
       drs_busy_i            => '0',
+      hash_i                => GLOBAL_SHA,
       drs_data_i            => drs_data(13 downto 0),
       drs_valid_i           => drs_data_valid,
       data_o                => fifo_data_out_int,

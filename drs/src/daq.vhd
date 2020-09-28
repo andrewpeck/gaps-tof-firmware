@@ -42,6 +42,7 @@ entity daq is
     board_id    : in std_logic_vector (7 downto 0);
     sync_err_i  : in std_logic;
     dna_i       : in std_logic_vector (63 downto 0);
+    hash_i      : in std_logic_vector (31 downto 0);
     timestamp_i : in std_logic_vector (47 downto 0);
     roi_size_i  : in std_logic_vector (9 downto 0);
 
@@ -60,7 +61,7 @@ architecture behavioral of daq is
 
   -- packet processing in python 15% faster by adding a channel header!!
   type state_t is (IDLE_state, ERR_state, HEAD_state, STATUS_state, LENGTH_state, ROI_state,
-                   DNA_state, ID_state, CHMASK_state, EVENT_CNT_state, TIMESTAMP_state,
+                   DNA_state, HASH_state, ID_state, CHMASK_state, EVENT_CNT_state, TIMESTAMP_state,
                    CALC_CH_CRC_state, CH_CRC_state, CH_HEADER_state, PAYLOAD_state,
                    CALC_CRC32_state, CRC32_state, TAIL_state);
 
@@ -90,6 +91,7 @@ architecture behavioral of daq is
   signal event_cnt : std_logic_vector (event_cnt_i'range) := (others => '0');
   signal timestamp : std_logic_vector (timestamp_i'range) := (others => '0');
   signal dna       : std_logic_vector (dna_i'range)       := (others => '0');
+  signal hash      : std_logic_vector (15 downto 0)       := (others => '0');
 
   constant DNA_WORDS         : integer := dna'length / g_WORD_SIZE;
   constant TIMESTAMP_WORDS   : integer := timestamp'length / g_WORD_SIZE;
@@ -139,7 +141,8 @@ architecture behavioral of daq is
       + status'length / g_WORD_SIZE
       + packet_length'length / g_WORD_SIZE
       + dna'length / g_WORD_SIZE
-      + data'length / g_WORD_SIZE -- roi
+      + hash'length / g_WORD_SIZE
+      + data'length / g_WORD_SIZE       -- roi
       + id'length / g_WORD_SIZE
       + mask'length / g_WORD_SIZE
       + event_cnt'length / g_WORD_SIZE
@@ -198,6 +201,7 @@ begin
           num_channels <= 9;
           mask         <= x"00FF";
           dna          <= x"FEDCBA9876543210";
+          hash         <= x"3210";
           event_cnt    <= x"76543210";
           timestamp    <= x"BA9876543210";
         else
@@ -212,6 +216,7 @@ begin
 
           roi_size     <= to_int (roi_size_i);
           dna          <= dna_i;
+          hash         <= hash_i (23 downto 8);
           debug        <= false;
           dropped      <= drs_busy_i;
           num_channels <= count_ones (mask_i) + 1;  -- FIXME: need to account for drs ID and mask appropriately
@@ -230,219 +235,229 @@ begin
     end if;
   end process;
 
+  --------------------------------------------------------------------------------
+  -- State Machine
+  --------------------------------------------------------------------------------
+
   process (clock) is
   begin
     if (rising_edge(clock)) then
 
-      if (reset = '1') then
-        state <= IDLE_state;
-      else
+      dav    <= false;
+      data   <= (others => '0');
 
-        dav  <= false;
-        data <= (others => '0');
+      case state is
 
-        case state is
+        when IDLE_state =>
 
-          when IDLE_state =>
+          if (trigger_i = '1' or debug_packet_inject_i = '1') then
+            state <= HEAD_state;
+          end if;
 
-            if (trigger_i = '1' or debug_packet_inject_i = '1') then
-              state <= HEAD_state;
-            end if;
+        when HEAD_state =>
 
-          when HEAD_state =>
+          state <= STATUS_state;
 
-            state <= STATUS_state;
+          data <= HEAD;
+          dav  <= true;
 
-            data <= HEAD;
-            dav  <= true;
+        when STATUS_state =>
 
-          when STATUS_state =>
+          state <= LENGTH_state;
 
-            state <= LENGTH_state;
+          data <= status;
+          dav  <= true;
 
-            data <= status;
-            dav  <= true;
+        when LENGTH_state =>
 
-          when LENGTH_state =>
+          state <= ROI_state;
 
-            state <= ROI_state;
+          data <= packet_length;
+          dav  <= true;
 
-            data <= packet_length;
-            dav  <= true;
+        when ROI_state =>
 
-          when ROI_state =>
+          state <= DNA_state;
 
-            state <= DNA_state;
+          data <= to_slv(roi_size, data'length);
+          dav  <= true;
 
-            data <= to_slv(roi_size, data'length);
-            dav  <= true;
+        when DNA_state =>
 
-          when DNA_state =>
+          if (state_word_cnt = dna'length / g_WORD_SIZE - 1) then
+            state          <= HASH_state;
+            state_word_cnt <= 0;
+          else
+            state_word_cnt <= state_word_cnt + 1;
+          end if;
 
-            if (state_word_cnt = dna'length / g_WORD_SIZE - 1) then
-              state          <= ID_state;
-              state_word_cnt <= 0;
+          data <= hash;
+          dav  <= true;
+
+        when HASH_state =>
+
+          state <= ID_state;
+
+          data <= hash;
+
+          dav <= true;
+
+        when ID_state =>
+
+          state <= CHMASK_state;
+
+          data <= id;
+          dav  <= true;
+
+        when CHMASK_state =>
+
+          state <= EVENT_CNT_state;
+
+          data <= mask;
+          dav  <= true;
+
+        when EVENT_CNT_state =>
+
+          if (state_word_cnt = event_cnt'length / g_WORD_SIZE - 1) then
+            state          <= TIMESTAMP_state;
+            state_word_cnt <= 0;
+          else
+            state_word_cnt <= state_word_cnt + 1;
+          end if;
+
+          data <= event_cnt(g_WORD_SIZE*(EVENT_CNT_WORDS -state_word_cnt)-1
+                            downto g_WORD_SIZE*(EVENT_CNT_WORDS -state_word_cnt-1));
+          dav <= true;
+
+        when TIMESTAMP_state =>
+
+          if (state_word_cnt = timestamp'length / g_WORD_SIZE - 1) then
+
+            if (dropped = '1') then
+              state <= CRC32_state;
             else
-              state_word_cnt <= state_word_cnt + 1;
+              state <= CH_HEADER_state;
             end if;
 
-            data <= dna(g_WORD_SIZE*(DNA_WORDS -state_word_cnt)-1
-                        downto g_WORD_SIZE*(DNA_WORDS -state_word_cnt-1));
-            dav <= true;
+            state_word_cnt <= 0;
+          else
+            state_word_cnt <= state_word_cnt + 1;
+          end if;
 
-          when ID_state =>
+          data <= timestamp(g_WORD_SIZE*(TIMESTAMP_WORDS -state_word_cnt)-1
+                            downto g_WORD_SIZE*(TIMESTAMP_WORDS -state_word_cnt-1));
+          dav <= true;
 
-            state <= CHMASK_state;
+        when CH_HEADER_state =>
 
-            data <= id;
+          if (num_channels = 0) then
+            state          <= CRC32_state;
+            state_word_cnt <= 0;
+          else
+            state          <= PAYLOAD_state;
+            state_word_cnt <= 0;
+          end if;
+
+          data <= to_slv (channel_cnt, data'length);
+          dav  <= true;
+
+        when PAYLOAD_state =>
+
+          if (debug) then
+            state_word_cnt <= state_word_cnt + 1;
+          else
+            -- FIXME: should be gated by the fifonot full
+            state_word_cnt <= state_word_cnt + 1;
+          end if;
+
+          if (num_channels = 0) then
+            state          <= CRC32_state;
+            state_word_cnt <= 0;
+          elsif (state_word_cnt = roi_size) then
+            state          <= CALC_CH_CRC_state;
+            state_word_cnt <= 0;
+            channel_cnt    <= channel_cnt + 1;
+          end if;
+
+          if (debug) then
             dav  <= true;
+            data <= to_slv(state_word_cnt, g_WORD_SIZE);
+          elsif (num_channels > 0) then
 
-          when CHMASK_state =>
-
-            state <= EVENT_CNT_state;
-
-            data <= mask;
+            -- TODO: need the guts of the thing
+            -- dav should connect to !empty output of the adc fifo
+            -- if (not fifo_empty) then
+            data <= (others => '0');
             dav  <= true;
+            --else
+            dav  <= false;
+            data <= (others => '0');
+            -- end if;
 
-          when EVENT_CNT_state =>
+          end if;
 
-            if (state_word_cnt = event_cnt'length / g_WORD_SIZE - 1) then
-              state          <= TIMESTAMP_state;
-              state_word_cnt <= 0;
+        when CALC_CH_CRC_state =>
+
+          -- need 1 extra clock to calculate the channel crc
+          state <= CH_CRC_state;
+          dav   <= false;
+          data  <= (others => '0');
+
+        when CH_CRC_state =>
+
+          if (state_word_cnt = CHANNEL_CRC'length / 16 - 1) then
+            if (channel_cnt = num_channels) then
+              state <= CALC_CRC32_state;
             else
-              state_word_cnt <= state_word_cnt + 1;
+              state <= CH_HEADER_state;
             end if;
+            state_word_cnt <= 0;
+          else
+            state_word_cnt <= state_word_cnt + 1;
+          end if;
 
-            data <= event_cnt(g_WORD_SIZE*(EVENT_CNT_WORDS -state_word_cnt)-1
-                              downto g_WORD_SIZE*(EVENT_CNT_WORDS -state_word_cnt-1));
-            dav <= true;
+          data <= channel_crc(g_WORD_SIZE*(CHANNEL_CRC_WORDS -state_word_cnt)-1
+                              downto g_WORD_SIZE*(CHANNEL_CRC_WORDS -state_word_cnt-1));
+          dav <= true;
 
-          when TIMESTAMP_state =>
+        when CALC_CRC32_state =>
 
-            if (state_word_cnt = timestamp'length / g_WORD_SIZE - 1) then
-
-              if (dropped = '1') then
-                state <= CRC32_state;
-              else
-                state <= CH_HEADER_state;
-              end if;
-
-              state_word_cnt <= 0;
-            else
-              state_word_cnt <= state_word_cnt + 1;
-            end if;
-
-            data <= timestamp(g_WORD_SIZE*(TIMESTAMP_WORDS -state_word_cnt)-1
-                              downto g_WORD_SIZE*(TIMESTAMP_WORDS -state_word_cnt-1));
-            dav <= true;
-
-          when CH_HEADER_state =>
-
-            if (num_channels = 0) then
-              state          <= CRC32_state;
-              state_word_cnt <= 0;
-            else
-              state          <= PAYLOAD_state;
-              state_word_cnt <= 0;
-            end if;
-
-            data <= to_slv (channel_cnt, data'length);
-            dav <= true;
-
-          when PAYLOAD_state =>
-
-            if (debug) then
-              state_word_cnt <= state_word_cnt + 1;
-            else
-              -- FIXME: should be gated by the fifonot full
-              state_word_cnt <= state_word_cnt + 1;
-            end if;
-
-            if (num_channels = 0) then
-              state          <= CRC32_state;
-              state_word_cnt <= 0;
-            elsif (state_word_cnt = roi_size) then
-              state          <= CALC_CH_CRC_state;
-              state_word_cnt <= 0;
-              channel_cnt    <= channel_cnt + 1;
-            end if;
-
-            if (debug) then
-              dav  <= true;
-              data <= to_slv(state_word_cnt, g_WORD_SIZE);
-            elsif (num_channels > 0) then
-
-              -- TODO: need the guts of the thing
-              -- dav should connect to !empty output of the adc fifo
-              -- if (not fifo_empty) then
-              data <= (others => '0');
-              dav  <= true;
-              --else
-              dav  <= false;
-              data <= (others => '0');
-              -- end if;
-
-            end if;
-
-          when CALC_CH_CRC_state =>
-
-            -- need 1 extra clock to calculate the channel crc
-            state <= CH_CRC_state;
-            dav   <= false;
-            data  <= (others => '0');
-
-          when CH_CRC_state =>
-
-            if (state_word_cnt = CHANNEL_CRC'length / 16 - 1) then
-              if (channel_cnt = num_channels) then
-                state          <= CALC_CRC32_state;
-              else
-                state          <= CH_HEADER_state;
-              end if;
-              state_word_cnt <= 0;
-            else
-              state_word_cnt <= state_word_cnt + 1;
-            end if;
-
-            data <= channel_crc(g_WORD_SIZE*(CHANNEL_CRC_WORDS -state_word_cnt)-1
-                                downto g_WORD_SIZE*(CHANNEL_CRC_WORDS -state_word_cnt-1));
-            dav <= true;
-
-          when CALC_CRC32_state =>
-
-            -- need 1 extra clock to calculate the crc
-            state <= CRC32_state;
-            dav   <= false;
-            data  <= (others => '0');
+          -- need 1 extra clock to calculate the crc
+          state <= CRC32_state;
+          dav   <= false;
+          data  <= (others => '0');
 
 
-          when CRC32_state =>
+        when CRC32_state =>
 
-            if (state_word_cnt = PACKET_CRC'length / 16 - 1) then
-              state          <= TAIL_state;
-              state_word_cnt <= 0;
-            else
-              state_word_cnt <= state_word_cnt + 1;
-            end if;
+          if (state_word_cnt = PACKET_CRC'length / 16 - 1) then
+            state          <= TAIL_state;
+            state_word_cnt <= 0;
+          else
+            state_word_cnt <= state_word_cnt + 1;
+          end if;
 
-            data <= packet_crc(g_WORD_SIZE*(PACKET_CRC_WORDS -state_word_cnt)-1
-                               downto g_WORD_SIZE*(PACKET_CRC_WORDS -state_word_cnt-1));
-            dav <= true;
+          data <= packet_crc(g_WORD_SIZE*(PACKET_CRC_WORDS -state_word_cnt)-1
+                             downto g_WORD_SIZE*(PACKET_CRC_WORDS -state_word_cnt-1));
+          dav <= true;
 
-          when TAIL_state =>
+        when TAIL_state =>
 
-            state <= IDLE_state;
+          state <= IDLE_state;
 
-            data <= TAIL;
-            dav  <= true;
+          data   <= TAIL;
+          dav    <= true;
 
-          when others =>
+        when others =>
 
-            state <= IDLE_state;
+          state <= IDLE_state;
 
-        end case;
+      end case;
 
-      end if;
+    end if;
+
+    if (reset = '1') then
+      state <= IDLE_state;
     end if;
 
   end process;

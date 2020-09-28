@@ -31,6 +31,7 @@ architecture test of daq_tb is
   signal board_id              : std_logic_vector (7 downto 0)  := (others => '0');
   signal sync_err_i            : std_logic                      := '0';
   signal dna_i                 : std_logic_vector (63 downto 0) := (others => '0');
+  signal hash_i                : std_logic_vector (31 downto 0) := (others => '0');
   signal timestamp_i           : std_logic_vector (47 downto 0) := (others => '0');
   signal roi_size_I            : std_logic_vector (9 downto 0)  := (others => '1');
   signal drs_busy_i            : std_logic                      := '0';
@@ -100,6 +101,7 @@ begin
       board_id              => board_id,
       sync_err_i            => sync_err_i,
       dna_i                 => dna_i,
+      hash_i                => hash_i,
       timestamp_i           => timestamp_i,
       roi_size_i            => roi_size_i,
       drs_busy_i            => drs_busy_i,

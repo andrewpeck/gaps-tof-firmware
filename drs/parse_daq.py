@@ -28,6 +28,7 @@ class DAQReadout():
     trailer = np.uint16(0)
     status = np.uint16(0)
     dna = np.uint64(0)
+    githash = np.uint16(0)
     channels = np.uint16(0)
     roi_size = np.uint16(0)
     board_id = np.uint16(0)
@@ -69,7 +70,8 @@ class DAQReadout():
         ret += ("STATUS    : 0x%0*X\n" % (2, self.status))
         ret += ("LENGTH    : 0x%0*X\n" % (2, self.length))
         ret += ("ROI_SIZE  : %d\n"     % (self.roi_size))
-        ret += ("DNA       : 0x%0*X\n" % (16, self.dna))
+        ret += ("DNA       : 0x%0*X\n" % (4, self.dna))
+        ret += ("GITHASH   : 0x%0*X\n" % (4, self.githash))
         ret += ("BOARD     : 0x%0*X\n" % (2, self.board_id))
         ret += ("MASK      : 0x%0*X\n" % (2, self.ch_mask))
         ret += ("NUM_CH    : %d\n"     % (self.channels))
@@ -87,17 +89,18 @@ def read_packet (data, verbose=False):
     drs.length = data[2]
     drs.roi_size = data[3]+1 # daq report counts from zero, we count from 1
     drs.dna = int.from_bytes(data[4:8], byteorder="big")
-    drs.board_id = data[8]
-    drs.ch_mask = data[9]
+    drs.githash = data[8]
+    drs.board_id = data[9]
+    drs.ch_mask = data[10]
     drs.count_channels()
-    drs.event_cnt = int.from_bytes(data[10:12], byteorder="big")
-    drs.timestamp = int.from_bytes(data[12:15], byteorder="big")
+    drs.event_cnt = int.from_bytes(data[11:13], byteorder="big")
+    drs.timestamp = int.from_bytes(data[13:16], byteorder="big")
 
     for ch in range(drs.channels):
 
 
-        START = 16+ch*(drs.roi_size+3)
-        END = 16+ch*(drs.roi_size+3) + drs.roi_size
+        START = 17+ch*(drs.roi_size+3)
+        END = 17+ch*(drs.roi_size+3) + drs.roi_size
 
         drs.waveforms.append(DRSWaveform(data[START:END], \
                                     int.from_bytes(data[END:END+2], byteorder="big"), \
