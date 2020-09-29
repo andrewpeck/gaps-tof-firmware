@@ -150,14 +150,14 @@ architecture Behavioral of drs_top is
   signal start        : std_logic;
   signal transp_mode  : std_logic;
 
-  signal readout_mask     : std_logic_vector (8 downto 0);
+  signal readout_mask     : std_logic_vector (7 downto 0);
   signal drs_reset        : std_logic;
   signal daq_reset        : std_logic;
   signal drs_config       : std_logic_vector (7 downto 0);
   signal chn_config       : std_logic_vector (7 downto 0);
   signal dna              : std_logic_vector (56 downto 0);
   signal adc_latency      : std_logic_vector (5 downto 0);
-  signal sample_count_max : std_logic_vector (10 downto 0);
+  signal sample_count_max : std_logic_vector (9 downto 0);
 
   signal timestamp : unsigned (47 downto 0) := (others => '0');
 
@@ -274,7 +274,7 @@ architecture Behavioral of drs_top is
       drs_ctl_reinit           : in  std_logic;
       drs_ctl_configure_drs    : in  std_logic;
       drs_ctl_chn_config       : in  std_logic_vector;
-      drs_ctl_readout_mask     : in  std_logic_vector;
+      drs_ctl_readout_mask_i   : in  std_logic_vector;
       drs_ctl_wait_vdd_clocks  : in  std_logic_vector;
       drs_srout_i              : in  std_logic;
       drs_addr_o               : out std_logic_vector;
@@ -519,7 +519,7 @@ begin
       drs_ctl_reinit           => reinit,
       drs_ctl_configure_drs    => configure,
       drs_ctl_chn_config       => chn_config(7 downto 0),
-      drs_ctl_readout_mask     => readout_mask(8 downto 0),
+      drs_ctl_readout_mask_i   => readout_mask(7 downto 0),
       drs_ctl_wait_vdd_clocks  => x"4000",
 
       drs_srout_i => drs_srout_i,
