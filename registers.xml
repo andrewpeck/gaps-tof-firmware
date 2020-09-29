@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
+<node>
+
 <node id="DRS"  address="0x0000"
     description="Implements various control and monitoring functions of the DRS Logic"
     fw_is_module="true"
@@ -230,5 +232,7 @@
         <node id="FULL"  permission="r" address="0x2" mask="0x00000001" description="Spy Buffer Full"  fw_signal="spy_full"/>
         <node id="EMPTY" permission="r" address="0x2" mask="0x00000002" description="Spy Buffer Empty" fw_signal="spy_empty"/>
     </node>
+
+</node>
 
 </node>
