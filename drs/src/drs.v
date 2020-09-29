@@ -46,7 +46,7 @@ module drs #(
                                                   // correlates with ADC conversion latency
                                                   //
     input [15:0] drs_ctl_wait_vdd_clocks,         //
-    input [10:0] drs_ctl_sample_count_max,        // number of samples to readout
+    input [9:0]  drs_ctl_sample_count_max,        // number of samples to readout
                                                   //
     input [7:0]  drs_ctl_config,                  // configuration register
                                                   // Bit0  DMODE  Control Domino Mode. A 1 means continuous cycling, a 0 configures a single shot
@@ -67,7 +67,7 @@ module drs #(
                                                   // 2        | 4096              | 00010001 b
                                                   // 1        | 8192              | 00000001
                                                   //
-    input [8:0] drs_ctl_readout_mask,             // set a bit to '1' to enable readout of its channel
+    input [7:0] drs_ctl_readout_mask_i,           // set a bit to '1' to enable readout of its channel
 
     //------------------------------------------------------------------------------------------------------------------
     // drs io
@@ -133,6 +133,10 @@ end
 
 reg trigger, domino_ready;
 reg trigger_last;
+
+// always read the 9th channel if any other channel is enabled
+wire [8:0] drs_ctl_readout_mask = |(drs_ctl_readout_mask_i) & drs_ctl_readout_mask_i;
+  
 always @(posedge clock) begin
   trigger <= (|drs_ctl_readout_mask && domino_ready) ? trigger_i : 0;
 end
@@ -548,7 +552,7 @@ always @(posedge clock) begin
               drs_readout_state <= INIT;
 
           // All cells & channels of DRS chips read ?
-          if (drs_sample_count==drs_ctl_sample_count_max) begin
+          if (drs_sample_count+1==drs_ctl_sample_count_max) begin
             if (drs_addr==drs_ctl_last_chn)
             //  drs_readout_state <= STOP_CELL; //original
                drs_readout_state <= IDLE; //remove this line..
@@ -559,7 +563,7 @@ always @(posedge clock) begin
           // Logic
           //------------------------------------------------------------------------------------------------------------
 
-          if (drs_rd_tmp_count < drs_ctl_sample_count_max)
+          if (drs_rd_tmp_count+1 < drs_ctl_sample_count_max)
             drs_srclk_en_o <= 1; // enable clock
           else
             drs_srclk_en_o <= 0; // disable clock
@@ -597,7 +601,7 @@ always @(posedge clock) begin
           end
 
           // finished
-          if (drs_sample_count == drs_ctl_sample_count_max) begin
+          if (drs_sample_count+1 == drs_ctl_sample_count_max) begin
             drs_sample_count   <= 0;
             drs_rd_tmp_count   <= 0;
 

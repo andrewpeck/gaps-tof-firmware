@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
+<node>
+
 <node id="DRS"  address="0x0000"
     description="Implements various control and monitoring functions of the DRS Logic"
     fw_is_module="true"
@@ -75,17 +77,17 @@
             fw_signal="adc_latency"
             fw_default="0x0"/>
         <node id="SAMPLE_COUNT" address="0x0" permission="rw"
-            description="Number of samples to read out"
-            mask="0x7ff000"
+            description="Number of samples to read out (0 to 1023)"
+            mask="0x3ff000"
             fw_signal="sample_count_max"
-            fw_default="0x400"/>
+            fw_default="0x3FF"/>
 
 
         <node id="READOUT_MASK" address="0x1" permission="rw"
-            description="9 bit mask, set a bit to 1 to enable readout of that channel"
-            mask="0x1ff"
+            description="8 bit mask, set a bit to 1 to enable readout of that channel. 9th is auto-read if any channel is enabled"
+            mask="0xff"
             fw_signal="readout_mask"
-            fw_default="0x1ff"/>
+            fw_default="0xff"/>
         <node id="START" address="0x2" permission="w"
             description="Write 1 to take the state machine out of idle mode"
             mask="0x1"
@@ -101,10 +103,14 @@
             mask="0x1"
             fw_write_pulse_signal="configure" />
 
-        <node id="RESET" address="0x5" permission="w"
+        <node id="DRS_RESET" address="0x5" permission="w"
             description="Write 1 to completely reset the DRS state machine logic"
             mask="0x1"
             fw_write_pulse_signal="drs_reset" />
+        <node id="DAQ_RESET" address="0x6" permission="w"
+            description="Write 1 to completely reset the DAQ state machine logic"
+            mask="0x1"
+            fw_write_pulse_signal="daq_reset" />
     </node> <!--READOUT-->
 
 
@@ -226,5 +232,7 @@
         <node id="FULL"  permission="r" address="0x2" mask="0x00000001" description="Spy Buffer Full"  fw_signal="spy_full"/>
         <node id="EMPTY" permission="r" address="0x2" mask="0x00000002" description="Spy Buffer Empty" fw_signal="spy_empty"/>
     </node>
+
+</node>
 
 </node>

@@ -78,12 +78,13 @@
     ROI\_MODE & \texttt{0x10} & \texttt{[0:0]} & rw & \texttt{0x1} & Set to 1 to enable Region of Interest Readout \\\hline
     BUSY & \texttt{0x10} & \texttt{[1:1]} & r & \texttt{} & Readout is busy \\\hline
     ADC\_LATENCY & \texttt{0x10} & \texttt{[9:4]} & rw & \texttt{0x0} & Latency from first sr clock to when ADC data should be valid \\\hline
-    SAMPLE\_COUNT & \texttt{0x10} & \texttt{[22:12]} & rw & \texttt{0x400} & Number of samples to read out \\\hline
-    READOUT\_MASK & \texttt{0x11} & \texttt{[8:0]} & rw & \texttt{0x1FF} & 9 bit mask, set a bit to 1 to enable readout of that channel \\\hline
+    SAMPLE\_COUNT & \texttt{0x10} & \texttt{[21:12]} & rw & \texttt{0x3FF} & Number of samples to read out (0 to 1023) \\\hline
+    READOUT\_MASK & \texttt{0x11} & \texttt{[7:0]} & rw & \texttt{0xFF} & 8 bit mask, set a bit to 1 to enable readout of that channel. 9th is auto-read if any channel is enabled \\\hline
     START & \texttt{0x12} & \texttt{[0:0]} & w & Pulse & Write 1 to take the state machine out of idle mode \\\hline
     REINIT & \texttt{0x13} & \texttt{[0:0]} & w & Pulse & Write 1 to reinitialize DRS state machine (restores to idle state) \\\hline
     CONFIGURE & \texttt{0x14} & \texttt{[0:0]} & w & Pulse & Write 1 to configure the DRS. Should be done before data taking \\\hline
-    RESET & \texttt{0x15} & \texttt{[0:0]} & w & Pulse & Write 1 to completely reset the DRS state machine logic \\\hline
+    DRS\_RESET & \texttt{0x15} & \texttt{[0:0]} & w & Pulse & Write 1 to completely reset the DRS state machine logic \\\hline
+    DAQ\_RESET & \texttt{0x16} & \texttt{[0:0]} & w & Pulse & Write 1 to completely reset the DAQ state machine logic \\\hline
     \end{tabularx}
     \vspace{5mm}
 

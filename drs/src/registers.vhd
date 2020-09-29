@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_DRS_NUM_REGS : integer := 33;
+    constant REG_DRS_NUM_REGS : integer := 34;
     constant REG_DRS_ADDRESS_MSB : integer := 6;
     constant REG_DRS_ADDRESS_LSB : integer := 0;
     constant REG_CHIP_DMODE_ADDR    : std_logic_vector(6 downto 0) := "000" & x"0";
@@ -54,14 +54,14 @@ package registers is
     constant REG_READOUT_ADC_LATENCY_DEFAULT : std_logic_vector(9 downto 4) := "00" & x"0";
 
     constant REG_READOUT_SAMPLE_COUNT_ADDR    : std_logic_vector(6 downto 0) := "001" & x"0";
-    constant REG_READOUT_SAMPLE_COUNT_MSB    : integer := 22;
+    constant REG_READOUT_SAMPLE_COUNT_MSB    : integer := 21;
     constant REG_READOUT_SAMPLE_COUNT_LSB     : integer := 12;
-    constant REG_READOUT_SAMPLE_COUNT_DEFAULT : std_logic_vector(22 downto 12) := "100" & x"00";
+    constant REG_READOUT_SAMPLE_COUNT_DEFAULT : std_logic_vector(21 downto 12) := "11" & x"ff";
 
     constant REG_READOUT_READOUT_MASK_ADDR    : std_logic_vector(6 downto 0) := "001" & x"1";
-    constant REG_READOUT_READOUT_MASK_MSB    : integer := 8;
+    constant REG_READOUT_READOUT_MASK_MSB    : integer := 7;
     constant REG_READOUT_READOUT_MASK_LSB     : integer := 0;
-    constant REG_READOUT_READOUT_MASK_DEFAULT : std_logic_vector(8 downto 0) := '1' & x"ff";
+    constant REG_READOUT_READOUT_MASK_DEFAULT : std_logic_vector(7 downto 0) := x"ff";
 
     constant REG_READOUT_START_ADDR    : std_logic_vector(6 downto 0) := "001" & x"2";
     constant REG_READOUT_START_BIT    : integer := 0;
@@ -72,8 +72,11 @@ package registers is
     constant REG_READOUT_CONFIGURE_ADDR    : std_logic_vector(6 downto 0) := "001" & x"4";
     constant REG_READOUT_CONFIGURE_BIT    : integer := 0;
 
-    constant REG_READOUT_RESET_ADDR    : std_logic_vector(6 downto 0) := "001" & x"5";
-    constant REG_READOUT_RESET_BIT    : integer := 0;
+    constant REG_READOUT_DRS_RESET_ADDR    : std_logic_vector(6 downto 0) := "001" & x"5";
+    constant REG_READOUT_DRS_RESET_BIT    : integer := 0;
+
+    constant REG_READOUT_DAQ_RESET_ADDR    : std_logic_vector(6 downto 0) := "001" & x"6";
+    constant REG_READOUT_DAQ_RESET_BIT    : integer := 0;
 
     constant REG_FPGA_DNA_DNA_LSBS_ADDR    : std_logic_vector(6 downto 0) := "010" & x"0";
     constant REG_FPGA_DNA_DNA_LSBS_MSB    : integer := 31;
