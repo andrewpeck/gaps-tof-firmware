@@ -84,9 +84,16 @@ Hog/LaunchImplementation.sh readout_board
 
 A more streamlined HDL based project organization is forthcoming...
 
-*To use any of these commands you need to make sure that vivado is in your path*, i.e. if you type
-vivado into the terminal it should open vivado. The scripts use only very primitive bash and
-otherwise use the vivado TCL shell, so there should be no external dependencies.
+*To use any of these commands you need to make sure that Vivado is in your path*, i.e. if you type
+Vivado into the terminal it should open Vivado. 
+
+To make sure the environment variables always set, modify your `.bashrc` to contain a similar command as below, depending on where you installed Vivado.
+#+BEGIN_EXAMPLE
+source /home/your_usr_name/Xilinx/Vivado/2019.2/settings64.sh
+#+END_EXAMPLE
+
+The scripts use only very primitive bash and
+otherwise use the Vivado TCL shell, so there should be no external dependencies.
 
 A complete set of commands which should build the project, tested on Vivado 2018.2 and 2019.2 is:
 
@@ -121,7 +128,7 @@ Hog/CreateProject.sh tcl-to-bd
 Block designs are easier to work with, but do not play well with diff and have more issues with
 version lock-in.
 
-Both tcl and bd should be committed to the repository. For working with the same (or close) vivado
+Both tcl and bd should be committed to the repository. For working with the same (or close) Vivado
 versions the bd file can just be opened directly (and the tcl should be exported after any changes
 are made).
 
