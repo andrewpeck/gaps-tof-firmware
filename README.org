@@ -46,6 +46,11 @@ This firmware is using the HOG framework as a build system:
 - HOG Documentation: http://hog-user-docs.web.cern.ch
 - HOG Source Code: https://gitlab.cern.ch/hog/Hog
 
+Clone project recursively to pull all HOG scripts
+#+BEGIN_EXAMPLE
+git clone --recursive https://gitlab.com/ucla-gaps-tof/firmware.git
+#+END_EXAMPLE
+
 Currently the firmware is built around three separately compiled IP cores which are then integrated
 together into a common project through the graphical block diagram generator.
 
