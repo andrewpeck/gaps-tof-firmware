@@ -15,7 +15,7 @@
     ├── Hog                           : Submodule containing the HOG project
     ├── Top                           : Top level project configuration files for HOG
     ├── bd                            : Block diagram files
-    │    └──top_readout_board
+    │   └──top_readout_board
     │       └── synth                 : Location of HDF files for PetaLinux build
     ├── regmap                        : Register XML to VHDL tools
     ├── tcl                           : TCL scripts for ip core creation
