@@ -16,7 +16,7 @@
     ├── Top                           : Top level project configuration files for HOG
     ├── bd                            : Block diagram files
     │   └──top_readout_board
-    │       └── synth                 : Location of HDF files for PetaLinux build
+    │      └── synth                 : Location of HDF files for PetaLinux build
     ├── regmap                        : Register XML to VHDL tools
     ├── tcl                           : TCL scripts for ip core creation
     ├── ip                            : Holds both user and Vivado IP cores
