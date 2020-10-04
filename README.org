@@ -87,7 +87,7 @@ A more streamlined HDL based project organization is forthcoming...
 *To use any of these commands you need to make sure that Vivado is in your path*, i.e. if you type
 Vivado into the terminal it should open Vivado. 
 
-To make sure the environment variables always set, modify your `.bashrc` to contain a similar command as below, depending on where you installed Vivado.
+To make sure the environment variables always set, modify your =.bashrc= to contain a similar command as below, depending on where you installed Vivado.
 #+BEGIN_EXAMPLE
 source /home/your_usr_name/Xilinx/Vivado/2019.2/settings64.sh
 #+END_EXAMPLE
