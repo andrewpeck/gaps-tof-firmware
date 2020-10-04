@@ -59,9 +59,9 @@ constructed as standalone IP cores, they go through the entire out-of-context sy
 the time of project creation. No further action is required with these IPs.
 
 #+BEGIN_EXAMPLE
-Hog/CreateProject.sh trg-ip
-Hog/CreateProject.sh dma-ip
-Hog/CreateProject.sh drs-ip
+Hog/CreateProject.sh trg_ip
+Hog/CreateProject.sh dma_ip
+Hog/CreateProject.sh drs_ip
 #+END_EXAMPLE
 
 After that, the combined project can be created with the command
