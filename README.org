@@ -67,19 +67,19 @@ Hog/CreateProject.sh drs_ip
 After that, the combined project can be created with the command
 
 #+BEGIN_EXAMPLE
-Hog/CreateProject.sh readout-board
+Hog/CreateProject.sh readout_board
 #+END_EXAMPLE
 
 Synthesis can be launched with the command
 
 #+BEGIN_EXAMPLE
-Hog/LaunchSynthesis.sh readout-board
+Hog/LaunchSynthesis.sh readout_board
 #+END_EXAMPLE
 
 Implementation can be launched with the command
 
 #+BEGIN_EXAMPLE
-Hog/LaunchImplementation.sh readout-board
+Hog/LaunchImplementation.sh readout_board
 #+END_EXAMPLE
 
 A more streamlined HDL based project organization is forthcoming...
