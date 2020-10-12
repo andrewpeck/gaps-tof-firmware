@@ -7,6 +7,13 @@ else
 COLORIZE = | ccze -A
 endif
 
+IFTIME := $(shell command -v time 2> /dev/null)
+ifndef IFTIME
+TIMECMD =
+else
+TIMECMD = time -p
+endif
+
 list:
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$'
 
@@ -19,19 +26,19 @@ reg:
 	cd regmap && make
 
 tcl_to_bd:
-	Hog/CreateProject.sh tcl_to_bd $(COLORIZE)
+	$(TIMECMD) Hog/CreateProject.sh tcl_to_bd $(COLORIZE)
 
 bd_to_tcl:
-	Hog/CreateProject.sh bd_to_tcl $(COLORIZE)
+	$(TIMECMD) Hog/CreateProject.sh bd_to_tcl $(COLORIZE)
 
 create:
-	Hog/CreateProject.sh readout_board $(COLORIZE)
+	$(TIMECMD) Hog/CreateProject.sh readout_board $(COLORIZE)
 
 synth:
-	Hog/LaunchWorkflow.sh -synth_only readout_board $(COLORIZE)
+	$(TIMECMD) Hog/LaunchWorkflow.sh -synth_only readout_board $(COLORIZE)
 
 impl:
-	Hog/LaunchWorkflow.sh -impl_only readout_board $(COLORIZE)
+	$(TIMECMD) Hog/LaunchWorkflow.sh -impl_only readout_board $(COLORIZE)
 
 clean:
 	rm -rf VivadoProject/
