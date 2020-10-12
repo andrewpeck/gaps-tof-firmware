@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0xE94BB4F8FCA8A669",
+      "boundary_crc": "0xE94BB4F81C450FE4",
       "device": "xc7z010clg400-1",
       "name": "gaps_ps_interface",
       "synth_flow_mode": "Hierarchical",
@@ -13,6 +13,7 @@
       "ipbus_pl_reset": "",
       "processing_system": "",
       "ipbus_ps_reset": "",
+      "smartconnect_0": "",
       "dma_interconnect": {
         "s00_couplers": {}
       },
@@ -20,8 +21,7 @@
         "s00_couplers": {
           "auto_cc": ""
         }
-      },
-      "smartconnect_0": ""
+      }
     },
     "interface_ports": {
       "DDR": {
@@ -208,7 +208,7 @@
             "value": "AXI4"
           },
           "FREQ_HZ": {
-            "value": "200000000",
+            "value": "2e+08",
             "value_src": "user_prop"
           },
           "ID_WIDTH": {
@@ -517,7 +517,7 @@
             "value_src": "default_prop"
           },
           "FREQ_HZ": {
-            "value": "200000000",
+            "value": "2e+08",
             "value_src": "user_prop"
           },
           "INSERT_VIP": {
@@ -1504,6 +1504,56 @@
         "vlnv": "xilinx.com:ip:proc_sys_reset:5.0",
         "xci_name": "gaps_ps_interface_ipbus_ps_reset_0"
       },
+      "smartconnect_0": {
+        "vlnv": "xilinx.com:ip:smartconnect:1.0",
+        "xci_name": "gaps_ps_interface_smartconnect_0_0",
+        "parameters": {
+          "NUM_SI": {
+            "value": "1"
+          }
+        },
+        "interface_ports": {
+          "S00_AXI": {
+            "mode": "Slave",
+            "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
+            "bridges": [
+              "M00_AXI"
+            ],
+            "parameters": {
+              "NUM_READ_OUTSTANDING": {
+                "value": "8"
+              },
+              "NUM_WRITE_OUTSTANDING": {
+                "value": "8"
+              }
+            }
+          },
+          "M00_AXI": {
+            "mode": "Master",
+            "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
+            "parameters": {
+              "MAX_BURST_LENGTH": {
+                "value": "16"
+              },
+              "NUM_READ_OUTSTANDING": {
+                "value": "8"
+              },
+              "NUM_WRITE_OUTSTANDING": {
+                "value": "8"
+              },
+              "RUSER_BITS_PER_BYTE": {
+                "value": "0"
+              },
+              "SUPPORTS_NARROW_BURST": {
+                "value": "0"
+              },
+              "WUSER_BITS_PER_BYTE": {
+                "value": "0"
+              }
+            }
+          }
+        }
+      },
       "dma_interconnect": {
         "vlnv": "xilinx.com:ip:axi_interconnect:2.1",
         "xci_name": "gaps_ps_interface_dma_interconnect_0",
@@ -1790,16 +1840,16 @@
               }
             },
             "interface_nets": {
-              "s00_couplers_to_auto_cc": {
-                "interface_ports": [
-                  "S_AXI",
-                  "auto_cc/S_AXI"
-                ]
-              },
               "auto_cc_to_s00_couplers": {
                 "interface_ports": [
                   "M_AXI",
                   "auto_cc/M_AXI"
+                ]
+              },
+              "s00_couplers_to_auto_cc": {
+                "interface_ports": [
+                  "S_AXI",
+                  "auto_cc/S_AXI"
                 ]
               }
             },
@@ -1832,16 +1882,16 @@
           }
         },
         "interface_nets": {
-          "s00_couplers_to_ipbus_interconnect": {
-            "interface_ports": [
-              "M00_AXI",
-              "s00_couplers/M_AXI"
-            ]
-          },
           "ipbus_interconnect_to_s00_couplers": {
             "interface_ports": [
               "S00_AXI",
               "s00_couplers/S_AXI"
+            ]
+          },
+          "s00_couplers_to_ipbus_interconnect": {
+            "interface_ports": [
+              "M00_AXI",
+              "s00_couplers/M_AXI"
             ]
           }
         },
@@ -1871,56 +1921,6 @@
             ]
           }
         }
-      },
-      "smartconnect_0": {
-        "vlnv": "xilinx.com:ip:smartconnect:1.0",
-        "xci_name": "gaps_ps_interface_smartconnect_0_0",
-        "parameters": {
-          "NUM_SI": {
-            "value": "1"
-          }
-        },
-        "interface_ports": {
-          "S00_AXI": {
-            "mode": "Slave",
-            "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
-            "bridges": [
-              "M00_AXI"
-            ],
-            "parameters": {
-              "NUM_READ_OUTSTANDING": {
-                "value": "8"
-              },
-              "NUM_WRITE_OUTSTANDING": {
-                "value": "8"
-              }
-            }
-          },
-          "M00_AXI": {
-            "mode": "Master",
-            "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
-            "parameters": {
-              "MAX_BURST_LENGTH": {
-                "value": "16"
-              },
-              "NUM_READ_OUTSTANDING": {
-                "value": "8"
-              },
-              "NUM_WRITE_OUTSTANDING": {
-                "value": "8"
-              },
-              "RUSER_BITS_PER_BYTE": {
-                "value": "0"
-              },
-              "SUPPORTS_NARROW_BURST": {
-                "value": "0"
-              },
-              "WUSER_BITS_PER_BYTE": {
-                "value": "0"
-              }
-            }
-          }
-        }
       }
     },
     "interface_nets": {
@@ -1930,22 +1930,10 @@
           "processing_system/DDR"
         ]
       },
-      "axi_interconnect_1_M00_AXI": {
+      "processing_system_M_AXI_GP1": {
         "interface_ports": [
-          "DMA_AXI",
-          "dma_interconnect/M00_AXI"
-        ]
-      },
-      "processing_system_M_AXI_GP0": {
-        "interface_ports": [
-          "dma_interconnect/S00_AXI",
-          "processing_system/M_AXI_GP0"
-        ]
-      },
-      "axi_interconnect_0_M00_AXI": {
-        "interface_ports": [
-          "IPB_AXI",
-          "ipbus_interconnect/M00_AXI"
+          "ipbus_interconnect/S00_AXI",
+          "processing_system/M_AXI_GP1"
         ]
       },
       "processing_system7_0_FIXED_IO": {
@@ -1954,22 +1942,34 @@
           "processing_system/FIXED_IO"
         ]
       },
-      "processing_system_M_AXI_GP1": {
-        "interface_ports": [
-          "ipbus_interconnect/S00_AXI",
-          "processing_system/M_AXI_GP1"
-        ]
-      },
       "DMA_HP_AXI_1": {
         "interface_ports": [
           "DMA_HP_AXI",
           "smartconnect_0/S00_AXI"
         ]
       },
+      "axi_interconnect_0_M00_AXI": {
+        "interface_ports": [
+          "IPB_AXI",
+          "ipbus_interconnect/M00_AXI"
+        ]
+      },
+      "axi_interconnect_1_M00_AXI": {
+        "interface_ports": [
+          "DMA_AXI",
+          "dma_interconnect/M00_AXI"
+        ]
+      },
       "smartconnect_0_M00_AXI": {
         "interface_ports": [
           "smartconnect_0/M00_AXI",
           "processing_system/S_AXI_HP0"
+        ]
+      },
+      "processing_system_M_AXI_GP0": {
+        "interface_ports": [
+          "dma_interconnect/S00_AXI",
+          "processing_system/M_AXI_GP0"
         ]
       }
     },
@@ -1978,10 +1978,10 @@
         "ports": [
           "dma_reset/peripheral_aresetn",
           "DMA_AXI_ARESETN",
+          "smartconnect_0/aresetn",
           "dma_interconnect/ARESETN",
           "dma_interconnect/S00_ARESETN",
-          "dma_interconnect/M00_ARESETN",
-          "smartconnect_0/aresetn"
+          "dma_interconnect/M00_ARESETN"
         ]
       },
       "IRQ_F2P_0_1": {
@@ -1996,11 +1996,11 @@
           "dma_reset/slowest_sync_clk",
           "processing_system/M_AXI_GP0_ACLK",
           "processing_system/S_AXI_HP0_ACLK",
+          "smartconnect_0/aclk",
+          "DMA_AXI_CLK_O",
           "dma_interconnect/ACLK",
           "dma_interconnect/S00_ACLK",
-          "dma_interconnect/M00_ACLK",
-          "smartconnect_0/aclk",
-          "DMA_AXI_CLK_O"
+          "dma_interconnect/M00_ACLK"
         ]
       },
       "IPBUS_CLK": {

@@ -122,6 +122,7 @@ if { $bCheckIPs == 1 } {
    set list_check_ips "\ 
 xilinx.com:ip:proc_sys_reset:*\
 xilinx.com:ip:processing_system7:*\
+xilinx.com:ip:smartconnect:*\
 "
 
    set list_ips_missing ""
@@ -205,7 +206,6 @@ proc create_root_design { parentCell } {
    CONFIG.AWUSER_WIDTH {0} \
    CONFIG.BUSER_WIDTH {0} \
    CONFIG.DATA_WIDTH {32} \
-   CONFIG.FREQ_HZ {200000000} \
    CONFIG.HAS_BRESP {1} \
    CONFIG.HAS_BURST {1} \
    CONFIG.HAS_CACHE {1} \
@@ -216,16 +216,16 @@ proc create_root_design { parentCell } {
    CONFIG.HAS_RRESP {1} \
    CONFIG.HAS_WSTRB {1} \
    CONFIG.ID_WIDTH {6} \
-   CONFIG.MAX_BURST_LENGTH {16} \
+   CONFIG.MAX_BURST_LENGTH {256} \
    CONFIG.NUM_READ_OUTSTANDING {8} \
    CONFIG.NUM_READ_THREADS {1} \
    CONFIG.NUM_WRITE_OUTSTANDING {8} \
    CONFIG.NUM_WRITE_THREADS {1} \
-   CONFIG.PROTOCOL {AXI3} \
+   CONFIG.PROTOCOL {AXI4} \
    CONFIG.READ_WRITE_MODE {READ_WRITE} \
    CONFIG.RUSER_BITS_PER_BYTE {0} \
    CONFIG.RUSER_WIDTH {0} \
-   CONFIG.SUPPORTS_NARROW_BURST {1} \
+   CONFIG.SUPPORTS_NARROW_BURST {0} \
    CONFIG.WUSER_BITS_PER_BYTE {0} \
    CONFIG.WUSER_WIDTH {0} \
    ] $DMA_HP_AXI
@@ -236,7 +236,7 @@ proc create_root_design { parentCell } {
   set_property -dict [ list \
    CONFIG.ADDR_WIDTH {32} \
    CONFIG.DATA_WIDTH {32} \
-   CONFIG.FREQ_HZ {33333336} \
+   CONFIG.FREQ_HZ {33333333} \
    CONFIG.HAS_REGION {0} \
    CONFIG.NUM_READ_OUTSTANDING {8} \
    CONFIG.NUM_WRITE_OUTSTANDING {8} \
@@ -245,16 +245,24 @@ proc create_root_design { parentCell } {
 
 
   # Create ports
+  set DMA_AXI_ARESETN [ create_bd_port -dir O -from 0 -to 0 DMA_AXI_ARESETN ]
+  set DMA_AXI_CLK_O [ create_bd_port -dir O -type clk DMA_AXI_CLK_O ]
+  set_property -dict [ list \
+   CONFIG.ASSOCIATED_BUSIF {DMA_HP_AXI} \
+ ] $DMA_AXI_CLK_O
+  set IPB_AXI_ARESETN [ create_bd_port -dir O -from 0 -to 0 -type rst IPB_AXI_ARESETN ]
+  set IPB_MCLK_IN [ create_bd_port -dir I -type clk -freq_hz 33333333 IPB_MCLK_IN ]
   set IRQ_F2P_0 [ create_bd_port -dir I -from 0 -to 0 -type intr IRQ_F2P_0 ]
   set_property -dict [ list \
    CONFIG.PortWidth {1} \
  ] $IRQ_F2P_0
+  set PL_MMCM_LOCKED [ create_bd_port -dir I PL_MMCM_LOCKED ]
 
   # Create instance: dma_interconnect, and set properties
   set dma_interconnect [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect dma_interconnect ]
   set_property -dict [ list \
-   CONFIG.NUM_MI {2} \
-   CONFIG.NUM_SI {2} \
+   CONFIG.NUM_MI {1} \
+   CONFIG.NUM_SI {1} \
  ] $dma_interconnect
 
   # Create instance: dma_reset, and set properties
@@ -264,11 +272,14 @@ proc create_root_design { parentCell } {
   set ipbus_interconnect [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect ipbus_interconnect ]
   set_property -dict [ list \
    CONFIG.NUM_MI {1} \
-   CONFIG.NUM_SI {2} \
+   CONFIG.NUM_SI {1} \
  ] $ipbus_interconnect
 
-  # Create instance: ipbus_reset, and set properties
-  set ipbus_reset [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset ipbus_reset ]
+  # Create instance: ipbus_pl_reset, and set properties
+  set ipbus_pl_reset [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset ipbus_pl_reset ]
+
+  # Create instance: ipbus_ps_reset, and set properties
+  set ipbus_ps_reset [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset ipbus_ps_reset ]
 
   # Create instance: processing_system, and set properties
   set processing_system [ create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7 processing_system ]
@@ -278,7 +289,7 @@ proc create_root_design { parentCell } {
    CONFIG.PCW_ACT_DCI_PERIPHERAL_FREQMHZ {10.062893} \
    CONFIG.PCW_ACT_ENET0_PERIPHERAL_FREQMHZ {125.000000} \
    CONFIG.PCW_ACT_ENET1_PERIPHERAL_FREQMHZ {10.000000} \
-   CONFIG.PCW_ACT_FPGA0_PERIPHERAL_FREQMHZ {250.000000} \
+   CONFIG.PCW_ACT_FPGA0_PERIPHERAL_FREQMHZ {200.000000} \
    CONFIG.PCW_ACT_FPGA1_PERIPHERAL_FREQMHZ {33.333336} \
    CONFIG.PCW_ACT_FPGA2_PERIPHERAL_FREQMHZ {10.000000} \
    CONFIG.PCW_ACT_FPGA3_PERIPHERAL_FREQMHZ {10.000000} \
@@ -299,13 +310,13 @@ proc create_root_design { parentCell } {
    CONFIG.PCW_ARMPLL_CTRL_FBDIV {40} \
    CONFIG.PCW_CAN_PERIPHERAL_DIVISOR0 {1} \
    CONFIG.PCW_CAN_PERIPHERAL_DIVISOR1 {1} \
-   CONFIG.PCW_CLK0_FREQ {250000000} \
+   CONFIG.PCW_CLK0_FREQ {200000000} \
    CONFIG.PCW_CLK1_FREQ {33333336} \
    CONFIG.PCW_CLK2_FREQ {10000000} \
    CONFIG.PCW_CLK3_FREQ {10000000} \
    CONFIG.PCW_CPU_CPU_PLL_FREQMHZ {1333.333} \
    CONFIG.PCW_CPU_PERIPHERAL_DIVISOR0 {2} \
-   CONFIG.PCW_CRYSTAL_PERIPHERAL_FREQMHZ {33.333333} \
+   CONFIG.PCW_CRYSTAL_PERIPHERAL_FREQMHZ {33.333333333333333333333333333333333} \
    CONFIG.PCW_DCI_PERIPHERAL_DIVISOR0 {53} \
    CONFIG.PCW_DCI_PERIPHERAL_DIVISOR1 {3} \
    CONFIG.PCW_DDRPLL_CTRL_FBDIV {48} \
@@ -324,6 +335,7 @@ proc create_root_design { parentCell } {
    CONFIG.PCW_ENET1_PERIPHERAL_DIVISOR1 {1} \
    CONFIG.PCW_ENET1_RESET_ENABLE {0} \
    CONFIG.PCW_ENET_RESET_ENABLE {0} \
+   CONFIG.PCW_EN_CLK0_PORT {1} \
    CONFIG.PCW_EN_CLK1_PORT {1} \
    CONFIG.PCW_EN_EMIO_CD_SDIO0 {0} \
    CONFIG.PCW_EN_EMIO_GPIO {0} \
@@ -343,18 +355,18 @@ proc create_root_design { parentCell } {
    CONFIG.PCW_EN_USB0 {0} \
    CONFIG.PCW_EN_WDT {1} \
    CONFIG.PCW_FCLK0_PERIPHERAL_CLKSRC {IO PLL} \
-   CONFIG.PCW_FCLK0_PERIPHERAL_DIVISOR0 {2} \
-   CONFIG.PCW_FCLK0_PERIPHERAL_DIVISOR1 {2} \
-   CONFIG.PCW_FCLK1_PERIPHERAL_DIVISOR0 {30} \
-   CONFIG.PCW_FCLK1_PERIPHERAL_DIVISOR1 {1} \
+   CONFIG.PCW_FCLK0_PERIPHERAL_DIVISOR0 {5} \
+   CONFIG.PCW_FCLK0_PERIPHERAL_DIVISOR1 {1} \
+   CONFIG.PCW_FCLK1_PERIPHERAL_DIVISOR0 {6} \
+   CONFIG.PCW_FCLK1_PERIPHERAL_DIVISOR1 {5} \
    CONFIG.PCW_FCLK2_PERIPHERAL_DIVISOR0 {1} \
    CONFIG.PCW_FCLK2_PERIPHERAL_DIVISOR1 {1} \
    CONFIG.PCW_FCLK3_PERIPHERAL_DIVISOR0 {1} \
    CONFIG.PCW_FCLK3_PERIPHERAL_DIVISOR1 {1} \
    CONFIG.PCW_FCLK_CLK0_BUF {TRUE} \
    CONFIG.PCW_FCLK_CLK1_BUF {TRUE} \
-   CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {250} \
-   CONFIG.PCW_FPGA1_PERIPHERAL_FREQMHZ {33} \
+   CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {200.00000000000000000} \
+   CONFIG.PCW_FPGA1_PERIPHERAL_FREQMHZ {33.33333333333333333333333333333} \
    CONFIG.PCW_FPGA_FCLK0_ENABLE {1} \
    CONFIG.PCW_FPGA_FCLK1_ENABLE {1} \
    CONFIG.PCW_FPGA_FCLK2_ENABLE {0} \
@@ -720,22 +732,32 @@ proc create_root_design { parentCell } {
    CONFIG.PCW_WDT_WDT_IO {EMIO} \
  ] $processing_system
 
+  # Create instance: smartconnect_0, and set properties
+  set smartconnect_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect smartconnect_0 ]
+  set_property -dict [ list \
+   CONFIG.NUM_SI {1} \
+ ] $smartconnect_0
+
   # Create interface connections
-  connect_bd_intf_net -intf_net S_AXI_HP0_0_1 [get_bd_intf_ports DMA_HP_AXI] [get_bd_intf_pins processing_system/S_AXI_HP0]
+  connect_bd_intf_net -intf_net DMA_HP_AXI_1 [get_bd_intf_ports DMA_HP_AXI] [get_bd_intf_pins smartconnect_0/S00_AXI]
   connect_bd_intf_net -intf_net axi_interconnect_0_M00_AXI [get_bd_intf_ports IPB_AXI] [get_bd_intf_pins ipbus_interconnect/M00_AXI]
   connect_bd_intf_net -intf_net axi_interconnect_1_M00_AXI [get_bd_intf_ports DMA_AXI] [get_bd_intf_pins dma_interconnect/M00_AXI]
   connect_bd_intf_net -intf_net processing_system7_0_DDR [get_bd_intf_ports DDR] [get_bd_intf_pins processing_system/DDR]
   connect_bd_intf_net -intf_net processing_system7_0_FIXED_IO [get_bd_intf_ports FIXED_IO] [get_bd_intf_pins processing_system/FIXED_IO]
   connect_bd_intf_net -intf_net processing_system_M_AXI_GP0 [get_bd_intf_pins dma_interconnect/S00_AXI] [get_bd_intf_pins processing_system/M_AXI_GP0]
   connect_bd_intf_net -intf_net processing_system_M_AXI_GP1 [get_bd_intf_pins ipbus_interconnect/S00_AXI] [get_bd_intf_pins processing_system/M_AXI_GP1]
+  connect_bd_intf_net -intf_net smartconnect_0_M00_AXI [get_bd_intf_pins processing_system/S_AXI_HP0] [get_bd_intf_pins smartconnect_0/M00_AXI]
 
   # Create port connections
-  connect_bd_net -net ARESETN_1 [get_bd_pins ipbus_interconnect/ARESETN] [get_bd_pins ipbus_interconnect/M00_ARESETN] [get_bd_pins ipbus_interconnect/S00_ARESETN] [get_bd_pins ipbus_reset/peripheral_aresetn]
-  connect_bd_net -net ARESETN_2 [get_bd_pins dma_interconnect/ARESETN] [get_bd_pins dma_interconnect/M00_ARESETN] [get_bd_pins dma_interconnect/S00_ARESETN] [get_bd_pins dma_reset/peripheral_aresetn]
+  connect_bd_net -net ARESETN_1 [get_bd_pins ipbus_interconnect/ARESETN] [get_bd_pins ipbus_interconnect/S00_ARESETN] [get_bd_pins ipbus_ps_reset/peripheral_aresetn]
+  connect_bd_net -net ARESETN_2 [get_bd_ports DMA_AXI_ARESETN] [get_bd_pins dma_interconnect/ARESETN] [get_bd_pins dma_interconnect/M00_ARESETN] [get_bd_pins dma_interconnect/S00_ARESETN] [get_bd_pins dma_reset/peripheral_aresetn] [get_bd_pins smartconnect_0/aresetn]
+  connect_bd_net -net AXI_MCLK_1 [get_bd_ports IPB_MCLK_IN] [get_bd_pins ipbus_interconnect/M00_ACLK] [get_bd_pins ipbus_pl_reset/slowest_sync_clk]
+  connect_bd_net -net DMA_CLK [get_bd_ports DMA_AXI_CLK_O] [get_bd_pins dma_interconnect/ACLK] [get_bd_pins dma_interconnect/M00_ACLK] [get_bd_pins dma_interconnect/S00_ACLK] [get_bd_pins dma_reset/slowest_sync_clk] [get_bd_pins processing_system/FCLK_CLK0] [get_bd_pins processing_system/M_AXI_GP0_ACLK] [get_bd_pins processing_system/S_AXI_HP0_ACLK] [get_bd_pins smartconnect_0/aclk]
+  connect_bd_net -net IPBUS_CLK [get_bd_pins ipbus_interconnect/ACLK] [get_bd_pins ipbus_interconnect/S00_ACLK] [get_bd_pins ipbus_ps_reset/slowest_sync_clk] [get_bd_pins processing_system/FCLK_CLK1] [get_bd_pins processing_system/M_AXI_GP1_ACLK]
   connect_bd_net -net IRQ_F2P_0_1 [get_bd_ports IRQ_F2P_0] [get_bd_pins processing_system/IRQ_F2P]
-  connect_bd_net -net processing_system_FCLK_CLK0 [get_bd_pins dma_interconnect/ACLK] [get_bd_pins dma_interconnect/M00_ACLK] [get_bd_pins dma_interconnect/S00_ACLK] [get_bd_pins dma_reset/slowest_sync_clk] [get_bd_pins processing_system/FCLK_CLK0] [get_bd_pins processing_system/M_AXI_GP0_ACLK] [get_bd_pins processing_system/S_AXI_HP0_ACLK]
-  connect_bd_net -net processing_system_FCLK_CLK1 [get_bd_pins ipbus_interconnect/ACLK] [get_bd_pins ipbus_interconnect/M00_ACLK] [get_bd_pins ipbus_interconnect/S00_ACLK] [get_bd_pins ipbus_reset/slowest_sync_clk] [get_bd_pins processing_system/FCLK_CLK1] [get_bd_pins processing_system/M_AXI_GP1_ACLK]
-  connect_bd_net -net ps_reset [get_bd_pins dma_reset/ext_reset_in] [get_bd_pins ipbus_reset/ext_reset_in] [get_bd_pins processing_system/FCLK_RESET0_N]
+  connect_bd_net -net M00_ARESETN_1 [get_bd_ports IPB_AXI_ARESETN] [get_bd_pins ipbus_interconnect/M00_ARESETN] [get_bd_pins ipbus_pl_reset/peripheral_aresetn]
+  connect_bd_net -net PL_MMCM_LOCKED_1 [get_bd_ports PL_MMCM_LOCKED] [get_bd_pins ipbus_pl_reset/aux_reset_in]
+  connect_bd_net -net ps_reset [get_bd_pins dma_reset/ext_reset_in] [get_bd_pins ipbus_pl_reset/ext_reset_in] [get_bd_pins ipbus_ps_reset/ext_reset_in] [get_bd_pins processing_system/FCLK_RESET0_N]
 
   # Create address segments
   assign_bd_address -offset 0x43C00000 -range 0x00001000 -target_address_space [get_bd_addr_spaces processing_system/Data] [get_bd_addr_segs DMA_AXI/Reg] -force
@@ -746,6 +768,7 @@ proc create_root_design { parentCell } {
   # Restore current instance
   current_bd_instance $oldCurInst
 
+  validate_bd_design
   save_bd_design
 }
 # End of create_root_design()
@@ -758,4 +781,3 @@ proc create_root_design { parentCell } {
 create_root_design ""
 
 
-common::send_msg_id "BD_TCL-1000" "WARNING" "This Tcl script was generated from a block design that has not been validated. It is possible that design <$design_name> may result in errors during validation."
