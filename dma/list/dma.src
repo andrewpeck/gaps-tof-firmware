@@ -1,7 +1,6 @@
 # -*- mode: TCL;-*-
 
 # IP Cores
-ip/ila_0/ila_0.xci
 ip/ila_s2mm/ila_s2mm.xci
 ip/axis2aximm/axis2aximm.xci
 ip/fifo_generator_0/fifo_generator_0.xci
