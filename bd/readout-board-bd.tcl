@@ -1,6 +1,6 @@
 
 ################################################################
-# This is a generated script based on design: top_readout_board
+# This is a generated script based on design: gaps_ps_interface
 #
 # Though there are limitations about the generated script,
 # the main purpose of this utility is to make learning
@@ -34,7 +34,7 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 ################################################################
 
 # To test this script, run the following commands from Vivado Tcl console:
-# source top_readout_board_script.tcl
+# source gaps_ps_interface_script.tcl
 
 # If there is no project opened, this script will create a
 # project, but make sure you do not have an existing project
@@ -45,9 +45,10 @@ if { $list_projs eq "" } {
    create_project project_1 myproj -part xc7z010clg400-1
 }
 
+
 # CHANGE DESIGN NAME HERE
 variable design_name
-set design_name top_readout_board
+set design_name gaps_ps_interface
 
 # This script was generated for a remote BD. To create a non-remote design,
 # change the variable <run_remote_bd_flow> to <0>.
@@ -56,7 +57,7 @@ set run_remote_bd_flow 1
 if { $run_remote_bd_flow == 1 } {
   # Set the reference directory for source file relative paths (by default 
   # the value is script directory path)
-  set origin_dir ./readout-firmware/bd
+  set origin_dir ./bd
 
   # Use origin directory path location variable, if specified in the tcl shell
   if { [info exists ::origin_dir_loc] } {
@@ -119,16 +120,8 @@ set bCheckIPsPassed 1
 set bCheckIPs 1
 if { $bCheckIPs == 1 } {
    set list_check_ips "\ 
-UCLA:GAPSFW:GAPS_WDMA:*\
-UCLA:GAPSFW:DWrite_Trigger:*\
-xilinx.com:ip:axi_vip:*\
-UCLA:GAPSFW:GAPS_DRS4:*\
-xilinx.com:ip:ila:*\
 xilinx.com:ip:proc_sys_reset:*\
 xilinx.com:ip:processing_system7:*\
-xilinx.com:ip:smartconnect:*\
-xilinx.com:ip:util_ds_buf:*\
-xilinx.com:ip:xlconstant:*\
 "
 
    set list_ips_missing ""
@@ -194,126 +187,91 @@ proc create_root_design { parentCell } {
   # Create interface ports
   set DDR [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:ddrx_rtl:1.0 DDR ]
 
-  set FIXED_IO [ create_bd_intf_port -mode Master -vlnv xilinx.com:display_processing_system7:fixedio_rtl:1.0 FIXED_IO ]
-
-
-  # Create ports
-  set adc_data_i_0 [ create_bd_port -dir I -from 13 -to 0 adc_data_i_0 ]
-  set clock_i_n_0 [ create_bd_port -dir I clock_i_n_0 ]
-  set clock_i_p_0 [ create_bd_port -dir I clock_i_p_0 ]
-  set drs_addr_o_0 [ create_bd_port -dir O -from 3 -to 0 drs_addr_o_0 ]
-  set drs_denable_o_0 [ create_bd_port -dir O drs_denable_o_0 ]
-  set drs_dtap_i_0 [ create_bd_port -dir I drs_dtap_i_0 ]
-  set drs_dwrite_o_0 [ create_bd_port -dir O drs_dwrite_o_0 ]
-  set drs_nreset_o_0 [ create_bd_port -dir O drs_nreset_o_0 ]
-  set drs_plllock_i_0 [ create_bd_port -dir I drs_plllock_i_0 ]
-  set drs_rsrload_o_0 [ create_bd_port -dir O drs_rsrload_o_0 ]
-  set drs_srclk_o_0 [ create_bd_port -dir O drs_srclk_o_0 ]
-  set drs_srin_o_0 [ create_bd_port -dir O drs_srin_o_0 ]
-  set drs_srout_i_0 [ create_bd_port -dir I drs_srout_i_0 ]
-  set gpio_n_0 [ create_bd_port -dir IO -from 10 -to 0 gpio_n_0 ]
-  set gpio_p_0 [ create_bd_port -dir IO -from 10 -to 0 gpio_p_0 ]
-
-  # Create instance: DMA_Write_0, and set properties
-  set DMA_Write_0 [ create_bd_cell -type ip -vlnv UCLA:GAPSFW:GAPS_WDMA DMA_Write_0 ]
+  set DMA_AXI [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 DMA_AXI ]
   set_property -dict [ list \
-   CONFIG.C_FIFO_WR_DEPTH {16384} \
-   CONFIG.C_M00_AXI_AWUSER_WIDTH {32} \
-   CONFIG.C_M00_AXI_BUSER_WIDTH {32} \
-   CONFIG.C_M00_AXI_WUSER_WIDTH {32} \
-   CONFIG.address_Complete {8192000} \
- ] $DMA_Write_0
+   CONFIG.ADDR_WIDTH {32} \
+   CONFIG.DATA_WIDTH {32} \
+   CONFIG.FREQ_HZ {200000000} \
+   CONFIG.HAS_REGION {0} \
+   CONFIG.NUM_READ_OUTSTANDING {8} \
+   CONFIG.NUM_WRITE_OUTSTANDING {8} \
+   CONFIG.PROTOCOL {AXI3} \
+   ] $DMA_AXI
 
-  # Create instance: DWrite_Trigger_0, and set properties
-  set DWrite_Trigger_0 [ create_bd_cell -type ip -vlnv UCLA:GAPSFW:DWrite_Trigger DWrite_Trigger_0 ]
-
-  # Create instance: axi_interconnect_0, and set properties
-  set axi_interconnect_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect axi_interconnect_0 ]
-  set_property -dict [ list \
-   CONFIG.NUM_MI {1} \
-   CONFIG.NUM_SI {2} \
- ] $axi_interconnect_0
-
-  # Create instance: axi_interconnect_1, and set properties
-  set axi_interconnect_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect axi_interconnect_1 ]
-  set_property -dict [ list \
-   CONFIG.NUM_MI {2} \
-   CONFIG.NUM_SI {2} \
- ] $axi_interconnect_1
-
-  # Create instance: axi_vip_0, and set properties
-  set axi_vip_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip axi_vip_0 ]
+  set DMA_HP_AXI [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 DMA_HP_AXI ]
   set_property -dict [ list \
    CONFIG.ADDR_WIDTH {32} \
    CONFIG.ARUSER_WIDTH {0} \
    CONFIG.AWUSER_WIDTH {0} \
    CONFIG.BUSER_WIDTH {0} \
    CONFIG.DATA_WIDTH {32} \
+   CONFIG.FREQ_HZ {200000000} \
    CONFIG.HAS_BRESP {1} \
    CONFIG.HAS_BURST {1} \
    CONFIG.HAS_CACHE {1} \
    CONFIG.HAS_LOCK {1} \
    CONFIG.HAS_PROT {1} \
    CONFIG.HAS_QOS {1} \
-   CONFIG.HAS_REGION {1} \
-   CONFIG.HAS_RRESP {1} \
-   CONFIG.HAS_WSTRB {1} \
-   CONFIG.ID_WIDTH {0} \
-   CONFIG.INTERFACE_MODE {MASTER} \
-   CONFIG.PROTOCOL {AXI4} \
-   CONFIG.READ_WRITE_MODE {READ_WRITE} \
-   CONFIG.RUSER_BITS_PER_BYTE {0} \
-   CONFIG.RUSER_WIDTH {0} \
-   CONFIG.SUPPORTS_NARROW {1} \
-   CONFIG.WUSER_BITS_PER_BYTE {0} \
-   CONFIG.WUSER_WIDTH {0} \
- ] $axi_vip_0
-
-  # Create instance: axi_vip_1, and set properties
-  set axi_vip_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_vip axi_vip_1 ]
-  set_property -dict [ list \
-   CONFIG.ADDR_WIDTH {32} \
-   CONFIG.ARUSER_WIDTH {0} \
-   CONFIG.AWUSER_WIDTH {0} \
-   CONFIG.BUSER_WIDTH {0} \
-   CONFIG.DATA_WIDTH {32} \
-   CONFIG.HAS_BRESP {1} \
-   CONFIG.HAS_BURST {0} \
-   CONFIG.HAS_CACHE {0} \
-   CONFIG.HAS_LOCK {0} \
-   CONFIG.HAS_PROT {1} \
-   CONFIG.HAS_QOS {0} \
    CONFIG.HAS_REGION {0} \
    CONFIG.HAS_RRESP {1} \
    CONFIG.HAS_WSTRB {1} \
-   CONFIG.ID_WIDTH {0} \
-   CONFIG.INTERFACE_MODE {MASTER} \
-   CONFIG.PROTOCOL {AXI4LITE} \
+   CONFIG.ID_WIDTH {6} \
+   CONFIG.MAX_BURST_LENGTH {16} \
+   CONFIG.NUM_READ_OUTSTANDING {8} \
+   CONFIG.NUM_READ_THREADS {1} \
+   CONFIG.NUM_WRITE_OUTSTANDING {8} \
+   CONFIG.NUM_WRITE_THREADS {1} \
+   CONFIG.PROTOCOL {AXI3} \
    CONFIG.READ_WRITE_MODE {READ_WRITE} \
    CONFIG.RUSER_BITS_PER_BYTE {0} \
    CONFIG.RUSER_WIDTH {0} \
-   CONFIG.SUPPORTS_NARROW {0} \
+   CONFIG.SUPPORTS_NARROW_BURST {1} \
    CONFIG.WUSER_BITS_PER_BYTE {0} \
    CONFIG.WUSER_WIDTH {0} \
- ] $axi_vip_1
+   ] $DMA_HP_AXI
 
-  # Create instance: drs_top_0, and set properties
-  set drs_top_0 [ create_bd_cell -type ip -vlnv UCLA:GAPSFW:GAPS_DRS4 drs_top_0 ]
+  set FIXED_IO [ create_bd_intf_port -mode Master -vlnv xilinx.com:display_processing_system7:fixedio_rtl:1.0 FIXED_IO ]
 
-  # Create instance: ila_0, and set properties
-  set ila_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:ila ila_0 ]
+  set IPB_AXI [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 IPB_AXI ]
   set_property -dict [ list \
-   CONFIG.C_DATA_DEPTH {1024} \
- ] $ila_0
+   CONFIG.ADDR_WIDTH {32} \
+   CONFIG.DATA_WIDTH {32} \
+   CONFIG.FREQ_HZ {33333336} \
+   CONFIG.HAS_REGION {0} \
+   CONFIG.NUM_READ_OUTSTANDING {8} \
+   CONFIG.NUM_WRITE_OUTSTANDING {8} \
+   CONFIG.PROTOCOL {AXI3} \
+   ] $IPB_AXI
 
-  # Create instance: proc_sys_reset_0, and set properties
-  set proc_sys_reset_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset proc_sys_reset_0 ]
 
-  # Create instance: proc_sys_reset_1, and set properties
-  set proc_sys_reset_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset proc_sys_reset_1 ]
+  # Create ports
+  set IRQ_F2P_0 [ create_bd_port -dir I -from 0 -to 0 -type intr IRQ_F2P_0 ]
+  set_property -dict [ list \
+   CONFIG.PortWidth {1} \
+ ] $IRQ_F2P_0
 
-  # Create instance: processing_system7_0, and set properties
-  set processing_system7_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7 processing_system7_0 ]
+  # Create instance: dma_interconnect, and set properties
+  set dma_interconnect [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect dma_interconnect ]
+  set_property -dict [ list \
+   CONFIG.NUM_MI {2} \
+   CONFIG.NUM_SI {2} \
+ ] $dma_interconnect
+
+  # Create instance: dma_reset, and set properties
+  set dma_reset [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset dma_reset ]
+
+  # Create instance: ipbus_interconnect, and set properties
+  set ipbus_interconnect [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect ipbus_interconnect ]
+  set_property -dict [ list \
+   CONFIG.NUM_MI {1} \
+   CONFIG.NUM_SI {2} \
+ ] $ipbus_interconnect
+
+  # Create instance: ipbus_reset, and set properties
+  set ipbus_reset [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset ipbus_reset ]
+
+  # Create instance: processing_system, and set properties
+  set processing_system [ create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7 processing_system ]
   set_property -dict [ list \
    CONFIG.PCW_ACT_APU_PERIPHERAL_FREQMHZ {666.666687} \
    CONFIG.PCW_ACT_CAN_PERIPHERAL_FREQMHZ {10.000000} \
@@ -760,77 +718,30 @@ proc create_root_design { parentCell } {
    CONFIG.PCW_WDT_PERIPHERAL_ENABLE {1} \
    CONFIG.PCW_WDT_PERIPHERAL_FREQMHZ {133.333333} \
    CONFIG.PCW_WDT_WDT_IO {EMIO} \
- ] $processing_system7_0
-
-  # Create instance: smartconnect_0, and set properties
-  set smartconnect_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect smartconnect_0 ]
-  set_property -dict [ list \
-   CONFIG.NUM_SI {1} \
- ] $smartconnect_0
-
-  # Create instance: util_ds_buf_2, and set properties
-  set util_ds_buf_2 [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_ds_buf util_ds_buf_2 ]
-  set_property -dict [ list \
-   CONFIG.C_BUF_TYPE {BUFH} \
- ] $util_ds_buf_2
-
-  # Create instance: xlconstant_0, and set properties
-  set xlconstant_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant xlconstant_0 ]
-  set_property -dict [ list \
-   CONFIG.CONST_VAL {0} \
- ] $xlconstant_0
+ ] $processing_system
 
   # Create interface connections
-  connect_bd_intf_net -intf_net DMA_Write_0_DMA_AXI [get_bd_intf_pins DMA_Write_0/DMA_AXI] [get_bd_intf_pins smartconnect_0/S00_AXI]
-connect_bd_intf_net -intf_net [get_bd_intf_nets DMA_Write_0_DMA_AXI] [get_bd_intf_pins DMA_Write_0/DMA_AXI] [get_bd_intf_pins ila_0/SLOT_0_AXI]
-  connect_bd_intf_net -intf_net axi_interconnect_0_M00_AXI [get_bd_intf_pins DMA_Write_0/DMA_SLAVE] [get_bd_intf_pins axi_interconnect_0/M00_AXI]
-  connect_bd_intf_net -intf_net axi_interconnect_1_M00_AXI [get_bd_intf_pins axi_interconnect_1/M00_AXI] [get_bd_intf_pins drs_top_0/S_AXI_LITE]
-  connect_bd_intf_net -intf_net axi_interconnect_1_M01_AXI [get_bd_intf_pins DWrite_Trigger_0/S_AXI_LITE] [get_bd_intf_pins axi_interconnect_1/M01_AXI]
-  connect_bd_intf_net -intf_net axi_vip_0_M_AXI [get_bd_intf_pins axi_interconnect_1/S01_AXI] [get_bd_intf_pins axi_vip_0/M_AXI]
-  connect_bd_intf_net -intf_net axi_vip_1_M_AXI [get_bd_intf_pins axi_interconnect_0/S01_AXI] [get_bd_intf_pins axi_vip_1/M_AXI]
-  connect_bd_intf_net -intf_net processing_system7_0_DDR [get_bd_intf_ports DDR] [get_bd_intf_pins processing_system7_0/DDR]
-  connect_bd_intf_net -intf_net processing_system7_0_FIXED_IO [get_bd_intf_ports FIXED_IO] [get_bd_intf_pins processing_system7_0/FIXED_IO]
-  connect_bd_intf_net -intf_net processing_system7_0_M_AXI_GP0 [get_bd_intf_pins axi_interconnect_0/S00_AXI] [get_bd_intf_pins processing_system7_0/M_AXI_GP0]
-  connect_bd_intf_net -intf_net processing_system7_0_M_AXI_GP1 [get_bd_intf_pins axi_interconnect_1/S00_AXI] [get_bd_intf_pins processing_system7_0/M_AXI_GP1]
-  connect_bd_intf_net -intf_net smartconnect_0_M00_AXI [get_bd_intf_pins processing_system7_0/S_AXI_HP0] [get_bd_intf_pins smartconnect_0/M00_AXI]
+  connect_bd_intf_net -intf_net S_AXI_HP0_0_1 [get_bd_intf_ports DMA_HP_AXI] [get_bd_intf_pins processing_system/S_AXI_HP0]
+  connect_bd_intf_net -intf_net axi_interconnect_0_M00_AXI [get_bd_intf_ports IPB_AXI] [get_bd_intf_pins ipbus_interconnect/M00_AXI]
+  connect_bd_intf_net -intf_net axi_interconnect_1_M00_AXI [get_bd_intf_ports DMA_AXI] [get_bd_intf_pins dma_interconnect/M00_AXI]
+  connect_bd_intf_net -intf_net processing_system7_0_DDR [get_bd_intf_ports DDR] [get_bd_intf_pins processing_system/DDR]
+  connect_bd_intf_net -intf_net processing_system7_0_FIXED_IO [get_bd_intf_ports FIXED_IO] [get_bd_intf_pins processing_system/FIXED_IO]
+  connect_bd_intf_net -intf_net processing_system_M_AXI_GP0 [get_bd_intf_pins dma_interconnect/S00_AXI] [get_bd_intf_pins processing_system/M_AXI_GP0]
+  connect_bd_intf_net -intf_net processing_system_M_AXI_GP1 [get_bd_intf_pins ipbus_interconnect/S00_AXI] [get_bd_intf_pins processing_system/M_AXI_GP1]
 
   # Create port connections
-  connect_bd_net -net DMA_Write_0_dma_irq [get_bd_pins DMA_Write_0/dma_irq] [get_bd_pins util_ds_buf_2/BUFH_I]
-  connect_bd_net -net DWrite_Trigger_0_dtrig_o [get_bd_pins DWrite_Trigger_0/dtrig_o] [get_bd_pins drs_top_0/trigger_i]
-  connect_bd_net -net Net [get_bd_ports gpio_n_0] [get_bd_pins drs_top_0/gpio_n]
-  connect_bd_net -net Net1 [get_bd_ports gpio_p_0] [get_bd_pins drs_top_0/gpio_p]
-  connect_bd_net -net adc_data_i_0_1 [get_bd_ports adc_data_i_0] [get_bd_pins drs_top_0/adc_data_i]
-  connect_bd_net -net clock_i_n_0_1 [get_bd_ports clock_i_n_0] [get_bd_pins drs_top_0/clock_i_n]
-  connect_bd_net -net clock_i_p_0_1 [get_bd_ports clock_i_p_0] [get_bd_pins drs_top_0/clock_i_p]
-  connect_bd_net -net drs_dtap_i_0_1 [get_bd_ports drs_dtap_i_0] [get_bd_pins drs_top_0/drs_dtap_i]
-  connect_bd_net -net drs_plllock_i_0_1 [get_bd_ports drs_plllock_i_0] [get_bd_pins drs_top_0/drs_plllock_i]
-  connect_bd_net -net drs_srout_i_0_1 [get_bd_ports drs_srout_i_0] [get_bd_pins drs_top_0/drs_srout_i]
-  connect_bd_net -net drs_top_0_drs_addr_o [get_bd_ports drs_addr_o_0] [get_bd_pins drs_top_0/drs_addr_o]
-  connect_bd_net -net drs_top_0_drs_denable_o [get_bd_ports drs_denable_o_0] [get_bd_pins drs_top_0/drs_denable_o]
-  connect_bd_net -net drs_top_0_drs_dwrite_o [get_bd_ports drs_dwrite_o_0] [get_bd_pins drs_top_0/drs_dwrite_o]
-  connect_bd_net -net drs_top_0_drs_nreset_o [get_bd_ports drs_nreset_o_0] [get_bd_pins drs_top_0/drs_nreset_o]
-  connect_bd_net -net drs_top_0_drs_rsrload_o [get_bd_ports drs_rsrload_o_0] [get_bd_pins drs_top_0/drs_rsrload_o]
-  connect_bd_net -net drs_top_0_drs_srclk_o [get_bd_ports drs_srclk_o_0] [get_bd_pins drs_top_0/drs_srclk_o]
-  connect_bd_net -net drs_top_0_drs_srin_o [get_bd_ports drs_srin_o_0] [get_bd_pins drs_top_0/drs_srin_o]
-  connect_bd_net -net drs_top_0_fifo_clock_out [get_bd_pins DMA_Write_0/wr_aclk] [get_bd_pins drs_top_0/fifo_clock_out]
-  connect_bd_net -net drs_top_0_fifo_data_out [get_bd_pins DMA_Write_0/din_dma] [get_bd_pins drs_top_0/fifo_data_out]
-  connect_bd_net -net drs_top_0_fifo_data_wen [get_bd_pins DMA_Write_0/wr_en] [get_bd_pins drs_top_0/fifo_data_wen]
-  connect_bd_net -net proc_sys_reset_0_peripheral_aresetn [get_bd_pins DMA_Write_0/m00_axi_aresetn] [get_bd_pins axi_interconnect_0/ARESETN] [get_bd_pins axi_interconnect_0/M00_ARESETN] [get_bd_pins axi_interconnect_0/S00_ARESETN] [get_bd_pins axi_interconnect_0/S01_ARESETN] [get_bd_pins axi_vip_1/aresetn] [get_bd_pins proc_sys_reset_0/peripheral_aresetn] [get_bd_pins smartconnect_0/aresetn]
-  connect_bd_net -net proc_sys_reset_1_peripheral_aresetn [get_bd_pins DWrite_Trigger_0/S_AXI_ARESETN] [get_bd_pins axi_interconnect_1/ARESETN] [get_bd_pins axi_interconnect_1/M00_ARESETN] [get_bd_pins axi_interconnect_1/M01_ARESETN] [get_bd_pins axi_interconnect_1/S00_ARESETN] [get_bd_pins axi_interconnect_1/S01_ARESETN] [get_bd_pins axi_vip_0/aresetn] [get_bd_pins drs_top_0/S_AXI_LITE_ARESETN] [get_bd_pins proc_sys_reset_1/peripheral_aresetn]
-  connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_pins DMA_Write_0/m00_axi_aclk] [get_bd_pins axi_interconnect_0/ACLK] [get_bd_pins axi_interconnect_0/M00_ACLK] [get_bd_pins axi_interconnect_0/S00_ACLK] [get_bd_pins axi_interconnect_0/S01_ACLK] [get_bd_pins axi_vip_1/aclk] [get_bd_pins ila_0/clk] [get_bd_pins proc_sys_reset_0/slowest_sync_clk] [get_bd_pins processing_system7_0/FCLK_CLK0] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] [get_bd_pins processing_system7_0/S_AXI_HP0_ACLK] [get_bd_pins smartconnect_0/aclk]
-  connect_bd_net -net processing_system7_0_FCLK_CLK1 [get_bd_pins DWrite_Trigger_0/S_AXI_ACLK] [get_bd_pins axi_interconnect_1/ACLK] [get_bd_pins axi_interconnect_1/M00_ACLK] [get_bd_pins axi_interconnect_1/M01_ACLK] [get_bd_pins axi_interconnect_1/S00_ACLK] [get_bd_pins axi_interconnect_1/S01_ACLK] [get_bd_pins axi_vip_0/aclk] [get_bd_pins drs_top_0/S_AXI_LITE_ACLK] [get_bd_pins proc_sys_reset_1/slowest_sync_clk] [get_bd_pins processing_system7_0/FCLK_CLK1] [get_bd_pins processing_system7_0/M_AXI_GP1_ACLK]
-  connect_bd_net -net processing_system7_0_FCLK_RESET0_N [get_bd_pins proc_sys_reset_0/ext_reset_in] [get_bd_pins proc_sys_reset_1/ext_reset_in] [get_bd_pins processing_system7_0/FCLK_RESET0_N]
-  connect_bd_net -net util_ds_buf_2_BUFH_O [get_bd_pins processing_system7_0/IRQ_F2P] [get_bd_pins util_ds_buf_2/BUFH_O]
-  connect_bd_net -net xlconstant_0_dout [get_bd_pins drs_top_0/reset_i] [get_bd_pins xlconstant_0/dout]
+  connect_bd_net -net ARESETN_1 [get_bd_pins ipbus_interconnect/ARESETN] [get_bd_pins ipbus_interconnect/M00_ARESETN] [get_bd_pins ipbus_interconnect/S00_ARESETN] [get_bd_pins ipbus_reset/peripheral_aresetn]
+  connect_bd_net -net ARESETN_2 [get_bd_pins dma_interconnect/ARESETN] [get_bd_pins dma_interconnect/M00_ARESETN] [get_bd_pins dma_interconnect/S00_ARESETN] [get_bd_pins dma_reset/peripheral_aresetn]
+  connect_bd_net -net IRQ_F2P_0_1 [get_bd_ports IRQ_F2P_0] [get_bd_pins processing_system/IRQ_F2P]
+  connect_bd_net -net processing_system_FCLK_CLK0 [get_bd_pins dma_interconnect/ACLK] [get_bd_pins dma_interconnect/M00_ACLK] [get_bd_pins dma_interconnect/S00_ACLK] [get_bd_pins dma_reset/slowest_sync_clk] [get_bd_pins processing_system/FCLK_CLK0] [get_bd_pins processing_system/M_AXI_GP0_ACLK] [get_bd_pins processing_system/S_AXI_HP0_ACLK]
+  connect_bd_net -net processing_system_FCLK_CLK1 [get_bd_pins ipbus_interconnect/ACLK] [get_bd_pins ipbus_interconnect/M00_ACLK] [get_bd_pins ipbus_interconnect/S00_ACLK] [get_bd_pins ipbus_reset/slowest_sync_clk] [get_bd_pins processing_system/FCLK_CLK1] [get_bd_pins processing_system/M_AXI_GP1_ACLK]
+  connect_bd_net -net ps_reset [get_bd_pins dma_reset/ext_reset_in] [get_bd_pins ipbus_reset/ext_reset_in] [get_bd_pins processing_system/FCLK_RESET0_N]
 
   # Create address segments
-  assign_bd_address -offset 0x00000000 -range 0x20000000 -target_address_space [get_bd_addr_spaces DMA_Write_0/m00_axi] [get_bd_addr_segs processing_system7_0/S_AXI_HP0/HP0_DDR_LOWOCM]
-  assign_bd_address -offset 0xA0000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces axi_vip_0/Master_AXI] [get_bd_addr_segs DWrite_Trigger_0/S_AXI_LITE/reg0]
-  assign_bd_address -offset 0x80000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces axi_vip_0/Master_AXI] [get_bd_addr_segs drs_top_0/S_AXI_LITE/reg0]
-  assign_bd_address -offset 0x43C00000 -range 0x00001000 -target_address_space [get_bd_addr_spaces axi_vip_1/Master_AXI] [get_bd_addr_segs DMA_Write_0/s_axi_lite/reg0]
-  assign_bd_address -offset 0x43C00000 -range 0x00001000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs DMA_Write_0/s_axi_lite/reg0]
-  assign_bd_address -offset 0xA0000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs DWrite_Trigger_0/S_AXI_LITE/reg0]
-  assign_bd_address -offset 0x80000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs drs_top_0/S_AXI_LITE/reg0]
+  assign_bd_address -offset 0x43C00000 -range 0x00001000 -target_address_space [get_bd_addr_spaces processing_system/Data] [get_bd_addr_segs DMA_AXI/Reg] -force
+  assign_bd_address -offset 0x80000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system/Data] [get_bd_addr_segs IPB_AXI/Reg] -force
+  assign_bd_address -offset 0x00000000 -range 0x20000000 -target_address_space [get_bd_addr_spaces DMA_HP_AXI] [get_bd_addr_segs processing_system/S_AXI_HP0/HP0_DDR_LOWOCM] -force
+
 
   # Restore current instance
   current_bd_instance $oldCurInst
@@ -845,3 +756,6 @@ connect_bd_intf_net -intf_net [get_bd_intf_nets DMA_Write_0_DMA_AXI] [get_bd_int
 ##################################################################
 
 create_root_design ""
+
+
+common::send_msg_id "BD_TCL-1000" "WARNING" "This Tcl script was generated from a block design that has not been validated. It is possible that design <$design_name> may result in errors during validation."

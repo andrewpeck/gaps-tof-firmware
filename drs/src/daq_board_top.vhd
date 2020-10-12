@@ -571,7 +571,8 @@ begin
       fifo_clock_in => clock, -- TODO: separate daq clock
       fifo_data_wen => fifo_data_wen,
 
-      clk33_axi => clock,
+      clk33 => clock,
+      pl_mmcm_locked => locked,
 
       ipb_reset    => ipb_reset,
       ipb_clk      => ipb_clk,

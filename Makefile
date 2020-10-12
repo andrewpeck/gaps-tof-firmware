@@ -18,6 +18,9 @@ reg:
 tcl_to_bd:
 	Hog/CreateProject.sh tcl_to_bd $(COLORIZE)
 
+bd_to_tcl:
+	Hog/CreateProject.sh bd_to_tcl $(COLORIZE)
+
 create:
 	Hog/CreateProject.sh readout_board $(COLORIZE)
 

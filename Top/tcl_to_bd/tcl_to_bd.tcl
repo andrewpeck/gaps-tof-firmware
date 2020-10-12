@@ -48,6 +48,6 @@ source $PATH_REPO/Hog/Tcl/create_project.tcl
 set_property  ip_repo_paths  $PATH_REPO/ip [current_project]
 update_ip_catalog
 
-file delete $PATH_REPO/bd/top_readout_board/top_readout_board.bd
+file delete $PATH_REPO/bd/gaps_ps_interface/gaps_ps_interface.bd
 set origin_dir_loc $PATH_REPO/bd/
 source $PATH_REPO/bd/readout-board-bd.tcl
