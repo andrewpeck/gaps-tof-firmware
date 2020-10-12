@@ -107,7 +107,7 @@ architecture Behavioral of ps_interface is
   signal dma_hp_axi_arburst : std_logic_vector (1 downto 0);
   signal dma_hp_axi_arcache : std_logic_vector (3 downto 0);
   signal dma_hp_axi_arid    : std_logic_vector (5 downto 0);
-  signal dma_hp_axi_arlen   : std_logic_vector (3 downto 0);
+  signal dma_hp_axi_arlen   : std_logic_vector (7 downto 0);
   signal dma_hp_axi_arlock  : std_logic_vector (1 downto 0);
   signal dma_hp_axi_arprot  : std_logic_vector (2 downto 0);
   signal dma_hp_axi_arqos   : std_logic_vector (3 downto 0);
@@ -120,7 +120,7 @@ architecture Behavioral of ps_interface is
   signal dma_hp_axi_awuser  : std_logic_vector (3 downto 0);
   signal dma_hp_axi_aruser  : std_logic_vector (3 downto 0);
   signal dma_hp_axi_awid    : std_logic_vector (5 downto 0);
-  signal dma_hp_axi_awlen   : std_logic_vector (3 downto 0);
+  signal dma_hp_axi_awlen   : std_logic_vector (7 downto 0);
   signal dma_hp_axi_awlock  : std_logic_vector (1 downto 0);
   signal dma_hp_axi_awprot  : std_logic_vector (2 downto 0);
   signal dma_hp_axi_awqos   : std_logic_vector (3 downto 0);
@@ -138,7 +138,6 @@ architecture Behavioral of ps_interface is
   signal dma_hp_axi_rresp   : std_logic_vector (1 downto 0);
   signal dma_hp_axi_rvalid  : std_logic;
   signal dma_hp_axi_wdata   : std_logic_vector (31 downto 0);
-  signal dma_hp_axi_wid     : std_logic_vector (5 downto 0);
   signal dma_hp_axi_wlast   : std_logic;
   signal dma_hp_axi_wready  : std_logic;
   signal dma_hp_axi_wstrb   : std_logic_vector (3 downto 0);
@@ -269,46 +268,45 @@ begin
       dma_axi_wvalid     => dma_axi_wvalid,
 
       --
-      dma_hp_axi_araddr  => dma_hp_axi_araddr,
-      dma_hp_axi_arburst => dma_hp_axi_arburst,
-      dma_hp_axi_arcache => dma_hp_axi_arcache,
-    --dma_hp_axi_aruser  => dma_hp_axi_aruser,
-    --dma_hp_axi_awuser  => dma_hp_axi_awuser,
-      dma_hp_axi_arid    => dma_hp_axi_arid,
-      dma_hp_axi_arlen   => dma_hp_axi_arlen,
-      dma_hp_axi_arlock  => dma_hp_axi_arlock,
-      dma_hp_axi_arprot  => dma_hp_axi_arprot,
-      dma_hp_axi_arqos   => dma_hp_axi_arqos,
-      dma_hp_axi_arready => dma_hp_axi_arready,
-      dma_hp_axi_arsize  => dma_hp_axi_arsize,
-      dma_hp_axi_arvalid => dma_hp_axi_arvalid,
-      dma_hp_axi_awaddr  => dma_hp_axi_awaddr,
-      dma_hp_axi_awburst => dma_hp_axi_awburst,
-      dma_hp_axi_awcache => dma_hp_axi_awcache,
-      dma_hp_axi_awid    => dma_hp_axi_awid,
-      dma_hp_axi_awlen   => dma_hp_axi_awlen,
-      dma_hp_axi_awlock  => dma_hp_axi_awlock,
-      dma_hp_axi_awprot  => dma_hp_axi_awprot,
-      dma_hp_axi_awqos   => dma_hp_axi_awqos,
-      dma_hp_axi_awready => dma_hp_axi_awready,
-      dma_hp_axi_awsize  => dma_hp_axi_awsize,
-      dma_hp_axi_awvalid => dma_hp_axi_awvalid,
-      dma_hp_axi_bid     => dma_hp_axi_bid,
-      dma_hp_axi_bready  => dma_hp_axi_bready,
-      dma_hp_axi_bresp   => dma_hp_axi_bresp,
-      dma_hp_axi_bvalid  => dma_hp_axi_bvalid,
-      dma_hp_axi_rdata   => dma_hp_axi_rdata,
-      dma_hp_axi_rid     => dma_hp_axi_rid,
-      dma_hp_axi_rlast   => dma_hp_axi_rlast,
-      dma_hp_axi_rready  => dma_hp_axi_rready,
-      dma_hp_axi_rresp   => dma_hp_axi_rresp,
-      dma_hp_axi_rvalid  => dma_hp_axi_rvalid,
-      dma_hp_axi_wdata   => dma_hp_axi_wdata,
-      dma_hp_axi_wid     => dma_hp_axi_wid,
-      dma_hp_axi_wlast   => dma_hp_axi_wlast,
-      dma_hp_axi_wready  => dma_hp_axi_wready,
-      dma_hp_axi_wstrb   => dma_hp_axi_wstrb,
-      dma_hp_axi_wvalid  => dma_hp_axi_wvalid,
+      dma_hp_axi_araddr    => dma_hp_axi_araddr,
+      dma_hp_axi_arburst   => dma_hp_axi_arburst,
+      dma_hp_axi_arcache   => dma_hp_axi_arcache,
+      --dma_hp_axi_aruser  => dma_hp_axi_aruser,
+      --dma_hp_axi_awuser  => dma_hp_axi_awuser,
+      dma_hp_axi_arid      => dma_hp_axi_arid,
+      dma_hp_axi_arlen     => dma_hp_axi_arlen,
+      dma_hp_axi_arlock(0) => dma_hp_axi_arlock(0),
+      dma_hp_axi_arprot    => dma_hp_axi_arprot,
+      dma_hp_axi_arqos     => dma_hp_axi_arqos,
+      dma_hp_axi_arready   => dma_hp_axi_arready,
+      dma_hp_axi_arsize    => dma_hp_axi_arsize,
+      dma_hp_axi_arvalid   => dma_hp_axi_arvalid,
+      dma_hp_axi_awaddr    => dma_hp_axi_awaddr,
+      dma_hp_axi_awburst   => dma_hp_axi_awburst,
+      dma_hp_axi_awcache   => dma_hp_axi_awcache,
+      dma_hp_axi_awid      => dma_hp_axi_awid,
+      dma_hp_axi_awlen     => dma_hp_axi_awlen,
+      dma_hp_axi_awlock(0) => dma_hp_axi_awlock(0),
+      dma_hp_axi_awprot    => dma_hp_axi_awprot,
+      dma_hp_axi_awqos     => dma_hp_axi_awqos,
+      dma_hp_axi_awready   => dma_hp_axi_awready,
+      dma_hp_axi_awsize    => dma_hp_axi_awsize,
+      dma_hp_axi_awvalid   => dma_hp_axi_awvalid,
+      dma_hp_axi_bid       => dma_hp_axi_bid,
+      dma_hp_axi_bready    => dma_hp_axi_bready,
+      dma_hp_axi_bresp     => dma_hp_axi_bresp,
+      dma_hp_axi_bvalid    => dma_hp_axi_bvalid,
+      dma_hp_axi_rdata     => dma_hp_axi_rdata,
+      dma_hp_axi_rid       => dma_hp_axi_rid,
+      dma_hp_axi_rlast     => dma_hp_axi_rlast,
+      dma_hp_axi_rready    => dma_hp_axi_rready,
+      dma_hp_axi_rresp     => dma_hp_axi_rresp,
+      dma_hp_axi_rvalid    => dma_hp_axi_rvalid,
+      dma_hp_axi_wdata     => dma_hp_axi_wdata,
+      dma_hp_axi_wlast     => dma_hp_axi_wlast,
+      dma_hp_axi_wready    => dma_hp_axi_wready,
+      dma_hp_axi_wstrb     => dma_hp_axi_wstrb,
+      dma_hp_axi_wvalid    => dma_hp_axi_wvalid,
 
       --
       ipb_axi_aresetn(0) => ipb_axi_aresetn,
@@ -354,14 +352,14 @@ begin
 
   gaps_dma_controller_rev1_v1_0_1 : entity dma.gaps_dma_controller_rev1_v1_0
     generic map (
-      C_S00_AXI_DATA_WIDTH    => 32,
-      C_S00_AXI_ADDR_WIDTH    => 6,
-      C_S01_AXI_DATA_WIDTH    => 32,
-      C_S01_AXI_ADDR_WIDTH    => 32,
-      words_to_send => 16,
-      MAX_ADDRESS   => x"10800000",
-      HEAD          => x"AAAA",
-      TAIL          => x"5555"
+      C_S00_AXI_DATA_WIDTH => 32,
+      C_S00_AXI_ADDR_WIDTH => 6,
+      C_S01_AXI_DATA_WIDTH => 32,
+      C_S01_AXI_ADDR_WIDTH => 32,
+      words_to_send        => 16,
+      MAX_ADDRESS          => x"10800000",
+      HEAD                 => x"AAAA",
+      TAIL                 => x"5555"
       )
     port map (
 
@@ -395,7 +393,7 @@ begin
 
       m_axi_s2mm_awid    => dma_hp_axi_awid (3 downto 0),
       m_axi_s2mm_awaddr  => dma_hp_axi_awaddr,
-      m_axi_s2mm_awlen   => dma_hp_axi_awlen (3 downto 0),
+      m_axi_s2mm_awlen   => dma_hp_axi_awlen (7 downto 0),
       m_axi_s2mm_awsize  => dma_hp_axi_awsize,
       m_axi_s2mm_awburst => dma_hp_axi_awburst,
       m_axi_s2mm_awprot  => dma_hp_axi_awprot,
@@ -413,7 +411,7 @@ begin
       m_axi_s2mm_bready  => dma_hp_axi_bready,
       m_axi_mm2s_arid    => dma_hp_axi_arid (3 downto 0),
       m_axi_mm2s_araddr  => dma_hp_axi_araddr,
-      m_axi_mm2s_arlen   => dma_hp_axi_arlen (3 downto 0),
+      m_axi_mm2s_arlen   => dma_hp_axi_arlen (7 downto 0),
       m_axi_mm2s_arsize  => dma_hp_axi_arsize,
       m_axi_mm2s_arburst => dma_hp_axi_arburst,
       m_axi_mm2s_arprot  => dma_hp_axi_arprot,

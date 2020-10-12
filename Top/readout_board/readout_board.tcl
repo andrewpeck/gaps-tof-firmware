@@ -48,12 +48,13 @@ source $PATH_REPO/Hog/Tcl/create_project.tcl
 #set_property  ip_repo_paths  $PATH_REPO/ip [current_project]
 update_ip_catalog
 
-#update_compile_order -fileset sources_1
+set_property top drs_top [current_fileset]
+
+update_compile_order -fileset sources_1
 
 open_bd_design [get_files $PATH_REPO/bd/gaps_ps_interface/gaps_ps_interface.bd]
 upgrade_bd_cells [get_bd_cells {*}]
 make_wrapper -files [get_files $PATH_REPO/bd/gaps_ps_interface/gaps_ps_interface.bd] -top
 add_files -norecurse $PATH_REPO/bd/gaps_ps_interface/hdl/gaps_ps_interface_wrapper.vhd
 
-set_property top drs_top [current_fileset]
 update_compile_order -fileset sources_1
