@@ -15,19 +15,10 @@ init:
 reg:
 	cd regmap && make
 
-drs_ip:
-	Hog/CreateProject.sh drs_ip $(COLORIZE)
-
-trg_ip:
-	Hog/CreateProject.sh trg_ip $(COLORIZE)
-
-dma_ip:
-	Hog/CreateProject.sh dma_ip $(COLORIZE)
-
 tcl_to_bd:
 	Hog/CreateProject.sh tcl_to_bd $(COLORIZE)
 
-create: drs_ip trg_ip dma_ip tcl_to_bd
+create:
 	Hog/CreateProject.sh readout_board $(COLORIZE)
 
 synth:

@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_DRS_NUM_REGS : integer := 34;
+    constant REG_DRS_NUM_REGS : integer := 32;
     constant REG_DRS_ADDRESS_MSB : integer := 6;
     constant REG_DRS_ADDRESS_LSB : integer := 0;
     constant REG_CHIP_DMODE_ADDR    : std_logic_vector(6 downto 0) := "000" & x"0";
@@ -86,29 +86,13 @@ package registers is
     constant REG_FPGA_DNA_DNA_MSBS_MSB    : integer := 24;
     constant REG_FPGA_DNA_DNA_MSBS_LSB     : integer := 0;
 
-    constant REG_FPGA_RELEASE_DATE_ADDR    : std_logic_vector(6 downto 0) := "010" & x"2";
-    constant REG_FPGA_RELEASE_DATE_MSB    : integer := 31;
-    constant REG_FPGA_RELEASE_DATE_LSB     : integer := 0;
+    constant REG_FPGA_TIMESTAMP_TIMESTAMP_LSBS_ADDR    : std_logic_vector(6 downto 0) := "010" & x"4";
+    constant REG_FPGA_TIMESTAMP_TIMESTAMP_LSBS_MSB    : integer := 31;
+    constant REG_FPGA_TIMESTAMP_TIMESTAMP_LSBS_LSB     : integer := 0;
 
-    constant REG_FPGA_RELEASE_VERSION_MAJOR_ADDR    : std_logic_vector(6 downto 0) := "010" & x"3";
-    constant REG_FPGA_RELEASE_VERSION_MAJOR_MSB    : integer := 7;
-    constant REG_FPGA_RELEASE_VERSION_MAJOR_LSB     : integer := 0;
-
-    constant REG_FPGA_RELEASE_VERSION_MINOR_ADDR    : std_logic_vector(6 downto 0) := "010" & x"3";
-    constant REG_FPGA_RELEASE_VERSION_MINOR_MSB    : integer := 15;
-    constant REG_FPGA_RELEASE_VERSION_MINOR_LSB     : integer := 8;
-
-    constant REG_FPGA_RELEASE_VERSION_BUILD_ADDR    : std_logic_vector(6 downto 0) := "010" & x"3";
-    constant REG_FPGA_RELEASE_VERSION_BUILD_MSB    : integer := 23;
-    constant REG_FPGA_RELEASE_VERSION_BUILD_LSB     : integer := 16;
-
-    constant REG_FPGA_RELEASE_TIMESTAMP_TIMESTAMP_LSBS_ADDR    : std_logic_vector(6 downto 0) := "010" & x"6";
-    constant REG_FPGA_RELEASE_TIMESTAMP_TIMESTAMP_LSBS_MSB    : integer := 31;
-    constant REG_FPGA_RELEASE_TIMESTAMP_TIMESTAMP_LSBS_LSB     : integer := 0;
-
-    constant REG_FPGA_RELEASE_TIMESTAMP_TIMESTAMP_MSBS_ADDR    : std_logic_vector(6 downto 0) := "010" & x"7";
-    constant REG_FPGA_RELEASE_TIMESTAMP_TIMESTAMP_MSBS_MSB    : integer := 15;
-    constant REG_FPGA_RELEASE_TIMESTAMP_TIMESTAMP_MSBS_LSB     : integer := 0;
+    constant REG_FPGA_TIMESTAMP_TIMESTAMP_MSBS_ADDR    : std_logic_vector(6 downto 0) := "010" & x"5";
+    constant REG_FPGA_TIMESTAMP_TIMESTAMP_MSBS_MSB    : integer := 15;
+    constant REG_FPGA_TIMESTAMP_TIMESTAMP_MSBS_LSB     : integer := 0;
 
     constant REG_DAQ_INJECT_DEBUG_PACKET_ADDR    : std_logic_vector(6 downto 0) := "011" & x"0";
     constant REG_DAQ_INJECT_DEBUG_PACKET_BIT    : integer := 0;

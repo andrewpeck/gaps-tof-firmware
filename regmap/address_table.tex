@@ -109,45 +109,7 @@
 
 
     \noindent
-    \subsection*{\textcolor{parentcolor}{\textbf{DRS.FPGA.RELEASE}}}
-
-    \vspace{4mm}
-    \noindent
-    DRS Firmware Release Date and Version
-    \noindent
-
-    \keepXColumns
-    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
-    \hline
-    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
-    \nopagebreak
-    DATE & \texttt{0x22} & \texttt{[31:0]} & r & \texttt{} & Release YYYY/MM/DD \\\hline
-    \end{tabularx}
-    \vspace{5mm}
-
-
-    \noindent
-    \subsection*{\textcolor{parentcolor}{\textbf{DRS.FPGA.RELEASE.VERSION}}}
-
-    \vspace{4mm}
-    \noindent
-    Firmware Release Version (XX.YY.ZZ)
-    \noindent
-
-    \keepXColumns
-    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
-    \hline
-    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
-    \nopagebreak
-    MAJOR & \texttt{0x23} & \texttt{[7:0]} & r & \texttt{} & Release semantic version major \\\hline
-    MINOR & \texttt{0x23} & \texttt{[15:8]} & r & \texttt{} & Release semantic version minor \\\hline
-    BUILD & \texttt{0x23} & \texttt{[23:16]} & r & \texttt{} & Release semantic version build \\\hline
-    \end{tabularx}
-    \vspace{5mm}
-
-
-    \noindent
-    \subsection*{\textcolor{parentcolor}{\textbf{DRS.FPGA.RELEASE.TIMESTAMP}}}
+    \subsection*{\textcolor{parentcolor}{\textbf{DRS.FPGA.TIMESTAMP}}}
 
     \vspace{4mm}
     \noindent
@@ -159,8 +121,8 @@
     \hline
     \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
     \nopagebreak
-    TIMESTAMP\_LSBS & \texttt{0x26} & \texttt{[31:0]} & r & \texttt{} & Device TIMESTAMP [31:0] \\\hline
-    TIMESTAMP\_MSBS & \texttt{0x27} & \texttt{[15:0]} & r & \texttt{} & Device TIMESTAMP [47:32] \\\hline
+    TIMESTAMP\_LSBS & \texttt{0x24} & \texttt{[31:0]} & r & \texttt{} & Device TIMESTAMP [31:0] \\\hline
+    TIMESTAMP\_MSBS & \texttt{0x25} & \texttt{[15:0]} & r & \texttt{} & Device TIMESTAMP [47:32] \\\hline
     \end{tabularx}
     \vspace{5mm}
 

@@ -2,11 +2,11 @@
 
 # IP Cores
 ip/ila_0/ila_0.xci
-ip/dma_ila/dma_ila.xci
-ip/fifo_generator_1/fifo_generator_1.xci
+ip/ila_s2mm/ila_s2mm.xci
+ip/axis2aximm/axis2aximm.xci
+ip/fifo_generator_0/fifo_generator_0.xci
 
 # DMA Files
-dma/src/DMA_WRITE_v1_0_IRQ.v
-dma/src/DMA_WRITE_v1_0_STATUS.v
-dma/src/DMA_Write_v1_0.v
-dma/src/DMA_Write_v1_0_M00_AXI.v
+dma/src/GAPS_DMA_Controller_rev1_v1_0.vhd
+dma/src/GAPS_DMA_Controller_rev1_v1_0_S00_AXI.vhd
+dma/src/dma_controller.vhd

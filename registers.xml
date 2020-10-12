@@ -129,27 +129,6 @@
                 fw_signal="dna (56 downto 32)" />
         </node> <!--DNA-->
 
-        <node id="RELEASE" address="0x2"
-            description="DRS Firmware Release Date and Version">
-            <node id="DATE" address="0x0" permission="r"
-                mask="0xffffffff"
-                description="Release YYYY/MM/DD"
-                fw_signal="(RELEASE_YEAR &amp; RELEASE_MONTH &amp; RELEASE_DAY)"/>
-            <node id="VERSION" address="0x1" description="Firmware Release Version (XX.YY.ZZ)">
-                <node id="MAJOR" address="0x0" permission="r"
-                    mask="0xff"
-                    description="Release semantic version major"
-                    fw_signal="(MAJOR_VERSION)"/>
-                <node id="MINOR" address="0x0" permission="r"
-                    mask="0xff00"
-                    description="Release semantic version minor"
-                    fw_signal="(MINOR_VERSION)"/>
-                <node id="BUILD" address="0x0" permission="r"
-                    mask="0xff0000"
-                    description="Release semantic version build"
-                    fw_signal="(RELEASE_VERSION)"/>
-            </node> <!--Version-->
-
         <node id="TIMESTAMP" address="0x4"
             description="Timestamp">
             <node id="TIMESTAMP_LSBS" address="0x0" permission="r"
@@ -162,7 +141,6 @@
                 mask="0x0000ffff"
                 fw_signal="std_logic_vector(timestamp (47 downto 32))" />
         </node> <!--TIMESTAMP-->
-        </node> <!--Release-->
     </node> <!--FPGA-->
 
 

@@ -45,14 +45,15 @@ set PATH_REPO "[file normalize [file dirname [info script]]]/../../"
 
 source $PATH_REPO/Hog/Tcl/create_project.tcl
 
-set_property  ip_repo_paths  $PATH_REPO/ip [current_project]
-update_ip_catalog
-
-update_compile_order -fileset sources_1
-open_bd_design [get_files $PATH_REPO/bd/top_readout_board/top_readout_board.bd]
-upgrade_bd_cells [get_bd_cells {*}]
-make_wrapper -files [get_files $PATH_REPO/bd/top_readout_board/top_readout_board.bd] -top
-add_files -norecurse $PATH_REPO/bd/top_readout_board/hdl/top_readout_board_wrapper.vhd
-update_compile_order -fileset sources_1
-set_property top top_readout_board_wrapper [current_fileset]
-update_compile_order -fileset sources_1
+#set_property  ip_repo_paths  $PATH_REPO/ip [current_project]
+#update_ip_catalog
+#
+#update_compile_order -fileset sources_1
+#
+#open_bd_design [get_files $PATH_REPO/bd/top_readout_board/top_readout_board.bd]
+#upgrade_bd_cells [get_bd_cells {*}]
+#make_wrapper -files [get_files $PATH_REPO/bd/top_readout_board/top_readout_board.bd] -top
+#add_files -norecurse $PATH_REPO/bd/top_readout_board/hdl/top_readout_board_wrapper.vhd
+#update_compile_order -fileset sources_1
+#set_property top top_readout_board_wrapper [current_fileset]
+#update_compile_order -fileset sources_1

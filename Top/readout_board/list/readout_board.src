@@ -1,8 +1,8 @@
 # -*- mode: TCL;-*-
 
-#drs/list/drs.src
-#dma/list/dma.src
-#trg/list/trg.src
+drs/list/drs.src lib=dma
+dma/list/dma.src lib=drs
+
 
 # Block Design
-bd/top_readout_board/top_readout_board.bd
+#bd/top_readout_board/top_readout_board.bd
