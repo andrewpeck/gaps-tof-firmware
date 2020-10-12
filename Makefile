@@ -28,10 +28,10 @@ create:
 	Hog/CreateProject.sh readout_board $(COLORIZE)
 
 synth:
-	Hog/LaunchSynthesis.sh readout_board $(COLORIZE)
+	Hog/LaunchWorkflow.sh -synth_only readout_board $(COLORIZE)
 
 impl:
-	Hog/LaunchImplementation.sh readout_board $(COLORIZE)
+	Hog/LaunchWorkflow.sh -impl_only readout_board $(COLORIZE)
 
 clean:
 	rm -rf VivadoProject/

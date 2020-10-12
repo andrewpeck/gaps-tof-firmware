@@ -54,62 +54,28 @@ Clone project recursively to pull all HOG scripts
 git clone --recursive https://gitlab.com/ucla-gaps-tof/firmware.git
 #+END_EXAMPLE
 
-Currently the firmware is built around three separately compiled IP cores which are then integrated
-together into a common project through the graphical block diagram generator.
-
-The IP cores can be built with the following commands. Note that because the these blocks are
-constructed as standalone IP cores, they go through the entire out-of-context synthesis process at
-the time of project creation. No further action is required with these IPs.
+The firmware can then be built with:
 
 #+BEGIN_EXAMPLE
-Hog/CreateProject.sh trg_ip
-Hog/CreateProject.sh dma_ip
-Hog/CreateProject.sh drs_ip
+make all
 #+END_EXAMPLE
 
-After that, the combined project can be created with the command
+a list of Make targets will be displayed by typing:
 
 #+BEGIN_EXAMPLE
-Hog/CreateProject.sh readout_board
+make
 #+END_EXAMPLE
 
-Synthesis can be launched with the command
-
-#+BEGIN_EXAMPLE
-Hog/LaunchSynthesis.sh readout_board
-#+END_EXAMPLE
-
-Implementation can be launched with the command
-
-#+BEGIN_EXAMPLE
-Hog/LaunchImplementation.sh readout_board
-#+END_EXAMPLE
-
-A more streamlined HDL based project organization is forthcoming...
-
-*To use any of these commands you need to make sure that Vivado is in your path*, i.e. if you type
-Vivado into the terminal it should open Vivado. 
+*To use any of these commands you need to make sure that Vivado is in your path*, i.e. if you type Vivado into the terminal it should open Vivado.
 
 To make sure the environment variables always set, modify your =.bashrc= to contain a similar command as below, depending on where you installed Vivado.
 #+BEGIN_EXAMPLE
 source /home/your_usr_name/Xilinx/Vivado/2019.2/settings64.sh
 #+END_EXAMPLE
 
-The scripts use only very primitive bash and
-otherwise use the Vivado TCL shell, so there should be no external dependencies.
+The scripts use only very primitive bash and otherwise use the Vivado TCL shell, so there should be no external dependencies.
 
-A complete set of commands which should build the project, tested on Vivado 2018.2 and 2019.2 is:
-
-#+BEGIN_EXAMPLE bash
-git clone https://gitlab.com/ucla-gaps-tof/firmware
-cd firmware
-git submodule update --init
-make
-#+END_EXAMPLE
-
-Best practice is for released builds the entire repo should be cloned from scratch and built from
-the clean cloned repository to ensure that no files are missing, the build directory is clean, and
-so on.
+Best practice is for released builds the entire repo should be cloned from scratch and built from the clean cloned repository to ensure that no files are missing, the build directory is clean, and so on.
 
 ** Block Design Creation
 

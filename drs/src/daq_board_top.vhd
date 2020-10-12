@@ -17,7 +17,7 @@ use ieee.numeric_std.all;
 library UNISIM;
 use UNISIM.vcomponents.all;
 
-entity drs_top is
+entity top_readout_board is
   generic (
     EN_TMR_IPB_SLAVE_DRS : integer := 1;
 
@@ -82,9 +82,9 @@ entity drs_top is
     gpio_n : inout std_logic_vector (10 downto 0)
 
     );
-end drs_top;
+end top_readout_board;
 
-architecture Behavioral of drs_top is
+architecture Behavioral of top_readout_board is
 
   signal clk33  : std_logic;
   signal clock  : std_logic;

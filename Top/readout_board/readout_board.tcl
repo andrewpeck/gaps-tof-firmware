@@ -48,7 +48,7 @@ source $PATH_REPO/Hog/Tcl/create_project.tcl
 #set_property  ip_repo_paths  $PATH_REPO/ip [current_project]
 update_ip_catalog
 
-set_property top drs_top [current_fileset]
+set_property top top_readout_board [current_fileset]
 
 update_compile_order -fileset sources_1
 
