@@ -16,7 +16,7 @@ use UNISIM.VComponents.all;
 entity dma_controller is
     generic ( 
         words_to_send  : integer := 16;
-        MAX_ADDRESS    : std_logic_vector(31 downto 0)  := x"1080_00000";
+        MAX_ADDRESS    : std_logic_vector(31 downto 0)  := x"10800000";
         HEAD           : std_logic_vector (15 downto 0) := x"AAAA";
         TAIL           : std_logic_vector (15 downto 0) := x"5555"
     );
@@ -134,9 +134,7 @@ architecture Behavioral of dma_controller is
             s2mm_wr_len : OUT STD_LOGIC_VECTOR(7 DOWNTO 0) 
         );
     end component;
-    
-        
-    
+
     component fifo_generator_0 is
     port (
             rst : IN STD_LOGIC;
@@ -157,73 +155,6 @@ architecture Behavioral of dma_controller is
     );
     end component; 
     
-    component axi_bram_ctrl_0 is 
-    port (
-            s_axi_aclk : IN STD_LOGIC;
-            s_axi_aresetn : IN STD_LOGIC;
-            s_axi_awaddr : IN STD_LOGIC_VECTOR(12 DOWNTO 0);
-            s_axi_awlen : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
-            s_axi_awsize : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
-            s_axi_awburst : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
-            s_axi_awlock : IN STD_LOGIC;
-            s_axi_awcache : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
-            s_axi_awprot : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
-            s_axi_awvalid : IN STD_LOGIC;
-            s_axi_awready : OUT STD_LOGIC;
-            s_axi_wdata : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-            s_axi_wstrb : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
-            s_axi_wlast : IN STD_LOGIC;
-            s_axi_wvalid : IN STD_LOGIC;
-            s_axi_wready : OUT STD_LOGIC;
-            s_axi_bresp : OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
-            s_axi_bvalid : OUT STD_LOGIC;
-            s_axi_bready : IN STD_LOGIC;
-            s_axi_araddr : IN STD_LOGIC_VECTOR(12 DOWNTO 0);
-            s_axi_arlen : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
-            s_axi_arsize : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
-            s_axi_arburst : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
-            s_axi_arlock : IN STD_LOGIC;
-            s_axi_arcache : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
-            s_axi_arprot : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
-            s_axi_arvalid : IN STD_LOGIC;
-            s_axi_arready : OUT STD_LOGIC;
-            s_axi_rdata : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-            s_axi_rresp : OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
-            s_axi_rlast : OUT STD_LOGIC;
-            s_axi_rvalid : OUT STD_LOGIC;
-            s_axi_rready : IN STD_LOGIC;
-            
-            bram_rst_a : OUT STD_LOGIC;
-            bram_clk_a : OUT STD_LOGIC;
-            bram_en_a : OUT STD_LOGIC;
-            bram_we_a : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
-            bram_addr_a : OUT STD_LOGIC_VECTOR(12 DOWNTO 0);
-            bram_wrdata_a : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-            bram_rddata_a : IN STD_LOGIC_VECTOR(31 DOWNTO 0)
-       );  
-    end component;       
-    
-    component blk_mem_gen_0 IS
-      PORT (
-            clka : IN STD_LOGIC;
-            ena : IN STD_LOGIC;
-            wea : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
-            addra : IN STD_LOGIC_VECTOR(10 DOWNTO 0);
-            dina : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-            douta : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-            
-            clkb : IN STD_LOGIC;
-            rstb : IN STD_LOGIC;
-            enb : IN STD_LOGIC;
-            web : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
-            addrb : IN STD_LOGIC_VECTOR(10 DOWNTO 0);
-            dinb : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-            doutb : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-            rsta_busy : OUT STD_LOGIC;
-            rstb_busy : OUT STD_LOGIC
-      );
-    END component;
-
      component  ila_s2mm IS
         PORT (
             clk : IN STD_LOGIC;
@@ -254,16 +185,11 @@ architecture Behavioral of dma_controller is
   
     TYPE cmd_state is (IDLE, SET, DONE);
     TYPE data_state is (IDLE, ASSERT_CMD,DELAY0,READ_FIFO, DONE,DELAY1);
-     
-    
+
     signal reset_sys                    : std_logic := '0'; 
     signal aresetn                      : std_logic := '1';
     signal RESET_ACTIVE                 : std_logic := '0';
-     
- 
 
-    
-    
     signal s2mm_cmd_state               : cmd_state;
     signal s2mm_data_state              : data_state;
 
