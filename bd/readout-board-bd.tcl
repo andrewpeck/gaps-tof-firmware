@@ -122,7 +122,6 @@ if { $bCheckIPs == 1 } {
    set list_check_ips "\ 
 xilinx.com:ip:proc_sys_reset:*\
 xilinx.com:ip:processing_system7:*\
-xilinx.com:ip:smartconnect:*\
 "
 
    set list_ips_missing ""
@@ -192,7 +191,6 @@ proc create_root_design { parentCell } {
   set_property -dict [ list \
    CONFIG.ADDR_WIDTH {32} \
    CONFIG.DATA_WIDTH {32} \
-   CONFIG.FREQ_HZ {200000000} \
    CONFIG.HAS_REGION {0} \
    CONFIG.NUM_READ_OUTSTANDING {8} \
    CONFIG.NUM_WRITE_OUTSTANDING {8} \
@@ -248,7 +246,7 @@ proc create_root_design { parentCell } {
   set DMA_AXI_ARESETN [ create_bd_port -dir O -from 0 -to 0 DMA_AXI_ARESETN ]
   set DMA_AXI_CLK_O [ create_bd_port -dir O -type clk DMA_AXI_CLK_O ]
   set_property -dict [ list \
-   CONFIG.ASSOCIATED_BUSIF {DMA_HP_AXI} \
+   CONFIG.ASSOCIATED_BUSIF {DMA_HP_AXI:DMA_AXI} \
  ] $DMA_AXI_CLK_O
   set IPB_AXI_ARESETN [ create_bd_port -dir O -from 0 -to 0 -type rst IPB_AXI_ARESETN ]
   set IPB_MCLK_IN [ create_bd_port -dir I -type clk -freq_hz 33333333 IPB_MCLK_IN ]
@@ -257,6 +255,16 @@ proc create_root_design { parentCell } {
    CONFIG.PortWidth {1} \
  ] $IRQ_F2P_0
   set PL_MMCM_LOCKED [ create_bd_port -dir I PL_MMCM_LOCKED ]
+
+  # Create instance: dma_hp_interconnect, and set properties
+  set dma_hp_interconnect [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect dma_hp_interconnect ]
+  set_property -dict [ list \
+   CONFIG.ENABLE_ADVANCED_OPTIONS {1} \
+   CONFIG.NUM_MI {1} \
+   CONFIG.NUM_SI {1} \
+   CONFIG.S00_HAS_DATA_FIFO {0} \
+   CONFIG.S00_HAS_REGSLICE {4} \
+ ] $dma_hp_interconnect
 
   # Create instance: dma_interconnect, and set properties
   set dma_interconnect [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect dma_interconnect ]
@@ -732,27 +740,21 @@ proc create_root_design { parentCell } {
    CONFIG.PCW_WDT_WDT_IO {EMIO} \
  ] $processing_system
 
-  # Create instance: smartconnect_0, and set properties
-  set smartconnect_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect smartconnect_0 ]
-  set_property -dict [ list \
-   CONFIG.NUM_SI {1} \
- ] $smartconnect_0
-
   # Create interface connections
-  connect_bd_intf_net -intf_net DMA_HP_AXI_1 [get_bd_intf_ports DMA_HP_AXI] [get_bd_intf_pins smartconnect_0/S00_AXI]
+  connect_bd_intf_net -intf_net DMA_HP_AXI_1 [get_bd_intf_ports DMA_HP_AXI] [get_bd_intf_pins dma_hp_interconnect/S00_AXI]
   connect_bd_intf_net -intf_net axi_interconnect_0_M00_AXI [get_bd_intf_ports IPB_AXI] [get_bd_intf_pins ipbus_interconnect/M00_AXI]
   connect_bd_intf_net -intf_net axi_interconnect_1_M00_AXI [get_bd_intf_ports DMA_AXI] [get_bd_intf_pins dma_interconnect/M00_AXI]
+  connect_bd_intf_net -intf_net dma_interconnect1_M00_AXI [get_bd_intf_pins dma_hp_interconnect/M00_AXI] [get_bd_intf_pins processing_system/S_AXI_HP0]
   connect_bd_intf_net -intf_net processing_system7_0_DDR [get_bd_intf_ports DDR] [get_bd_intf_pins processing_system/DDR]
   connect_bd_intf_net -intf_net processing_system7_0_FIXED_IO [get_bd_intf_ports FIXED_IO] [get_bd_intf_pins processing_system/FIXED_IO]
   connect_bd_intf_net -intf_net processing_system_M_AXI_GP0 [get_bd_intf_pins dma_interconnect/S00_AXI] [get_bd_intf_pins processing_system/M_AXI_GP0]
   connect_bd_intf_net -intf_net processing_system_M_AXI_GP1 [get_bd_intf_pins ipbus_interconnect/S00_AXI] [get_bd_intf_pins processing_system/M_AXI_GP1]
-  connect_bd_intf_net -intf_net smartconnect_0_M00_AXI [get_bd_intf_pins processing_system/S_AXI_HP0] [get_bd_intf_pins smartconnect_0/M00_AXI]
 
   # Create port connections
   connect_bd_net -net ARESETN_1 [get_bd_pins ipbus_interconnect/ARESETN] [get_bd_pins ipbus_interconnect/S00_ARESETN] [get_bd_pins ipbus_ps_reset/peripheral_aresetn]
-  connect_bd_net -net ARESETN_2 [get_bd_ports DMA_AXI_ARESETN] [get_bd_pins dma_interconnect/ARESETN] [get_bd_pins dma_interconnect/M00_ARESETN] [get_bd_pins dma_interconnect/S00_ARESETN] [get_bd_pins dma_reset/peripheral_aresetn] [get_bd_pins smartconnect_0/aresetn]
+  connect_bd_net -net ARESETN_2 [get_bd_ports DMA_AXI_ARESETN] [get_bd_pins dma_hp_interconnect/ARESETN] [get_bd_pins dma_hp_interconnect/M00_ARESETN] [get_bd_pins dma_hp_interconnect/S00_ARESETN] [get_bd_pins dma_interconnect/ARESETN] [get_bd_pins dma_interconnect/M00_ARESETN] [get_bd_pins dma_interconnect/S00_ARESETN] [get_bd_pins dma_reset/peripheral_aresetn]
   connect_bd_net -net AXI_MCLK_1 [get_bd_ports IPB_MCLK_IN] [get_bd_pins ipbus_interconnect/M00_ACLK] [get_bd_pins ipbus_pl_reset/slowest_sync_clk]
-  connect_bd_net -net DMA_CLK [get_bd_ports DMA_AXI_CLK_O] [get_bd_pins dma_interconnect/ACLK] [get_bd_pins dma_interconnect/M00_ACLK] [get_bd_pins dma_interconnect/S00_ACLK] [get_bd_pins dma_reset/slowest_sync_clk] [get_bd_pins processing_system/FCLK_CLK0] [get_bd_pins processing_system/M_AXI_GP0_ACLK] [get_bd_pins processing_system/S_AXI_HP0_ACLK] [get_bd_pins smartconnect_0/aclk]
+  connect_bd_net -net DMA_CLK [get_bd_ports DMA_AXI_CLK_O] [get_bd_pins dma_hp_interconnect/ACLK] [get_bd_pins dma_hp_interconnect/M00_ACLK] [get_bd_pins dma_hp_interconnect/S00_ACLK] [get_bd_pins dma_interconnect/ACLK] [get_bd_pins dma_interconnect/M00_ACLK] [get_bd_pins dma_interconnect/S00_ACLK] [get_bd_pins dma_reset/slowest_sync_clk] [get_bd_pins processing_system/FCLK_CLK0] [get_bd_pins processing_system/M_AXI_GP0_ACLK] [get_bd_pins processing_system/S_AXI_HP0_ACLK]
   connect_bd_net -net IPBUS_CLK [get_bd_pins ipbus_interconnect/ACLK] [get_bd_pins ipbus_interconnect/S00_ACLK] [get_bd_pins ipbus_ps_reset/slowest_sync_clk] [get_bd_pins processing_system/FCLK_CLK1] [get_bd_pins processing_system/M_AXI_GP1_ACLK]
   connect_bd_net -net IRQ_F2P_0_1 [get_bd_ports IRQ_F2P_0] [get_bd_pins processing_system/IRQ_F2P]
   connect_bd_net -net M00_ARESETN_1 [get_bd_ports IPB_AXI_ARESETN] [get_bd_pins ipbus_interconnect/M00_ARESETN] [get_bd_pins ipbus_pl_reset/peripheral_aresetn]

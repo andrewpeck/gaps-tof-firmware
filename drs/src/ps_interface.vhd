@@ -103,45 +103,46 @@ architecture Behavioral of ps_interface is
   signal dma_axi_wstrb   : std_logic_vector (3 downto 0);
   signal dma_axi_wvalid  : std_logic;
 
-  signal dma_hp_axi_araddr  : std_logic_vector (31 downto 0);
-  signal dma_hp_axi_arburst : std_logic_vector (1 downto 0);
-  signal dma_hp_axi_arcache : std_logic_vector (3 downto 0);
-  signal dma_hp_axi_arid    : std_logic_vector (5 downto 0);
-  signal dma_hp_axi_arlen   : std_logic_vector (7 downto 0);
-  signal dma_hp_axi_arlock  : std_logic_vector (1 downto 0);
-  signal dma_hp_axi_arprot  : std_logic_vector (2 downto 0);
-  signal dma_hp_axi_arqos   : std_logic_vector (3 downto 0);
-  signal dma_hp_axi_arready : std_logic;
-  signal dma_hp_axi_arsize  : std_logic_vector (2 downto 0);
-  signal dma_hp_axi_arvalid : std_logic;
-  signal dma_hp_axi_awaddr  : std_logic_vector (31 downto 0);
-  signal dma_hp_axi_awburst : std_logic_vector (1 downto 0);
-  signal dma_hp_axi_awcache : std_logic_vector (3 downto 0);
-  signal dma_hp_axi_awuser  : std_logic_vector (3 downto 0);
-  signal dma_hp_axi_aruser  : std_logic_vector (3 downto 0);
-  signal dma_hp_axi_awid    : std_logic_vector (5 downto 0);
-  signal dma_hp_axi_awlen   : std_logic_vector (7 downto 0);
-  signal dma_hp_axi_awlock  : std_logic_vector (1 downto 0);
-  signal dma_hp_axi_awprot  : std_logic_vector (2 downto 0);
-  signal dma_hp_axi_awqos   : std_logic_vector (3 downto 0);
-  signal dma_hp_axi_awready : std_logic;
-  signal dma_hp_axi_awsize  : std_logic_vector (2 downto 0);
-  signal dma_hp_axi_awvalid : std_logic;
-  signal dma_hp_axi_bid     : std_logic_vector (5 downto 0);
-  signal dma_hp_axi_bready  : std_logic;
-  signal dma_hp_axi_bresp   : std_logic_vector (1 downto 0);
-  signal dma_hp_axi_bvalid  : std_logic;
-  signal dma_hp_axi_rdata   : std_logic_vector (31 downto 0);
-  signal dma_hp_axi_rid     : std_logic_vector (5 downto 0);
-  signal dma_hp_axi_rlast   : std_logic;
-  signal dma_hp_axi_rready  : std_logic;
-  signal dma_hp_axi_rresp   : std_logic_vector (1 downto 0);
-  signal dma_hp_axi_rvalid  : std_logic;
-  signal dma_hp_axi_wdata   : std_logic_vector (31 downto 0);
-  signal dma_hp_axi_wlast   : std_logic;
-  signal dma_hp_axi_wready  : std_logic;
-  signal dma_hp_axi_wstrb   : std_logic_vector (3 downto 0);
-  signal dma_hp_axi_wvalid  : std_logic;
+  signal dma_hp_axi_araddr   : std_logic_vector (31 downto 0);
+  signal dma_hp_axi_arburst  : std_logic_vector (1 downto 0);
+  signal dma_hp_axi_arcache  : std_logic_vector (3 downto 0);
+  signal dma_hp_axi_arid     : std_logic_vector (5 downto 0);
+  signal dma_hp_axi_arlen    : std_logic_vector (7 downto 0);
+  signal dma_hp_axi_arlock   : std_logic_vector (1 downto 0);
+  signal dma_hp_axi_arprot   : std_logic_vector (2 downto 0);
+  signal dma_hp_axi_arqos    : std_logic_vector (3 downto 0);
+  signal dma_hp_axi_arready  : std_logic;
+  signal dma_hp_axi_arsize   : std_logic_vector (2 downto 0);
+  signal dma_hp_axi_arvalid  : std_logic;
+  signal dma_hp_axi_awaddr   : std_logic_vector (31 downto 0);
+  signal dma_hp_axi_awburst  : std_logic_vector (1 downto 0);
+  signal dma_hp_axi_awcache  : std_logic_vector (3 downto 0);
+  signal dma_hp_axi_awuser   : std_logic_vector (3 downto 0);
+  signal dma_hp_axi_aruser   : std_logic_vector (3 downto 0);
+  signal dma_hp_axi_awid     : std_logic_vector (5 downto 0);
+  signal dma_hp_axi_awlen    : std_logic_vector (7 downto 0);
+  signal dma_hp_axi_awlock   : std_logic_vector (1 downto 0);
+  signal dma_hp_axi_awprot   : std_logic_vector (2 downto 0);
+  signal dma_hp_axi_awqos    : std_logic_vector (3 downto 0);
+  signal dma_hp_axi_awready  : std_logic;
+  signal dma_hp_axi_awsize   : std_logic_vector (2 downto 0);
+  signal dma_hp_axi_awvalid  : std_logic;
+  signal dma_hp_axi_bid      : std_logic_vector (5 downto 0);
+  signal dma_hp_axi_bready   : std_logic;
+  signal dma_hp_axi_bresp    : std_logic_vector (1 downto 0);
+  signal dma_hp_axi_bvalid   : std_logic;
+  signal dma_hp_axi_rdata    : std_logic_vector (31 downto 0);
+  signal dma_hp_axi_rlast    : std_logic;
+  signal dma_hp_axi_rready   : std_logic;
+  signal dma_hp_axi_rresp    : std_logic_vector (1 downto 0);
+  signal dma_hp_axi_rvalid   : std_logic;
+  signal dma_hp_axi_wdata    : std_logic_vector (31 downto 0);
+  signal dma_hp_axi_arregion : std_logic_vector (3 downto 0) := (others => '0');
+  signal dma_hp_axi_awregion : std_logic_vector (3 downto 0) := (others => '0');
+  signal dma_hp_axi_wlast    : std_logic;
+  signal dma_hp_axi_wready   : std_logic;
+  signal dma_hp_axi_wstrb    : std_logic_vector (3 downto 0);
+  signal dma_hp_axi_wvalid   : std_logic;
 
   signal ipb_axi_aresetn : std_logic;
   signal ipb_axi_araddr  : std_logic_vector (31 downto 0);
@@ -292,12 +293,13 @@ begin
       dma_hp_axi_awready   => dma_hp_axi_awready,
       dma_hp_axi_awsize    => dma_hp_axi_awsize,
       dma_hp_axi_awvalid   => dma_hp_axi_awvalid,
+      dma_hp_axi_awregion  => dma_hp_axi_awregion,
+      dma_hp_axi_arregion  => dma_hp_axi_arregion,
       dma_hp_axi_bid       => dma_hp_axi_bid,
       dma_hp_axi_bready    => dma_hp_axi_bready,
       dma_hp_axi_bresp     => dma_hp_axi_bresp,
       dma_hp_axi_bvalid    => dma_hp_axi_bvalid,
       dma_hp_axi_rdata     => dma_hp_axi_rdata,
-      dma_hp_axi_rid       => dma_hp_axi_rid,
       dma_hp_axi_rlast     => dma_hp_axi_rlast,
       dma_hp_axi_rready    => dma_hp_axi_rready,
       dma_hp_axi_rresp     => dma_hp_axi_rresp,
