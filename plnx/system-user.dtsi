@@ -1,0 +1,69 @@
+/include/ "system-conf.dtsi"
+/ {
+
+&i2c0 {
+    pinctrl-names = "default", "gpio";
+    pinctrl-0 = <&pinctrl_i2c0_default>;
+    pinctrl-1 = <&pinctrl_i2c0_gpio>;
+    // This might be different for Mars?
+    scl-gpios = <&gpio 14 0>;
+    sda-gpios = <&gpio 15 0>;
+
+    i2c-mux@75 {
+        compatible = "nxp,pca9548"; /* U40 PCA9548ABS,118*/
+        #address-cells = <1>;
+        #size-cells = <0>;
+        reg = <0x75>;
+        i2c@0 { /* i2c mw 75 0 1 */
+            #address-cells = <1>;
+            #size-cells = <0>;
+            reg = <0>;
+            /* PS_PMBUS */
+            ina226@41 { /* U30 Zynq 3V3 rail */
+                compatible = "ti,ina226";
+                reg = <0x41>;
+                label = "Zynq3V3-I2C0";
+            };
+            ina226@43 { /* U30 4V rail */
+                compatible = "ti,ina226";
+                reg = <0x43>;
+                label = "4V-I2C0";
+            };
+            ina226@44 { /* U29 3V3 rail */
+                compatible = "ti,ina226";
+                reg = <0x44>;
+                label = "3V3-I2C0";
+            };
+            ina226@45 { /* U31 -1V rail */
+                compatible = "ti,ina226";
+                reg = <0x45>;
+                label = "neg1V-I2C0";
+            };
+            ina226@4e { /* U19 DRS4 digital rail */
+                compatible = "ti,ina226";
+                reg = <0x4e>;
+                label = "drs4dvdd-I2C0";
+            };
+            tmp112@48 { /* U20 DRS4 temp */
+                compatible = "ti,tmp112";
+                reg = <0x48>;
+                label = "drs4-temp-I2C0";
+            };
+            tmp112@4b { /* U33 Si5395 temp */
+                compatible = "ti,tmp112";
+                reg = <0x4b>;
+                label = "clk-synth-temp-I2C0";
+            };
+            lis3mdl@1e { /* U32 B-field sense */
+                compatible = "st,lis3mdl-magn";
+                reg = <0x1e>;
+                label = "bfield-I2C0";
+            };
+            bme280@76 { /* U34 Env sense */
+                compatible = "bosch,bme280";
+                reg = <0x76>;
+                label = "bme280-I2C0";
+            };
+    }
+
+};
