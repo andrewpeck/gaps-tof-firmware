@@ -64,6 +64,65 @@
                 reg = <0x76>;
                 label = "bme280-I2C0";
             };
-    }
+        };
+    };
+
+    i2c-mux@77 {
+        compatible = "nxp,pca9548"; /* U39 PCA9548ABS,118*/
+        #address-cells = <1>;
+        #size-cells = <0>;
+        reg = <0x77>;
+        i2c@0 { 
+            #address-cells = <1>;
+            #size-cells = <0>;
+            reg = <0>;
+            /* PS_PMBUS */
+            ina226@42 { /* U24 AD9245 digital */
+                compatible = "ti,ina226";
+                reg = <0x42>;
+                label = "ad9245dvdd-I2C0";
+            };
+            ina226@40 { /* U18 DRS analog rail */
+                compatible = "ti,ina226";
+                reg = <0x40>;
+                label = "drs4avdd-I2C0";
+            };
+            ina226@4f { /* U23 ADC analog rail */
+                compatible = "ti,ina226";
+                reg = <0x4f>;
+                label = "ad9245avdd-I2C0";
+            };
+            tmp112@4a { /* U22 ADC temp */
+                compatible = "ti,tmp112";
+                reg = <0x4a>;
+                label = "ad9245temp-I2C0";
+            };
+            tmp112@4b { /* U33 Si5395 temp */
+                compatible = "ti,tmp112";
+                reg = <0x4b>;
+                label = "clk-synth-temp-I2C0";
+            };
+            si5395@68 { /* U34 Clock synth comms */
+                compatible = "silabs,si5395";
+                reg = <0x68>;
+                label = "si5395-I2C0";
+            };
+            ad5675@0c { /* U37 VCAL DAC unsure if this will work */
+                compatible = "ad,ad5675";
+                reg = <0x0c>;
+                label = "ad5675DAC-I2C0";
+            };
+            cy8c9560@50 { /* U16 GPIO mux eeprom, unsure if this will work */
+                compatible = "cy,cy8c9560";
+                reg = <0x0c>;
+                label = "cy8c9560-eeprom-I2C0";
+            };
+            cy8c9560@20 { /* U16 GPIO mux multiport, unsure if this will work */
+                compatible = "cy,cy8c9560";
+                reg = <0x20>;
+                label = "cy8c9560-multiport-I2C0";
+            };
+        };
+    };
 
 };
