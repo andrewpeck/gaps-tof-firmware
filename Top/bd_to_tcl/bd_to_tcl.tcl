@@ -49,5 +49,5 @@ set_property  ip_repo_paths  $PATH_REPO/ip [current_project]
 update_ip_catalog
 
 set origin_dir_loc $PATH_REPO
-open_bd_design [get_files -filter {NAME =~ *top_readout_board.bd}]
+open_bd_design [get_files -filter {NAME =~ *gaps_ps_interface.bd}]
 write_bd_tcl -no_ip_version -include_layout -force $PATH_REPO/bd/readout-board-bd.tcl

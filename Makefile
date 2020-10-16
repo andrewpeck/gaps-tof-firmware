@@ -7,6 +7,16 @@ else
 COLORIZE = | ccze -A
 endif
 
+IFTIME := $(shell command -v time 2> /dev/null)
+ifndef IFTIME
+TIMECMD =
+else
+TIMECMD = time -p
+endif
+
+list:
+	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$'
+
 all: create synth impl
 
 init:
@@ -15,26 +25,20 @@ init:
 reg:
 	cd regmap && make
 
-drs_ip:
-	Hog/CreateProject.sh drs_ip $(COLORIZE)
-
-trg_ip:
-	Hog/CreateProject.sh trg_ip $(COLORIZE)
-
-dma_ip:
-	Hog/CreateProject.sh dma_ip $(COLORIZE)
-
 tcl_to_bd:
-	Hog/CreateProject.sh tcl_to_bd $(COLORIZE)
+	$(TIMECMD) Hog/CreateProject.sh tcl_to_bd $(COLORIZE)
 
-create: drs_ip trg_ip dma_ip tcl_to_bd
-	Hog/CreateProject.sh readout_board $(COLORIZE)
+bd_to_tcl:
+	$(TIMECMD) Hog/CreateProject.sh bd_to_tcl $(COLORIZE)
+
+create:
+	$(TIMECMD) Hog/CreateProject.sh readout_board $(COLORIZE)
 
 synth:
-	Hog/LaunchSynthesis.sh readout_board $(COLORIZE)
+	$(TIMECMD) Hog/LaunchWorkflow.sh -synth_only readout_board $(COLORIZE)
 
 impl:
-	Hog/LaunchImplementation.sh readout_board $(COLORIZE)
+	$(TIMECMD) Hog/LaunchWorkflow.sh -impl_only readout_board $(COLORIZE)
 
 clean:
 	rm -rf VivadoProject/

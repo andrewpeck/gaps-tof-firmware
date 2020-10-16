@@ -1,2 +1,2 @@
 # -*- mode: TCL;-*-
-bd/top_readout_board/top_readout_board.bd
+bd/gaps_ps_interface/gaps_ps_interface.bd

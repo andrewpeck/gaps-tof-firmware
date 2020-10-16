@@ -1,4 +1,0 @@
-# -*- mode: TCL;-*-
-trg/src/drs_trigger.v
-trg/src/dwrite_trigger.v
-trg/src/s_axi.v
