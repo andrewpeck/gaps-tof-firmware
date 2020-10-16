@@ -2,12 +2,6 @@
 / {
 
 &i2c0 {
-    pinctrl-names = "default", "gpio";
-    pinctrl-0 = <&pinctrl_i2c0_default>;
-    pinctrl-1 = <&pinctrl_i2c0_gpio>;
-    // This might be different for Mars?
-    scl-gpios = <&gpio 14 0>;
-    sda-gpios = <&gpio 15 0>;
 
     i2c-mux@75 {
         compatible = "nxp,pca9548"; /* U40 PCA9548ABS,118*/
@@ -114,7 +108,7 @@
             };
             cy8c9560@50 { /* U16 GPIO mux eeprom, unsure if this will work */
                 compatible = "cy,cy8c9560";
-                reg = <0x0c>;
+                reg = <0x50>;
                 label = "cy8c9560-eeprom-I2C0";
             };
             cy8c9560@20 { /* U16 GPIO mux multiport, unsure if this will work */
