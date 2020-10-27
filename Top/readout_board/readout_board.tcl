@@ -1,6 +1,6 @@
 #vivado
 ############# modify these to match project ################
-set BIN_FILE 0
+set BIN_FILE 1
 set SIMULATOR  xsim
 
 ## FPGA and Vivado strategies and flows
