@@ -1,41 +1,7 @@
 # #################### READOUT-BOARD Project ###########################
-
-create_project:readout-board:
-    extends: .create_project
+generate_project:readout_board:
+    extends: .generate_project
     variables:
       extends: .vars
-      PROJECT_NAME: readout-board
-
-# simulate_project:readout-board:
-#     extends: .simulate_project
-#     variables:
-#       extends: .vars
-#       PROJECT_NAME: readout-board
-
-synthesise_ips:readout-board:
-    extends: .synthesise_ips
-    variables:
-      extends: .vars
-      PROJECT_NAME: readout-board
-      IP_PATH: IP
-    dependencies:
-        - create_project:readout-board
-
-synthesise_project:readout-board:
-    extends: .synthesise_project
-    variables:
-      extends: .vars
-      PROJECT_NAME: readout-board
-    dependencies:
-        - synthesise_ips:readout-board
-        - create_project:readout-board
-
-implement_project:readout-board:
-    extends: .implement_project
-    variables:
-      extends: .vars
-      PROJECT_NAME: readout-board
-    dependencies:
-       - create_project:readout-board
-       - synthesise_ips:readout-board
-       - synthesise_project:readout-board
+      PROJECT_NAME: readout_board
+      HOG_ONLY_SYNTH: 0 # if 1 runs only the synthesis

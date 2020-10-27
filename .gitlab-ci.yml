@@ -1,0 +1,7 @@
+#https://gitlab.com/gitlab-org/gitlab/-/issues/31971
+
+include:
+    - project: 'andrewpeck1/Hog'
+      file: '/hog.yml'
+      ref: 'v2.11.0'
+    - local: '/Top/readout_board/gitlab-ci.yml'
