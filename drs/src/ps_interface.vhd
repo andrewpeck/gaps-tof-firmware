@@ -50,6 +50,9 @@ entity ps_interface is
     clk33          : in std_logic;
     pl_mmcm_locked : in std_logic;
 
+    packet_counter    : out std_logic_vector(31 downto 0);
+    dma_control_reset : in  std_logic;
+
     ipb_reset    : out std_logic;
     ipb_clk      : out std_logic;
     ipb_miso_arr : in  ipb_rbus_array(IPB_SLAVES - 1 downto 0) := (others => (ipb_rdata => (others => '0'), ipb_ack => '0', ipb_err => '0'));
@@ -64,44 +67,6 @@ architecture Behavioral of ps_interface is
 
   signal dma_axi_aclk    : std_logic;
   signal dma_axi_aresetn : std_logic;
-  signal dma_axi_araddr  : std_logic_vector (31 downto 0);
-  signal dma_axi_arburst : std_logic_vector (1 downto 0);
-  signal dma_axi_arcache : std_logic_vector (3 downto 0);
-  signal dma_axi_arid    : std_logic_vector (11 downto 0);
-  signal dma_axi_arlen   : std_logic_vector (3 downto 0);
-  signal dma_axi_arlock  : std_logic_vector (1 downto 0);
-  signal dma_axi_arprot  : std_logic_vector (2 downto 0);
-  signal dma_axi_arqos   : std_logic_vector (3 downto 0);
-  signal dma_axi_arready : std_logic;
-  signal dma_axi_arsize  : std_logic_vector (2 downto 0);
-  signal dma_axi_arvalid : std_logic;
-  signal dma_axi_awaddr  : std_logic_vector (31 downto 0);
-  signal dma_axi_awburst : std_logic_vector (1 downto 0);
-  signal dma_axi_awcache : std_logic_vector (3 downto 0);
-  signal dma_axi_awid    : std_logic_vector (11 downto 0);
-  signal dma_axi_awlen   : std_logic_vector (3 downto 0);
-  signal dma_axi_awlock  : std_logic_vector (1 downto 0);
-  signal dma_axi_awprot  : std_logic_vector (2 downto 0);
-  signal dma_axi_awqos   : std_logic_vector (3 downto 0);
-  signal dma_axi_awready : std_logic;
-  signal dma_axi_awsize  : std_logic_vector (2 downto 0);
-  signal dma_axi_awvalid : std_logic;
-  signal dma_axi_bid     : std_logic_vector (11 downto 0);
-  signal dma_axi_bready  : std_logic;
-  signal dma_axi_bresp   : std_logic_vector (1 downto 0);
-  signal dma_axi_bvalid  : std_logic;
-  signal dma_axi_rdata   : std_logic_vector (31 downto 0);
-  signal dma_axi_rid     : std_logic_vector (11 downto 0);
-  signal dma_axi_rlast   : std_logic;
-  signal dma_axi_rready  : std_logic;
-  signal dma_axi_rresp   : std_logic_vector (1 downto 0);
-  signal dma_axi_rvalid  : std_logic;
-  signal dma_axi_wdata   : std_logic_vector (31 downto 0);
-  signal dma_axi_wid     : std_logic_vector (11 downto 0);
-  signal dma_axi_wlast   : std_logic;
-  signal dma_axi_wready  : std_logic;
-  signal dma_axi_wstrb   : std_logic_vector (3 downto 0);
-  signal dma_axi_wvalid  : std_logic;
 
   signal dma_hp_axi_araddr   : std_logic_vector (31 downto 0);
   signal dma_hp_axi_arburst  : std_logic_vector (1 downto 0);
@@ -198,7 +163,8 @@ begin
   gaps_ps_interface_wrapper_inst : entity xil_defaultlib.gaps_ps_interface_wrapper
     port map (
 
-      dma_axi_clk_o  => dma_axi_aclk,   -- FIXME: connect this
+      --
+      dma_axi_clk_o  => dma_axi_aclk,
       ipb_mclk_in    => clk33,
       pl_mmcm_locked => pl_mmcm_locked,
 
@@ -226,47 +192,6 @@ begin
       ddr_ras_n   => ddr_ras_n,
       ddr_reset_n => ddr_reset_n,
       ddr_we_n    => ddr_we_n,
-
-      --
-      dma_axi_aresetn(0) => dma_axi_aresetn,
-      dma_axi_araddr     => dma_axi_araddr,
-      dma_axi_arburst    => dma_axi_arburst,
-      dma_axi_arcache    => dma_axi_arcache,
-      dma_axi_arid       => dma_axi_arid,
-      dma_axi_arlen      => dma_axi_arlen,
-      dma_axi_arlock     => dma_axi_arlock,
-      dma_axi_arprot     => dma_axi_arprot,
-      dma_axi_arqos      => dma_axi_arqos,
-      dma_axi_arready    => dma_axi_arready,
-      dma_axi_arsize     => dma_axi_arsize,
-      dma_axi_arvalid    => dma_axi_arvalid,
-      dma_axi_awaddr     => dma_axi_awaddr,
-      dma_axi_awburst    => dma_axi_awburst,
-      dma_axi_awcache    => dma_axi_awcache,
-      dma_axi_awid       => dma_axi_awid,
-      dma_axi_awlen      => dma_axi_awlen,
-      dma_axi_awlock     => dma_axi_awlock,
-      dma_axi_awprot     => dma_axi_awprot,
-      dma_axi_awqos      => dma_axi_awqos,
-      dma_axi_awready    => dma_axi_awready,
-      dma_axi_awsize     => dma_axi_awsize,
-      dma_axi_awvalid    => dma_axi_awvalid,
-      dma_axi_bid        => dma_axi_bid,
-      dma_axi_bready     => dma_axi_bready,
-      dma_axi_bresp      => dma_axi_bresp,
-      dma_axi_bvalid     => dma_axi_bvalid,
-      dma_axi_rdata      => dma_axi_rdata,
-      dma_axi_rid        => dma_axi_rid,
-      dma_axi_rlast      => dma_axi_rlast,
-      dma_axi_rready     => dma_axi_rready,
-      dma_axi_rresp      => dma_axi_rresp,
-      dma_axi_rvalid     => dma_axi_rvalid,
-      dma_axi_wdata      => dma_axi_wdata,
-      dma_axi_wid        => dma_axi_wid,
-      dma_axi_wlast      => dma_axi_wlast,
-      dma_axi_wready     => dma_axi_wready,
-      dma_axi_wstrb      => dma_axi_wstrb,
-      dma_axi_wvalid     => dma_axi_wvalid,
 
       --
       dma_hp_axi_araddr    => dma_hp_axi_araddr,
@@ -352,46 +277,24 @@ begin
       ipb_axi_wvalid     => ipb_axi_wvalid,
       irq_f2p_0          => irq_f2p_0);
 
-  gaps_dma_controller_rev1_v1_0_1 : entity dma.gaps_dma_controller_rev1_v1_0
+  dma_controller_inst : entity dma.dma_controller
     generic map (
-      C_S00_AXI_DATA_WIDTH => 32,
-      C_S00_AXI_ADDR_WIDTH => 6,
-      C_S01_AXI_DATA_WIDTH => 32,
-      C_S01_AXI_ADDR_WIDTH => 32,
-      words_to_send        => 16,
-      MAX_ADDRESS          => x"10800000",
-      HEAD                 => x"AAAA",
-      TAIL                 => x"5555"
+      words_to_send => 16,
+      max_address   => x"10800000",
+      head          => x"aaaa",
+      tail          => x"5555"
       )
     port map (
+      --
+      packet_sent => packet_counter,
+      reset_sys   => dma_control_reset,
 
       clk_in     => fifo_clock_in,
+      clk_axi    => dma_axi_aclk,
       rst_in     => dma_reset,
       fifo_in    => x"0000" & fifo_data_in,
       fifo_wr_en => fifo_data_wen,
       fifo_full  => open,               -- TODO: connect to monitor
-
-      s00_axi_aclk    => dma_axi_aclk,
-      s00_axi_aresetn => dma_axi_aresetn,
-      s00_axi_awaddr  => dma_axi_awaddr(5 downto 0),
-      s00_axi_awprot  => dma_axi_awprot,
-      s00_axi_awvalid => dma_axi_awvalid,
-      s00_axi_awready => dma_axi_awready,
-      s00_axi_wdata   => dma_axi_wdata,
-      s00_axi_wstrb   => dma_axi_wstrb,
-      s00_axi_wvalid  => dma_axi_wvalid,
-      s00_axi_wready  => dma_axi_wready,
-      s00_axi_bresp   => dma_axi_bresp,
-      s00_axi_bvalid  => dma_axi_bvalid,
-      s00_axi_bready  => dma_axi_bready,
-      s00_axi_araddr  => dma_axi_araddr(5 downto 0),
-      s00_axi_arprot  => dma_axi_arprot,
-      s00_axi_arvalid => dma_axi_arvalid,
-      s00_axi_arready => dma_axi_arready,
-      s00_axi_rdata   => dma_axi_rdata,
-      s00_axi_rresp   => dma_axi_rresp,
-      s00_axi_rvalid  => dma_axi_rvalid,
-      s00_axi_rready  => dma_axi_rready,
 
       m_axi_s2mm_awid    => dma_hp_axi_awid (3 downto 0),
       m_axi_s2mm_awaddr  => dma_hp_axi_awaddr,

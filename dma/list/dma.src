@@ -6,6 +6,4 @@ ip/axis2aximm/axis2aximm.xci
 ip/fifo_generator_0/fifo_generator_0.xci
 
 # DMA Files
-dma/src/GAPS_DMA_Controller_rev1_v1_0.vhd
-dma/src/GAPS_DMA_Controller_rev1_v1_0_S00_AXI.vhd
 dma/src/dma_controller.vhd
