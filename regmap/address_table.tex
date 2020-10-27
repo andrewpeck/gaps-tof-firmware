@@ -85,6 +85,7 @@
     CONFIGURE & \texttt{0x14} & \texttt{[0:0]} & w & Pulse & Write 1 to configure the DRS. Should be done before data taking \\\hline
     DRS\_RESET & \texttt{0x15} & \texttt{[0:0]} & w & Pulse & Write 1 to completely reset the DRS state machine logic \\\hline
     DAQ\_RESET & \texttt{0x16} & \texttt{[0:0]} & w & Pulse & Write 1 to completely reset the DAQ state machine logic \\\hline
+    DMA\_RESET & \texttt{0x17} & \texttt{[0:0]} & w & Pulse & Write 1 to completely reset the DMA state machine logic \\\hline
     \end{tabularx}
     \vspace{5mm}
 
@@ -178,9 +179,10 @@
     \nopagebreak
     CNT\_SEM\_CORRECTION & \texttt{0x50} & \texttt{[15:0]} & r & \texttt{} & Number of Single Event Errors corrected by the scrubber \\\hline
     CNT\_SEM\_UNCORRECTABLE & \texttt{0x51} & \texttt{[19:16]} & r & \texttt{} & Number of Critical Single Event Errors (uncorrectable by scrubber) \\\hline
-    CNT\_READOUTS\_COMPLETED & \texttt{0x52} & \texttt{[15:0]} & r & \texttt{} & Number of readouts completed since reset \\\hline
-    CNT\_LOST\_EVENT & \texttt{0x53} & \texttt{[31:16]} & r & \texttt{} & Number of trigger lost due to deadtime \\\hline
-    CNT\_EVENT & \texttt{0x54} & \texttt{[31:0]} & r & \texttt{} & Number of triggers received \\\hline
+    CNT\_READOUTS\_COMPLETED & \texttt{0x52} & \texttt{[31:0]} & r & \texttt{} & Number of readouts completed since reset \\\hline
+    CNT\_DMA\_READOUTS\_COMPLETED & \texttt{0x53} & \texttt{[31:0]} & r & \texttt{} & Number of readouts completed since reset \\\hline
+    CNT\_LOST\_EVENT & \texttt{0x54} & \texttt{[31:16]} & r & \texttt{} & Number of trigger lost due to deadtime \\\hline
+    CNT\_EVENT & \texttt{0x55} & \texttt{[31:0]} & r & \texttt{} & Number of triggers received \\\hline
     \end{tabularx}
     \vspace{5mm}
 
