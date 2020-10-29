@@ -519,7 +519,7 @@ proc create_root_design { parentCell } {
    CONFIG.PCW_MIO_40_DIRECTION {inout} \
    CONFIG.PCW_MIO_40_IOTYPE {LVCMOS 1.8V} \
    CONFIG.PCW_MIO_40_PULLUP {disabled} \
-   CONFIG.PCW_MIO_40_SLEW {fast} \
+   CONFIG.PCW_MIO_40_SLEW {slow} \
    CONFIG.PCW_MIO_41_DIRECTION {inout} \
    CONFIG.PCW_MIO_41_IOTYPE {LVCMOS 1.8V} \
    CONFIG.PCW_MIO_41_PULLUP {disabled} \

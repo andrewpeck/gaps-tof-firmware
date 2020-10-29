@@ -960,7 +960,7 @@
             "value": "disabled"
           },
           "PCW_MIO_40_SLEW": {
-            "value": "fast"
+            "value": "slow"
           },
           "PCW_MIO_41_IOTYPE": {
             "value": "LVCMOS 1.8V"
@@ -1532,16 +1532,16 @@
                   "s00_regslice/S_AXI"
                 ]
               },
-              "auto_pc_to_s00_couplers": {
-                "interface_ports": [
-                  "M_AXI",
-                  "auto_pc/M_AXI"
-                ]
-              },
               "s00_regslice_to_auto_pc": {
                 "interface_ports": [
                   "s00_regslice/M_AXI",
                   "auto_pc/S_AXI"
+                ]
+              },
+              "auto_pc_to_s00_couplers": {
+                "interface_ports": [
+                  "M_AXI",
+                  "auto_pc/M_AXI"
                 ]
               }
             },
@@ -1767,16 +1767,16 @@
           }
         },
         "interface_nets": {
-          "ipbus_interconnect_to_s00_couplers": {
-            "interface_ports": [
-              "S00_AXI",
-              "s00_couplers/S_AXI"
-            ]
-          },
           "s00_couplers_to_ipbus_interconnect": {
             "interface_ports": [
               "M00_AXI",
               "s00_couplers/M_AXI"
+            ]
+          },
+          "ipbus_interconnect_to_s00_couplers": {
+            "interface_ports": [
+              "S00_AXI",
+              "s00_couplers/S_AXI"
             ]
           }
         },
