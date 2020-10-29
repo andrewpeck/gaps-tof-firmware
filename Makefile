@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 .PHONY: create synth impl reg init
 
 CCZE := $(shell command -v ccze 2> /dev/null)
