@@ -7,6 +7,7 @@
   - [[#block-design-creation][Block Design Creation]]
   - [[#dataformat][Dataformat]]
   - [[#trigger-data-format][Trigger Data Format]]
+- [[#gitlab-runner-registration][Gitlab runner registration]]
 
 ** Organization
 
@@ -20,7 +21,6 @@
     ├── ip                            : Holds both user and Vivado IP cores
     ├── dma                           : Files for DMA driver
     ├── drs                           : Files for DRS4 control
-    ├── trg                           : Files for AXI-SLAVE trigger interface
     ├──xdc                            : Xilinx XDC constraint files
     └──VivadoProject
        └──readout_board               : Location of hardware description file (.xsa) for PetaLinux build
@@ -181,3 +181,25 @@ assign_bd_address -offset 0x80000000 -range 0x00010000 -target_address_space [ge
 | EVENT_ID | [31:0] | Event ID                                |
 |----------+--------+-----------------------------------------|
 
+* Gitlab runner registration
+Some simple instructions for registering a Gitlab runner
+
+1. Install gitlab-runner
+   + https://docs.gitlab.com/runner/install/
+2. Execute ~gitlab-runner register~
+3. At the prompt of "Please enter the gitlab-ci coordinator URL (e.g. https://gitlab.com/):", enter:
+  #+BEGIN_SRC
+  https://gitlab.com/
+  #+END_SRC
+4. At the prompt of "Please enter the gitlab-ci token for this runner:", enter the token that you get from  Settings -> CI/CD -> Runners --> Set up a specific Runner manually.
+5. At the prompt of "Please enter the gitlab-ci description for this runner:", give it a name:
+6. At the prompt of "Please enter the gitlab-ci tags for this runner (comma separated):", enter
+   #+BEGIN_SRC
+hog
+   #+END_SRC
+7. At the prompt of: "Please enter the executor: docker+machine, docker-ssh+machine, kubernetes, parallels, virtualbox, docker-ssh, shell, ssh, custom, docker:", enter:
+   #+BEGIN_SRC
+shell
+   #+END_SRC
+
+Now you can simply start the runner (~gitlab-runner run~). Make sure Vivado is in the path.
