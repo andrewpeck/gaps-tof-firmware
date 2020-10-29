@@ -52,8 +52,8 @@ entity top_readout_board is
     drs_plllock_i : in  std_logic;                      --
     drs_dtap_i    : in  std_logic;                      --
 
-    trigger_i_p : in std_logic;
-    trigger_i_n : in std_logic;
+    trigger_i_p : in std_logic; -- trigger_i from rj45
+    trigger_i_n : in std_logic; -- trigger_i from rj45
 
     -- Zynq IO
     fixed_io_mio      : inout std_logic_vector (53 downto 0);
@@ -78,8 +78,8 @@ entity top_readout_board is
     ddr_dqs_n         : inout std_logic_vector (3 downto 0);
     ddr_dqs_p         : inout std_logic_vector (3 downto 0);
 
-    gpio_p : inout std_logic_vector (10 downto 0);
-    gpio_n : inout std_logic_vector (10 downto 0)
+    gpio_p : inout std_logic_vector (9 downto 0);
+    gpio_n : inout std_logic_vector (9 downto 0)
 
     );
 end top_readout_board;
