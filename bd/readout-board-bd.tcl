@@ -187,16 +187,6 @@ proc create_root_design { parentCell } {
   # Create interface ports
   set DDR [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:ddrx_rtl:1.0 DDR ]
 
-  set DMA_AXI [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 DMA_AXI ]
-  set_property -dict [ list \
-   CONFIG.ADDR_WIDTH {32} \
-   CONFIG.DATA_WIDTH {32} \
-   CONFIG.HAS_REGION {0} \
-   CONFIG.NUM_READ_OUTSTANDING {8} \
-   CONFIG.NUM_WRITE_OUTSTANDING {8} \
-   CONFIG.PROTOCOL {AXI3} \
-   ] $DMA_AXI
-
   set DMA_HP_AXI [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 DMA_HP_AXI ]
   set_property -dict [ list \
    CONFIG.ADDR_WIDTH {32} \
@@ -265,13 +255,6 @@ proc create_root_design { parentCell } {
    CONFIG.S00_HAS_DATA_FIFO {0} \
    CONFIG.S00_HAS_REGSLICE {4} \
  ] $dma_hp_interconnect
-
-  # Create instance: dma_interconnect, and set properties
-  set dma_interconnect [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect dma_interconnect ]
-  set_property -dict [ list \
-   CONFIG.NUM_MI {1} \
-   CONFIG.NUM_SI {1} \
- ] $dma_interconnect
 
   # Create instance: dma_reset, and set properties
   set dma_reset [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset dma_reset ]
@@ -743,18 +726,16 @@ proc create_root_design { parentCell } {
   # Create interface connections
   connect_bd_intf_net -intf_net DMA_HP_AXI_1 [get_bd_intf_ports DMA_HP_AXI] [get_bd_intf_pins dma_hp_interconnect/S00_AXI]
   connect_bd_intf_net -intf_net axi_interconnect_0_M00_AXI [get_bd_intf_ports IPB_AXI] [get_bd_intf_pins ipbus_interconnect/M00_AXI]
-  connect_bd_intf_net -intf_net axi_interconnect_1_M00_AXI [get_bd_intf_ports DMA_AXI] [get_bd_intf_pins dma_interconnect/M00_AXI]
   connect_bd_intf_net -intf_net dma_interconnect1_M00_AXI [get_bd_intf_pins dma_hp_interconnect/M00_AXI] [get_bd_intf_pins processing_system/S_AXI_HP0]
   connect_bd_intf_net -intf_net processing_system7_0_DDR [get_bd_intf_ports DDR] [get_bd_intf_pins processing_system/DDR]
   connect_bd_intf_net -intf_net processing_system7_0_FIXED_IO [get_bd_intf_ports FIXED_IO] [get_bd_intf_pins processing_system/FIXED_IO]
-  connect_bd_intf_net -intf_net processing_system_M_AXI_GP0 [get_bd_intf_pins dma_interconnect/S00_AXI] [get_bd_intf_pins processing_system/M_AXI_GP0]
   connect_bd_intf_net -intf_net processing_system_M_AXI_GP1 [get_bd_intf_pins ipbus_interconnect/S00_AXI] [get_bd_intf_pins processing_system/M_AXI_GP1]
 
   # Create port connections
   connect_bd_net -net ARESETN_1 [get_bd_pins ipbus_interconnect/ARESETN] [get_bd_pins ipbus_interconnect/S00_ARESETN] [get_bd_pins ipbus_ps_reset/peripheral_aresetn]
-  connect_bd_net -net ARESETN_2 [get_bd_ports DMA_AXI_ARESETN] [get_bd_pins dma_hp_interconnect/ARESETN] [get_bd_pins dma_hp_interconnect/M00_ARESETN] [get_bd_pins dma_hp_interconnect/S00_ARESETN] [get_bd_pins dma_interconnect/ARESETN] [get_bd_pins dma_interconnect/M00_ARESETN] [get_bd_pins dma_interconnect/S00_ARESETN] [get_bd_pins dma_reset/peripheral_aresetn]
+  connect_bd_net -net ARESETN_2 [get_bd_ports DMA_AXI_ARESETN] [get_bd_pins dma_hp_interconnect/ARESETN] [get_bd_pins dma_hp_interconnect/M00_ARESETN] [get_bd_pins dma_hp_interconnect/S00_ARESETN] [get_bd_pins dma_reset/peripheral_aresetn]
   connect_bd_net -net AXI_MCLK_1 [get_bd_ports IPB_MCLK_IN] [get_bd_pins ipbus_interconnect/M00_ACLK] [get_bd_pins ipbus_pl_reset/slowest_sync_clk]
-  connect_bd_net -net DMA_CLK [get_bd_ports DMA_AXI_CLK_O] [get_bd_pins dma_hp_interconnect/ACLK] [get_bd_pins dma_hp_interconnect/M00_ACLK] [get_bd_pins dma_hp_interconnect/S00_ACLK] [get_bd_pins dma_interconnect/ACLK] [get_bd_pins dma_interconnect/M00_ACLK] [get_bd_pins dma_interconnect/S00_ACLK] [get_bd_pins dma_reset/slowest_sync_clk] [get_bd_pins processing_system/FCLK_CLK0] [get_bd_pins processing_system/M_AXI_GP0_ACLK] [get_bd_pins processing_system/S_AXI_HP0_ACLK]
+  connect_bd_net -net DMA_CLK [get_bd_ports DMA_AXI_CLK_O] [get_bd_pins dma_hp_interconnect/ACLK] [get_bd_pins dma_hp_interconnect/M00_ACLK] [get_bd_pins dma_hp_interconnect/S00_ACLK] [get_bd_pins dma_reset/slowest_sync_clk] [get_bd_pins processing_system/FCLK_CLK0] [get_bd_pins processing_system/M_AXI_GP0_ACLK] [get_bd_pins processing_system/S_AXI_HP0_ACLK]
   connect_bd_net -net IPBUS_CLK [get_bd_pins ipbus_interconnect/ACLK] [get_bd_pins ipbus_interconnect/S00_ACLK] [get_bd_pins ipbus_ps_reset/slowest_sync_clk] [get_bd_pins processing_system/FCLK_CLK1] [get_bd_pins processing_system/M_AXI_GP1_ACLK]
   connect_bd_net -net IRQ_F2P_0_1 [get_bd_ports IRQ_F2P_0] [get_bd_pins processing_system/IRQ_F2P]
   connect_bd_net -net M00_ARESETN_1 [get_bd_ports IPB_AXI_ARESETN] [get_bd_pins ipbus_interconnect/M00_ARESETN] [get_bd_pins ipbus_pl_reset/peripheral_aresetn]
@@ -762,7 +743,6 @@ proc create_root_design { parentCell } {
   connect_bd_net -net ps_reset [get_bd_pins dma_reset/ext_reset_in] [get_bd_pins ipbus_pl_reset/ext_reset_in] [get_bd_pins ipbus_ps_reset/ext_reset_in] [get_bd_pins processing_system/FCLK_RESET0_N]
 
   # Create address segments
-  assign_bd_address -offset 0x43C00000 -range 0x00001000 -target_address_space [get_bd_addr_spaces processing_system/Data] [get_bd_addr_segs DMA_AXI/Reg] -force
   assign_bd_address -offset 0x80000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system/Data] [get_bd_addr_segs IPB_AXI/Reg] -force
   assign_bd_address -offset 0x00000000 -range 0x20000000 -target_address_space [get_bd_addr_spaces DMA_HP_AXI] [get_bd_addr_segs processing_system/S_AXI_HP0/HP0_DDR_LOWOCM] -force
 
