@@ -292,7 +292,7 @@ begin
       clk_in     => fifo_clock_in,
       clk_axi    => dma_axi_aclk,
       rst_in     => dma_reset,
-      fifo_in    => x"0000" & fifo_data_in,
+      fifo_in    => x"0000" & fifo_data_in, -- TODO: this is really inefficient...
       fifo_wr_en => fifo_data_wen,
       fifo_full  => open,               -- TODO: connect to monitor
 

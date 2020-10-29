@@ -54,6 +54,7 @@ update_compile_order -fileset sources_1
 
 open_bd_design [get_files $PATH_REPO/bd/gaps_ps_interface/gaps_ps_interface.bd]
 upgrade_bd_cells [get_bd_cells {*}]
+set_property -dict [list CONFIG.PCW_SDIO_PERIPHERAL_FREQMHZ {33.333333333333} CONFIG.PCW_QSPI_GRP_SINGLE_SS_ENABLE {1}] [get_bd_cells processing_system]
 make_wrapper -files [get_files $PATH_REPO/bd/gaps_ps_interface/gaps_ps_interface.bd] -top
 add_files -norecurse $PATH_REPO/bd/gaps_ps_interface/hdl/gaps_ps_interface_wrapper.vhd
 

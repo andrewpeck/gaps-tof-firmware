@@ -465,7 +465,7 @@
             "value": "125.000000"
           },
           "PCW_ACT_SDIO_PERIPHERAL_FREQMHZ": {
-            "value": "15.873016"
+            "value": "33.333336"
           },
           "PCW_ACT_SMC_PERIPHERAL_FREQMHZ": {
             "value": "10.000000"
@@ -1233,7 +1233,7 @@
             "value": "MIO 40 .. 45"
           },
           "PCW_SDIO_PERIPHERAL_FREQMHZ": {
-            "value": "13"
+            "value": "33.333333333333333333333"
           },
           "PCW_SDIO_PERIPHERAL_VALID": {
             "value": "1"
