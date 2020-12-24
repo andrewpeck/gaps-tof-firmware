@@ -124,49 +124,6 @@ architecture arch_imp of axi_ipbus_bridge is
   signal ipb_mosi           : ipb_wbus_array(C_NUM_IPB_SLAVES-1 downto 0);-- := (others => (ipb_addr => (others => '0'), ipb_wdata => (others => '0'), ipb_strobe => '0', ipb_write => '0'));
   signal ipb_slv_select     : integer range 0 to 99 := 0; --C_NUM_IPB_SLAVES-1 := 0; -- ipbus slave select
 
-  signal debug_awaddr : std_logic_vector(31 downto 0) := (others => '0');
-  signal debug_araddr : std_logic_vector(31 downto 0) := (others => '0');
-
-  component ila_axi_ipbus_bridge
-
-    port (
-      clk : in std_logic;
-
-      probe0  : in std_logic_vector(0 downto 0);
-      probe1  : in std_logic_vector(31 downto 0);
-      probe2  : in std_logic_vector(2 downto 0);
-      probe3  : in std_logic_vector(0 downto 0);
-      probe4  : in std_logic_vector(31 downto 0);
-      probe5  : in std_logic_vector(3 downto 0);
-      probe6  : in std_logic_vector(0 downto 0);
-      probe7  : in std_logic_vector(0 downto 0);
-      probe8  : in std_logic_vector(31 downto 0);
-      probe9  : in std_logic_vector(2 downto 0);
-      probe10 : in std_logic_vector(0 downto 0);
-      probe11 : in std_logic_vector(0 downto 0);
-      probe12 : in std_logic_vector(31 downto 0);
-      probe13 : in std_logic_vector(0 downto 0);
-      probe14 : in std_logic_vector(0 downto 0);
-      probe15 : in std_logic_vector(1 downto 0);
-      probe16 : in std_logic_vector(0 downto 0);
-      probe17 : in std_logic_vector(31 downto 0);
-      probe18 : in std_logic_vector(0 downto 0);
-      probe19 : in std_logic_vector(31 downto 0);
-      probe20 : in std_logic_vector(1 downto 0);
-      probe21 : in std_logic_vector(0 downto 0);
-      probe22 : in std_logic_vector(31 downto 0);
-      probe23 : in std_logic_vector(31 downto 0);
-      probe24 : in std_logic_vector(0 downto 0);
-      probe25 : in std_logic_vector(0 downto 0);
-      probe26 : in std_logic_vector(31 downto 0);
-      probe27 : in std_logic_vector(0 downto 0);
-      probe28 : in std_logic_vector(0 downto 0);
-      probe29 : in std_logic_vector(7 downto 0);
-      probe30 : in std_logic_vector(3 downto 0);
-      probe31 : in std_logic_vector(23 downto 0)
-      );
-  end component;
-
 begin
     -- I/O Connections assignments
     ipb_clk_o <= ipb_clk;
@@ -360,10 +317,62 @@ begin
   end process;
 
   -- ================================= DEBUG ====================================
-  debug_awaddr(C_S_AXI_ADDR_WIDTH-1 downto 0) <= S_AXI_AWADDR;
-  debug_araddr(C_S_AXI_ADDR_WIDTH-1 downto 0) <= S_AXI_ARADDR;
 
     debug : if (C_DEBUG) generate
+
+      signal debug_awaddr : std_logic_vector(31 downto 0) := (others => '0');
+      signal debug_araddr : std_logic_vector(31 downto 0) := (others => '0');
+      signal debug_slv_sel : std_logic_vector(7 downto 0) := (others => '0');
+      component ila_axi_ipbus_bridge
+
+        port (
+          clk : in std_logic;
+
+          probe0  : in std_logic_vector(0 downto 0);
+          probe1  : in std_logic_vector(31 downto 0);
+          probe2  : in std_logic_vector(2 downto 0);
+          probe3  : in std_logic_vector(0 downto 0);
+          probe4  : in std_logic_vector(31 downto 0);
+          probe5  : in std_logic_vector(3 downto 0);
+          probe6  : in std_logic_vector(0 downto 0);
+          probe7  : in std_logic_vector(0 downto 0);
+          probe8  : in std_logic_vector(31 downto 0);
+          probe9  : in std_logic_vector(2 downto 0);
+          probe10 : in std_logic_vector(0 downto 0);
+          probe11 : in std_logic_vector(0 downto 0);
+          probe12 : in std_logic_vector(31 downto 0);
+          probe13 : in std_logic_vector(0 downto 0);
+          probe14 : in std_logic_vector(0 downto 0);
+          probe15 : in std_logic_vector(1 downto 0);
+          probe16 : in std_logic_vector(0 downto 0);
+          probe17 : in std_logic_vector(31 downto 0);
+          probe18 : in std_logic_vector(0 downto 0);
+          probe19 : in std_logic_vector(31 downto 0);
+          probe20 : in std_logic_vector(1 downto 0);
+          probe21 : in std_logic_vector(0 downto 0);
+          probe22 : in std_logic_vector(31 downto 0);
+          probe23 : in std_logic_vector(31 downto 0);
+          probe24 : in std_logic_vector(0 downto 0);
+          probe25 : in std_logic_vector(0 downto 0);
+          probe26 : in std_logic_vector(31 downto 0);
+          probe27 : in std_logic_vector(0 downto 0);
+          probe28 : in std_logic_vector(0 downto 0);
+          probe29 : in std_logic_vector(7 downto 0);
+          probe30 : in std_logic_vector(3 downto 0);
+          probe31 : in std_logic_vector(23 downto 0)
+          );
+      end component;
+
+    begin
+
+      slv_sel_map : for I in 0 to 7 generate
+      begin
+        debug_slv_sel(I) <= '1' when ipb_slv_select = I else '0';
+      end generate;
+
+      debug_awaddr(C_S_AXI_ADDR_WIDTH-1 downto 0) <= S_AXI_AWADDR;
+      debug_araddr(C_S_AXI_ADDR_WIDTH-1 downto 0) <= S_AXI_ARADDR;
+
       ila_axi_ipbus_bridge_inst : ila_axi_ipbus_bridge
         port map (
           clk        => S_AXI_ACLK,
@@ -396,11 +405,10 @@ begin
           probe26    => ipb_miso_i(0).ipb_rdata,
           probe27(0) => ipb_miso_i(0).ipb_ack,
           probe28(0) => ipb_miso_i(0).ipb_err,
-          probe29    => "0000000" & std_logic_vector(to_unsigned(ipb_slv_select, 1)),
+          probe29    => debug_slv_sel,
           probe30    => std_logic_vector (to_unsigned(t_axi_ipb_state'pos(ipb_state), 4)),
           probe31    => std_logic_vector(ipb_timer)
           );
     end generate;
 
 end arch_imp;
-
