@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0xCA121ACA5BC7287B",
+      "boundary_crc": "0xA4D7C6F354328E76",
       "device": "xc7z010clg400-1",
       "name": "gaps_ps_interface",
       "synth_flow_mode": "Hierarchical",
@@ -20,9 +20,7 @@
         }
       },
       "system_ila_0": "",
-      "axi_gpio_0": "",
-      "axi_protocol_convert_0": "",
-      "axi_protocol_convert_1": ""
+      "axi_gpio_0": ""
     },
     "interface_ports": {
       "DDR": {
@@ -207,8 +205,8 @@
             "value_src": "user_prop"
           },
           "ID_WIDTH": {
-            "value": "0",
-            "value_src": "const_prop"
+            "value": "12",
+            "value_src": "auto_prop"
           },
           "ADDR_WIDTH": {
             "value": "32"
@@ -235,7 +233,7 @@
           },
           "READ_WRITE_MODE": {
             "value": "READ_WRITE",
-            "value_src": "const_prop"
+            "value_src": "auto_prop"
           },
           "HAS_BURST": {
             "value": "0"
@@ -245,7 +243,7 @@
           },
           "HAS_PROT": {
             "value": "1",
-            "value_src": "const_prop"
+            "value_src": "auto_prop"
           },
           "HAS_CACHE": {
             "value": "0"
@@ -258,19 +256,19 @@
           },
           "HAS_WSTRB": {
             "value": "1",
-            "value_src": "const_prop"
+            "value_src": "auto_prop"
           },
           "HAS_BRESP": {
             "value": "1",
-            "value_src": "const_prop"
+            "value_src": "auto_prop"
           },
           "HAS_RRESP": {
             "value": "1",
-            "value_src": "default"
+            "value_src": "auto_prop"
           },
           "SUPPORTS_NARROW_BURST": {
             "value": "0",
-            "value_src": "ip_prop"
+            "value_src": "user_prop"
           },
           "NUM_READ_OUTSTANDING": {
             "value": "0"
@@ -279,8 +277,8 @@
             "value": "0"
           },
           "MAX_BURST_LENGTH": {
-            "value": "1",
-            "value_src": "ip_prop"
+            "value": "16",
+            "value_src": "default_prop"
           },
           "PHASE": {
             "value": "0.000",
@@ -291,12 +289,12 @@
             "value_src": "default_prop"
           },
           "NUM_READ_THREADS": {
-            "value": "1",
-            "value_src": "default"
+            "value": "4",
+            "value_src": "const_prop"
           },
           "NUM_WRITE_THREADS": {
-            "value": "1",
-            "value_src": "default"
+            "value": "4",
+            "value_src": "const_prop"
           },
           "RUSER_BITS_PER_BYTE": {
             "value": "0",
@@ -1518,11 +1516,11 @@
             "components": {
               "s00_regslice": {
                 "vlnv": "xilinx.com:ip:axi_register_slice:2.1",
-                "xci_name": "gaps_ps_interface_s00_regslice_44"
+                "xci_name": "gaps_ps_interface_s00_regslice_0"
               },
               "auto_pc": {
                 "vlnv": "xilinx.com:ip:axi_protocol_converter:2.1",
-                "xci_name": "gaps_ps_interface_auto_pc_3",
+                "xci_name": "gaps_ps_interface_auto_pc_0",
                 "parameters": {
                   "MI_PROTOCOL": {
                     "value": "AXI3"
@@ -1540,16 +1538,16 @@
                   "auto_pc/S_AXI"
                 ]
               },
-              "s00_couplers_to_s00_regslice": {
-                "interface_ports": [
-                  "S_AXI",
-                  "s00_regslice/S_AXI"
-                ]
-              },
               "auto_pc_to_s00_couplers": {
                 "interface_ports": [
                   "M_AXI",
                   "auto_pc/M_AXI"
+                ]
+              },
+              "s00_couplers_to_s00_regslice": {
+                "interface_ports": [
+                  "S_AXI",
+                  "s00_regslice/S_AXI"
                 ]
               }
             },
@@ -1572,16 +1570,16 @@
           }
         },
         "interface_nets": {
-          "s00_couplers_to_dma_hp_interconnect": {
-            "interface_ports": [
-              "M00_AXI",
-              "s00_couplers/M_AXI"
-            ]
-          },
           "dma_hp_interconnect_to_s00_couplers": {
             "interface_ports": [
               "S00_AXI",
               "s00_couplers/S_AXI"
+            ]
+          },
+          "s00_couplers_to_dma_hp_interconnect": {
+            "interface_ports": [
+              "M00_AXI",
+              "s00_couplers/M_AXI"
             ]
           }
         },
@@ -1623,10 +1621,10 @@
             "value": "INTERFACE"
           },
           "C_NUM_MONITOR_SLOTS": {
-            "value": "2"
+            "value": "1"
           },
           "C_SLOT_0_APC_EN": {
-            "value": "1"
+            "value": "0"
           },
           "C_SLOT_0_AXI_AR_SEL_DATA": {
             "value": "1"
@@ -1661,8 +1659,11 @@
           "C_SLOT_0_INTF_TYPE": {
             "value": "xilinx.com:interface:aximm_rtl:1.0"
           },
+          "C_SLOT_0_TYPE": {
+            "value": "0"
+          },
           "C_SLOT_1_APC_EN": {
-            "value": "1"
+            "value": "0"
           },
           "C_SLOT_1_AXI_AR_SEL_DATA": {
             "value": "1"
@@ -1738,10 +1739,6 @@
           "SLOT_0_AXI": {
             "mode": "Monitor",
             "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
-          },
-          "SLOT_1_AXI": {
-            "mode": "Monitor",
-            "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
           }
         }
       },
@@ -1753,27 +1750,6 @@
             "value": "1"
           }
         }
-      },
-      "axi_protocol_convert_0": {
-        "vlnv": "xilinx.com:ip:axi_protocol_converter:2.1",
-        "xci_name": "gaps_ps_interface_axi_protocol_convert_0_0",
-        "parameters": {
-          "TRANSLATION_MODE": {
-            "value": "2"
-          }
-        }
-      },
-      "axi_protocol_convert_1": {
-        "vlnv": "xilinx.com:ip:axi_protocol_converter:2.1",
-        "xci_name": "gaps_ps_interface_axi_protocol_convert_0_1",
-        "parameters": {
-          "MI_PROTOCOL": {
-            "value": "AXI4LITE"
-          },
-          "TRANSLATION_MODE": {
-            "value": "2"
-          }
-        }
       }
     },
     "interface_nets": {
@@ -1783,25 +1759,16 @@
           "processing_system/S_AXI_HP0"
         ]
       },
-      "jtag_axi_0_M_AXI": {
+      "processing_system7_0_FIXED_IO": {
         "interface_ports": [
-          "jtag_axi_0/M_AXI",
-          "axi_protocol_convert_0/S_AXI",
-          "system_ila_0/SLOT_1_AXI"
-        ],
-        "hdl_attributes": {
-          "DEBUG": {
-            "value": "true"
-          },
-          "MARK_DEBUG": {
-            "value": "true"
-          }
-        }
+          "FIXED_IO",
+          "processing_system/FIXED_IO"
+        ]
       },
-      "axi_interconnect_0_M00_AXI": {
+      "axi_protocol_convert_1_M_AXI": {
         "interface_ports": [
           "IPB_AXI",
-          "axi_protocol_convert_0/M_AXI",
+          "processing_system/M_AXI_GP1",
           "system_ila_0/SLOT_0_AXI"
         ],
         "hdl_attributes": {
@@ -1812,18 +1779,6 @@
             "value": "true"
           }
         }
-      },
-      "processing_system7_0_FIXED_IO": {
-        "interface_ports": [
-          "FIXED_IO",
-          "processing_system/FIXED_IO"
-        ]
-      },
-      "processing_system_M_AXI_GP1": {
-        "interface_ports": [
-          "axi_protocol_convert_1/S_AXI",
-          "processing_system/M_AXI_GP1"
-        ]
       },
       "processing_system7_0_DDR": {
         "interface_ports": [
@@ -1837,9 +1792,9 @@
           "dma_hp_interconnect/S00_AXI"
         ]
       },
-      "axi_protocol_convert_1_M_AXI": {
+      "jtag_axi_0_M_AXI": {
         "interface_ports": [
-          "axi_protocol_convert_1/M_AXI",
+          "jtag_axi_0/M_AXI",
           "axi_gpio_0/S_AXI"
         ]
       },
@@ -1857,9 +1812,7 @@
           "jtag_axi_0/aresetn",
           "IPB_AXI_ARESETN",
           "system_ila_0/resetn",
-          "axi_gpio_0/s_axi_aresetn",
-          "axi_protocol_convert_0/aresetn",
-          "axi_protocol_convert_1/aresetn"
+          "axi_gpio_0/s_axi_aresetn"
         ]
       },
       "ARESETN_2": {
@@ -1890,9 +1843,7 @@
           "jtag_axi_0/aclk",
           "IPB_CLK",
           "system_ila_0/clk",
-          "axi_gpio_0/s_axi_aclk",
-          "axi_protocol_convert_0/aclk",
-          "axi_protocol_convert_1/aclk"
+          "axi_gpio_0/s_axi_aclk"
         ]
       },
       "IRQ_F2P_0_1": {
@@ -1943,9 +1894,9 @@
             "range": "4G",
             "width": "32",
             "segments": {
-              "SEG_axi_gpio_0_Reg": {
-                "address_block": "/axi_gpio_0/S_AXI/Reg",
-                "offset": "0x90000000",
+              "SEG_IPB_AXI_Reg": {
+                "address_block": "/IPB_AXI/Reg",
+                "offset": "0x80000000",
                 "range": "64K"
               }
             }
@@ -1958,9 +1909,9 @@
             "range": "4G",
             "width": "32",
             "segments": {
-              "SEG_IPB_AXI_Reg": {
-                "address_block": "/IPB_AXI/Reg",
-                "offset": "0x80000000",
+              "SEG_axi_gpio_0_Reg": {
+                "address_block": "/axi_gpio_0/S_AXI/Reg",
+                "offset": "0x90000000",
                 "range": "64K"
               }
             }
