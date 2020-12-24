@@ -123,7 +123,6 @@ if { $bCheckIPs == 1 } {
 xilinx.com:ip:proc_sys_reset:*\
 xilinx.com:ip:jtag_axi:*\
 xilinx.com:ip:processing_system7:*\
-xilinx.com:ip:system_ila:*\
 "
 
    set list_ips_missing ""
@@ -735,58 +734,10 @@ proc create_root_design { parentCell } {
    CONFIG.PCW_WDT_WDT_IO {EMIO} \
  ] $processing_system
 
-  # Create instance: system_ila_0, and set properties
-  set system_ila_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:system_ila system_ila_0 ]
-  set_property -dict [ list \
-   CONFIG.C_BRAM_CNT {12} \
-   CONFIG.C_INPUT_PIPE_STAGES {5} \
-   CONFIG.C_MON_TYPE {INTERFACE} \
-   CONFIG.C_NUM_MONITOR_SLOTS {1} \
-   CONFIG.C_SLOT_0_APC_EN {0} \
-   CONFIG.C_SLOT_0_AXI_AR_SEL_DATA {1} \
-   CONFIG.C_SLOT_0_AXI_AR_SEL_TRIG {1} \
-   CONFIG.C_SLOT_0_AXI_AW_SEL_DATA {1} \
-   CONFIG.C_SLOT_0_AXI_AW_SEL_TRIG {1} \
-   CONFIG.C_SLOT_0_AXI_B_SEL_DATA {1} \
-   CONFIG.C_SLOT_0_AXI_B_SEL_TRIG {1} \
-   CONFIG.C_SLOT_0_AXI_R_SEL_DATA {1} \
-   CONFIG.C_SLOT_0_AXI_R_SEL_TRIG {1} \
-   CONFIG.C_SLOT_0_AXI_W_SEL_DATA {1} \
-   CONFIG.C_SLOT_0_AXI_W_SEL_TRIG {1} \
-   CONFIG.C_SLOT_0_INTF_TYPE {xilinx.com:interface:aximm_rtl:1.0} \
-   CONFIG.C_SLOT_0_TYPE {0} \
-   CONFIG.C_SLOT_1_APC_EN {0} \
-   CONFIG.C_SLOT_1_AXI_AR_SEL_DATA {1} \
-   CONFIG.C_SLOT_1_AXI_AR_SEL_TRIG {1} \
-   CONFIG.C_SLOT_1_AXI_AW_SEL_DATA {1} \
-   CONFIG.C_SLOT_1_AXI_AW_SEL_TRIG {1} \
-   CONFIG.C_SLOT_1_AXI_B_SEL_DATA {1} \
-   CONFIG.C_SLOT_1_AXI_B_SEL_TRIG {1} \
-   CONFIG.C_SLOT_1_AXI_R_SEL_DATA {1} \
-   CONFIG.C_SLOT_1_AXI_R_SEL_TRIG {1} \
-   CONFIG.C_SLOT_1_AXI_W_SEL_DATA {1} \
-   CONFIG.C_SLOT_1_AXI_W_SEL_TRIG {1} \
-   CONFIG.C_SLOT_1_INTF_TYPE {xilinx.com:interface:aximm_rtl:1.0} \
-   CONFIG.C_SLOT_2_APC_EN {0} \
-   CONFIG.C_SLOT_2_AXI_AR_SEL_DATA {1} \
-   CONFIG.C_SLOT_2_AXI_AR_SEL_TRIG {1} \
-   CONFIG.C_SLOT_2_AXI_AW_SEL_DATA {1} \
-   CONFIG.C_SLOT_2_AXI_AW_SEL_TRIG {1} \
-   CONFIG.C_SLOT_2_AXI_B_SEL_DATA {1} \
-   CONFIG.C_SLOT_2_AXI_B_SEL_TRIG {1} \
-   CONFIG.C_SLOT_2_AXI_R_SEL_DATA {1} \
-   CONFIG.C_SLOT_2_AXI_R_SEL_TRIG {1} \
-   CONFIG.C_SLOT_2_AXI_W_SEL_DATA {1} \
-   CONFIG.C_SLOT_2_AXI_W_SEL_TRIG {1} \
-   CONFIG.C_SLOT_2_INTF_TYPE {xilinx.com:interface:aximm_rtl:1.0} \
- ] $system_ila_0
-
   # Create interface connections
   connect_bd_intf_net -intf_net DMA_HP_AXI_1 [get_bd_intf_ports DMA_HP_AXI] [get_bd_intf_pins dma_hp_interconnect/S00_AXI]
   connect_bd_intf_net -intf_net axi_interconnect_0_M00_AXI [get_bd_intf_ports IPB_AXI] [get_bd_intf_pins axi_interconnect_0/M00_AXI]
   connect_bd_intf_net -intf_net axi_protocol_convert_1_M_AXI [get_bd_intf_pins axi_interconnect_0/S00_AXI] [get_bd_intf_pins processing_system/M_AXI_GP1]
-connect_bd_intf_net -intf_net [get_bd_intf_nets axi_protocol_convert_1_M_AXI] [get_bd_intf_pins processing_system/M_AXI_GP1] [get_bd_intf_pins system_ila_0/SLOT_0_AXI]
-  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_intf_nets axi_protocol_convert_1_M_AXI]
   connect_bd_intf_net -intf_net dma_interconnect1_M00_AXI [get_bd_intf_pins dma_hp_interconnect/M00_AXI] [get_bd_intf_pins processing_system/S_AXI_HP0]
   connect_bd_intf_net -intf_net jtag_axi_0_M_AXI [get_bd_intf_pins axi_interconnect_0/S01_AXI] [get_bd_intf_pins jtag_axi_0/M_AXI]
   connect_bd_intf_net -intf_net processing_system7_0_DDR [get_bd_intf_ports DDR] [get_bd_intf_pins processing_system/DDR]
@@ -795,8 +746,8 @@ connect_bd_intf_net -intf_net [get_bd_intf_nets axi_protocol_convert_1_M_AXI] [g
   # Create port connections
   connect_bd_net -net ARESETN_2 [get_bd_ports DMA_AXI_ARESETN] [get_bd_pins dma_hp_interconnect/ARESETN] [get_bd_pins dma_hp_interconnect/M00_ARESETN] [get_bd_pins dma_hp_interconnect/S00_ARESETN] [get_bd_pins dma_reset/peripheral_aresetn]
   connect_bd_net -net DMA_CLK [get_bd_ports DMA_AXI_CLK_O] [get_bd_pins dma_hp_interconnect/ACLK] [get_bd_pins dma_hp_interconnect/M00_ACLK] [get_bd_pins dma_hp_interconnect/S00_ACLK] [get_bd_pins dma_reset/slowest_sync_clk] [get_bd_pins processing_system/FCLK_CLK0] [get_bd_pins processing_system/S_AXI_HP0_ACLK]
-  connect_bd_net -net IPBUS_AXI_RESETN [get_bd_ports IPB_AXI_ARESETN] [get_bd_pins axi_interconnect_0/ARESETN] [get_bd_pins axi_interconnect_0/M00_ARESETN] [get_bd_pins axi_interconnect_0/S00_ARESETN] [get_bd_pins axi_interconnect_0/S01_ARESETN] [get_bd_pins ipbus_ps_reset/peripheral_aresetn] [get_bd_pins jtag_axi_0/aresetn] [get_bd_pins system_ila_0/resetn]
-  connect_bd_net -net IPBUS_CLK [get_bd_ports IPB_CLK] [get_bd_pins axi_interconnect_0/ACLK] [get_bd_pins axi_interconnect_0/M00_ACLK] [get_bd_pins axi_interconnect_0/S00_ACLK] [get_bd_pins axi_interconnect_0/S01_ACLK] [get_bd_pins ipbus_ps_reset/slowest_sync_clk] [get_bd_pins jtag_axi_0/aclk] [get_bd_pins processing_system/FCLK_CLK1] [get_bd_pins processing_system/M_AXI_GP1_ACLK] [get_bd_pins system_ila_0/clk]
+  connect_bd_net -net IPBUS_AXI_RESETN [get_bd_ports IPB_AXI_ARESETN] [get_bd_pins axi_interconnect_0/ARESETN] [get_bd_pins axi_interconnect_0/M00_ARESETN] [get_bd_pins axi_interconnect_0/S00_ARESETN] [get_bd_pins axi_interconnect_0/S01_ARESETN] [get_bd_pins ipbus_ps_reset/peripheral_aresetn] [get_bd_pins jtag_axi_0/aresetn]
+  connect_bd_net -net IPBUS_CLK [get_bd_ports IPB_CLK] [get_bd_pins axi_interconnect_0/ACLK] [get_bd_pins axi_interconnect_0/M00_ACLK] [get_bd_pins axi_interconnect_0/S00_ACLK] [get_bd_pins axi_interconnect_0/S01_ACLK] [get_bd_pins ipbus_ps_reset/slowest_sync_clk] [get_bd_pins jtag_axi_0/aclk] [get_bd_pins processing_system/FCLK_CLK1] [get_bd_pins processing_system/M_AXI_GP1_ACLK]
   connect_bd_net -net IRQ_F2P_0_1 [get_bd_ports IRQ_F2P_0] [get_bd_pins processing_system/IRQ_F2P]
   connect_bd_net -net ps_reset [get_bd_pins dma_reset/ext_reset_in] [get_bd_pins ipbus_ps_reset/ext_reset_in] [get_bd_pins processing_system/FCLK_RESET0_N]
 
@@ -809,7 +760,6 @@ connect_bd_intf_net -intf_net [get_bd_intf_nets axi_protocol_convert_1_M_AXI] [g
   # Restore current instance
   current_bd_instance $oldCurInst
 
-  validate_bd_design
   save_bd_design
 }
 # End of create_root_design()
@@ -821,4 +771,6 @@ connect_bd_intf_net -intf_net [get_bd_intf_nets axi_protocol_convert_1_M_AXI] [g
 
 create_root_design ""
 
+
+common::send_msg_id "BD_TCL-1000" "WARNING" "This Tcl script was generated from a block design that has not been validated. It is possible that design <$design_name> may result in errors during validation."
 
