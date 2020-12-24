@@ -15,6 +15,7 @@ use UNISIM.VComponents.all;
 
 entity dma_controller is
   generic (
+    C_DEBUG       : boolean                        := false;
     words_to_send : integer                        := 16;
     MAX_ADDRESS   : std_logic_vector(31 downto 0)  := x"10800000";
     HEAD          : std_logic_vector (15 downto 0) := x"AAAA";
@@ -298,31 +299,33 @@ begin
       rd_rst_busy   => rd_rst_busy
       );
 
-  ila_s2mm_inst : ila_s2mm
-    port map(
-      clk     => CLK_AXI,
-      probe0  => s2mm_cmd_tvalid,
-      probe1  => s2mm_cmd_tready,
-      probe2  => s2mm_cmd_tdata,
-      probe3  => s2mm_tdata,
-      probe4  => s2mm_tkeep,
-      probe5  => s2mm_tlast,
-      probe6  => s2mm_tvalid,
-      probe7  => s2mm_tready,
-      probe8  => valid_fifo_data,
-      probe9  => fifo_rd_en,
-      probe10 => fifo_out,
-      probe11 => s2mm_allow_addr_req_reg,
-      probe12 => s2mm_addr_req_posted_reg,
-      probe13 => s2mm_wr_xfer_cmplt_reg,
-      probe14 => s2mm_ld_nxt_len_reg,
-      probe15 => s2mm_wr_len_reg,
-      probe16 => s2mm_err_reg,
-      probe17 => m_axis_s2mm_sts_tvalid_reg,
-      probe18 => m_axis_s2mm_sts_tdata_reg,
-      probe19 => m_axis_s2mm_sts_tkeep_reg(0),
-      probe20 => m_axis_s2mm_sts_tlast_Reg
-      );
+  debug : if (C_DEBUG) generate
+    ila_s2mm_inst : ila_s2mm
+      port map(
+        clk     => CLK_AXI,
+        probe0  => s2mm_cmd_tvalid,
+        probe1  => s2mm_cmd_tready,
+        probe2  => s2mm_cmd_tdata,
+        probe3  => s2mm_tdata,
+        probe4  => s2mm_tkeep,
+        probe5  => s2mm_tlast,
+        probe6  => s2mm_tvalid,
+        probe7  => s2mm_tready,
+        probe8  => valid_fifo_data,
+        probe9  => fifo_rd_en,
+        probe10 => fifo_out,
+        probe11 => s2mm_allow_addr_req_reg,
+        probe12 => s2mm_addr_req_posted_reg,
+        probe13 => s2mm_wr_xfer_cmplt_reg,
+        probe14 => s2mm_ld_nxt_len_reg,
+        probe15 => s2mm_wr_len_reg,
+        probe16 => s2mm_err_reg,
+        probe17 => m_axis_s2mm_sts_tvalid_reg,
+        probe18 => m_axis_s2mm_sts_tdata_reg,
+        probe19 => m_axis_s2mm_sts_tkeep_reg(0),
+        probe20 => m_axis_s2mm_sts_tlast_Reg
+        );
+  end generate;
 
   --------------------------------------------------------------------------------------------
   -- AXI Control Signals
