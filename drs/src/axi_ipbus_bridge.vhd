@@ -117,7 +117,7 @@ architecture arch_imp of axi_ipbus_bridge is
 
   type t_axi_ipb_state is (IDLE, WRITE, READ, WAIT_FOR_WRITE_ACK, WAIT_FOR_READ_ACK, AXI_READ_HANDSHAKE, AXI_WRITE_HANDSHAKE);
 
-  constant ipb_timeout      : unsigned(23 downto 0) := x"027100"; --x"0000f5"; -- 254 clocks to ~match the 255 cycle limit on the Zynq fw --x"027100"; -- 10000 clock cycles (totally arbitrary.. if everything is fine, it takes about 60 clock cycles to complete the transaction)
+  constant ipb_timeout  : unsigned(23 downto 0) := x"000080";
   signal ipb_clk            : std_logic;
   signal ipb_state          : t_axi_ipb_state;
   signal ipb_timer          : unsigned(23 downto 0) := (others => '0');
