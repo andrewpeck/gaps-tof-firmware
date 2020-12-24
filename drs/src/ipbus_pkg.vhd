@@ -79,11 +79,24 @@ package body ipbus_pkg is
         -- highest are used as the module ID (wishbone slave #)
 
         -- START: IPBUS_ADDR_SEL :: DO NOT EDIT
-        if   (std_match(addr, std_logic_vector(to_unsigned(IPB_SLAVE.            DRS,     4))  & "------------")) then sel := IPB_SLAVE.DRS;
+        if   (std_match(addr(15 downto 0), std_logic_vector(to_unsigned(IPB_SLAVE.            DRS,     4))  & "------------")) then sel := IPB_SLAVE.DRS;
         -- END: IPBUS_ADDR_SEL :: DO NOT EDIT
-
         else sel := 99;
         end if;
+
+        -- FIXME: at some point the std_match function stopped working as it did previously
+        -- now if the inputs are different sizes, rather than truncating and comparing
+        -- the truncated sizes it just returns false :(
+        --
+        -- should update this in the generator
+
+        if   (std_match(addr(15 downto 0), std_logic_vector(to_unsigned(IPB_SLAVE.            DRS,     4))  & "------------")) then
+          sel := IPB_SLAVE.DRS;
+        else
+          sel := 99;
+        end if;
+
+
         return sel;
     end ipb_addr_sel;
 

@@ -16,7 +16,7 @@ use ieee.numeric_std.all;
 
 entity axi_ipbus_bridge is
     generic (
-        C_DEBUG : boolean := false;
+        C_DEBUG : boolean := true;
         C_NUM_IPB_SLAVES : integer := 64;
         -- Width of S_AXI data bus
         C_S_AXI_DATA_WIDTH  : integer   := 32;
@@ -194,7 +194,7 @@ begin
 --          -- initiate IPBus read request
           when READ =>
             -- address ok
-            if (ipb_slv_select /= 999) then
+            if (ipb_slv_select /= 99) then
               axi_arready <= '0';
               ipb_mosi(ipb_slv_select).ipb_addr(C_S_AXI_ADDR_WIDTH-3 downto 0) <= S_AXI_ARADDR(C_S_AXI_ADDR_WIDTH-1 downto 2);
               ipb_mosi(ipb_slv_select).ipb_strobe <= '1';
@@ -249,7 +249,7 @@ begin
           -- initiate IPBus write request
           when WRITE =>
             -- address ok
-            if (ipb_slv_select /= 999) then
+            if (ipb_slv_select /= 99) then
               axi_awready <= '0';
               axi_wready <= '0';
               ipb_mosi(ipb_slv_select).ipb_addr(C_S_AXI_ADDR_WIDTH-3 downto 0) <= S_AXI_AWADDR(C_S_AXI_ADDR_WIDTH-1 downto 2);
