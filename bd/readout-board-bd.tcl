@@ -121,7 +121,9 @@ set bCheckIPs 1
 if { $bCheckIPs == 1 } {
    set list_check_ips "\ 
 xilinx.com:ip:proc_sys_reset:*\
+xilinx.com:ip:jtag_axi:*\
 xilinx.com:ip:processing_system7:*\
+xilinx.com:ip:system_ila:*\
 "
 
    set list_ips_missing ""
@@ -224,11 +226,14 @@ proc create_root_design { parentCell } {
   set_property -dict [ list \
    CONFIG.ADDR_WIDTH {32} \
    CONFIG.DATA_WIDTH {32} \
-   CONFIG.FREQ_HZ {33333333} \
+   CONFIG.HAS_BURST {0} \
+   CONFIG.HAS_CACHE {0} \
+   CONFIG.HAS_LOCK {0} \
+   CONFIG.HAS_QOS {0} \
    CONFIG.HAS_REGION {0} \
-   CONFIG.NUM_READ_OUTSTANDING {8} \
-   CONFIG.NUM_WRITE_OUTSTANDING {8} \
-   CONFIG.PROTOCOL {AXI3} \
+   CONFIG.NUM_READ_OUTSTANDING {0} \
+   CONFIG.NUM_WRITE_OUTSTANDING {0} \
+   CONFIG.PROTOCOL {AXI4LITE} \
    ] $IPB_AXI
 
 
@@ -236,15 +241,25 @@ proc create_root_design { parentCell } {
   set DMA_AXI_ARESETN [ create_bd_port -dir O -from 0 -to 0 DMA_AXI_ARESETN ]
   set DMA_AXI_CLK_O [ create_bd_port -dir O -type clk DMA_AXI_CLK_O ]
   set_property -dict [ list \
-   CONFIG.ASSOCIATED_BUSIF {DMA_HP_AXI:DMA_AXI} \
+   CONFIG.ASSOCIATED_BUSIF {DMA_HP_AXI} \
  ] $DMA_AXI_CLK_O
   set IPB_AXI_ARESETN [ create_bd_port -dir O -from 0 -to 0 -type rst IPB_AXI_ARESETN ]
-  set IPB_MCLK_IN [ create_bd_port -dir I -type clk -freq_hz 33333333 IPB_MCLK_IN ]
+  set IPB_CLK [ create_bd_port -dir O -type clk IPB_CLK ]
+  set_property -dict [ list \
+   CONFIG.ASSOCIATED_BUSIF {IPB_AXI} \
+   CONFIG.ASSOCIATED_RESET {IPB_AXI_ARESETN} \
+ ] $IPB_CLK
   set IRQ_F2P_0 [ create_bd_port -dir I -from 0 -to 0 -type intr IRQ_F2P_0 ]
   set_property -dict [ list \
    CONFIG.PortWidth {1} \
  ] $IRQ_F2P_0
-  set PL_MMCM_LOCKED [ create_bd_port -dir I PL_MMCM_LOCKED ]
+
+  # Create instance: axi_interconnect_0, and set properties
+  set axi_interconnect_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect axi_interconnect_0 ]
+  set_property -dict [ list \
+   CONFIG.NUM_MI {1} \
+   CONFIG.NUM_SI {2} \
+ ] $axi_interconnect_0
 
   # Create instance: dma_hp_interconnect, and set properties
   set dma_hp_interconnect [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect dma_hp_interconnect ]
@@ -259,18 +274,14 @@ proc create_root_design { parentCell } {
   # Create instance: dma_reset, and set properties
   set dma_reset [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset dma_reset ]
 
-  # Create instance: ipbus_interconnect, and set properties
-  set ipbus_interconnect [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect ipbus_interconnect ]
-  set_property -dict [ list \
-   CONFIG.NUM_MI {1} \
-   CONFIG.NUM_SI {1} \
- ] $ipbus_interconnect
-
-  # Create instance: ipbus_pl_reset, and set properties
-  set ipbus_pl_reset [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset ipbus_pl_reset ]
-
   # Create instance: ipbus_ps_reset, and set properties
   set ipbus_ps_reset [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset ipbus_ps_reset ]
+
+  # Create instance: jtag_axi_0, and set properties
+  set jtag_axi_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:jtag_axi jtag_axi_0 ]
+  set_property -dict [ list \
+   CONFIG.PROTOCOL {2} \
+ ] $jtag_axi_0
 
   # Create instance: processing_system, and set properties
   set processing_system [ create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7 processing_system ]
@@ -646,7 +657,7 @@ proc create_root_design { parentCell } {
    CONFIG.PCW_SD0_PERIPHERAL_ENABLE {1} \
    CONFIG.PCW_SD0_SD0_IO {MIO 40 .. 45} \
    CONFIG.PCW_SDIO_PERIPHERAL_DIVISOR0 {30} \
-   CONFIG.PCW_SDIO_PERIPHERAL_FREQMHZ {33.333333333333333333333} \
+   CONFIG.PCW_SDIO_PERIPHERAL_FREQMHZ {33.333333333333} \
    CONFIG.PCW_SDIO_PERIPHERAL_VALID {1} \
    CONFIG.PCW_SINGLE_QSPI_DATA_MODE {x4} \
    CONFIG.PCW_SMC_PERIPHERAL_DIVISOR0 {1} \
@@ -713,6 +724,7 @@ proc create_root_design { parentCell } {
    CONFIG.PCW_USB1_RESET_ENABLE {0} \
    CONFIG.PCW_USB_RESET_ENABLE {0} \
    CONFIG.PCW_USE_FABRIC_INTERRUPT {1} \
+   CONFIG.PCW_USE_M_AXI_GP0 {0} \
    CONFIG.PCW_USE_M_AXI_GP1 {1} \
    CONFIG.PCW_USE_S_AXI_HP0 {1} \
    CONFIG.PCW_USE_S_AXI_HP1 {0} \
@@ -723,26 +735,73 @@ proc create_root_design { parentCell } {
    CONFIG.PCW_WDT_WDT_IO {EMIO} \
  ] $processing_system
 
+  # Create instance: system_ila_0, and set properties
+  set system_ila_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:system_ila system_ila_0 ]
+  set_property -dict [ list \
+   CONFIG.C_BRAM_CNT {12} \
+   CONFIG.C_INPUT_PIPE_STAGES {5} \
+   CONFIG.C_MON_TYPE {INTERFACE} \
+   CONFIG.C_NUM_MONITOR_SLOTS {1} \
+   CONFIG.C_SLOT_0_APC_EN {0} \
+   CONFIG.C_SLOT_0_AXI_AR_SEL_DATA {1} \
+   CONFIG.C_SLOT_0_AXI_AR_SEL_TRIG {1} \
+   CONFIG.C_SLOT_0_AXI_AW_SEL_DATA {1} \
+   CONFIG.C_SLOT_0_AXI_AW_SEL_TRIG {1} \
+   CONFIG.C_SLOT_0_AXI_B_SEL_DATA {1} \
+   CONFIG.C_SLOT_0_AXI_B_SEL_TRIG {1} \
+   CONFIG.C_SLOT_0_AXI_R_SEL_DATA {1} \
+   CONFIG.C_SLOT_0_AXI_R_SEL_TRIG {1} \
+   CONFIG.C_SLOT_0_AXI_W_SEL_DATA {1} \
+   CONFIG.C_SLOT_0_AXI_W_SEL_TRIG {1} \
+   CONFIG.C_SLOT_0_INTF_TYPE {xilinx.com:interface:aximm_rtl:1.0} \
+   CONFIG.C_SLOT_0_TYPE {0} \
+   CONFIG.C_SLOT_1_APC_EN {0} \
+   CONFIG.C_SLOT_1_AXI_AR_SEL_DATA {1} \
+   CONFIG.C_SLOT_1_AXI_AR_SEL_TRIG {1} \
+   CONFIG.C_SLOT_1_AXI_AW_SEL_DATA {1} \
+   CONFIG.C_SLOT_1_AXI_AW_SEL_TRIG {1} \
+   CONFIG.C_SLOT_1_AXI_B_SEL_DATA {1} \
+   CONFIG.C_SLOT_1_AXI_B_SEL_TRIG {1} \
+   CONFIG.C_SLOT_1_AXI_R_SEL_DATA {1} \
+   CONFIG.C_SLOT_1_AXI_R_SEL_TRIG {1} \
+   CONFIG.C_SLOT_1_AXI_W_SEL_DATA {1} \
+   CONFIG.C_SLOT_1_AXI_W_SEL_TRIG {1} \
+   CONFIG.C_SLOT_1_INTF_TYPE {xilinx.com:interface:aximm_rtl:1.0} \
+   CONFIG.C_SLOT_2_APC_EN {0} \
+   CONFIG.C_SLOT_2_AXI_AR_SEL_DATA {1} \
+   CONFIG.C_SLOT_2_AXI_AR_SEL_TRIG {1} \
+   CONFIG.C_SLOT_2_AXI_AW_SEL_DATA {1} \
+   CONFIG.C_SLOT_2_AXI_AW_SEL_TRIG {1} \
+   CONFIG.C_SLOT_2_AXI_B_SEL_DATA {1} \
+   CONFIG.C_SLOT_2_AXI_B_SEL_TRIG {1} \
+   CONFIG.C_SLOT_2_AXI_R_SEL_DATA {1} \
+   CONFIG.C_SLOT_2_AXI_R_SEL_TRIG {1} \
+   CONFIG.C_SLOT_2_AXI_W_SEL_DATA {1} \
+   CONFIG.C_SLOT_2_AXI_W_SEL_TRIG {1} \
+   CONFIG.C_SLOT_2_INTF_TYPE {xilinx.com:interface:aximm_rtl:1.0} \
+ ] $system_ila_0
+
   # Create interface connections
   connect_bd_intf_net -intf_net DMA_HP_AXI_1 [get_bd_intf_ports DMA_HP_AXI] [get_bd_intf_pins dma_hp_interconnect/S00_AXI]
-  connect_bd_intf_net -intf_net axi_interconnect_0_M00_AXI [get_bd_intf_ports IPB_AXI] [get_bd_intf_pins ipbus_interconnect/M00_AXI]
+  connect_bd_intf_net -intf_net axi_interconnect_0_M00_AXI [get_bd_intf_ports IPB_AXI] [get_bd_intf_pins axi_interconnect_0/M00_AXI]
+  connect_bd_intf_net -intf_net axi_protocol_convert_1_M_AXI [get_bd_intf_pins axi_interconnect_0/S00_AXI] [get_bd_intf_pins processing_system/M_AXI_GP1]
+connect_bd_intf_net -intf_net [get_bd_intf_nets axi_protocol_convert_1_M_AXI] [get_bd_intf_pins processing_system/M_AXI_GP1] [get_bd_intf_pins system_ila_0/SLOT_0_AXI]
+  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_intf_nets axi_protocol_convert_1_M_AXI]
   connect_bd_intf_net -intf_net dma_interconnect1_M00_AXI [get_bd_intf_pins dma_hp_interconnect/M00_AXI] [get_bd_intf_pins processing_system/S_AXI_HP0]
+  connect_bd_intf_net -intf_net jtag_axi_0_M_AXI [get_bd_intf_pins axi_interconnect_0/S01_AXI] [get_bd_intf_pins jtag_axi_0/M_AXI]
   connect_bd_intf_net -intf_net processing_system7_0_DDR [get_bd_intf_ports DDR] [get_bd_intf_pins processing_system/DDR]
   connect_bd_intf_net -intf_net processing_system7_0_FIXED_IO [get_bd_intf_ports FIXED_IO] [get_bd_intf_pins processing_system/FIXED_IO]
-  connect_bd_intf_net -intf_net processing_system_M_AXI_GP1 [get_bd_intf_pins ipbus_interconnect/S00_AXI] [get_bd_intf_pins processing_system/M_AXI_GP1]
 
   # Create port connections
-  connect_bd_net -net ARESETN_1 [get_bd_pins ipbus_interconnect/ARESETN] [get_bd_pins ipbus_interconnect/S00_ARESETN] [get_bd_pins ipbus_ps_reset/peripheral_aresetn]
   connect_bd_net -net ARESETN_2 [get_bd_ports DMA_AXI_ARESETN] [get_bd_pins dma_hp_interconnect/ARESETN] [get_bd_pins dma_hp_interconnect/M00_ARESETN] [get_bd_pins dma_hp_interconnect/S00_ARESETN] [get_bd_pins dma_reset/peripheral_aresetn]
-  connect_bd_net -net AXI_MCLK_1 [get_bd_ports IPB_MCLK_IN] [get_bd_pins ipbus_interconnect/M00_ACLK] [get_bd_pins ipbus_pl_reset/slowest_sync_clk]
-  connect_bd_net -net DMA_CLK [get_bd_ports DMA_AXI_CLK_O] [get_bd_pins dma_hp_interconnect/ACLK] [get_bd_pins dma_hp_interconnect/M00_ACLK] [get_bd_pins dma_hp_interconnect/S00_ACLK] [get_bd_pins dma_reset/slowest_sync_clk] [get_bd_pins processing_system/FCLK_CLK0] [get_bd_pins processing_system/M_AXI_GP0_ACLK] [get_bd_pins processing_system/S_AXI_HP0_ACLK]
-  connect_bd_net -net IPBUS_CLK [get_bd_pins ipbus_interconnect/ACLK] [get_bd_pins ipbus_interconnect/S00_ACLK] [get_bd_pins ipbus_ps_reset/slowest_sync_clk] [get_bd_pins processing_system/FCLK_CLK1] [get_bd_pins processing_system/M_AXI_GP1_ACLK]
+  connect_bd_net -net DMA_CLK [get_bd_ports DMA_AXI_CLK_O] [get_bd_pins dma_hp_interconnect/ACLK] [get_bd_pins dma_hp_interconnect/M00_ACLK] [get_bd_pins dma_hp_interconnect/S00_ACLK] [get_bd_pins dma_reset/slowest_sync_clk] [get_bd_pins processing_system/FCLK_CLK0] [get_bd_pins processing_system/S_AXI_HP0_ACLK]
+  connect_bd_net -net IPBUS_AXI_RESETN [get_bd_ports IPB_AXI_ARESETN] [get_bd_pins axi_interconnect_0/ARESETN] [get_bd_pins axi_interconnect_0/M00_ARESETN] [get_bd_pins axi_interconnect_0/S00_ARESETN] [get_bd_pins axi_interconnect_0/S01_ARESETN] [get_bd_pins ipbus_ps_reset/peripheral_aresetn] [get_bd_pins jtag_axi_0/aresetn] [get_bd_pins system_ila_0/resetn]
+  connect_bd_net -net IPBUS_CLK [get_bd_ports IPB_CLK] [get_bd_pins axi_interconnect_0/ACLK] [get_bd_pins axi_interconnect_0/M00_ACLK] [get_bd_pins axi_interconnect_0/S00_ACLK] [get_bd_pins axi_interconnect_0/S01_ACLK] [get_bd_pins ipbus_ps_reset/slowest_sync_clk] [get_bd_pins jtag_axi_0/aclk] [get_bd_pins processing_system/FCLK_CLK1] [get_bd_pins processing_system/M_AXI_GP1_ACLK] [get_bd_pins system_ila_0/clk]
   connect_bd_net -net IRQ_F2P_0_1 [get_bd_ports IRQ_F2P_0] [get_bd_pins processing_system/IRQ_F2P]
-  connect_bd_net -net M00_ARESETN_1 [get_bd_ports IPB_AXI_ARESETN] [get_bd_pins ipbus_interconnect/M00_ARESETN] [get_bd_pins ipbus_pl_reset/peripheral_aresetn]
-  connect_bd_net -net PL_MMCM_LOCKED_1 [get_bd_ports PL_MMCM_LOCKED] [get_bd_pins ipbus_pl_reset/aux_reset_in]
-  connect_bd_net -net ps_reset [get_bd_pins dma_reset/ext_reset_in] [get_bd_pins ipbus_pl_reset/ext_reset_in] [get_bd_pins ipbus_ps_reset/ext_reset_in] [get_bd_pins processing_system/FCLK_RESET0_N]
+  connect_bd_net -net ps_reset [get_bd_pins dma_reset/ext_reset_in] [get_bd_pins ipbus_ps_reset/ext_reset_in] [get_bd_pins processing_system/FCLK_RESET0_N]
 
   # Create address segments
+  assign_bd_address -offset 0x90000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces jtag_axi_0/Data] [get_bd_addr_segs IPB_AXI/Reg] -force
   assign_bd_address -offset 0x80000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system/Data] [get_bd_addr_segs IPB_AXI/Reg] -force
   assign_bd_address -offset 0x00000000 -range 0x20000000 -target_address_space [get_bd_addr_spaces DMA_HP_AXI] [get_bd_addr_segs processing_system/S_AXI_HP0/HP0_DDR_LOWOCM] -force
 
