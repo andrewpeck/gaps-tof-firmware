@@ -3,6 +3,7 @@
 # IP Cores
 ip/clock_wizard/clock_wizard.xci
 ip/sem_core/sem_core.xci
+ip/ila_axi_ipbus_bridge/ila_axi_ipbus_bridge.xci
 
 # DRS4 Controller
 drs/src/fifo_async.vhd
