@@ -54,8 +54,8 @@ set_property PACKAGE_PIN L20 [get_ports drs_nreset_o]; # IO_B35_L9_L20_N
 set_property PACKAGE_PIN K19 [get_ports {drs_addr_o[1]}]; #IO_B35_L10_K19_P
 set_property PACKAGE_PIN J19 [get_ports {drs_addr_o[0]}]; # IO_B35_L10_J19_N
 
-set_property PACKAGE_PIN H18 [get_ports drs_rsrload_o]; # IO_B35_L14_SRCC_H18_N
-set_property PACKAGE_PIN J18 [get_ports drs_srclk_o]; # IO_B35_L14_SRCC_J18_P
+set_property PACKAGE_PIN J18 [get_ports drs_rsrload_o]; # IO_B35_L14_AD4_SRCC_J18_P
+set_property PACKAGE_PIN H18 [get_ports drs_srclk_o]; # IO_B35_L14_AD4_SRCC_H18_N
 
 set_property PACKAGE_PIN G19 [get_ports drs_srin_o]; # IO_B35_L18_AD13_G19_P
 set_property PACKAGE_PIN G20 [get_ports drs_srout_i]; # IO_B35_L18_AD13_G20_N
