@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # -*- mode: shell-script -*-
 #
 # tangle files with org-mode
