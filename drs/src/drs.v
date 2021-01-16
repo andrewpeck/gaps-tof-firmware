@@ -156,15 +156,15 @@ always @(posedge clock) begin
 
   for( i = 8; i >= 0; i=i-1)
     if (readout_mask_sr[i]) 
-        drs_ctl_next_chn=i;
+        drs_ctl_next_chn=i[3:0];
 
   for( j = 8; j >= 0; j=j-1)
     if (drs_ctl_readout_mask[j])
-        drs_ctl_first_chn=j;
+        drs_ctl_first_chn=j[3:0];
 
   for( k = 0; k <= 8; k=k+1)
     if (drs_ctl_readout_mask[k])
-        drs_ctl_last_chn=k;
+        drs_ctl_last_chn=k[3:0];
 
 end
 
