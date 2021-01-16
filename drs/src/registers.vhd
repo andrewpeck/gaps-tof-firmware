@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_DRS_NUM_REGS : integer := 34;
+    constant REG_DRS_NUM_REGS : integer := 33;
     constant REG_DRS_ADDRESS_MSB : integer := 6;
     constant REG_DRS_ADDRESS_LSB : integer := 0;
     constant REG_CHIP_DMODE_ADDR    : std_logic_vector(6 downto 0) := "000" & x"0";
@@ -33,13 +33,9 @@ package registers is
     constant REG_CHIP_CHANNEL_CONFIG_LSB     : integer := 24;
     constant REG_CHIP_CHANNEL_CONFIG_DEFAULT : std_logic_vector(31 downto 24) := x"ff";
 
-    constant REG_CHIP_DTAP_HIGH_CNTS_ADDR    : std_logic_vector(6 downto 0) := "000" & x"1";
-    constant REG_CHIP_DTAP_HIGH_CNTS_MSB    : integer := 24;
-    constant REG_CHIP_DTAP_HIGH_CNTS_LSB     : integer := 0;
-
-    constant REG_CHIP_DTAP_LOW_CNTS_ADDR    : std_logic_vector(6 downto 0) := "000" & x"2";
-    constant REG_CHIP_DTAP_LOW_CNTS_MSB    : integer := 24;
-    constant REG_CHIP_DTAP_LOW_CNTS_LSB     : integer := 0;
+    constant REG_CHIP_DTAP_FREQ_ADDR    : std_logic_vector(6 downto 0) := "000" & x"1";
+    constant REG_CHIP_DTAP_FREQ_MSB    : integer := 31;
+    constant REG_CHIP_DTAP_FREQ_LSB     : integer := 0;
 
     constant REG_READOUT_ROI_MODE_ADDR    : std_logic_vector(6 downto 0) := "001" & x"0";
     constant REG_READOUT_ROI_MODE_BIT    : integer := 0;
