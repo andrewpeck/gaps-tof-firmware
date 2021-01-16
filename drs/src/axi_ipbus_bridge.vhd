@@ -16,7 +16,7 @@ use ieee.numeric_std.all;
 
 entity axi_ipbus_bridge is
     generic (
-        C_DEBUG : boolean := true;
+        C_DEBUG : boolean := false;
         C_NUM_IPB_SLAVES : integer := 64;
         -- Width of S_AXI data bus
         C_S_AXI_DATA_WIDTH  : integer   := 32;
