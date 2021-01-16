@@ -191,11 +191,11 @@ reg [6:0] drs_start_timer = 0; // startup timer to make sure the domino is runni
 
 wire [21:0] crc;
 
-reg [7:0]  drs_stat_stop_wsr=0;
-reg        drs_stop_wsr=0;
+//reg [7:0]  drs_stat_stop_wsr=0;
+//reg        drs_stop_wsr=0;
 reg [9:0]  drs_stop_cell=0;
-reg [9:0]  drs_stat_stop_cell=0;
-reg [10:0] drs_sample_count=0;
+//reg [9:0]  drs_stat_stop_cell=0;
+reg [9:0] drs_sample_count=0;
 reg [15:0] drs_rd_tmp_count=0;
 reg [10:0] drs_sr_count=0;
 
