@@ -291,11 +291,12 @@ always @(posedge clock) begin
 
   else begin
 
-  fifo_wen     <= 0;
-  fifo_wen_crc <= 0;
-  fifo_reset   <= 0;
-  domino_ready <= 1;
-  readout_complete <= 0;
+  fifo_wdata        <= 0;
+  fifo_wen          <= 0;
+  fifo_wen_crc      <= 0;
+  fifo_reset        <= 0;
+  domino_ready      <= 1;
+  readout_complete  <= 0;
 
   // Memorize a write access to the bit in the control register that requests a reinitialisation of
   // the DRS readout state machine (drs_ctl_reinit goes high for only one cycle, therefore this
