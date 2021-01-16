@@ -149,7 +149,7 @@ architecture Behavioral of top_readout_board is
   signal rd_enable : std_logic := '1';
   signal rd_clock  : std_logic;
 
-  signal spy_data  : std_logic_vector (31 downto 0) := (others => '0');
+  signal spy_data  : std_logic_vector (15 downto 0) := (others => '0');
   signal spy_full  : std_logic                      := '0';
   signal spy_empty : std_logic                      := '0';
   signal spy_reset : std_logic                      := '0';
@@ -488,9 +488,9 @@ begin
 
   spy_fifo_inst : entity work.fifo_async
     generic map (
-      DEPTH    => 16384,
+      DEPTH    => 2*16384,
       WR_WIDTH => 16,
-      RD_WIDTH => 32
+      RD_WIDTH => 16
       )
     port map (
       rst     => spy_reset,

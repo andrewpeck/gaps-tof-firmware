@@ -212,7 +212,7 @@
 
         <node id="SPY" address="0x70" description = "Spy Buffer">
             <node id="RESET" permission="w" address="0x0" mask="0x00000001" description="Spy Buffer Reset" fw_write_pulse_signal="spy_reset"/>
-            <node id="DATA"  permission="r" address="0x1" mask="0xFFFFFFFF" description="Spy Read Data"
+            <node id="DATA"  permission="r" address="0x1" mask="0x0000FFFF" description="Spy Read Data"
                 fw_signal="spy_data" fw_read_pulse_signal="spy_rd_en" fw_read_ready_signal="spy_valid"/>
             <node id="FULL"  permission="r" address="0x2" mask="0x00000001" description="Spy Buffer Full"  fw_signal="spy_full"/>
             <node id="EMPTY" permission="r" address="0x2" mask="0x00000002" description="Spy Buffer Empty" fw_signal="spy_empty"/>

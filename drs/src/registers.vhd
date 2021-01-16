@@ -163,7 +163,7 @@ package registers is
     constant REG_SPY_RESET_BIT    : integer := 0;
 
     constant REG_SPY_DATA_ADDR    : std_logic_vector(6 downto 0) := "111" & x"1";
-    constant REG_SPY_DATA_MSB    : integer := 31;
+    constant REG_SPY_DATA_MSB    : integer := 15;
     constant REG_SPY_DATA_LSB     : integer := 0;
 
     constant REG_SPY_FULL_ADDR    : std_logic_vector(6 downto 0) := "111" & x"2";
