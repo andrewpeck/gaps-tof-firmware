@@ -1,3 +1,6 @@
+library xpm;
+use xpm.vcomponents.all;
+
 library work;
 use work.ipbus_pkg.all;
 use work.registers.all;
@@ -64,6 +67,8 @@ entity ps_interface is
 end ps_interface;
 
 architecture Behavioral of ps_interface is
+
+  signal ipb_reset_async : std_logic := '0';
 
   signal dma_axi_aclk    : std_logic;
   signal dma_axi_aresetn : std_logic;
@@ -389,6 +394,17 @@ begin
 
   ipb_clk <= clk33;
 
+  xpm_cdc_sync_rst_inst : xpm_cdc_sync_rst
+    generic map (
+      DEST_SYNC_FF   => 2, -- range: 2-10
+      INIT           => 1  -- 0=initialize synchronization registers to 0, 1=initialize
+      )
+    port map (
+      dest_rst => ipb_reset,
+      dest_clk => ipb_clk,
+      src_rst  => ipb_reset_async
+      );
+
   i_axi_ipbus_bridge : entity work.axi_ipbus_bridge
     generic map(
       C_NUM_IPB_SLAVES   => IPB_SLAVES,
@@ -396,7 +412,7 @@ begin
       C_S_AXI_ADDR_WIDTH => C_IPB_AXI_ADDR_WIDTH
       )
     port map(
-      ipb_reset_o   => ipb_reset,
+      ipb_reset_o   => ipb_reset_async,
       ipb_clk_o     => open,
       ipb_miso_i    => ipb_miso_arr_int,
       ipb_mosi_o    => ipb_mosi_arr_int,
