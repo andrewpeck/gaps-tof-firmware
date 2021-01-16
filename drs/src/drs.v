@@ -879,34 +879,77 @@ assign fifo_wen_o   = fifo_wen;
 assign fifo_clock_o = clock;
 
 `ifdef SIMULATION
-    // Write-buffer auto-clear state machine display
+// Write-buffer auto-clear state machine display
 
-    reg[15*8:0] state_disp;
+reg[15*8:0] state_disp;
 
-    always @* begin
-      case (drs_readout_state)
-        INIT            : state_disp <= "INIT";
-        IDLE            : state_disp <= "IDLE";
-        START_RUNNING   : state_disp <= "START_RUNNING";
-        RUNNING         : state_disp <= "RUNNING";
-        TRIGGER         : state_disp <= "TRIGGER";
-        WAIT_VDD        : state_disp <= "WAIT_VDD";
-        INIT_READOUT    : state_disp <= "INIT_READOUT";
-        RSR_LOAD        : state_disp <= "RSR_LOAD";
-        ADC_READOUT     : state_disp <= "ADC_READOUT";
-        //STOP_CELL       : state_disp <= "STOP_CELL";
-        DNA             : state_disp <= "DNA";
-        SPIKE_REMOVAL   : state_disp <= "SPIKE_REMOVAL";
-        DONE            : state_disp <= "DONE";
-        CONF_SETUP      : state_disp <= "CONF_SETUP";
-        CONF_WRITE      : state_disp <= "CONF_WRITE";
-        WSR_SETUP       : state_disp <= "WSR_SETUP";
-        WSR_STROBE      : state_disp <= "WSR_STROBE";
-        STANDBY         : state_disp <= "STANDBY";
-        INIT_RSR        : state_disp <= "INIT_RSR";
-      endcase
-    end
+always @* begin
+  case (drs_readout_state)
+    INIT            : state_disp <= "INIT";
+    IDLE            : state_disp <= "IDLE";
+    START_RUNNING   : state_disp <= "START_RUNNING";
+    RUNNING         : state_disp <= "RUNNING";
+    TRIGGER         : state_disp <= "TRIGGER";
+    WAIT_VDD        : state_disp <= "WAIT_VDD";
+    INIT_READOUT    : state_disp <= "INIT_READOUT";
+    RSR_LOAD        : state_disp <= "RSR_LOAD";
+    ADC_READOUT     : state_disp <= "ADC_READOUT";
+    //STOP_CELL       : state_disp <= "STOP_CELL";
+    //DNA             : state_disp <= "DNA";
+    SPIKE_REMOVAL   : state_disp <= "SPIKE_REMOVAL";
+    DONE            : state_disp <= "DONE";
+    CONF_SETUP      : state_disp <= "CONF_SETUP";
+    CONF_WRITE      : state_disp <= "CONF_WRITE";
+    WSR_SETUP       : state_disp <= "WSR_SETUP";
+    WSR_STROBE      : state_disp <= "WSR_STROBE";
+    STANDBY         : state_disp <= "STANDBY";
+    INIT_RSR        : state_disp <= "INIT_RSR";
+  endcase
+end
 `endif
+
+
+`ifdef DEBUG
+  ila_drs ila_drs_inst (
+    .clk     (clock),
+    .probe0  (reset),
+    .probe1  (trigger_i),
+    .probe2  (adc_data),
+    .probe3  (drs_ctl_roi_mode),
+    .probe4  (drs_ctl_roi_dmode),
+    .probe5  (drs_ctl_adc_latency[5:0]),
+    .probe6  (drs_ctl_wait_vdd_clocks[15:0]),
+    .probe7  (drs_ctl_sample_count_max[9:0]),
+    .probe8  (drs_ctl_config[7:0]),
+    .probe9  (drs_ctl_standby_mode),
+    .probe10 (drs_ctl_transp_mode),
+    .probe11 (drs_ctl_start),
+    .probe12 (drs_ctl_reinit),
+    .probe13 (drs_ctl_configure_drs),
+    .probe14 (drs_ctl_chn_config [7:0]),
+    .probe15 (drs_ctl_readout_mask[8:0]),
+    .probe16 (drs_srout_i),
+    .probe17 (drs_addr_o),
+    .probe18 (drs_denable_o),
+    .probe19 (drs_dwrite),
+    .probe20 (drs_rsrload_o),
+    .probe21 (drs_srclk_en_o),
+    .probe22 (drs_srin_o),
+    .probe23 (drs_on_o),
+    .probe24 (fifo_wdata_o[13:0]),
+    .probe25 (fifo_wen_o),
+    .probe26 (busy_o),
+    .probe27 (drs_readout_state[4:0]),
+    .probe28 (drs_rd_tmp_count[15:0]),
+    .probe29 (drs_sample_count[9:0]),
+    .probe30 (drs_ctl_last_chn),
+    .probe31 (drs_ctl_first_chn),
+    .probe32 (drs_ctl_next_chn),
+    .probe33 (drs_addr),
+    .probe34 (readout_mask_sr)
+  );
+`endif
+
 
 //----------------------------------------------------------------------------------------------------------------------
 endmodule
