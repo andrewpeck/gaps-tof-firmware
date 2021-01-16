@@ -553,18 +553,17 @@ always @(posedge clock) begin
               drs_readout_state <= INIT;
 
           // All cells & channels of DRS chips read ?
-          if (drs_sample_count+1==drs_ctl_sample_count_max) begin
+          if (drs_sample_count==drs_ctl_sample_count_max) begin
             if (drs_addr==drs_ctl_last_chn)
-            //  drs_readout_state <= STOP_CELL; //original
-               drs_readout_state <= IDLE; //remove this line..
-              
+               drs_readout_state <= IDLE;
            end
 
           //------------------------------------------------------------------------------------------------------------
           // Logic
           //------------------------------------------------------------------------------------------------------------
 
-          if (drs_rd_tmp_count+1 < drs_ctl_sample_count_max)
+          // run e.g. 1024 sr clocks to get the data out of the drs
+          if (drs_rd_tmp_count <= {6'b0, drs_ctl_sample_count_max})
             drs_srclk_en_o <= 1; // enable clock
           else
             drs_srclk_en_o <= 0; // disable clock
@@ -595,30 +594,36 @@ always @(posedge clock) begin
 
           // ADC delivers data at its outputs with 7 clock cycles delay
           // with respect to its external clock pin
-          if (drs_rd_tmp_count > drs_ctl_adc_latency) begin
+          if (drs_rd_tmp_count > {10'b0, drs_ctl_adc_latency}) begin
             fifo_wdata[13:0]  <= adc_data[13:0];  // ADC data
             fifo_wen          <= 1'b1;
             drs_sample_count  <= drs_sample_count + 1'b1;
           end
 
+          // pick a random clock to update the sr and lookup the next channel
+          if (drs_sample_count == 1) begin
+            readout_mask_sr[8:0] <= readout_mask_sr & (~(1 << drs_ctl_next_chn));
+          end
+
           // finished
-          if (drs_sample_count+1 == drs_ctl_sample_count_max) begin
+          if (drs_sample_count == drs_ctl_sample_count_max) begin
             drs_sample_count   <= 0;
             drs_rd_tmp_count   <= 0;
 
             // write stop cell into register
-            drs_stat_stop_cell <= drs_stop_cell;
-            drs_stat_stop_wsr  <= drs_stop_wsr;
+            //drs_stat_stop_cell <= drs_stop_cell;
+            //drs_stat_stop_wsr  <= drs_stop_wsr;
 
             // increment channel address
             // bit mask based "skip" to only readout enabled channels with next channel lookahead
-            
-           /* 1/27/2020 : changed output from drs_addr reg to drs_addr_o output reg.  */
              if (drs_addr != drs_ctl_last_chn) begin
-                drs_addr_o        <= drs_ctl_next_chn + 1'b1;   
-                drs_addr          <= drs_ctl_next_chn + 1'b1;   
-              readout_mask_sr[8:0] <= readout_mask_sr & ~(1'b1 << drs_ctl_next_chn);
-            end
+                drs_addr_o        <= drs_ctl_next_chn;
+                drs_addr          <= drs_ctl_next_chn;
+             end else begin
+                drs_addr             <= 0;
+                drs_addr_o           <= 0;
+                readout_mask_sr[8:0] <= 0;
+             end
           end
 
     end // fini
