@@ -371,6 +371,7 @@ always @(posedge clock) begin
           // Logic
           //------------------------------------------------------------------------------------------------------------
 
+          drs_addr             <= 0;
           drs_nreset_o         <= 1;
           fifo_wen_crc         <= 0;
           drs_srclk_en_o       <= 0; // disable clock
