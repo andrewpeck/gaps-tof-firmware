@@ -220,17 +220,4 @@
 
     </node>
 
-    <node id="DMA"  address="0x0100"
-        description="DMA Control and Monitoring"
-        fw_is_module="true"
-        fw_use_tmr="true"
-        fw_module_file="../drs/src/ps_interface.vhd"
-        fw_user_clock_signal="clock"
-        fw_bus_clock_signal="ipb_clk"
-        fw_bus_reset_signal="ipb_reset"
-        fw_master_bus_signal="ipb_mosi_arr(1)"
-        fw_slave_bus_signal="ipb_miso_arr(1)"
-        fw_reg_addr_msb="6"
-        fw_reg_addr_lsb="0">
-    </node>
 </node>
