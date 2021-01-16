@@ -25,6 +25,7 @@ def read_test_packet():
         IDLE = auto()
         ERR = auto()
         HEAD = auto()
+        HASH = auto()
         STATUS = auto()
         LENGTH = auto()
         ROI = auto()
@@ -35,6 +36,7 @@ def read_test_packet():
         TIMESTAMP = auto()
         CALC_CH_CRC = auto()
         CH_CRC = auto()
+        CH_HEADER = auto()
         PAYLOAD = auto()
         CRC32 = auto()
         TAIL = auto()
@@ -80,10 +82,16 @@ def read_test_packet():
             dna |= (data << (16*(dna_length-state_word_cnt-1)))
             if state_word_cnt == dna_length-1:
                 print("DNA       : 0x%0*X" % (16, dna))
-                state = State.ID
+                state = State.HASH
                 state_word_cnt = 0
                 continue
             state_word_cnt += 1
+
+        if state == State.HASH:
+            print("HASH      : 0x%X" % data)
+            state = State.ID
+            hash = data
+            continue
 
         if state == State.ID:
             print("ID        : 0x%X" % data)
@@ -121,14 +129,20 @@ def read_test_packet():
 
             if state_word_cnt == timestamp_length:
                 print("TIMESTAMP : 0x%0*X" % (12, timestamp))
-                state = State.PAYLOAD
+                state = State.CH_HEADER
                 state_word_cnt = 0
                 continue
+
+        if state == State.CH_HEADER:
+            print("CH_HEAD   : 0x%X" % data)
+            state = State.PAYLOAD
+            continue
 
         if state == State.PAYLOAD:
             #print("Ch%d %04X!=%04X" % (ch_cnt+1, data, state_word_cnt))
             if data != state_word_cnt:
                 print("Ch%d ERROR %04X!=%04X" % (ch_cnt+1, data, state_word_cnt))
+                return
             state_word_cnt += 1
 
             ch_crc_calc = libscrc.crc32((data).to_bytes(2, byteorder='big'), ch_crc_calc)
@@ -153,7 +167,7 @@ def read_test_packet():
                     state = State.CRC32
                     ch_cnt = 0
                 else:
-                    state = State.PAYLOAD
+                    state = State.CH_HEADER
                     ch_cnt += 1
 
                 ch_crc_calc = 0
