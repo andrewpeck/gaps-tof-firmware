@@ -69,6 +69,7 @@ end ps_interface;
 architecture Behavioral of ps_interface is
 
   signal ipb_reset_async : std_logic := '0';
+  signal ipb_axi_aresetn_sync  : std_logic := '0';
 
   signal dma_axi_aclk    : std_logic;
   signal dma_axi_aresetn : std_logic;
@@ -378,7 +379,7 @@ begin
         WR_WIDTH => MISOB,
         RD_WIDTH => MISOB)
       port map (
-        rst     => (not pl_mmcm_locked) or (not ipb_axi_aresetn(0)),
+        rst     => (not pl_mmcm_locked) or (not ipb_axi_aresetn_sync),
         wr_clk  => ipb_clk,
         rd_clk  => ipb_axi_clk,
         wr_en   => '1',
@@ -403,6 +404,17 @@ begin
       dest_rst => ipb_reset,
       dest_clk => ipb_clk,
       src_rst  => ipb_reset_async
+      );
+
+  xpm_cdc_sync_axi_rst_inst : xpm_cdc_sync_rst
+    generic map (
+      DEST_SYNC_FF   => 2, -- range: 2-10
+      INIT           => 1  -- 0=initialize synchronization registers to 0, 1=initialize
+      )
+    port map (
+      dest_rst => ipb_axi_aresetn_sync,
+      dest_clk => ipb_clk,
+      src_rst  => ipb_axi_aresetn(0)
       );
 
   i_axi_ipbus_bridge : entity work.axi_ipbus_bridge
