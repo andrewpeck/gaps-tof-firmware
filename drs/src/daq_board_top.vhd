@@ -19,7 +19,7 @@ use UNISIM.vcomponents.all;
 
 entity top_readout_board is
   generic (
-    EN_TMR_IPB_SLAVE_DRS : integer := 1;
+    EN_TMR_IPB_SLAVE_DRS : integer := 0;
 
     -- these generics get set by hog at synthesis
     GLOBAL_DATE : std_logic_vector (31 downto 0) := x"00000000";
