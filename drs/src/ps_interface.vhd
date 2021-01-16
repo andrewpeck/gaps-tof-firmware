@@ -344,7 +344,7 @@ begin
       port map (
         rst     => (not pl_mmcm_locked) or (not ipb_axi_aresetn(0)),
         wr_clk  => ipb_axi_clk,
-        rd_clk  => clk33,
+        rd_clk  => ipb_clk,
         wr_en   => '1',
         rd_en   => '1',
         din     => mosi_pre_cdc,
@@ -375,7 +375,7 @@ begin
         RD_WIDTH => MISOB)
       port map (
         rst     => (not pl_mmcm_locked) or (not ipb_axi_aresetn(0)),
-        wr_clk  => clk33,
+        wr_clk  => ipb_clk,
         rd_clk  => ipb_axi_clk,
         wr_en   => '1',
         rd_en   => '1',
@@ -389,6 +389,8 @@ begin
 
   end generate;
 
+  ipb_clk <= clk33;
+
   i_axi_ipbus_bridge : entity work.axi_ipbus_bridge
     generic map(
       C_NUM_IPB_SLAVES   => IPB_SLAVES,
@@ -397,7 +399,7 @@ begin
       )
     port map(
       ipb_reset_o   => ipb_reset,
-      ipb_clk_o     => ipb_clk,
+      ipb_clk_o     => open,
       ipb_miso_i    => ipb_miso_arr_int,
       ipb_mosi_o    => ipb_mosi_arr_int,
       S_AXI_ACLK    => ipb_axi_clk,
