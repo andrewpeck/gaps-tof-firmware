@@ -11,43 +11,57 @@ entity fifo_async is
     RD_WIDTH : integer := 16
     );
   port (
-    rst     : in  std_logic;
-    wr_clk  : in  std_logic;
-    rd_clk  : in  std_logic;
-    wr_en   : in  std_logic;
-    rd_en   : in  std_logic;
-    din     : in  std_logic_vector(WR_WIDTH-1 downto 0);
-    dout    : out std_logic_vector(RD_WIDTH-1 downto 0);
-    valid   : out std_logic;
-    full    : out std_logic;
-    empty   : out std_logic;
-    sbiterr : out std_logic;
-    dbiterr : out std_logic
+    rst    : in  std_logic;
+    wr_clk : in  std_logic;
+    rd_clk : in  std_logic;
+    wr_en  : in  std_logic;
+    rd_en  : in  std_logic;
+    din    : in  std_logic_vector(WR_WIDTH-1 downto 0);
+    dout   : out std_logic_vector(RD_WIDTH-1 downto 0);
+    valid  : out std_logic;
+    full   : out std_logic;
+    empty  : out std_logic
     );
 end fifo_async;
 
 architecture Behavioral of fifo_async is
+  constant USE_ADV_FEATURES : std_logic_vector (15 downto 0) := (
+    0      => '0',                      -- 1 = enable overflow
+    1      => '0',                      -- 1 = enable prog_full
+    2      => '0',                      -- 1 = enable wr_data_count
+    3      => '0',                      -- 1 = enable almost_full
+    4      => '0',                      -- 1 = enable wr_ack
+    8      => '0',                      -- 1 = enable underflow
+    9      => '0',                      -- 1 = enable prog_empty
+    10     => '0',                      -- 1 = enable rd_data_count
+    11     => '0',                      -- 1 = enable almost_empty
+    12     => '1',                      -- 1 = enable data_valid
+    others => '0'
+    );
+
+  constant USE_ADV_FEATURES_STR : string (1 to 4) := to_hstring (USE_ADV_FEATURES);
+
 begin
 
-  xpm_fifo_sync_inst : xpm_fifo_async
+  xpm_fifo_async_inst : xpm_fifo_async
     generic map (
-      CDC_SYNC_STAGES     => 2,         -- DECIMAL
-      DOUT_RESET_VALUE    => "0",       -- String
-      ECC_MODE            => "no_ecc",  -- String
-      FIFO_MEMORY_TYPE    => "auto",    -- String
-      FIFO_READ_LATENCY   => 1,         -- DECIMAL
-      FIFO_WRITE_DEPTH    => DEPTH,     -- DECIMAL
-      FULL_RESET_VALUE    => 0,         -- DECIMAL
-      PROG_EMPTY_THRESH   => 5,         -- DECIMAL
-      PROG_FULL_THRESH    => 5,         -- DECIMAL
-      RD_DATA_COUNT_WIDTH => 5,         -- DECIMAL
-      READ_DATA_WIDTH     => RD_WIDTH,  -- DECIMAL
-      read_mode           => "std",     -- String
-      RELATED_CLOCKS      => 0,         -- DECIMAL
-      USE_ADV_FEATURES    => "0707",    -- String
-      WAKEUP_TIME         => 0,         -- DECIMAL
-      WRITE_DATA_WIDTH    => WR_WIDTH,  -- DECIMAL
-      WR_DATA_COUNT_WIDTH => 5          -- DECIMAL
+      CDC_SYNC_STAGES     => 2,                    -- DECIMAL
+      DOUT_RESET_VALUE    => "0",                  -- String
+      ECC_MODE            => "no_ecc",             -- no_ecc, en_ecc
+      FIFO_MEMORY_TYPE    => "auto",               -- auto, block, distributed, ultra
+      FIFO_READ_LATENCY   => 1,                    -- DECIMAL
+      FIFO_WRITE_DEPTH    => DEPTH,                -- DECIMAL
+      FULL_RESET_VALUE    => 0,                    -- DECIMAL
+      PROG_EMPTY_THRESH   => 5,                    -- DECIMAL
+      PROG_FULL_THRESH    => 5,                    -- DECIMAL
+      RD_DATA_COUNT_WIDTH => 5,                    -- DECIMAL
+      READ_DATA_WIDTH     => RD_WIDTH,             -- DECIMAL
+      read_mode           => "std",                -- std or fwft
+      RELATED_CLOCKS      => 0,                    -- DECIMAL
+      USE_ADV_FEATURES    => USE_ADV_FEATURES_STR, -- String
+      WAKEUP_TIME         => 0,                    -- 0 = disable sleep, 2 = use sleep pin
+      WRITE_DATA_WIDTH    => WR_WIDTH,             -- DECIMAL
+      WR_DATA_COUNT_WIDTH => 5                     -- DECIMAL
       )
     port map (
       almost_empty  => open,   -- 1-bit output: Almost Empty : When asserted, this signal indicates that only one more read can be performed before the FIFO goes to empty.
@@ -55,8 +69,8 @@ begin
       data_valid    => valid,  -- 1-bit output: Read Data Valid: When asserted, this signal indicates that valid data is available on the output bus (dout).
       dbiterr       => open,   -- 1-bit output: Double Bit Error: Indicates that the ECC decoder detected a double-bit error and data in the FIFO core is corrupted.
       dout          => dout,   -- READ_DATA_WIDTH-bit output: Read Data: The output data bus is driven when reading the FIFO.
-      empty         => open,   -- 1-bit output: Empty Flag: When asserted, this signal indicates that the FIFO is empty. Read requests are ignored when the FIFO is empty, initiating a read while empty is not destructive to the FIFO.
-      full          => open,   -- 1-bit output: Full Flag: When asserted, this signal indicates that the FIFO is full. Write requests are ignored when the FIFO is full, initiating a write when the FIFO is full is not destructive to the contents of the FIFO.
+      empty         => empty,  -- 1-bit output: Empty Flag: When asserted, this signal indicates that the FIFO is empty. Read requests are ignored when the FIFO is empty, initiating a read while empty is not destructive to the FIFO.
+      full          => full,   -- 1-bit output: Full Flag: When asserted, this signal indicates that the FIFO is full. Write requests are ignored when the FIFO is full, initiating a write when the FIFO is full is not destructive to the contents of the FIFO.
       overflow      => open,   -- 1-bit output: Overflow: This signal indicates that a write request (wren) during the prior clock cycle was rejected, because the FIFO is full. Overflowing the FIFO is not destructive to the contents of the FIFO.
       prog_empty    => open,   -- 1-bit output: Programmable Empty: This signal is asserted when the number of words in the FIFO is less than or equal to the programmable empty threshold value. It is de-asserted when the number of words in the FIFO exceeds the programmable empty threshold value.
       prog_full     => open,   -- 1-bit output: Programmable Full: This signal is asserted when the number of words in the FIFO is greater than or equal to the programmable full threshold value. It is de-asserted when the number of words in the FIFO is less than the programmable full threshold value.

@@ -502,9 +502,7 @@ begin
       dout    => spy_data,
       valid   => spy_valid,
       full    => spy_full,
-      empty   => spy_empty,
-      sbiterr => open,
-      dbiterr => open
+      empty   => spy_empty
       );
 
   --trigger_delay trigger_delay (

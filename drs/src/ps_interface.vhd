@@ -351,9 +351,8 @@ begin
         dout    => mosi_post_cdc,
         valid   => open,
         full    => open,
-        empty   => open,
-        sbiterr => open,
-        dbiterr => open);
+        empty   => open
+        );
 
     --------------------------------------------------------------------------------
     -- From slaves, to master
@@ -383,9 +382,8 @@ begin
         dout    => miso_post_cdc,
         valid   => open,
         full    => open,
-        empty   => open,
-        sbiterr => open,
-        dbiterr => open);
+        empty   => open
+        );
 
   end generate;
 
