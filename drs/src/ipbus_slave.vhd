@@ -20,6 +20,7 @@ use work.types_pkg.all;
 
 entity ipbus_slave is
   generic(
+    g_TMR_INSTANCE         : integer := 0;  --
     g_N_SYNC_STAGES        : integer := 1;  --
     g_NUM_REGS             : integer := 32;  -- number of 32bit registers in this slave (use them wisely, don't allocate 100 times more than you need). If there are big gaps in the register addresses, please use individual address mapping.
     g_ADDR_HIGH_BIT        : integer := 5;   -- MSB of the IPbus address that will be mapped to registers
