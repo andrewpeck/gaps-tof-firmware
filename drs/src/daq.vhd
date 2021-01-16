@@ -7,20 +7,12 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_misc.all;
 use ieee.numeric_std.all;
 
--- TODO: CRC
---
--- TODO: handle the case that we get a trigger but both DRS chips are busy
---
--- TODO that makes me think also it might be a good feature for the DAQ to be able to inject a debug
--- packet (send a command, it will generate an event with an exact, predictable format, fixed
--- length, fixed event ID, all 9 channels of ADC data filled with just a counter (cell0=0,
--- cell1=1.... cell 1023=1023). It seems useful for debugging the unpacker, testing the DMA, etc.
-
--- Each daq block handles one trigger data stream, and is assumed busy during readout Instantiate as
+-- NOTE: Each daq block handles one trigger data stream, and is assumed busy during readout Instantiate as
 -- many daq blocks as needed to deal with the trigger rate some higher level arbitrator should dole
 -- out triggers to the daq blocks as needed
 --
--- Each daq block handles only 1 DRS chip
+-- NOTE: Each daq block handles only 1 DRS chip
+-- TODO: handle the case that we get a trigger but both DRS chips are busy
 
 entity daq is
   generic(
@@ -224,7 +216,7 @@ begin
           dna          <= dna_i;
           hash         <= hash_i (23 downto 8);
           debug        <= false;
-          dropped      <= drs_busy_i;
+          dropped      <= '0'; -- drs_busy_i; FIXME correct this when there is a real trigger
           num_channels <= count_ones (mask_i) + 1;  -- FIXME: need to account for drs ID and mask appropriately
                                                     -- move this to a common function....
           -- ((count_ones(id_mask and ch_mask)) +to_int(or_reduce(id_mask and ch_mask)))
@@ -255,6 +247,8 @@ begin
       case state is
 
         when IDLE_state =>
+
+          channel_cnt    <= 0;
 
           if (trigger_i = '1' or debug_packet_inject_i = '1') then
             state <= HEAD_state;
@@ -372,8 +366,9 @@ begin
           if (debug) then
             state_word_cnt <= state_word_cnt + 1;
           else
-            -- FIXME: should be gated by the fifonot full
-            state_word_cnt <= state_word_cnt + 1;
+            if (drs_valid_i='1') then
+              state_word_cnt <= state_word_cnt + 1;
+            end if;
           end if;
 
           if (num_channels = 0) then
@@ -390,15 +385,13 @@ begin
             data <= to_slv(state_word_cnt, g_WORD_SIZE);
           elsif (num_channels > 0) then
 
-            -- TODO: need the guts of the thing
-            -- dav should connect to !empty output of the adc fifo
-            -- if (not fifo_empty) then
-            data <= (others => '0');
-            dav  <= true;
-            --else
-            dav  <= false;
-            data <= (others => '0');
-            -- end if;
+            if (drs_valid_i='1') then
+              data <= "00" & drs_data_i;  -- FIXME: upper bits should be parity bits
+              dav  <= true;
+            else
+              dav  <= false;
+              data <= (others => '0');
+            end if;
 
           end if;
 
