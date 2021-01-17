@@ -135,7 +135,14 @@ architecture Behavioral of top_readout_board is
 
   signal timestamp : unsigned (47 downto 0) := (others => '0');
 
-  signal dtap_cnt_reg : integer range 0 to 33000000 := 0;
+  constant MAX         : integer                       := 33333333;
+  signal dtap_rising   : std_logic                     := '0';
+  signal dtap_debounce : std_logic_vector (1 downto 0) := (others => '0');
+  signal dtap          : std_logic                     := '0';
+  signal dtap_last     : std_logic                     := '0';
+  signal sec_cnt       : integer range 0 to MAX        := 0;
+  signal dtap_cnt      : integer range 0 to MAX        := 0;
+  signal dtap_cnt_reg  : integer range 0 to MAX        := 0;
 
   signal readout_complete : std_logic;
 
@@ -306,44 +313,33 @@ begin
   --------------------------------------------------------------------------------
 
  process (clock)
-   variable dtap_rising : std_logic := '0';
-
-   variable dtap_debounce : std_logic_vector (7 downto 0) := (others => '0');
-   variable dtap          : std_logic                     := '0';
-   variable dtap_last     : std_logic                     := '0';
-
-   constant MAX      : integer                := 33333333;
-   variable sec_cnt  : integer range 0 to MAX := 0;
-   variable dtap_cnt : integer range 0 to MAX := 0;
-
-
   begin
     if (rising_edge(clock)) then
 
-      dtap_debounce := dtap_debounce (dtap_debounce'length-2 downto 0) & drs_dtap_i;
+      dtap_debounce <= dtap_debounce (dtap_debounce'length-2 downto 0) & drs_dtap_i;
 
-      dtap := and_reduce(dtap_debounce);
+      dtap <= and_reduce(dtap_debounce);
 
-      dtap_last := dtap;
+      dtap_last <= dtap;
 
       if (dtap = '1' and dtap_last = '0') then
-        dtap_rising := '1';
+        dtap_rising <= '1';
       else
-        dtap_rising := '0';
+        dtap_rising <= '0';
       end if;
 
       if (dtap_rising='1') then
-        dtap_cnt := dtap_cnt + 1;
+        dtap_cnt <= dtap_cnt + 1;
       end if;
 
       if (sec_cnt=MAX) then
-        sec_cnt := 0;
-        dtap_cnt := 0;
+        sec_cnt <= 0;
+        dtap_cnt <= 0;
 
         -- copy to stable register
         dtap_cnt_reg <= dtap_cnt;
       else
-        sec_cnt := sec_cnt + 1;
+        sec_cnt <= sec_cnt + 1;
       end if;
 
     end if;
