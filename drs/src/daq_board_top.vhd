@@ -97,7 +97,7 @@ architecture Behavioral of top_readout_board is
   signal drs_data            : std_logic_vector (13 downto 0);
   signal drs_data_valid      : std_logic;
   signal daq_busy            : std_logic := '0';
-  signal trigger             : std_logic := '0';
+  signal trigger, trigger_i  : std_logic := '0';
   signal force_trig          : std_logic := '0';
   signal debug_packet_inject : std_logic;
 
@@ -290,21 +290,21 @@ begin
   -- Trigger Input
   -----------------------------------------------------------------------------------------------------------------------
 
-  --    ibuftrigger : IBUFDS
-  --    generic map (                 --
-  --        DIFF_TERM    => TRUE,   -- Differential Termination
-  --        IBUF_LOW_PWR => TRUE    -- Low power="TRUE", Highest performance="FALSE"
-  --    )
-  --    port map (
-  --        O  => trigger_i,   -- Buffer output
-  --        I  => trigger_i_p, -- Diff_p buffer input (connect directly to top-level port)
-  --        IB => trigger_i_n  -- Diff_n buffer input (connect directly to top-level port)
-  --    );
+  ibuftrigger : IBUFDS
+  generic map (                 --
+      DIFF_TERM    => TRUE,   -- Differential Termination
+      IBUF_LOW_PWR => TRUE    -- Low power="TRUE", Highest performance="FALSE"
+  )
+  port map (
+      O  => trigger_i,   -- Buffer output
+      I  => trigger_i_p, -- Diff_p buffer input (connect directly to top-level port)
+      IB => trigger_i_n  -- Diff_n buffer input (connect directly to top-level port)
+  );
 
   process (clock)
   begin
     if (rising_edge(clock)) then
-      trigger <= force_trig;
+      trigger <= trigger_i or force_trig;
     end if;
   end process;
 
