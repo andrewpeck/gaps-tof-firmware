@@ -27,3 +27,7 @@ set_output_delay -clock [get_clocks clock_i_p] -max 5.000 [get_ports drs_rsrload
 
 set_output_delay -clock [get_clocks clock_i_p] -min 4.000 [get_ports drs_srin_o]
 set_output_delay -clock [get_clocks clock_i_p] -max 5.000 [get_ports drs_srin_o]
+
+set_max_delay \
+    -from [get_pins {ipbus_slave_inst/NO_TMR.ipbus_slave_inst/write_pulse_arr_o_reg[*]/C}] \
+    -to [get_clocks clk_fpga_0] 5.0
