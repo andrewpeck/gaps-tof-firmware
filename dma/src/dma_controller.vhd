@@ -223,8 +223,6 @@ architecture Behavioral of dma_controller is
 
   signal init_cmd : std_logic;
 
-  signal nrst_i : std_logic;
-
   ---
   signal delay_counter   : integer := 0;
   signal initial_counter : integer;
@@ -246,13 +244,10 @@ architecture Behavioral of dma_controller is
 
   signal reset_pointer_address : std_logic := '0';
 
-
 begin
 
-  --active high reset for FIFO
-  nrst_i  <= not aresetn;
   --active low reset for logic
-  aresetn <= '0' when RST_IN = '0' or reset_sys = '1' else '1';
+  aresetn <= not (rst_in or reset_sys);
 
   --------------------------------------------------------------------------------------------
   -- Datamover Commmand Interface Signals
@@ -282,7 +277,7 @@ begin
   --------------------------------------------------------------------------------------------
   u0 : fifo_generator_0
     port map(
-      rst           => nrst_i,
+      rst           => not aresetn,
       wr_clk        => CLK_IN,
       rd_clk        => CLK_AXI,
       din           => fifo_in,
