@@ -25,7 +25,7 @@ set IMPL_FLOW "Vivado Implementation $VIVADO_YEAR"
 set PROPERTIES [dict create \
   synth_1 [dict create \
                 STEPS.SYNTH_DESIGN.ARGS.ASSERT true \
-                STEPS.SYNTH_DESIGN.ARGS.RETIMING false \
+                STEPS.SYNTH_DESIGN.ARGS.RETIMING true \
                 STEPS.SYNTH_DESIGN.ARGS.FANOUT_LIMIT 500 \
               ] \
   impl_1 [dict create \
