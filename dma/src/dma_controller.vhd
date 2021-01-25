@@ -383,7 +383,7 @@ begin
         case s2mm_data_state is
           when IDLE =>
             s2mm_allow_addr_req_reg <= '1';
-            if((unsigned(fifo_count) mod (words_to_send-1)) = 0 and unsigned(fifo_count) /= 0 and s2mm_cmd_tready = '1') then
+            if((unsigned(fifo_count) mod words_to_send) = 0 and unsigned(fifo_count) /= 0 and s2mm_cmd_tready = '1') then
               s2mm_data_state <= ASSERT_CMD;
             else
               fifo_rd_en <= '0';
