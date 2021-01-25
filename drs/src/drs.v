@@ -2,6 +2,8 @@
 // synthesis translate_off
 `define SIMULATION
 // synthesis translate_on
+`define DEBUG
+// Enable DRS ILAs for now..
 
 // TODO: implement ROI trigger delay
 // TODO: figure out what roi old mode does and (possibly?) add it back into the readout format
