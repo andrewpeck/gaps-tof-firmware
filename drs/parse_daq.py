@@ -122,7 +122,8 @@ def read_packet (data, verbose=False):
         print ("calc=%08X data=%08X" % (packet_crc, drs.crc))
 
 if __name__ == "__main__":
-    a = np.fromfile("daq_packet.dat", dtype='>u2', count=-1, sep='', offset=0)
+    a = np.fromfile("daq_packet.dat", dtype='>u2', count=-1, sep='')
+    #a = np.fromfile("daq_packet.dat", dtype='>u2', count=-1, sep='', offset=0)
     np.set_printoptions(formatter={'int':hex})
     PROFILE=False
     if PROFILE:

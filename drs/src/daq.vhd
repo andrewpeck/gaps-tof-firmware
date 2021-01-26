@@ -26,6 +26,7 @@ entity daq is
     debug_packet_inject_i : in std_logic;  -- assert 1 and it will send a debug (fixed content) packet
 
     -- Trigger info
+    stop_cell_i : in std_logic_vector (9 downto 0);
     trigger_i   : in std_logic;
     event_cnt_i : in std_logic_vector (31 downto 0);
     mask_i      : in std_logic_vector (15 downto 0);
@@ -54,9 +55,9 @@ architecture behavioral of daq is
 
   -- packet processing in python 15% faster by adding a channel header!!
   type state_t is (IDLE_state, ERR_state, HEAD_state, STATUS_state, LENGTH_state, ROI_state,
-                   DNA_state, HASH_state, ID_state, CHMASK_state, EVENT_CNT_state, TIMESTAMP_state,
-                   CALC_CH_CRC_state, CH_CRC_state, CH_HEADER_state, PAYLOAD_state,
-                   CALC_CRC32_state, CRC32_state, TAIL_state);
+                   DNA_state, HASH_state, ID_state, CHMASK_state, EVENT_CNT_state,
+                   TIMESTAMP_state, CALC_CH_CRC_state, CH_CRC_state, CH_HEADER_state,
+                   PAYLOAD_state, STOP_CELL_state, CALC_CRC32_state, CRC32_state, TAIL_state);
 
   signal state : state_t := IDLE_state;
 
@@ -135,7 +136,8 @@ architecture behavioral of daq is
       + packet_length'length / g_WORD_SIZE
       + dna'length / g_WORD_SIZE
       + hash'length / g_WORD_SIZE
-      + data'length / g_WORD_SIZE       -- roi
+      + data'length / g_WORD_SIZE -- roi
+      + data'length / g_WORD_SIZE -- stop cell
       + id'length / g_WORD_SIZE
       + mask'length / g_WORD_SIZE
       + event_cnt'length / g_WORD_SIZE
@@ -406,7 +408,7 @@ begin
 
           if (state_word_cnt = CHANNEL_CRC'length / 16 - 1) then
             if (channel_cnt = num_channels) then
-              state <= CALC_CRC32_state;
+              state <= STOP_CELL_state;
             else
               state <= CH_HEADER_state;
             end if;
@@ -419,13 +421,23 @@ begin
                               downto g_WORD_SIZE*(CHANNEL_CRC_WORDS -state_word_cnt-1));
           dav <= true;
 
+        when STOP_CELL_state =>
+
+          -- need 1 extra clock to calculate the crc
+          state <= CALC_CRC32_state;
+          dav   <= true;
+          if (debug) then
+            data  <= x"7777";
+          else
+            data  <= "000000" & stop_cell_i;
+          end if;
+
         when CALC_CRC32_state =>
 
           -- need 1 extra clock to calculate the crc
           state <= CRC32_state;
           dav   <= false;
           data  <= (others => '0');
-
 
         when CRC32_state =>
 

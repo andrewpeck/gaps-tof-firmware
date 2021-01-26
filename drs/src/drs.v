@@ -41,7 +41,7 @@ module drs #(
     // drs control
     //------------------------------------------------------------------------------------------------------------------
 
-  //input        drs_ctl_spike_removal,           // set 1 for spike removal
+    input        drs_ctl_spike_removal,           // set 1 for spike removal
     input        drs_ctl_roi_mode,                // set 1 for region of interest mode
     input        drs_ctl_dmode,                   // set 1 = continuous domino, 0=single shot
     input [5:0]  drs_ctl_adc_latency,             // latency from first sr clock to when adc data should be valid
@@ -84,6 +84,7 @@ module drs #(
     output reg        drs_srclk_en_o, // Multiplexed Shift Register Clock Input
     output reg        drs_srin_o,     // Shared Shift Register Input
     output reg        drs_on_o   ,    //
+    output reg [9:0]  drs_stop_cell_o ,
 
     //------------------------------------------------------------------------------------------------------------------
     // output fifo
@@ -193,10 +194,10 @@ reg [6:0] drs_start_timer = 0; // startup timer to make sure the domino is runni
 
 wire [21:0] crc;
 
-//reg [7:0]  drs_stat_stop_wsr=0;
-//reg        drs_stop_wsr=0;
+reg [7:0]  drs_stat_stop_wsr=0;
+reg        drs_stop_wsr=0;
 reg [9:0]  drs_stop_cell=0;
-//reg [9:0]  drs_stat_stop_cell=0;
+reg [9:0]  drs_stat_stop_cell=0;
 reg [9:0] drs_sample_count=0;
 reg [15:0] drs_rd_tmp_count=0;
 reg [10:0] drs_sr_count=0;
@@ -230,7 +231,7 @@ localparam WAIT_VDD      = 5;
 localparam INIT_READOUT  = 6;
 localparam RSR_LOAD      = 7;
 localparam ADC_READOUT   = 8;
-//localparam STOP_CELL     = 9;
+localparam STOP_CELL     = 9;
 localparam SPIKE_REMOVAL = 13;
 localparam DONE          = 14;
 localparam CONF_SETUP    = 15;
@@ -558,7 +559,7 @@ always @(posedge clock) begin
           // All cells & channels of DRS chips read ?
           if (drs_sample_count==drs_ctl_sample_count_max) begin
             if (drs_addr==drs_ctl_last_chn)
-               drs_readout_state <= IDLE;
+               drs_readout_state <= STOP_CELL;
            end
 
           //------------------------------------------------------------------------------------------------------------
@@ -614,8 +615,8 @@ always @(posedge clock) begin
             drs_rd_tmp_count   <= 0;
 
             // write stop cell into register
-            //drs_stat_stop_cell <= drs_stop_cell;
-            //drs_stat_stop_wsr  <= drs_stop_wsr;
+            drs_stat_stop_cell <= drs_stop_cell;
+            drs_stat_stop_wsr  <= drs_stop_wsr;
 
             // increment channel address
             // bit mask based "skip" to only readout enabled channels with next channel lookahead
@@ -632,24 +633,23 @@ always @(posedge clock) begin
     end // fini
 
     // APPEND THE STOP CELL
-    // STOP_CELL: begin
+    STOP_CELL: begin
 
-    //       //------------------------------------------------------------------------------------------------------------
-    //       // State
-    //       //------------------------------------------------------------------------------------------------------------
+       //------------------------------------------------------------------------------------------------------------
+       // State
+       //------------------------------------------------------------------------------------------------------------
 
-    //       drs_readout_state <= DONE;
+       drs_readout_state <= DONE;
 
 
-    //       //------------------------------------------------------------------------------------------------------------
-    //       // Logic
-    //       //------------------------------------------------------------------------------------------------------------
+       //------------------------------------------------------------------------------------------------------------
+       // Logic
+       //------------------------------------------------------------------------------------------------------------
 
-    //       fifo_wdata[15:10] <= 5'b0;
-    //       fifo_wdata[ 9: 0] <= drs_stop_cell;
-    //       fifo_wen          <= 1;
+       drs_stop_cell_o <= drs_stat_stop_cell;
+       fifo_wen        <= 0;
 
-    // end // fini
+    end // fini
 
     // FINISH READOUT
     DONE: begin
@@ -658,20 +658,25 @@ always @(posedge clock) begin
           // State
           //------------------------------------------------------------------------------------------------------------
 
-          drs_readout_state    <= SPIKE_REMOVAL; //revert to original after implementation.
+          if (drs_ctl_spike_removal) begin
+              drs_readout_state    <= SPIKE_REMOVAL;
+          end
+          else begin
+              drs_readout_state    <= IDLE;
+          end;
 
           //------------------------------------------------------------------------------------------------------------
           // Logic
           //------------------------------------------------------------------------------------------------------------
 
           readout_complete     <= 1;
-          //drs_stat_busy        <= 0; // uncomment later
           fifo_wen             <= 0;
           drs_dwrite_set       <= 1; // to keep chip "warm"
 
     end // fini
 
-    // Clear the address read shift register to remove spikes (see elog
+    // Clear the address read shift register to remove spikes, see elog
+    // https://elog.psi.ch/elogs/DRS4+Forum/697
     SPIKE_REMOVAL: begin
 
           //------------------------------------------------------------------------------------------------------------
@@ -903,8 +908,7 @@ always @* begin
     INIT_READOUT    : state_disp <= "INIT_READOUT";
     RSR_LOAD        : state_disp <= "RSR_LOAD";
     ADC_READOUT     : state_disp <= "ADC_READOUT";
-    //STOP_CELL       : state_disp <= "STOP_CELL";
-    //DNA             : state_disp <= "DNA";
+    STOP_CELL       : state_disp <= "STOP_CELL";
     SPIKE_REMOVAL   : state_disp <= "SPIKE_REMOVAL";
     DONE            : state_disp <= "DONE";
     CONF_SETUP      : state_disp <= "CONF_SETUP";

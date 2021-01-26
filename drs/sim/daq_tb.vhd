@@ -104,6 +104,7 @@ begin
       hash_i                => hash_i,
       timestamp_i           => timestamp_i,
       roi_size_i            => roi_size_i,
+      stop_cell_i           => "1111000011",
       drs_busy_i            => drs_busy_i,
       drs_data_i            => drs_data_i,
       drs_valid_i           => drs_valid_i,

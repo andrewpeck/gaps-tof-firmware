@@ -112,17 +112,18 @@ architecture Behavioral of top_readout_board is
   -- DRS configuration
   ------------------------------------------------------------------------------------------------------------------------
 
-  signal resync       : std_logic;
-  signal busy         : std_logic;
-  signal roi_mode     : std_logic;
-  signal dmode        : std_logic;
-  signal reinit       : std_logic;
-  signal configure    : std_logic;
-  signal standby_mode : std_logic;
-  signal start        : std_logic;
-  signal transp_mode  : std_logic;
-  signal wrsloop      : std_logic;
-  signal pllen        : std_logic;
+  signal resync        : std_logic;
+  signal busy          : std_logic;
+  signal roi_mode      : std_logic;
+  signal spike_removal : std_logic;
+  signal dmode         : std_logic;
+  signal reinit        : std_logic;
+  signal configure     : std_logic;
+  signal standby_mode  : std_logic;
+  signal start         : std_logic;
+  signal transp_mode   : std_logic;
+  signal wrsloop       : std_logic;
+  signal pllen         : std_logic;
 
   signal readout_mask     : std_logic_vector (7 downto 0);
   signal drs_reset        : std_logic;
@@ -206,6 +207,7 @@ architecture Behavioral of top_readout_board is
       reset                    : in  std_logic;
       trigger_i                : in  std_logic;
       adc_data_i               : in  std_logic_vector;
+      drs_ctl_spike_removal    : in  std_logic;
       drs_ctl_roi_mode         : in  std_logic;
       drs_ctl_dmode            : in  std_logic;
       drs_ctl_adc_latency      : in  std_logic_vector;
@@ -659,6 +661,7 @@ begin
     regs_read_arr(2)(REG_READOUT_BUSY_BIT) <= busy;
     regs_read_arr(2)(REG_READOUT_ADC_LATENCY_MSB downto REG_READOUT_ADC_LATENCY_LSB) <= adc_latency;
     regs_read_arr(2)(REG_READOUT_SAMPLE_COUNT_MSB downto REG_READOUT_SAMPLE_COUNT_LSB) <= sample_count_max;
+    regs_read_arr(2)(REG_READOUT_EN_SPIKE_REMOVAL_BIT) <= spike_removal;
     regs_read_arr(3)(REG_READOUT_READOUT_MASK_MSB downto REG_READOUT_READOUT_MASK_LSB) <= readout_mask;
     regs_read_arr(10)(REG_FPGA_DNA_DNA_LSBS_MSB downto REG_FPGA_DNA_DNA_LSBS_LSB) <= dna (31 downto 0);
     regs_read_arr(11)(REG_FPGA_DNA_DNA_MSBS_MSB downto REG_FPGA_DNA_DNA_MSBS_LSB) <= dna (56 downto 32);
@@ -690,6 +693,7 @@ begin
     roi_mode <= regs_write_arr(2)(REG_READOUT_ROI_MODE_BIT);
     adc_latency <= regs_write_arr(2)(REG_READOUT_ADC_LATENCY_MSB downto REG_READOUT_ADC_LATENCY_LSB);
     sample_count_max <= regs_write_arr(2)(REG_READOUT_SAMPLE_COUNT_MSB downto REG_READOUT_SAMPLE_COUNT_LSB);
+    spike_removal <= regs_write_arr(2)(REG_READOUT_EN_SPIKE_REMOVAL_BIT);
     readout_mask <= regs_write_arr(3)(REG_READOUT_READOUT_MASK_MSB downto REG_READOUT_READOUT_MASK_LSB);
 
     -- Connect write pulse signals
@@ -788,6 +792,7 @@ begin
     regs_defaults(2)(REG_READOUT_ROI_MODE_BIT) <= REG_READOUT_ROI_MODE_DEFAULT;
     regs_defaults(2)(REG_READOUT_ADC_LATENCY_MSB downto REG_READOUT_ADC_LATENCY_LSB) <= REG_READOUT_ADC_LATENCY_DEFAULT;
     regs_defaults(2)(REG_READOUT_SAMPLE_COUNT_MSB downto REG_READOUT_SAMPLE_COUNT_LSB) <= REG_READOUT_SAMPLE_COUNT_DEFAULT;
+    regs_defaults(2)(REG_READOUT_EN_SPIKE_REMOVAL_BIT) <= REG_READOUT_EN_SPIKE_REMOVAL_DEFAULT;
     regs_defaults(3)(REG_READOUT_READOUT_MASK_MSB downto REG_READOUT_READOUT_MASK_LSB) <= REG_READOUT_READOUT_MASK_DEFAULT;
 
     -- Define writable regs

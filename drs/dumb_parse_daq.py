@@ -38,6 +38,7 @@ def read_test_packet():
         CH_CRC = auto()
         CH_HEADER = auto()
         PAYLOAD = auto()
+        STOPCELL = auto()
         CRC32 = auto()
         TAIL = auto()
 
@@ -164,7 +165,7 @@ def read_test_packet():
                     print("      > Calculate crc = 0x%08X" % ch_crc_calc)
                     print("      > Received  crc = 0x%0*X" % (8, ch_crc))
                 if ch_cnt == num_channels-1:
-                    state = State.CRC32
+                    state = State.STOPCELL
                     ch_cnt = 0
                 else:
                     state = State.CH_HEADER
@@ -174,6 +175,11 @@ def read_test_packet():
                 state_word_cnt = 0
                 continue
             state_word_cnt += 1
+
+        if state == State.STOPCELL:
+            print("STOPCELL  : 0x%X" % data)
+            state = State.CRC32
+            continue
 
         if state == State.CRC32:
             if state_word_cnt == 0:
