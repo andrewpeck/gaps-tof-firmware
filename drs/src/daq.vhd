@@ -57,7 +57,8 @@ architecture behavioral of daq is
   type state_t is (IDLE_state, ERR_state, HEAD_state, STATUS_state, LENGTH_state, ROI_state,
                    DNA_state, HASH_state, ID_state, CHMASK_state, EVENT_CNT_state,
                    TIMESTAMP_state, CALC_CH_CRC_state, CH_CRC_state, CH_HEADER_state,
-                   PAYLOAD_state, STOP_CELL_state, CALC_CRC32_state, CRC32_state, TAIL_state);
+                   PAYLOAD_state, STOP_CELL_state, CALC_CRC32_state, CRC32_state, TAIL_state,
+                   PAD_state);
 
   signal state : state_t := IDLE_state;
 
@@ -75,11 +76,12 @@ architecture behavioral of daq is
   signal dropped : std_logic := '0';
   signal debug   : boolean   := false;
 
-  signal status        : std_logic_vector (15 downto 0) := (others => '0');
-  signal packet_length : std_logic_vector (15 downto 0) := (others => '0');
-  signal payload_size  : integer                        := 0;
-  signal num_channels  : integer                        := 0;
-  signal id            : std_logic_vector (15 downto 0) := (others => '0');
+  signal status         : std_logic_vector (15 downto 0) := (others => '0');
+  signal packet_length  : std_logic_vector (15 downto 0) := (others => '0');
+  signal packet_padding : integer;
+  signal payload_size   : integer                        := 0;
+  signal num_channels   : integer                        := 0;
+  signal id             : std_logic_vector (15 downto 0) := (others => '0');
 
   signal mask      : std_logic_vector (mask_i'range)      := (others => '0');
   signal event_cnt : std_logic_vector (event_cnt_i'range) := (others => '0');
@@ -127,6 +129,19 @@ architecture behavioral of daq is
     end if;
   end function;
 
+  -- dma expects multiple of 16 words... pad the tail with zeroes
+  function get_packet_padding (packet_size : integer)
+    return integer is
+    variable ret : integer;
+  begin
+    ret := packet_size mod 16;
+    if (ret = 0) then
+      return 0;
+    else
+      return 16-ret;
+    end if;
+  end function;
+
   impure function get_packet_size (packet_payload_size : integer)
     return integer is
   begin
@@ -136,8 +151,8 @@ architecture behavioral of daq is
       + packet_length'length / g_WORD_SIZE
       + dna'length / g_WORD_SIZE
       + hash'length / g_WORD_SIZE
-      + data'length / g_WORD_SIZE -- roi
-      + data'length / g_WORD_SIZE -- stop cell
+      + data'length / g_WORD_SIZE       -- roi
+      + data'length / g_WORD_SIZE       -- stop cell
       + id'length / g_WORD_SIZE
       + mask'length / g_WORD_SIZE
       + event_cnt'length / g_WORD_SIZE
@@ -218,7 +233,7 @@ begin
           dna          <= dna_i;
           hash         <= hash_i (23 downto 8);
           debug        <= false;
-          dropped      <= '0'; -- drs_busy_i; FIXME correct this when there is a real trigger
+          dropped      <= '0';                      -- drs_busy_i; FIXME correct this when there is a real trigger
           num_channels <= count_ones (mask_i) + 1;  -- FIXME: need to account for drs ID and mask appropriately
                                                     -- move this to a common function....
           -- ((count_ones(id_mask and ch_mask)) +to_int(or_reduce(id_mask and ch_mask)))
@@ -229,8 +244,9 @@ begin
       end if;
 
       -- let this pipeline over 2 clocks
-      payload_size  <= get_payload_size(g_DRS_ID, dropped, roi_size, mask);
-      packet_length <= to_slv(get_packet_size(payload_size), packet_length'length);
+      payload_size   <= get_payload_size(g_DRS_ID, dropped, roi_size, mask);
+      packet_length  <= to_slv(get_packet_size(payload_size), packet_length'length);
+      packet_padding <= get_packet_padding(to_integer(unsigned(packet_length)));
 
     end if;
   end process;
@@ -243,14 +259,14 @@ begin
   begin
     if (rising_edge(clock)) then
 
-      dav    <= false;
-      data   <= (others => '0');
+      dav  <= false;
+      data <= (others => '0');
 
       case state is
 
         when IDLE_state =>
 
-          channel_cnt    <= 0;
+          channel_cnt <= 0;
 
           if (trigger_i = '1' or debug_packet_inject_i = '1') then
             state <= HEAD_state;
@@ -368,7 +384,7 @@ begin
           if (debug) then
             state_word_cnt <= state_word_cnt + 1;
           else
-            if (drs_valid_i='1') then
+            if (drs_valid_i = '1') then
               state_word_cnt <= state_word_cnt + 1;
             end if;
           end if;
@@ -387,7 +403,7 @@ begin
             data <= to_slv(state_word_cnt, g_WORD_SIZE);
           elsif (num_channels > 0) then
 
-            if (drs_valid_i='1') then
+            if (drs_valid_i = '1') then
               data <= "00" & drs_data_i;  -- FIXME: upper bits should be parity bits
               dav  <= true;
             else
@@ -427,9 +443,9 @@ begin
           state <= CALC_CRC32_state;
           dav   <= true;
           if (debug) then
-            data  <= x"7777";
+            data <= x"7777";
           else
-            data  <= "000000" & stop_cell_i;
+            data <= "000000" & stop_cell_i;
           end if;
 
         when CALC_CRC32_state =>
@@ -454,10 +470,22 @@ begin
 
         when TAIL_state =>
 
-          state <= IDLE_state;
+          state <= PAD_state;
 
-          data   <= TAIL;
-          dav    <= true;
+          data <= TAIL;
+          dav  <= true;
+
+        when PAD_state =>
+
+          if (state_word_cnt = packet_padding - 1) then
+            state          <= IDLE_state;
+            state_word_cnt <= 0;
+          else
+            state_word_cnt <= state_word_cnt + 1;
+          end if;
+
+          data <= x"0000";
+          dav  <= true;
 
         when others =>
 
