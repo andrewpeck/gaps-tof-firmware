@@ -306,7 +306,8 @@ begin
   process (clock)
   begin
     if (rising_edge(clock)) then
-      trigger <= trigger_i or force_trig;
+      -- NOTE: trigger_i is polarity swapped
+      trigger <= (not trigger_i) or force_trig;
     end if;
   end process;
 
