@@ -176,6 +176,8 @@ end
 // DRS DWrite
 //----------------------------------------------------------------------------------------------------------------------
 
+reg drs_dwrite_set     = 0;
+
 always @(posedge clock) begin
 //  if (trigger)
 //    drs_dwrite_o <= 1'b0;
@@ -204,7 +206,6 @@ reg [10:0] drs_sr_count=0;
 
 reg [3:0] drs_addr=0;
 
-reg        drs_dwrite_set     = 0;
 reg        drs_reinit_request = 0;
 reg        drs_old_roi_mode   = 0;
 
