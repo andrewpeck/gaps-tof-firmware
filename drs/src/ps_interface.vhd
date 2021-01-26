@@ -68,8 +68,11 @@ end ps_interface;
 
 architecture Behavioral of ps_interface is
 
-  signal ipb_reset_async : std_logic := '0';
-  signal ipb_axi_aresetn_sync  : std_logic := '0';
+  signal dma_reset_synced         : std_logic;
+  signal dma_control_reset_synced : std_logic;
+
+  signal ipb_reset_async      : std_logic := '0';
+  signal ipb_axi_aresetn_sync : std_logic := '0';
 
   signal dma_axi_aclk    : std_logic;
   signal dma_axi_aresetn : std_logic;
@@ -155,7 +158,7 @@ begin
 
       dma_axi_clk_o => dma_axi_aclk,
 
-      ipb_clk       => ipb_axi_clk,
+      ipb_clk => ipb_axi_clk,
 
       fixed_io_ddr_vrn  => fixed_io_ddr_vrn,
       fixed_io_ddr_vrp  => fixed_io_ddr_vrp,
@@ -247,6 +250,32 @@ begin
       irq_f2p_0 => irq_f2p_0
       );
 
+  --------------------------------------------------------------------------------
+  -- DMA Controller
+  --------------------------------------------------------------------------------
+
+  xpm_dma_reset_sync : xpm_cdc_sync_rst
+    generic map (
+      DEST_SYNC_FF => 2,                -- range: 2-10
+      INIT         => 1                 -- 0=initialize synchronization registers to 0, 1=initialize
+      )
+    port map (
+      dest_clk => dma_axi_aclk,
+      src_rst  => dma_reset,
+      dest_rst => dma_reset_synced
+      );
+
+  xpm_dma_ctrl_reset_sync : xpm_cdc_sync_rst
+    generic map (
+      DEST_SYNC_FF => 2,                -- range: 2-10
+      INIT         => 1                 -- 0=initialize synchronization registers to 0, 1=initialize
+      )
+    port map (
+      dest_clk => dma_axi_aclk,
+      src_rst  => dma_control_reset,
+      dest_rst => dma_control_reset_synced
+      );
+
   dma_controller_inst : entity dma.dma_controller
     generic map (
       words_to_send => 16,
@@ -256,12 +285,12 @@ begin
       )
     port map (
       --
-      packet_sent => packet_counter,
-      reset_sys   => dma_control_reset,
+      packet_sent => packet_counter, -- FIXME: should put this on a cdc (gray?)
+      reset_sys   => dma_control_reset_synced,
 
       clk_in     => fifo_clock_in,
       clk_axi    => dma_axi_aclk,
-      rst_in     => dma_reset,
+      rst_in     => dma_reset_synced,
       fifo_in    => x"0000" & fifo_data_in,  -- TODO: this is really inefficient to zero pad..
       fifo_wr_en => fifo_data_wen,
       fifo_full  => open,                    -- TODO: connect to monitor
@@ -348,16 +377,16 @@ begin
         WR_WIDTH => MOSIB,
         RD_WIDTH => MOSIB)
       port map (
-        rst     => (not pl_mmcm_locked) or (not ipb_axi_aresetn(0)),
-        wr_clk  => ipb_axi_clk,
-        rd_clk  => ipb_clk,
-        wr_en   => '1',
-        rd_en   => '1',
-        din     => mosi_pre_cdc,
-        dout    => mosi_post_cdc,
-        valid   => open,
-        full    => open,
-        empty   => open
+        rst    => (not pl_mmcm_locked) or (not ipb_axi_aresetn(0)),
+        wr_clk => ipb_axi_clk,
+        rd_clk => ipb_clk,
+        wr_en  => '1',
+        rd_en  => '1',
+        din    => mosi_pre_cdc,
+        dout   => mosi_post_cdc,
+        valid  => open,
+        full   => open,
+        empty  => open
         );
 
     --------------------------------------------------------------------------------
@@ -379,16 +408,16 @@ begin
         WR_WIDTH => MISOB,
         RD_WIDTH => MISOB)
       port map (
-        rst     => (not pl_mmcm_locked) or (not ipb_axi_aresetn_sync),
-        wr_clk  => ipb_clk,
-        rd_clk  => ipb_axi_clk,
-        wr_en   => '1',
-        rd_en   => '1',
-        din     => miso_pre_cdc,
-        dout    => miso_post_cdc,
-        valid   => open,
-        full    => open,
-        empty   => open
+        rst    => (not pl_mmcm_locked) or (not ipb_axi_aresetn_sync),
+        wr_clk => ipb_clk,
+        rd_clk => ipb_axi_clk,
+        wr_en  => '1',
+        rd_en  => '1',
+        din    => miso_pre_cdc,
+        dout   => miso_post_cdc,
+        valid  => open,
+        full   => open,
+        empty  => open
         );
 
   end generate;
@@ -397,8 +426,8 @@ begin
 
   xpm_cdc_sync_rst_inst : xpm_cdc_sync_rst
     generic map (
-      DEST_SYNC_FF   => 2, -- range: 2-10
-      INIT           => 1  -- 0=initialize synchronization registers to 0, 1=initialize
+      DEST_SYNC_FF => 2,                -- range: 2-10
+      INIT         => 1                 -- 0=initialize synchronization registers to 0, 1=initialize
       )
     port map (
       dest_rst => ipb_reset,
@@ -408,8 +437,8 @@ begin
 
   xpm_cdc_sync_axi_rst_inst : xpm_cdc_sync_rst
     generic map (
-      DEST_SYNC_FF   => 2, -- range: 2-10
-      INIT           => 1  -- 0=initialize synchronization registers to 0, 1=initialize
+      DEST_SYNC_FF => 2,                -- range: 2-10
+      INIT         => 1                 -- 0=initialize synchronization registers to 0, 1=initialize
       )
     port map (
       dest_rst => ipb_axi_aresetn_sync,
