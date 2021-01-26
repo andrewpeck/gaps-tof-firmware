@@ -472,7 +472,7 @@ begin
       dna_i                 => "0000000" & dna,
       hash_i                => GLOBAL_SHA,
       timestamp_i           => std_logic_vector(timestamp),
-      roi_size_i            => to_slv(1023, 10),  -- TODO: connect to ipbus, make all of this count from 0
+      roi_size_i            => sample_count_max,
       drs_busy_i            => busy,
       drs_data_i            => drs_data(13 downto 0),
       drs_valid_i           => drs_data_valid,
