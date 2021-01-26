@@ -130,6 +130,7 @@ architecture Behavioral of top_readout_board is
   signal daq_reset        : std_logic;
   signal drs_config       : std_logic_vector (7 downto 0);
   signal chn_config       : std_logic_vector (7 downto 0);
+  signal drs_stop_cell    : std_logic_vector (9 downto 0);
   signal dna              : std_logic_vector (56 downto 0);
   signal adc_latency      : std_logic_vector (5 downto 0);
   signal sample_count_max : std_logic_vector (9 downto 0);
@@ -230,6 +231,7 @@ architecture Behavioral of top_readout_board is
       drs_srclk_en_o           : out std_logic;
       drs_srin_o               : out std_logic;
       drs_on_o                 : out std_logic;
+      drs_stop_cell_o          : out std_logic;
       fifo_wdata_o             : out std_logic_vector;
       fifo_wen_o               : out std_logic;
       fifo_clock_o             : out std_logic;
@@ -433,14 +435,14 @@ begin
 
       drs_srout_i => drs_srout_i,
 
-      drs_addr_o     => drs_addr_o(3 downto 0),
-      drs_nreset_o   => drs_nreset_o,
-      drs_denable_o  => drs_denable_o,
-      drs_dwrite_o   => drs_dwrite_o,
-      drs_rsrload_o  => drs_rsrload_o,
-      drs_srclk_en_o => drs_srclk_en,
-      drs_srin_o     => drs_srin_o,
-
+      drs_addr_o      => drs_addr_o(3 downto 0),
+      drs_nreset_o    => drs_nreset_o,
+      drs_denable_o   => drs_denable_o,
+      drs_dwrite_o    => drs_dwrite_o,
+      drs_rsrload_o   => drs_rsrload_o,
+      drs_srclk_en_o  => drs_srclk_en,
+      drs_srin_o      => drs_srin_o,
+      drs_stop_cell_o => drs_stop_cell,
 
       fifo_wdata_o => drs_data,
       fifo_wen_o   => drs_data_valid,
@@ -462,6 +464,7 @@ begin
       reset                 => daq_reset or reset,
       debug_packet_inject_i => debug_packet_inject,
       trigger_i             => trigger,
+      stop_cell_i           => drs_stop_cell,
       event_cnt_i           => event_counter,
       mask_i                => x"00" & readout_mask,
       board_id              => (others => '0'),
