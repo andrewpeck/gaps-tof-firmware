@@ -157,7 +157,12 @@
                 description="Generates a trigger"
                 mask="0x1"
                 fw_write_pulse_signal="force_trig" />
-        </node> <!--DAQ-->
+            <node id="EN_EXT_TRIGGER" address="0x1" permission="rw"
+                description="Generates a trigger"
+                fw_default="0x1"
+                mask="0x1"
+                fw_signal="en_ext_trigger" />
+        </node> <!--TRIGGER-->
 
         <node id="COUNTERS" address="0x50" description="Counters">
             <node id="CNT_SEM_CORRECTION" address="0x0" permission="r"
