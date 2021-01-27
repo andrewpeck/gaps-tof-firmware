@@ -17,7 +17,7 @@ entity dma_controller is
   generic (
     C_DEBUG       : boolean                        := false;
     words_to_send : integer                        := 16;
-    MAX_ADDRESS   : std_logic_vector(31 downto 0)  := x"10800000";
+    MAX_ADDRESS   : std_logic_vector(31 downto 0)  := x"1F900000";
     HEAD          : std_logic_vector (15 downto 0) := x"AAAA";
     TAIL          : std_logic_vector (15 downto 0) := x"5555"
     );
@@ -360,7 +360,7 @@ begin
   begin
     if(rising_edge(CLK_AXI)) then
       if aresetn = '0' or reset_pointer_address = '1' then
-        saddr <= x"10000000";
+        saddr <= x"19200000";
       elsif (s2mm_addr_req_posted_reg = '1') then
         saddr <= std_logic_vector(unsigned(saddr) + unsigned(btt));
       else
