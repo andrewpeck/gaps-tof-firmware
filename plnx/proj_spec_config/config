@@ -172,7 +172,7 @@ CONFIG_SUBSYSTEM_MACHINE_NAME="template"
 # Kernel Bootargs
 #
 # CONFIG_SUBSYSTEM_BOOTARGS_AUTO is not set
-CONFIG_SUBSYSTEM_USER_CMDLINE="console=ttyPS0,115200 earlycon mem=440M root=/dev/mmcblk0p2 rw rootwait"
+CONFIG_SUBSYSTEM_USER_CMDLINE="console=ttyPS0,115200 earlycon mem=400M root=/dev/mmcblk0p2 rw rootwait"
 CONFIG_SUBSYSTEM_DEVICETREE_FLAGS=""
 # CONFIG_SUBSYSTEM_DTB_OVERLAY is not set
 # CONFIG_SUBSYSTEM_REMOVE_PL_DTB is not set
