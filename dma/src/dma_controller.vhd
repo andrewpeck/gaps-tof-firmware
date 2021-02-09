@@ -350,7 +350,7 @@ begin
     if(rising_edge(CLK_AXI)) then
       if aresetn = '0' then
         reset_pointer_address <= '0';
-      elsif (fifo_out = TAIL and saddr >= MAX_ADDRESS)then
+      elsif (fifo_out = TAIL and mem_buffer_avail < MAX_PKT_LEN ) then
         reset_pointer_address <= '1';
       else
         reset_pointer_address <= '0';
@@ -362,11 +362,14 @@ begin
   begin
     if(rising_edge(CLK_AXI)) then
       if aresetn = '0' or reset_pointer_address = '1' then
-        saddr <= x"10000000";
+        saddr <= x"1B900000";
+        mem_buffer_avail <= to_unsigned(67108864,32);
       elsif (s2mm_addr_req_posted_reg = '1') then
         saddr <= std_logic_vector(unsigned(saddr) + unsigned(btt));
+        mem_buffer_avail <= mem_buffer_avail - unsigned(btt);
       else
         saddr <= saddr;
+        mem_buffer_avail <= mem_buffer_avail;
       end if;
     end if;
   end process;
