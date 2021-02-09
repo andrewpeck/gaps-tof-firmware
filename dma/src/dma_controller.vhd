@@ -17,7 +17,9 @@ entity dma_controller is
   generic (
     C_DEBUG       : boolean                        := false;
     words_to_send : integer                        := 16;
-    MAX_ADDRESS   : std_logic_vector(31 downto 0)  := x"10800000";
+    START_ADDRESS : std_logic_vector(31 downto 0)  := x"1B900000";
+    MAX_PKT_LEN   : unsigned(31 downto 0)          := to_unsigned(36976,32);
+    MEM_BUFF_SIZE : unsigned(31 downto 0)          := unsigned(MAX_ADDRESS) - unsigned(START_ADDRESS);    
     HEAD          : std_logic_vector (15 downto 0) := x"AAAA";
     TAIL          : std_logic_vector (15 downto 0) := x"5555"
     );
