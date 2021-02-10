@@ -251,7 +251,6 @@ begin
     generic map (
       words_to_send => 16,
       max_address   => x"1B900000",
-      max_pkt_len   => x"00009070",
       head          => x"aaaa",
       tail          => x"5555"
       )
