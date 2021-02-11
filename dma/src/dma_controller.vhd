@@ -15,7 +15,7 @@ use UNISIM.VComponents.all;
 
 entity dma_controller is
   generic (
-    C_DEBUG       : boolean                        := true;
+    C_DEBUG       : boolean                        := false;
     words_to_send : integer                        := 16;
     ram_buff_size : integer                        := 67108864;
     MAX_ADDRESS   : std_logic_vector(31 downto 0)  := x"1F900000";
@@ -177,9 +177,7 @@ architecture Behavioral of dma_controller is
       probe17 : in std_logic;
       probe18 : in std_logic_vector(7 downto 0);
       probe19 : in std_logic;
-      probe20 : in std_logic;
-      probe21 : in unsigned(31 downto 0);
-      probe22 : in unsigned(31 downto 0)
+      probe20 : in std_logic
       );
   end component;
 
@@ -326,9 +324,7 @@ begin
         probe17 => m_axis_s2mm_sts_tvalid_reg,
         probe18 => m_axis_s2mm_sts_tdata_reg,
         probe19 => m_axis_s2mm_sts_tkeep_reg(0),
-        probe20 => m_axis_s2mm_sts_tlast_Reg,
-        probe21 => mem_bytes_written,
-        probe22 => mem_buff_size
+        probe20 => m_axis_s2mm_sts_tlast_Reg
         );
   end generate;
 
@@ -368,6 +364,8 @@ begin
   begin
     if(rising_edge(CLK_AXI)) then
       if aresetn = '0' or reset_pointer_address = '1' then
+        -- TODO
+        -- Make saddr a generic defined at the top for easier access
         saddr <= x"1B900000";
         mem_bytes_written <= (others => '0');
       elsif (s2mm_addr_req_posted_reg = '1') then
