@@ -694,7 +694,10 @@ always @(posedge clock) begin
 
           drs_rd_tmp_count <= drs_rd_tmp_count + 1'b1;
           drs_addr_o       <= ADR_READ_SR;
-          drs_srclk_en_o   <= 1;
+          if (drs_rd_tmp_count < 1024)
+            drs_srclk_en_o   <= 1;
+          else
+            drs_srclk_en_o   <= 0;
           fifo_wen         <= 0;
           drs_srin_o       <= 0;      // Shared Shift Register Input
 
