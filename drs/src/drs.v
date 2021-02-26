@@ -616,7 +616,8 @@ always @(posedge clock) begin
             drs_rd_tmp_count   <= 0;
 
             // write stop cell into register
-            drs_stat_stop_cell <= drs_stop_cell;
+            if (drs_addr == drs_ctl_first_chan)
+              drs_stat_stop_cell <= drs_stop_cell;
             drs_stat_stop_wsr  <= drs_stop_wsr;
 
             // increment channel address
