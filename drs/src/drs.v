@@ -616,7 +616,7 @@ always @(posedge clock) begin
             drs_rd_tmp_count   <= 0;
 
             // write stop cell into register
-            if (drs_addr == drs_ctl_first_chan)
+            if (drs_addr == drs_ctl_first_chn)
               drs_stat_stop_cell <= drs_stop_cell;
             drs_stat_stop_wsr  <= drs_stop_wsr;
 
