@@ -665,7 +665,7 @@ always @(posedge clock) begin
           end
           else begin
               drs_readout_state    <= IDLE;
-          end;
+          end
 
           //------------------------------------------------------------------------------------------------------------
           // Logic
