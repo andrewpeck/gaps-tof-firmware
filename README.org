@@ -1,15 +1,15 @@
 #+OPTIONS: toc:5
 #+OPTIONS: ^:nil
 * DRS4 Readout Board Firmware :TOC_2:
-  - [[#organization][**Organization]]
-  - [[#register-access][**Register Access]]
-  - [[#building-the-firmware][**Building the Firmware]]
-  - [[#block-design-creation][**Block Design Creation]]
-  - [[#dataformat][**Dataformat]]
-  - [[#trigger-data-format][**Trigger Data Format]]
-- [[#gitlab-runner-registration][**Gitlab runner registration]]
+  - [[#organization][Organization]]
+  - [[#register-access][Register Access]]
+  - [[#building-the-firmware][Building the Firmware]]
+  - [[#block-design-creation][Block Design Creation]]
+  - [[#dataformat][Dataformat]]
+  - [[#trigger-data-format][Trigger Data Format]]
+- [[#gitlab-runner-registration][Gitlab runner registration]]
 
-** Organization
+** <a name="organization"></a>Organization
 
 #+BEGIN_EXAMPLE
   readout-firmware/
@@ -26,7 +26,7 @@
 
 #+END_EXAMPLE
 
-** Register Access
+** <a name="register-access"></a>Register Access
 
 Firmware registers mapped to a Wishbone-like A32/D32 interface, which is accessed through an AXI⟷Wishbone Bridge
 
