@@ -5,7 +5,7 @@
   - [[#register-access][Register Access]]
   - [[#building-the-firmware][Building the Firmware]]
   - [[#block-design-creation][Block Design Creation]]
-  - [[Dataformat](#dataformat)]
+  - [Dataformat](#dataformat)
   - [[#trigger-data-format][Trigger Data Format]]
 - [[#gitlab-runner-registration][Gitlab runner registration]]
 
