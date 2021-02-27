@@ -147,7 +147,7 @@ Dataformat
   |ROI         |   \[15:0\]    |size of region of interest                   |
   |DNA         |   \[63:0\]    |Zynq7000 Device DNA                          |
   |FW\_HASH    |   \[15:0\]    |First 16 bits of Git Hash                    |
-  |ID          |   \[15:0\]    |\[15:8\] = readout board ID <br> \[7:1\] = reserved <br> \[0\] = drs \#0 or \#1 |
+  |ID          |   \[15:0\]    |\[15:8\] = readout board ID <br> \[7:1\] = reserved <br> \[0\] = drs # 0 or # 1 |
   |CH\_MASK    |   \[15:0\]    |Channel Enable Mask '1'=ON <br> should be either upper 8 bits or lower 8 <br> depending on the chip id |
   |EVENT\_CNT  |   \[31:0\]    |Event ID Received From Trigger               |
   |TIMESTAMP   |   \[47:0\]    |\# of 33MHz clocks elapsed since resync      | 
