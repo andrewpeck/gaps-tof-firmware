@@ -321,7 +321,7 @@ always @(posedge clock) begin
           // then go into INIT_RSR or IDLE mode depending on ROI configuration
 
           if (drs_rd_tmp_count == 1)
-            if (drs_ctl_roi_mode == 0)
+            if (drs_ctl_roi_mode == 1)
               drs_readout_state  <= INIT_RSR;
             else
               drs_readout_state  <= IDLE;
