@@ -98,6 +98,7 @@ architecture Behavioral of top_readout_board is
   signal drs_data_valid      : std_logic;
   signal daq_busy            : std_logic := '0';
   signal trigger, trigger_i  : std_logic := '0';
+  signal trigger_i_ff        : std_logic := '0';
   signal force_trig          : std_logic := '0';
   signal en_ext_trigger      : std_logic := '0';
   signal debug_packet_inject : std_logic;
@@ -308,12 +309,11 @@ begin
 
   process (clock)
     variable trigger_i_inv : std_logic;
-    variable trigger_i_ff  : std_logic;
     variable ext_trigger   : std_logic;
   begin
     if (rising_edge(clock)) then
       trigger_i_inv := not trigger_i; -- NOTE: trigger_i is polarity swapped
-      trigger_i_ff  := trigger_i_inv;
+      trigger_i_ff  <= trigger_i_inv;
 
       -- ext trigger on rising edge from external input
       ext_trigger   := '1' when trigger_i = '1' and trigger_i_ff = '0' else '0';
@@ -823,3 +823,4 @@ begin
   --==== Registers end ============================================================================
 
 end Behavioral;
+
