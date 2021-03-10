@@ -664,7 +664,7 @@ always @(posedge clock) begin
               drs_readout_state    <= SPIKE_REMOVAL;
           end
           else begin
-              drs_readout_state    <= IDLE;
+              drs_readout_state    <= START_RUNNING;
           end
 
           //------------------------------------------------------------------------------------------------------------
@@ -686,7 +686,7 @@ always @(posedge clock) begin
           //------------------------------------------------------------------------------------------------------------
 
           if (drs_rd_tmp_count==1024)begin
-            drs_readout_state    <= IDLE;
+            drs_readout_state    <= START_RUNNING;
             drs_stat_busy <= 0;
           end
           //------------------------------------------------------------------------------------------------------------
