@@ -1,3 +1,6 @@
+library xpm;
+use xpm.vcomponents.all;
+
 library work;
 use work.ipbus_pkg.all;
 use work.registers.all;
@@ -46,6 +49,8 @@ entity ps_interface is
     fifo_data_in  : in std_logic_vector (15 downto 0);
     fifo_clock_in : in std_logic;
     fifo_data_wen : in std_logic;
+    
+    daq_busy_in   : in std_logic;
 
     clk33          : in std_logic;
     pl_mmcm_locked : in std_logic;
@@ -64,6 +69,12 @@ entity ps_interface is
 end ps_interface;
 
 architecture Behavioral of ps_interface is
+
+  signal dma_reset_synced         : std_logic;
+  signal dma_control_reset_synced : std_logic;
+
+  signal ipb_reset_async      : std_logic := '0';
+  signal ipb_axi_aresetn_sync : std_logic := '0';
 
   signal dma_axi_aclk    : std_logic;
   signal dma_axi_aresetn : std_logic;
@@ -109,42 +120,23 @@ architecture Behavioral of ps_interface is
   signal dma_hp_axi_wstrb    : std_logic_vector (3 downto 0);
   signal dma_hp_axi_wvalid   : std_logic;
 
-  signal ipb_axi_aresetn : std_logic;
+  signal ipb_axi_aresetn : std_logic_vector (0 to 0);
   signal ipb_axi_araddr  : std_logic_vector (31 downto 0);
-  signal ipb_axi_arburst : std_logic_vector (1 downto 0);
-  signal ipb_axi_arcache : std_logic_vector (3 downto 0);
-  signal ipb_axi_arid    : std_logic_vector (11 downto 0);
-  signal ipb_axi_arlen   : std_logic_vector (3 downto 0);
-  signal ipb_axi_arlock  : std_logic_vector (1 downto 0);
   signal ipb_axi_arprot  : std_logic_vector (2 downto 0);
-  signal ipb_axi_arqos   : std_logic_vector (3 downto 0);
   signal ipb_axi_arready : std_logic;
-  signal ipb_axi_arsize  : std_logic_vector (2 downto 0);
   signal ipb_axi_arvalid : std_logic;
   signal ipb_axi_awaddr  : std_logic_vector (31 downto 0);
-  signal ipb_axi_awburst : std_logic_vector (1 downto 0);
-  signal ipb_axi_awcache : std_logic_vector (3 downto 0);
-  signal ipb_axi_awid    : std_logic_vector (11 downto 0);
-  signal ipb_axi_awlen   : std_logic_vector (3 downto 0);
-  signal ipb_axi_awlock  : std_logic_vector (1 downto 0);
   signal ipb_axi_awprot  : std_logic_vector (2 downto 0);
-  signal ipb_axi_awqos   : std_logic_vector (3 downto 0);
   signal ipb_axi_awready : std_logic;
-  signal ipb_axi_awsize  : std_logic_vector (2 downto 0);
   signal ipb_axi_awvalid : std_logic;
-  signal ipb_axi_bid     : std_logic_vector (11 downto 0);
   signal ipb_axi_bready  : std_logic;
   signal ipb_axi_bresp   : std_logic_vector (1 downto 0);
   signal ipb_axi_bvalid  : std_logic;
   signal ipb_axi_rdata   : std_logic_vector (31 downto 0);
-  signal ipb_axi_rid     : std_logic_vector (11 downto 0);
-  signal ipb_axi_rlast   : std_logic;
   signal ipb_axi_rready  : std_logic;
   signal ipb_axi_rresp   : std_logic_vector (1 downto 0);
   signal ipb_axi_rvalid  : std_logic;
   signal ipb_axi_wdata   : std_logic_vector (31 downto 0);
-  signal ipb_axi_wid     : std_logic_vector (11 downto 0);
-  signal ipb_axi_wlast   : std_logic;
   signal ipb_axi_wready  : std_logic;
   signal ipb_axi_wstrb   : std_logic_vector (3 downto 0);
   signal ipb_axi_wvalid  : std_logic;
@@ -154,21 +146,22 @@ architecture Behavioral of ps_interface is
   -------------------------- AXI-IPbus bridge ---------------------------------
 
   --AXI
-  signal axi_clk      : std_logic;
+  signal ipb_axi_clk  : std_logic;
   signal ipb_axi_mosi : t_axi_lite_mosi;
   signal ipb_axi_miso : t_axi_lite_miso;
+
+  signal ipb_miso_arr_int : ipb_rbus_array(IPB_SLAVES - 1 downto 0) := (others => (ipb_rdata => (others => '0'), ipb_ack => '0', ipb_err => '0'));
+  signal ipb_mosi_arr_int : ipb_wbus_array(IPB_SLAVES - 1 downto 0);
 
 begin
 
   gaps_ps_interface_wrapper_inst : entity xil_defaultlib.gaps_ps_interface_wrapper
     port map (
 
-      --
-      dma_axi_clk_o  => dma_axi_aclk,
-      ipb_mclk_in    => clk33,
-      pl_mmcm_locked => pl_mmcm_locked,
+      dma_axi_clk_o => dma_axi_aclk,
 
-      --
+      ipb_clk => ipb_axi_clk,
+
       fixed_io_ddr_vrn  => fixed_io_ddr_vrn,
       fixed_io_ddr_vrp  => fixed_io_ddr_vrp,
       fixed_io_mio      => fixed_io_mio,
@@ -235,47 +228,55 @@ begin
       dma_hp_axi_wstrb     => dma_hp_axi_wstrb,
       dma_hp_axi_wvalid    => dma_hp_axi_wvalid,
 
-      --
-      ipb_axi_aresetn(0) => ipb_axi_aresetn,
-      ipb_axi_araddr     => ipb_axi_araddr,
-      ipb_axi_arburst    => ipb_axi_arburst,
-      ipb_axi_arcache    => ipb_axi_arcache,
-      ipb_axi_arid       => ipb_axi_arid,
-      ipb_axi_arlen      => ipb_axi_arlen,
-      ipb_axi_arlock     => ipb_axi_arlock,
-      ipb_axi_arprot     => ipb_axi_arprot,
-      ipb_axi_arqos      => ipb_axi_arqos,
-      ipb_axi_arready    => ipb_axi_arready,
-      ipb_axi_arsize     => ipb_axi_arsize,
-      ipb_axi_arvalid    => ipb_axi_arvalid,
-      ipb_axi_awaddr     => ipb_axi_awaddr,
-      ipb_axi_awburst    => ipb_axi_awburst,
-      ipb_axi_awcache    => ipb_axi_awcache,
-      ipb_axi_awid       => ipb_axi_awid,
-      ipb_axi_awlen      => ipb_axi_awlen,
-      ipb_axi_awlock     => ipb_axi_awlock,
-      ipb_axi_awprot     => ipb_axi_awprot,
-      ipb_axi_awqos      => ipb_axi_awqos,
-      ipb_axi_awready    => ipb_axi_awready,
-      ipb_axi_awsize     => ipb_axi_awsize,
-      ipb_axi_awvalid    => ipb_axi_awvalid,
-      ipb_axi_bid        => ipb_axi_bid,
-      ipb_axi_bready     => ipb_axi_bready,
-      ipb_axi_bresp      => ipb_axi_bresp,
-      ipb_axi_bvalid     => ipb_axi_bvalid,
-      ipb_axi_rdata      => ipb_axi_rdata,
-      ipb_axi_rid        => ipb_axi_rid,
-      ipb_axi_rlast      => ipb_axi_rlast,
-      ipb_axi_rready     => ipb_axi_rready,
-      ipb_axi_rresp      => ipb_axi_rresp,
-      ipb_axi_rvalid     => ipb_axi_rvalid,
-      ipb_axi_wdata      => ipb_axi_wdata,
-      ipb_axi_wid        => ipb_axi_wid,
-      ipb_axi_wlast      => ipb_axi_wlast,
-      ipb_axi_wready     => ipb_axi_wready,
-      ipb_axi_wstrb      => ipb_axi_wstrb,
-      ipb_axi_wvalid     => ipb_axi_wvalid,
-      irq_f2p_0          => irq_f2p_0);
+      ipb_axi_aresetn    => ipb_axi_aresetn,  -- ipb_axi_aresetn : out std_logic_vector (0 to 0 );
+      ipb_axi_araddr     => ipb_axi_araddr,   -- ipb_axi_araddr  : out std_logic_vector (31 downto 0 );
+      ipb_axi_arprot     => ipb_axi_arprot,   -- ipb_axi_arprot  : out std_logic_vector (2 downto 0 );
+      ipb_axi_arready(0) => ipb_axi_arready,  -- ipb_axi_arready : in  std_logic_vector (0 to 0 );
+      ipb_axi_arvalid(0) => ipb_axi_arvalid,  -- ipb_axi_arvalid : out std_logic_vector (0 to 0 );
+      ipb_axi_awaddr     => ipb_axi_awaddr,   -- ipb_axi_awaddr  : out std_logic_vector (31 downto 0 );
+      ipb_axi_awprot     => ipb_axi_awprot,   -- ipb_axi_awprot  : out std_logic_vector (2 downto 0 );
+      ipb_axi_awready(0) => ipb_axi_awready,  -- ipb_axi_awready : in  std_logic_vector (0 to 0 );
+      ipb_axi_awvalid(0) => ipb_axi_awvalid,  -- ipb_axi_awvalid : out std_logic_vector (0 to 0 );
+      ipb_axi_bready(0)  => ipb_axi_bready,   -- ipb_axi_bready  : out std_logic_vector (0 to 0 );
+      ipb_axi_bresp      => ipb_axi_bresp,    -- ipb_axi_bresp   : in  std_logic_vector (1 downto 0 );
+      ipb_axi_bvalid(0)  => ipb_axi_bvalid,   -- ipb_axi_bvalid  : in  std_logic_vector (0 to 0 );
+      ipb_axi_rdata      => ipb_axi_rdata,    -- ipb_axi_rdata   : in  std_logic_vector (31 downto 0 );
+      ipb_axi_rready(0)  => ipb_axi_rready,   -- ipb_axi_rready  : out std_logic_vector (0 to 0 );
+      ipb_axi_rresp      => ipb_axi_rresp,    -- ipb_axi_rresp   : in  std_logic_vector (1 downto 0 );
+      ipb_axi_rvalid(0)  => ipb_axi_rvalid,   -- ipb_axi_rvalid  : in  std_logic_vector (0 to 0 );
+      ipb_axi_wdata      => ipb_axi_wdata,    -- ipb_axi_wdata   : out std_logic_vector (31 downto 0 );
+      ipb_axi_wready(0)  => ipb_axi_wready,   -- ipb_axi_wready  : in  std_logic_vector (0 to 0 );
+      ipb_axi_wstrb      => ipb_axi_wstrb,    -- ipb_axi_wstrb   : out std_logic_vector (3 downto 0 );
+      ipb_axi_wvalid(0)  => ipb_axi_wvalid,   -- ipb_axi_wvalid  : out std_logic_vector (0 to 0 );
+
+      irq_f2p_0 => irq_f2p_0
+      );
+
+  --------------------------------------------------------------------------------
+  -- DMA Controller
+  --------------------------------------------------------------------------------
+
+  xpm_dma_reset_sync : xpm_cdc_sync_rst
+    generic map (
+      DEST_SYNC_FF => 2,                -- range: 2-10
+      INIT         => 1                 -- 0=initialize synchronization registers to 0, 1=initialize
+      )
+    port map (
+      dest_clk => dma_axi_aclk,
+      src_rst  => dma_reset,
+      dest_rst => dma_reset_synced
+      );
+
+  xpm_dma_ctrl_reset_sync : xpm_cdc_sync_rst
+    generic map (
+      DEST_SYNC_FF => 2,                -- range: 2-10
+      INIT         => 1                 -- 0=initialize synchronization registers to 0, 1=initialize
+      )
+    port map (
+      dest_clk => dma_axi_aclk,
+      src_rst  => dma_control_reset,
+      dest_rst => dma_control_reset_synced
+      );
 
   dma_controller_inst : entity dma.dma_controller
     generic map (
@@ -286,16 +287,18 @@ begin
       )
     port map (
       --
-      packet_sent => packet_counter,
-      reset_sys   => dma_control_reset,
+      packet_sent => packet_counter, -- FIXME: should put this on a cdc (gray?)
+      reset_sys   => dma_control_reset_synced,
+      clear_ps_mem => '0', -- TODO: create and connect to ipbus register 
 
       clk_in     => fifo_clock_in,
       clk_axi    => dma_axi_aclk,
-      rst_in     => dma_reset,
-      fifo_in    => x"0000" & fifo_data_in, -- TODO: this is really inefficient...
+      rst_in     => dma_reset_synced,
+      fifo_in    => x"0000" & fifo_data_in,  -- TODO: this is really inefficient to zero pad..
       fifo_wr_en => fifo_data_wen,
-      fifo_full  => open,               -- TODO: connect to monitor
-
+      fifo_full  => open,                    -- TODO: connect to monitor
+      daq_busy_in => daq_busy_in,
+      
       m_axi_s2mm_awid    => dma_hp_axi_awid (3 downto 0),
       m_axi_s2mm_awaddr  => dma_hp_axi_awaddr,
       m_axi_s2mm_awlen   => dma_hp_axi_awlen (7 downto 0),
@@ -333,7 +336,119 @@ begin
 
   ------------------------------------------------------------------------------------------------------------------------
   -- AXI IPBus (Wishbone) Bridge
+  --
+  --    (with clock domain crossings)
   ------------------------------------------------------------------------------------------------------------------------
+
+  ipb_cdc : for I in 0 to IPB_SLAVES-1 generate
+
+    constant addrb   : natural := ipb_mosi_arr_int(I).ipb_addr'length;
+    constant wdatb   : natural := ipb_mosi_arr_int(I).ipb_wdata'length;
+    constant rdatb   : natural := ipb_miso_arr_int(I).ipb_rdata'length;
+    constant strobeb : natural := 1;
+    constant writeb  : natural := 1;
+    constant ackb    : natural := 1;
+    constant errb    : natural := 1;
+
+    constant MOSIB : natural := addrb + wdatb + strobeb + writeb;
+    constant MISOB : natural := rdatb + ackb + errb;
+
+    signal mosi_pre_cdc  : std_logic_vector (MOSIB-1 downto 0) := (others => '0');
+    signal mosi_post_cdc : std_logic_vector (MOSIB-1 downto 0) := (others => '0');
+
+    signal miso_pre_cdc  : std_logic_vector (MISOB-1 downto 0) := (others => '0');
+    signal miso_post_cdc : std_logic_vector (MISOB-1 downto 0) := (others => '0');
+
+  begin
+
+    --------------------------------------------------------------------------------
+    -- From master, to slaves
+    --------------------------------------------------------------------------------
+
+    -- internal signal to slv
+    mosi_pre_cdc <= ipb_mosi_arr_int(I).ipb_addr & ipb_mosi_arr_int(I).ipb_wdata &
+                    ipb_mosi_arr_int(I).ipb_strobe & ipb_mosi_arr_int(I).ipb_write;
+
+    -- outputs
+    ipb_mosi_arr(I).ipb_addr   <= mosi_post_cdc (2+wdatb+addrb-1 downto 2+wdatb);
+    ipb_mosi_arr(I).ipb_wdata  <= mosi_post_cdc (2+wdatb-1 downto 2);
+    ipb_mosi_arr(I).ipb_strobe <= mosi_post_cdc (1);
+    ipb_mosi_arr(I).ipb_write  <= mosi_post_cdc (0);
+
+    mosi_sync : entity work.fifo_async
+      generic map (
+        DEPTH    => 16,
+        WR_WIDTH => MOSIB,
+        RD_WIDTH => MOSIB)
+      port map (
+        rst    => (not pl_mmcm_locked) or (not ipb_axi_aresetn(0)),
+        wr_clk => ipb_axi_clk,
+        rd_clk => ipb_clk,
+        wr_en  => '1',
+        rd_en  => '1',
+        din    => mosi_pre_cdc,
+        dout   => mosi_post_cdc,
+        valid  => open,
+        full   => open,
+        empty  => open
+        );
+
+    --------------------------------------------------------------------------------
+    -- From slaves, to master
+    --------------------------------------------------------------------------------
+
+    -- input from slaves, to slv
+    miso_pre_cdc <= ipb_miso_arr(I).ipb_rdata & ipb_miso_arr(I).ipb_ack &
+                    ipb_miso_arr(I).ipb_err;
+
+    -- from cdc, to bridge
+    ipb_miso_arr_int(I).ipb_rdata <= miso_post_cdc (2+rdatb-1 downto 2);
+    ipb_miso_arr_int(I).ipb_ack   <= miso_post_cdc (1);
+    ipb_miso_arr_int(I).ipb_err   <= miso_post_cdc (0);
+
+    miso_sync : entity work.fifo_async
+      generic map (
+        DEPTH    => 16,
+        WR_WIDTH => MISOB,
+        RD_WIDTH => MISOB)
+      port map (
+        rst    => (not pl_mmcm_locked) or (not ipb_axi_aresetn_sync),
+        wr_clk => ipb_clk,
+        rd_clk => ipb_axi_clk,
+        wr_en  => '1',
+        rd_en  => '1',
+        din    => miso_pre_cdc,
+        dout   => miso_post_cdc,
+        valid  => open,
+        full   => open,
+        empty  => open
+        );
+
+  end generate;
+
+  ipb_clk <= clk33;
+
+  xpm_cdc_sync_rst_inst : xpm_cdc_sync_rst
+    generic map (
+      DEST_SYNC_FF => 2,                -- range: 2-10
+      INIT         => 1                 -- 0=initialize synchronization registers to 0, 1=initialize
+      )
+    port map (
+      dest_rst => ipb_reset,
+      dest_clk => ipb_clk,
+      src_rst  => ipb_reset_async
+      );
+
+  xpm_cdc_sync_axi_rst_inst : xpm_cdc_sync_rst
+    generic map (
+      DEST_SYNC_FF => 2,                -- range: 2-10
+      INIT         => 1                 -- 0=initialize synchronization registers to 0, 1=initialize
+      )
+    port map (
+      dest_rst => ipb_axi_aresetn_sync,
+      dest_clk => ipb_clk,
+      src_rst  => ipb_axi_aresetn(0)
+      );
 
   i_axi_ipbus_bridge : entity work.axi_ipbus_bridge
     generic map(
@@ -342,12 +457,12 @@ begin
       C_S_AXI_ADDR_WIDTH => C_IPB_AXI_ADDR_WIDTH
       )
     port map(
-      ipb_reset_o   => ipb_reset,
-      ipb_clk_o     => ipb_clk,
-      ipb_miso_i    => ipb_miso_arr,
-      ipb_mosi_o    => ipb_mosi_arr,
-      S_AXI_ACLK    => clk33,
-      S_AXI_ARESETN => ipb_axi_aresetn,
+      ipb_reset_o   => ipb_reset_async,
+      ipb_clk_o     => open,
+      ipb_miso_i    => ipb_miso_arr_int,
+      ipb_mosi_o    => ipb_mosi_arr_int,
+      S_AXI_ACLK    => ipb_axi_clk,
+      S_AXI_ARESETN => ipb_axi_aresetn(0),
       S_AXI_ARADDR  => ipb_axi_araddr(C_IPB_AXI_ADDR_WIDTH - 1 downto 0),
       S_AXI_ARPROT  => ipb_axi_arprot,
       S_AXI_ARREADY => ipb_axi_arready,
