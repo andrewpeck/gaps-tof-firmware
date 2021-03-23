@@ -336,7 +336,7 @@ begin
   packet_tracker : process(CLK_AXI)
   begin
     if(rising_edge(CLK_AXI)) then
-      if RST_IN = RESET_ACTIVE or reset_sys = '1' then
+      if aresetn = RESET_ACTIVE or reset_sys = '1' then
         packet_sent <= (others => '0');
       elsif (fifo_out(15 downto 0) = TAIL)then
         packet_sent <= std_logic_vector(unsigned(packet_sent) + 1);
