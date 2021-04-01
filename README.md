@@ -143,7 +143,7 @@ Dataformat
   | :----      | :---------    | :-------------                              |
   |HEAD        |   \[15:0\]    | 0xAAAA                                      |
   |STATUS      |   \[15:0\]    |\[0\] =sync\_err <br> \[1\] = drs was busy (lost trigger) <br> \[15:1\]=reserved |
-  |LEN         |   \[15:0\]    |length of packet, need to precalculate       | 
+  |LEN         |   \[15:0\]    |length of packet in 2 byte words       | 
   |ROI         |   \[15:0\]    |size of region of interest                   |
   |DNA         |   \[63:0\]    |Zynq7000 Device DNA                          |
   |FW\_HASH    |   \[15:0\]    |First 16 bits of Git Hash                    |
@@ -151,7 +151,7 @@ Dataformat
   |CH\_MASK    |   \[15:0\]    |Channel Enable Mask '1'=ON <br> should be either upper 8 bits or lower 8 <br> depending on the chip id |
   |EVENT\_CNT  |   \[31:0\]    |Event ID Received From Trigger               |
   |TIMESTAMP   |   \[47:0\]    |\# of 33MHz clocks elapsed since resync      | 
-  |PAYLOAD     |0 to XXXX words|HEADER\[15:0\] = Channel ID <br> data bits \[13:0\] = ADC data <br> data bits \[15:14\] parity <br> trailer\[31:0\] = crc32 |
+  |PAYLOAD     |0 to XXXX words|HEADER\[15:0\] = Channel ID <br> ----- begin block data ----- <br> data bits \[13:0\] = ADC data <br> data bits \[15:14\] parity <br> ----- end block: len = ROI words ----- <br> trailer\[31:0\] = crc32 |
   |STOP CELL   |   \[15:0\]    |Stop cell of the DRS
   |CRC32       |   \[31:0\]    |Packet CRC (excluding Trailer)
   |TAIL        |   \[15:0\]    |0x5555
