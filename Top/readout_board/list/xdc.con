@@ -1,3 +1,4 @@
 xdc/MarsZX2_EB1.xdc
 xdc/pinout.xdc
 xdc/timing.xdc
+xdc/placements.tcl nosynth

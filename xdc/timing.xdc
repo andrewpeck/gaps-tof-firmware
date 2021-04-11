@@ -6,21 +6,11 @@ set_input_delay -clock [get_clocks clock_i_p] 5.000 [get_ports -filter { NAME =~
 
 # DWRITE Special Output
 
-set_input_delay -clock [get_clocks clock_i_p] -min 5.000 [get_ports trigger_i_n]
-set_input_delay -clock [get_clocks clock_i_p] -max 7.000 [get_ports trigger_i_n]
-
-set_input_delay -clock [get_clocks clock_i_p] -min 5.000 [get_ports trigger_i_p]
-set_input_delay -clock [get_clocks clock_i_p] -max 7.000 [get_ports trigger_i_p]
-
-
 set_output_delay -clock [get_clocks clock_i_p] -min 4.000 [get_ports {drs_addr_o[*]}]
 set_output_delay -clock [get_clocks clock_i_p] -max 5.000 [get_ports {drs_addr_o[*]}]
 
 set_output_delay -clock [get_clocks clock_i_p] -min 4.000 [get_ports drs_denable_o]
 set_output_delay -clock [get_clocks clock_i_p] -max 5.000 [get_ports drs_denable_o]
-
-set_output_delay -clock [get_clocks clock_i_p] -min 4.000 [get_ports drs_dwrite_o]
-set_output_delay -clock [get_clocks clock_i_p] -max 5.000 [get_ports drs_dwrite_o]
 
 set_output_delay -clock [get_clocks clock_i_p] -min 4.000 [get_ports drs_rsrload_o]
 set_output_delay -clock [get_clocks clock_i_p] -max 5.000 [get_ports drs_rsrload_o]
@@ -28,6 +18,24 @@ set_output_delay -clock [get_clocks clock_i_p] -max 5.000 [get_ports drs_rsrload
 set_output_delay -clock [get_clocks clock_i_p] -min 4.000 [get_ports drs_srin_o]
 set_output_delay -clock [get_clocks clock_i_p] -max 5.000 [get_ports drs_srin_o]
 
-set_max_delay \
-    -from [get_pins {ipbus_slave_inst/NO_TMR.ipbus_slave_inst/write_pulse_arr_o_reg[*]/C}] \
-    -to [get_clocks clk_fpga_0] 5.0
+set_output_delay -clock [get_clocks clock_i_p] -min 4.000 [get_ports drs_dwrite_o]
+set_output_delay -clock [get_clocks clock_i_p] -max 5.000 [get_ports drs_dwrite_o]
+
+set_output_delay -clock [get_clocks clock_i_p] -min 4.000 [get_ports drs_srclk_o]
+set_output_delay -clock [get_clocks clock_i_p] -max 5.000 [get_ports drs_srclk_o]
+
+set_input_delay -clock [get_clocks clock_i_p] -min 4.000 [get_ports drs_plllock_i]
+set_input_delay -clock [get_clocks clock_i_p] -max 5.000 [get_ports drs_plllock_i]
+
+set_input_delay -clock [get_clocks clock_i_p] -min 4.000 [get_ports drs_dtap_i]
+set_input_delay -clock [get_clocks clock_i_p] -max 5.000 [get_ports drs_dtap_i]
+
+set_output_delay -clock [get_clocks clock_i_p] -min 4.000 [get_ports drs_nreset_o]
+set_output_delay -clock [get_clocks clock_i_p] -max 5.000 [get_ports drs_nreset_o]
+
+set_false_path -from [get_ports drs_dtap_i]
+set_false_path -from [get_ports drs_plllock_i]
+set_false_path -to   [get_ports drs_nreset_o]
+
+#set_min_delay -from [get_ports ext_trigger_i_p] -to [get_ports drs_dwrite_o] 8
+set_max_delay -datapath_only -from [get_ports ext_trigger_i_p] -to [get_ports drs_dwrite_o] 14

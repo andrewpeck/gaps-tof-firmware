@@ -71,6 +71,8 @@ begin
     wait until rising_edge(clock);
     force_trig <= '0';
 
+    wait until rising_edge(clock);
+
     wait for 1 ns;
     assert dwrite_o = '0' report "ERROR: force trigger dwrite failure" severity error;
     wait until rising_edge(clock);
