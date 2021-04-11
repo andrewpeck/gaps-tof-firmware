@@ -26,17 +26,17 @@ architecture test of daq_tb is
 
   signal debug_packet_inject_i : std_logic                      := '0';
   signal trigger_i             : std_logic                      := '0';
-  signal event_cnt_i           : std_logic_vector (31 downto 0) := (others => '0');
-  signal mask_i                : std_logic_vector (15 downto 0) := (others => '0');
-  signal board_id              : std_logic_vector (7 downto 0)  := (others => '0');
+  signal event_cnt_i           : std_logic_vector (31 downto 0) := x"99999999";
+  signal mask_i                : std_logic_vector (15 downto 0) := x"000f";
+  signal board_id              : std_logic_vector (7 downto 0)  := x"77";
   signal sync_err_i            : std_logic                      := '0';
-  signal dna_i                 : std_logic_vector (63 downto 0) := (others => '0');
-  signal hash_i                : std_logic_vector (31 downto 0) := (others => '0');
-  signal timestamp_i           : std_logic_vector (47 downto 0) := (others => '0');
-  signal roi_size_I            : std_logic_vector (9 downto 0)  := (others => '1');
+  signal dna_i                 : std_logic_vector (63 downto 0) := x"6666666666666666";
+  signal hash_i                : std_logic_vector (31 downto 0) := x"CCCCCCCC";
+  signal timestamp_i           : std_logic_vector (47 downto 0) := x"444444444444";
+  signal roi_size_i            : std_logic_vector (9 downto 0)  := "11" & x"ff";
   signal drs_busy_i            : std_logic                      := '0';
-  signal drs_data_i            : std_logic_vector (13 downto 0) := (others => '0');
-  signal drs_valid_i           : std_logic                      := '0';
+  signal drs_data_i            : std_logic_vector (13 downto 0) := "00" & x"bbb";
+  signal drs_valid_i           : std_logic                      := '1';
 
   signal data_o  : std_logic_vector (15 downto 0) := (others => '0');
   signal valid_o : std_logic                      := '0';
@@ -73,6 +73,8 @@ begin
     --std.env.finish;
     wait until (falling_edge(busy_o));
     wait until (valid_o='0');
+    wait until (falling_edge(busy_o));
+    wait until (valid_o='0');
     std.env.finish;
   end process;
 
@@ -83,6 +85,14 @@ begin
     debug_packet_inject_i <= '1';
     wait until rising_edge(clock);
     debug_packet_inject_i <= '0';
+    wait until rising_edge(clock);
+    wait until busy_o = '0';
+
+    wait for 200 ns;
+    wait until rising_edge(clock);
+    trigger_i <= '1';
+    wait until rising_edge(clock);
+    trigger_i <= '0';
     wait;
   end process;
 

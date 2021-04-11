@@ -1,5 +1,7 @@
 .PHONY: check_output
 
+DAQ_FILES=src/crc32.vhd src/types_pkg.vhd src/daq.vhd sim/daq_tb.vhd
+
 all: check_output trigger_mux
 
 check_output:  daq_packet.dat
@@ -11,8 +13,8 @@ dumb_check:  daq_packet.txt
 daq_packet.dat:  daq_tb
 	@python3 hex_to_bin.py
 
-daq_tb: src/types_pkg.vhd src/daq.vhd sim/daq_tb.vhd src/crc32.vhd
-	ghdl -a --std=08 --ieee=synopsys src/crc32.vhd src/types_pkg.vhd src/daq.vhd sim/daq_tb.vhd
+daq_tb: $(DAQ_FILES)
+	ghdl -a --std=08 --ieee=synopsys $(DAQ_FILES)
 	ghdl -r --std=08 --ieee=synopsys daq_tb
 
 dump: daq_packet.dat
@@ -30,3 +32,6 @@ trigger_mux_questa:
 	vcom -2008 src/trigger_mux.vhd sim/trigger_mux_tb.vhd
 	vsim trigger_mux_tb
 
+questa:
+	vcom -2008 $(DAQ_FILES)
+	vsim daq_tb

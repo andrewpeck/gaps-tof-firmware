@@ -17,6 +17,8 @@ class DRSWaveform():
     def check_crc(self):
         crc = libscrc.crc32(self.data)
 
+        #print ("CRC=0x%08X" % crc)
+
         if crc != self.crc:
             print("CH%d CRC FAIL calc=0x%08X, read=0x%08X" % (self.channel, crc, self.crc))
             return 1
@@ -24,6 +26,7 @@ class DRSWaveform():
         return 0
 
 class DAQReadout():
+
     header = np.uint16(0)
     trailer = np.uint16(0)
     status = np.uint16(0)
@@ -81,9 +84,12 @@ class DAQReadout():
         ret += ("TRAILER   : 0x%0*X\n" % (2, self.trailer))
         return ret
 
-def read_packet (data, verbose=False):
+def read_packet (data, drs_truth, start=0,  verbose=False):
 
     drs = DAQReadout()
+
+    data = data[start:]
+
     drs.header = data[0]
     drs.status = data[1]
     drs.length = data[2]
@@ -98,9 +104,15 @@ def read_packet (data, verbose=False):
 
     for ch in range(drs.channels):
 
-
         START = 17+ch*(drs.roi_size+3)
         END = 17+ch*(drs.roi_size+3) + drs.roi_size
+
+        if (verbose==True):
+            print("start=%d, data=0x%02X" %(START, data[START]))
+            print("end=%d, data=0x%02X" % (END, data[END-1]))
+            print("data" + str(data[START:END]))
+            print("crc" + str(data[END:END+2]))
+            print("")
 
         drs.waveforms.append(DRSWaveform(data[START:END], \
                                     int.from_bytes(data[END:END+2], byteorder="big"), \
@@ -112,8 +124,7 @@ def read_packet (data, verbose=False):
     drs.crc = int.from_bytes(data[drs.length-3:drs.length-1], byteorder="big")
     drs.trailer = data[drs.length-1]
 
-    if (verbose):
-        print(drs)
+    print(drs)
 
     packet_crc = libscrc.crc32(data[0:drs.length-3]) # subtract trailer + crc
 
@@ -121,21 +132,65 @@ def read_packet (data, verbose=False):
         print ("Packet  CRC fail")
         print ("calc=%08X data=%08X" % (packet_crc, drs.crc))
 
+    assert drs_truth.status    == drs.status
+    assert drs_truth.dna       == drs.dna
+    assert drs_truth.githash   == drs.githash
+    assert drs_truth.board_id  == drs.board_id
+    assert drs_truth.ch_mask   == drs.ch_mask
+    assert drs_truth.event_cnt == drs.event_cnt
+    assert drs_truth.timestamp == drs.timestamp
+
+    assert drs.header==0xAAAA
+    assert drs.trailer==0x5555
+
 if __name__ == "__main__":
+
+    # a = np.fromfile("packet_3.bin", dtype='<u2', count=-1, sep='')
+    # i = 0
+    # for byte in a:
+    #     if (i%2==1):
+    #         print("0x%04X" % byte)
+    #     i=i+1
+
     a = np.fromfile("daq_packet.dat", dtype='>u2', count=-1, sep='')
-    #a = np.fromfile("daq_packet.dat", dtype='>u2', count=-1, sep='', offset=0)
+
     np.set_printoptions(formatter={'int':hex})
-    PROFILE=False
+
+    PROFILE = False
+
     if PROFILE:
         def loop_read(a):
             for i in range(100000):
-                read_packet(a,False)
+                read_packet(a, False)
 
         import cProfile
         cProfile.run('loop_read(a)', "stats")
         import pstats
         p = pstats.Stats('stats')
         p.strip_dirs().sort_stats('time').print_stats(20)
-        read_packet(a,True)
+        read_packet(a, True)
     else:
-        read_packet(a,True)
+
+        drs = DAQReadout()
+
+        drs.status = 0x9999
+        drs.dna = 0xfedcba9876543210
+        drs.githash = 0x3210
+        drs.board_id = 0x4444
+        drs.ch_mask = 0xff
+        drs.event_cnt = 0x76543210
+        drs.timestamp = 0xba9876543210
+
+        read_packet(a, drs, 0, False)
+
+        drs = DAQReadout()
+
+        drs.status = 0x0000
+        drs.dna = 0x6666666666666666
+        drs.githash = 0xcccc
+        drs.board_id = 0x7700
+        drs.ch_mask = 0x0f
+        drs.event_cnt = 0x99999999
+        drs.timestamp = 0x444444444444
+
+        read_packet(a, drs, 9264, False)
