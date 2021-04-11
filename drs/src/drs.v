@@ -12,7 +12,6 @@
 //       seems to be related only to combining two channels in cascade mode
 //       and can (probably) be removed if cascading is not used
 // TODO: tmr
-// DONE: add dna into readout
 
 module drs #(
   parameter TMR_INST     = 0,
