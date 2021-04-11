@@ -118,53 +118,42 @@ directly (and the tcl should be exported after any changes are made).
 The tcl-to-bd flow can be used when changing versions. There is still
 some version-lock-in but efforts were made to minimize it.
 
-### 2018.2 Compatibility
-
-One note. Newer versions of Vivado add the flag `force` onto the end of
-the `assign_bd_address` commands in the `readout-board-bd.tcl` file.
-
-The force flag does not exist in Vivado 2018.2 for example. To keep the
-TCL file compatible between versions you can change the lines from:
-
-``` {.example}
-assign_bd_address -offset 0x80000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs drs_top_0/S_AXI_LITE/reg0] -force
-```
-
-to
-
-``` {.example}
-assign_bd_address -offset 0x80000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs drs_top_0/S_AXI_LITE/reg0]
-```
-
 Dataformat
 ----------
 
-  | Field      | Len             | Description                                                                                                                                                                                               |
-  | :----      | :---------      | :-------------                                                                                                                                                                                            |
-  | HEAD       | \[15:0\]        | 0xAAAA                                                                                                                                                                                                    |
-  | STATUS     | \[15:0\]        | \[0\] =sync\_err <br> \[1\] = drs was busy (lost trigger) <br> \[15:1\]=reserved                                                                                                                          |
-  | LEN        | \[15:0\]        | length of packet in 2 byte words                                                                                                                                                                          |
-  | ROI        | \[15:0\]        | size of region of interest                                                                                                                                                                                |
-  | DNA        | \[63:0\]        | Zynq7000 Device DNA                                                                                                                                                                                       |
-  | FW\_HASH   | \[15:0\]        | First 16 bits of Git Hash                                                                                                                                                                                 |
-  | ID         | \[15:0\]        | \[15:8\] = readout board ID <br> \[7:1\] = reserved <br> \[0\] = drs # 0 or # 1                                                                                                                           |
-  | CH\_MASK   | \[15:0\]        | Channel Enable Mask '1'=ON <br> should be either upper 8 bits or lower 8 <br> depending on the chip id                                                                                                    |
-  | EVENT\_CNT | \[31:0\]        | Event ID Received From Trigger                                                                                                                                                                            |
-  | TIMESTAMP  | \[47:0\]        | \# of 33MHz clocks elapsed since resync                                                                                                                                                                   |
-  | PAYLOAD    | 0 to XXXX words | HEADER\[15:0\] = Channel ID <br> ----- begin block data ----- <br> data bits \[13:0\] = ADC data <br> data bits \[15:14\] parity <br> ----- end block: len = ROI words ----- <br> trailer\[31:0\] = crc32 |
-  | STOP CELL  | \[15:0\]        | Stop cell of the DRS                                                                                                                                                                                      |
-  | CRC32      | \[31:0\]        | Packet CRC (excluding Trailer)                                                                                                                                                                            |
-  | TAIL       | \[15:0\]        | 0x5555                                                                                                                                                                                                    |
+  | Field      | Len             | Description                                                                                                                                                                                   |
+  | :----      | :---------      | :-------------                                                                                                                                                                                |
+  | HEAD       | `[15:0]`        | 0xAAAA                                                                                                                                                                                        |
+  | STATUS     | `[15:0]`        | `[0]` = sync\_err <br> `[1]` = drs was busy (lost trigger) <br> `[15:2]`= reserved                                                                                                            |
+  | LEN        | `[15:0]`        | length of packet in 2 byte words                                                                                                                                                              |
+  | ROI        | `[15:0]`        | size of region of interest                                                                                                                                                                    |
+  | DNA        | `[63:0]`        | Zynq7000 Device DNA                                                                                                                                                                           |
+  | FW\_HASH   | `[15:0]`        | First 16 bits of Git Hash                                                                                                                                                                     |
+  | ID         | `[15:0]`        | `DATA[15:8]` = readout board ID <br> `DATA[7:0]` = reserved <br>                                                                                                                              |
+  | CH\_MASK   | `[15:0]`        | Channel Enable Mask '1'=ON <br> should be either upper 8 bits or lower 8 <br> depending on the chip id                                                                                        |
+  | EVENT\_CNT | `[31:0]`        | Event ID Received From Trigger                                                                                                                                                                |
+  | TIMESTAMP  | `[47:0]`        | \# of 33MHz clocks elapsed since resync                                                                                                                                                       |
+  | PAYLOAD    | 0 to XXXX words | `HEADER[15:0]` = Channel ID <br> ----- begin block data ----- <br> `DATA[13:0]` = ADC data <br> `DATA[15:14]` parity <br> ----- end block: len = ROI words ----- <br> `TRAILER[31:0]` = crc32 |
+  | STOP CELL  | `[15:0]`        | Stop cell of the DRS                                                                                                                                                                          |
+  | CRC32      | `[31:0]`        | Packet CRC (excluding Trailer)                                                                                                                                                                |
+  | TAIL       | `[15:0]`        | 0x5555                                                                                                                                                                                        |
 
 Trigger Data Format
 -------------------
 
   | Field     | Len       | Description                                                                                            |
   | :-------- | :-------- | :-------------                                                                                         |
-  | START     | \[0\]     | 1'b1 = Start bit                                                                                       |
-  | CMD       | \[0\]     | 1'b0 = resync <br> 1'b1 = trigger                                                                      |
-  | CH\_MASK  | \[15:0\]  | bitfield set to '1' to readout a chanel <br> \[7:0\]=DRS0 channels 7:0 <br> \[15:8\]=DRS1 channels 7:0 |
-  | EVENT\_ID | \[31:0\]  | Event ID                                                                                               |
+  | START     | `[0:0]`   | '1' = Start bit; initiates a trigger                                                                   |
+  | DWRITE0   | `[0:0]`   | '1' = deassert dwrite on drs 0                                                                         |
+  | DWRITE1   | `[0:0]`   | '1' = deassert dwrite on drs 1                                                                         |
+  | CH\_MASK  | `[15:0]`  | bitfield set to '1' to readout a chanel <br> `[7:0]`=DRS0 channels 7:0 <br> `[15:8]`=DRS1 channels 7:0 |
+  | EVENT\_ID | `[31:0]`  | Event ID                                                                                               |
+  | CMD       | `[3:0]`   | Command (c.f. command list for details)                                                                |
+  
+  Note that DWRITE0 and DWRITE1 are redundant with the channel mask, but are here in order to reduce
+  the latency to assert DWRITE. The firmware handles this through a fast path with minimum latency
+  to deassert DWRITE. After that, the data is frozen in the ring buffer so we can wait until the CH\_MASK 
+  is received to start the readout. 
 
 Gitlab runner registration
 ==========================
