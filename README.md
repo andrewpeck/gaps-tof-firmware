@@ -176,9 +176,9 @@ Some simple instructions for registering a Gitlab runner
 2.  Execute `gitlab-runner register`
 3.  At the prompt of "Please enter the gitlab-ci coordinator URL (e.g.
     <https://gitlab.com/>):", enter:
-
-        https://gitlab.com/
-
+```
+https://gitlab.com/
+```
 4.  At the prompt of "Please enter the gitlab-ci token for this
     runner:", enter the token that you get from Settings -&gt; CI/CD
     -&gt; Runners --&gt; Set up a specific Runner manually.
@@ -186,21 +186,14 @@ Some simple instructions for registering a Gitlab runner
     runner:", give it a name:
 6.  At the prompt of "Please enter the gitlab-ci tags for this runner
     (comma separated):", enter
-
 ```
-
 hog
-
 ```
-
 7.  At the prompt of: "Please enter the executor: docker+machine,
     docker-ssh+machine, kubernetes, parallels, virtualbox, docker-ssh,
     shell, ssh, custom, docker:", enter:
-
 ```
-
 shell
-
 ```
 Now you can simply start the runner (`gitlab-runner run`). Make sure
 Vivado is in the path.
