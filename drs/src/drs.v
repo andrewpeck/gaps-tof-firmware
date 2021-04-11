@@ -264,7 +264,17 @@ always @(posedge clock) begin
   fifo_wen             <= 0;
 
   // internal
+  drs_sr_reg           <= 'hf8;
+  drs_start_timer      <= 0;
   drs_stat_busy        <= 0;
+  drs_stat_stop_wsr    <= 0;
+  drs_stop_wsr         <= 0;
+  drs_stop_cell        <= 0;
+  drs_stat_stop_cell   <= 0;
+  drs_sr_count         <= 0;
+  drs_addr             <= 0;
+  drs_reinit_request   <= 0;
+  drs_old_roi_mode     <= 0;
   drs_sample_count     <= 0;
   drs_rd_tmp_count     <= 0;
   drs_reinit_request   <= 1;
