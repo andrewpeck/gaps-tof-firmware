@@ -68,6 +68,8 @@ end ps_interface;
 
 architecture Behavioral of ps_interface is
 
+  signal packet_counter_xdma : std_logic_vector (31 downto 0);
+
   signal dma_reset_synced         : std_logic;
   signal dma_control_reset_synced : std_logic;
 
@@ -276,6 +278,22 @@ begin
       dest_rst => dma_control_reset_synced
       );
 
+  xpm_cdc_gray_inst : xpm_cdc_gray
+    generic map (
+      DEST_SYNC_FF          => 2,          -- DECIMAL; range: 2-10
+      INIT_SYNC_FF          => 0,          -- DECIMAL; 0=disable simulation init values, 1=enable simulation init values
+      REG_OUTPUT            => 0,          -- DECIMAL; 0=disable registered output, 1=enable registered output
+      SIM_ASSERT_CHK        => 0,          -- DECIMAL; 0=disable simulation messages, 1=enable simulation messages
+      SIM_LOSSLESS_GRAY_CHK => 0,          -- DECIMAL; 0=disable lossless check, 1=enable lossless check
+      WIDTH                 => 32          -- DECIMAL; range: 2-32
+      )
+    port map (
+      dest_out_bin => packet_counter,      -- WIDTH-bit output: Binary input bus (src_in_bin) synchronized to destination clock domain. This output is combinatorial unless REG_OUTPUT is set to 1.
+      dest_clk     => fifo_clock_in,       -- 1-bit input: Destination clock.
+      src_clk      => dma_axi_aclk,        -- 1-bit input: Source clock.
+      src_in_bin   => packet_counter_xdma  -- WIDTH-bit input: Binary input bus that will be synchronized to the destination clock domain.
+      );
+
   dma_controller_inst : entity dma.dma_controller
     generic map (
       words_to_send => 16,
@@ -284,8 +302,8 @@ begin
       tail          => x"5555"
       )
     port map (
-      --
-      packet_sent => packet_counter, -- FIXME: should put this on a cdc (gray?)
+
+      packet_sent => packet_counter_xdma,
       reset_sys   => dma_control_reset_synced,
 
       clk_in     => fifo_clock_in,
