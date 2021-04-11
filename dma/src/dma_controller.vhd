@@ -82,8 +82,9 @@ architecture Behavioral of dma_controller is
 
   component axis2aximm is
     port (
-      s2mm_halt    : in std_logic;
-      s2mm_dbg_sel : in std_logic_vector(3 downto 0);
+      s2mm_halt       : in  std_logic;
+      s2mm_halt_cmplt : out std_logic;
+      s2mm_dbg_sel    : in  std_logic_vector(3 downto 0);
 
       m_axi_s2mm_aclk            : in  std_logic;
       m_axi_s2mm_aresetn         : in  std_logic;
