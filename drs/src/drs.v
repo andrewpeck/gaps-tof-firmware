@@ -92,7 +92,6 @@ module drs #(
 
     output [READ_WIDTH-1:0] fifo_wdata_o,
     output                  fifo_wen_o,
-    output                  fifo_clock_o,
 
     //------------------------------------------------------------------------------------------------------------------
     // status
@@ -895,7 +894,6 @@ end // and always
 
 assign fifo_wdata_o = fifo_wdata[READ_WIDTH-1:0];
 assign fifo_wen_o   = fifo_wen;
-assign fifo_clock_o = clock;
 
 `ifdef SIMULATION
 // Write-buffer auto-clear state machine display

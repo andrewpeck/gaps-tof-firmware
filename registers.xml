@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <node>
     <node id="DRS"  address="0x0000"
     description="Implements various control and monitoring functions of the DRS Logic"
@@ -32,7 +32,7 @@
             <node id="DRS_PLL_LOCK" address="0x0" permission="r"
                 description="DRS PLL Locked"
                 mask="0x10"
-                fw_signal="drs_plllock" />
+                fw_signal="drs_plllock_i" />
             <node id="CHANNEL_CONFIG" address="0x0" permission="rw"
                 description="Write Shift Register Configuration
                             \\ # of chn - # of cells per ch - bit pattern
@@ -47,7 +47,7 @@
             <node id="DTAP_FREQ" address="0x1" permission="r"
                 description="Frequency of DTAP in MHz"
                 mask="0xffffffff"
-                fw_signal="std_logic_vector(to_unsigned(dtap_cnt_reg,32))" />
+                fw_signal="dtap_cnt" />
         </node> <!--CONFIG-->
 
         <node id="READOUT" address="0x10" description="Registers for configuring the readout state machine">
@@ -58,9 +58,9 @@
                 fw_signal="roi_mode"
                 fw_default="0x1"/>
             <node id="BUSY" address="0x0" permission="r"
-                description="Readout is busy"
+                description="DRS is busy"
                 mask="0x2"
-                fw_signal="busy" />
+                fw_signal="drs_busy" />
             <node id="ADC_LATENCY" address="0x0" permission="rw"
                 description="Latency from first sr clock to when ADC data should be valid"
                 mask="0x3f0"
@@ -110,6 +110,12 @@
                 description="Write 1 to completely reset the DMA state machine logic"
                 mask="0x1"
                 fw_write_pulse_signal="dma_control_reset"/>
+
+            <node id="WAIT_VDD_CLKS" address="0x8" permission="rw"
+                description="Number of 30 ns clocks to wait before reading out the drs, allowing vdd to stabilize"
+                mask="0xffff"
+                fw_default="0x4000"
+                fw_signal="wait_vdd_clocks"/>
         </node> <!--READOUT-->
 
 
@@ -196,7 +202,7 @@
             <node id="CNT_LOST_EVENT" address="0x4" permission="r"
                 description="Number of trigger lost due to deadtime"
                 mask="0xffff0000"
-                fw_cnt_en_signal="trigger and busy"
+                fw_cnt_en_signal="trigger and drs_busy"
                 fw_signal="cnt_lost_events"/>
 
             <node id="CNT_EVENT" address="0x5" permission="r"

@@ -20,6 +20,8 @@ drs/src/registers.vhd
 drs/src/sem.vhd
 drs/src/synchonizer.vhd
 drs/src/types_pkg.vhd
+drs/src/trigger_mux.vhd
+drs/src/dtap.vhd
 
 drs/src/drs.v
 drs/src/crc32.vhd
