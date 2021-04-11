@@ -33,7 +33,7 @@ architecture test of daq_tb is
   signal dna_i                 : std_logic_vector (63 downto 0) := x"6666666666666666";
   signal hash_i                : std_logic_vector (31 downto 0) := x"CCCCCCCC";
   signal timestamp_i           : std_logic_vector (47 downto 0) := x"444444444444";
-  signal roi_size_i            : std_logic_vector (9 downto 0)  := "11" & x"ff";
+  signal roi_size_i            : std_logic_vector (9 downto 0)  := (others => '1');
   signal drs_busy_i            : std_logic                      := '0';
   signal drs_data_i            : std_logic_vector (13 downto 0) := "00" & x"bbb";
   signal drs_valid_i           : std_logic                      := '1';
@@ -113,7 +113,7 @@ begin
       hash_i                => hash_i,
       timestamp_i           => timestamp_i,
       roi_size_i            => roi_size_i,
-      stop_cell_i           => "1111000011",
+      stop_cell_i           => "10" & x"AA",
       drs_busy_i            => drs_busy_i,
       drs_data_i            => drs_data_i,
       drs_valid_i           => drs_valid_i,
