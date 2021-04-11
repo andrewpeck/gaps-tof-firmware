@@ -52,8 +52,8 @@ entity top_readout_board is
     drs_plllock_i : in  std_logic;                      --
     drs_dtap_i    : in  std_logic;                      --
 
-    trigger_i_p : in std_logic; -- trigger_i from rj45
-    trigger_i_n : in std_logic; -- trigger_i from rj45
+    ext_trigger_i_p : in std_logic;     -- trigger_i from rj45
+    ext_trigger_i_n : in std_logic;     -- trigger_i from rj45
 
     -- Zynq IO
     fixed_io_mio      : inout std_logic_vector (53 downto 0);
@@ -96,11 +96,15 @@ architecture Behavioral of top_readout_board is
 
   signal drs_data            : std_logic_vector (13 downto 0);
   signal drs_data_valid      : std_logic;
+  -- Trigger Signals
+  signal trigger               : std_logic := '0';
+  signal ext_trigger_i         : std_logic := '0';
+  signal ext_trigger_active_hi : std_logic := '0';
+  signal ext_trigger_en        : std_logic := '0';
+  signal force_trig            : std_logic := '0';
+
+  -- DAQ
   signal daq_busy            : std_logic := '0';
-  signal trigger, trigger_i  : std_logic := '0';
-  signal trigger_i_ff        : std_logic := '0';
-  signal force_trig          : std_logic := '0';
-  signal en_ext_trigger      : std_logic := '0';
   signal debug_packet_inject : std_logic;
 
   signal drs_srclk_en            : std_logic;
@@ -297,31 +301,34 @@ begin
   -----------------------------------------------------------------------------------------------------------------------
 
   ibuftrigger : IBUFDS
-  generic map (                 --
-      DIFF_TERM    => TRUE,   -- Differential Termination
-      IBUF_LOW_PWR => TRUE    -- Low power="TRUE", Highest performance="FALSE"
-  )
-  port map (
-      O  => trigger_i,   -- Buffer output
-      I  => trigger_i_p, -- Diff_p buffer input (connect directly to top-level port)
-      IB => trigger_i_n  -- Diff_n buffer input (connect directly to top-level port)
-  );
+    generic map (                       --
+      DIFF_TERM    => true,             -- Differential Termination
+      IBUF_LOW_PWR => true              -- Low power="TRUE", Highest performance="FALSE"
+      )
+    port map (
+      O  => ext_trigger_i,              -- Buffer output
+      I  => ext_trigger_i_p,            -- Diff_p buffer input (connect directly to top-level port)
+      IB => ext_trigger_i_n             -- Diff_n buffer input (connect directly to top-level port)
+      );
 
-  process (clock)
-    variable trigger_i_inv : std_logic;
-    variable ext_trigger   : std_logic;
-  begin
-    if (rising_edge(clock)) then
-      trigger_i_inv := not trigger_i; -- NOTE: trigger_i is polarity swapped
-      trigger_i_ff  <= trigger_i_inv;
+  drs_dwrite_o <= drs_dwrite_sync and drs_dwrite_async;
 
-      -- ext trigger on rising edge from external input
-      ext_trigger   := '1' when trigger_i = '1' and trigger_i_ff = '0' else '0';
+  trigger_mux_inst : entity work.trigger_mux
+    generic map (TRIGGER_OS_MAX => 3)
+    port map (
+      clock => clock,
 
-      trigger <= (en_ext_trigger and ext_trigger) or force_trig;
+      ext_trigger_i         => ext_trigger_i,
+      ext_trigger_en        => ext_trigger_en,
+      ext_trigger_active_hi => ext_trigger_active_hi,
 
-    end if;
-  end process;
+      force_trig => force_trig,
+
+      master_trigger => '0',
+
+      trigger_o => trigger,
+      dwrite_o  => drs_dwrite_async
+      );
 
   --------------------------------------------------------------------------------
   -- DTAP Monitoring

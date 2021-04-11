@@ -7,7 +7,7 @@ set_property IOSTANDARD LVCMOS25 [get_ports {drs_*}]
 set_property IOSTANDARD LVCMOS25 [get_ports {adc_data_i[*]}]
 
 
-set_property IOSTANDARD LVDS_25 [get_ports trigger_i_*]
+set_property IOSTANDARD LVDS_25 [get_ports ext_trigger_i_*]
 
 set_property IOSTANDARD LVDS_25 [get_ports {gpio_p[*]}]
 set_property IOSTANDARD LVDS_25 [get_ports {gpio_n[*]}]
@@ -18,8 +18,8 @@ set_property IOSTANDARD LVDS_25 [get_ports clock_i_*]
 # Pinouts
 ################################################################################
 
-set_property PACKAGE_PIN E17 [get_ports {trigger_i_p}]; # IO_B35_L3_AD1_E17_P
-set_property PACKAGE_PIN D18 [get_ports {trigger_i_n}]; # IO_B35_L3_AD1_D18_N
+set_property PACKAGE_PIN E17 [get_ports {ext_trigger_i_p}]; # IO_B35_L3_AD1_E17_P
+set_property PACKAGE_PIN D18 [get_ports {ext_trigger_i_n}]; # IO_B35_L3_AD1_D18_N
 
 set_property PACKAGE_PIN D19 [get_ports {gpio_p[0]}]; # IO_B35_L4_D19_P
 set_property PACKAGE_PIN D20 [get_ports {gpio_n[0]}]; # IO_B35_L4_D20_N

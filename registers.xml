@@ -151,17 +151,22 @@
                 fw_write_pulse_signal="debug_packet_inject" />
         </node> <!--DAQ-->
 
-        <node id="Trigger" address="0x40"
+        <node id="TRIGGER" address="0x40"
             description="Trigger">
             <node id="FORCE_TRIGGER" address="0x0" permission="w"
                 description="Generates a trigger"
                 mask="0x1"
                 fw_write_pulse_signal="force_trig" />
-            <node id="EN_EXT_TRIGGER" address="0x1" permission="rw"
-                description="Generates a trigger"
+            <node id="EXT_TRIGGER_EN" address="0x1" permission="rw"
+                description="Set to 1 to enable the external trigger"
                 fw_default="0x1"
                 mask="0x1"
-                fw_signal="en_ext_trigger" />
+                fw_signal="ext_trigger_en" />
+            <node id="EXT_TRIGGER_ACTIVE_HI" address="0x1" permission="rw"
+                description="Generates a trigger"
+                fw_default="0x1"
+                mask="0x2"
+                fw_signal="ext_trigger_active_hi" />
         </node> <!--TRIGGER-->
 
         <node id="COUNTERS" address="0x50" description="Counters">

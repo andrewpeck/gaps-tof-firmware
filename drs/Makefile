@@ -1,5 +1,7 @@
 .PHONY: check_output
 
+all: check_output trigger_mux
+
 check_output:  daq_packet.dat
 	@python3 parse_daq.py
 
@@ -18,3 +20,13 @@ dump: daq_packet.dat
 
 clean:
 	rm -f *.o *.ghw *.cf daq_tb daq_packet.txt daq_packet.dat
+
+trigger_mux:
+	ghdl -a --std=08 src/trigger_mux.vhd sim/trigger_mux_tb.vhd
+	ghdl -e --std=08 trigger_mux_tb
+	ghdl -r --std=08 trigger_mux_tb --wave=trigger_mux_tb.ghw
+
+trigger_mux_questa:
+	vcom -2008 src/trigger_mux.vhd sim/trigger_mux_tb.vhd
+	vsim trigger_mux_tb
+

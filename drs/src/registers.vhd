@@ -100,12 +100,16 @@ package registers is
     constant REG_DAQ_INJECT_DEBUG_PACKET_ADDR    : std_logic_vector(6 downto 0) := "011" & x"0";
     constant REG_DAQ_INJECT_DEBUG_PACKET_BIT    : integer := 0;
 
-    constant REG_Trigger_FORCE_TRIGGER_ADDR    : std_logic_vector(6 downto 0) := "100" & x"0";
-    constant REG_Trigger_FORCE_TRIGGER_BIT    : integer := 0;
+    constant REG_TRIGGER_FORCE_TRIGGER_ADDR    : std_logic_vector(6 downto 0) := "100" & x"0";
+    constant REG_TRIGGER_FORCE_TRIGGER_BIT    : integer := 0;
 
-    constant REG_Trigger_EN_EXT_TRIGGER_ADDR    : std_logic_vector(6 downto 0) := "100" & x"1";
-    constant REG_Trigger_EN_EXT_TRIGGER_BIT    : integer := 0;
-    constant REG_Trigger_EN_EXT_TRIGGER_DEFAULT : std_logic := '1';
+    constant REG_TRIGGER_EXT_TRIGGER_EN_ADDR    : std_logic_vector(6 downto 0) := "100" & x"1";
+    constant REG_TRIGGER_EXT_TRIGGER_EN_BIT    : integer := 0;
+    constant REG_TRIGGER_EXT_TRIGGER_EN_DEFAULT : std_logic := '1';
+
+    constant REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_ADDR    : std_logic_vector(6 downto 0) := "100" & x"1";
+    constant REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT    : integer := 1;
+    constant REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_DEFAULT : std_logic := '1';
 
     constant REG_COUNTERS_CNT_SEM_CORRECTION_ADDR    : std_logic_vector(6 downto 0) := "101" & x"0";
     constant REG_COUNTERS_CNT_SEM_CORRECTION_MSB    : integer := 15;
