@@ -515,10 +515,10 @@ begin
 
       end case;
 
-    end if;
+      if (reset = '1') then
+        state <= IDLE_state;
+      end if;
 
-    if (reset = '1') then
-      state <= IDLE_state;
     end if;
 
   end process;
