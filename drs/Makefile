@@ -14,8 +14,8 @@ daq_packet.dat:  daq_tb
 	@python3 hex_to_bin.py
 
 daq_tb: $(DAQ_FILES)
-	ghdl -a --std=08 --ieee=synopsys $(DAQ_FILES)
-	ghdl -r --std=08 --ieee=synopsys daq_tb
+	@ghdl -a --std=08 --ieee=synopsys $(DAQ_FILES)
+	@ghdl -r --std=08 --ieee=synopsys daq_tb
 
 dump: daq_packet.dat
 	@od --width=2 -t x2 --endian big  daq_packet.dat
@@ -24,9 +24,9 @@ clean:
 	rm -f *.o *.ghw *.cf daq_tb daq_packet.txt daq_packet.dat
 
 trigger_mux:
-	ghdl -a --std=08 src/trigger_mux.vhd sim/trigger_mux_tb.vhd
-	ghdl -e --std=08 trigger_mux_tb
-	ghdl -r --std=08 trigger_mux_tb --wave=trigger_mux_tb.ghw
+	@ghdl -a --std=08 src/trigger_mux.vhd sim/trigger_mux_tb.vhd
+	@ghdl -e --std=08 trigger_mux_tb
+	@ghdl -r --std=08 trigger_mux_tb --wave=trigger_mux_tb.ghw
 
 trigger_mux_questa:
 	vcom -2008 src/trigger_mux.vhd sim/trigger_mux_tb.vhd

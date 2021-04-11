@@ -17,11 +17,11 @@ class DRSWaveform():
     def check_crc(self):
         crc = libscrc.crc32(self.data)
 
-        #print ("CRC=0x%08X" % crc)
-
         if crc != self.crc:
             print("CH%d CRC FAIL calc=0x%08X, read=0x%08X" % (self.channel, crc, self.crc))
             return 1
+        else:
+            print("CH%d CRC ok (0x%08X)" % (self.channel, crc))
 
         return 0
 
@@ -101,6 +101,7 @@ def read_packet (data, drs_truth, start=0,  verbose=False):
     drs.event_cnt = int.from_bytes(data[11:13], byteorder="big")
     drs.timestamp = int.from_bytes(data[13:16], byteorder="big")
 
+    drs.waveforms.clear()
 
     for i in range(drs.channels):
 
@@ -129,6 +130,9 @@ def read_packet (data, drs_truth, start=0,  verbose=False):
                         data[START-1]))
 
         drs.waveforms[i].check_crc()
+
+        if (verbose):
+            print(drs.waveforms[i])
 
     drs.stop_cell = data[END+2]
 

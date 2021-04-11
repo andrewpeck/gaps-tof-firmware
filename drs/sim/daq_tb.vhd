@@ -96,6 +96,18 @@ begin
     wait;
   end process;
 
+  process (clock) is
+    variable seed1 : positive;
+    variable seed2 : positive;
+    variable x : real;
+    variable y : integer;
+  begin
+    if (rising_edge(clock)) then
+      uniform(seed1, seed2, x);
+      drs_data_i <= std_logic_vector(to_unsigned(integer(floor(x * 16384.0)), 14));
+    end if;
+  end process;
+
   daq_inst : entity work.daq
     generic map (
       g_WORD_SIZE => 16
