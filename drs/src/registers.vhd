@@ -59,9 +59,9 @@ package registers is
     constant REG_READOUT_EN_SPIKE_REMOVAL_DEFAULT : std_logic := '1';
 
     constant REG_READOUT_READOUT_MASK_ADDR    : std_logic_vector(6 downto 0) := "001" & x"1";
-    constant REG_READOUT_READOUT_MASK_MSB    : integer := 7;
+    constant REG_READOUT_READOUT_MASK_MSB    : integer := 8;
     constant REG_READOUT_READOUT_MASK_LSB     : integer := 0;
-    constant REG_READOUT_READOUT_MASK_DEFAULT : std_logic_vector(7 downto 0) := x"ff";
+    constant REG_READOUT_READOUT_MASK_DEFAULT : std_logic_vector(8 downto 0) := '1' & x"ff";
 
     constant REG_READOUT_START_ADDR    : std_logic_vector(6 downto 0) := "001" & x"2";
     constant REG_READOUT_START_BIT    : integer := 0;

@@ -7,17 +7,14 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_misc.all;
 use ieee.numeric_std.all;
 
--- NOTE: Each daq block handles one trigger data stream, and is assumed busy during readout Instantiate as
--- many daq blocks as needed to deal with the trigger rate some higher level arbitrator should dole
--- out triggers to the daq blocks as needed
---
--- NOTE: Each daq block handles only 1 DRS chip
+-- TODO: expand this block to handle 2x DRS chips.
 -- TODO: handle the case that we get a trigger but both DRS chips are busy
+-- TODO: add a timeout watchdog... right now if a trigger is received but the daq block doesnt
+--       generate data it will hang forever :(
 
 entity daq is
   generic(
-    g_DRS_ID    : integer := 0;
-    g_WORD_SIZE : integer := 16
+    g_WORD_SIZE : positive := 16
     );
   port(
     clock : in std_logic;               -- clock of arbitrary frequency
@@ -29,7 +26,7 @@ entity daq is
     stop_cell_i : in std_logic_vector (9 downto 0);
     trigger_i   : in std_logic;
     event_cnt_i : in std_logic_vector (31 downto 0);
-    mask_i      : in std_logic_vector (15 downto 0);
+    mask_i      : in std_logic_vector (17 downto 0);
 
     -- status
     board_id    : in std_logic_vector (7 downto 0);
@@ -78,9 +75,9 @@ architecture behavioral of daq is
 
   signal status         : std_logic_vector (15 downto 0) := (others => '0');
   signal packet_length  : std_logic_vector (15 downto 0) := (others => '0');
-  signal packet_padding : integer;
-  signal payload_size   : integer                        := 0;
-  signal num_channels   : integer                        := 0;
+  signal packet_padding : natural range 0 to 16;
+  signal payload_size   : natural                        := 0;
+  signal num_channels   : natural range 0 to 15          := 0;
   signal id             : std_logic_vector (15 downto 0) := (others => '0');
 
   signal mask      : std_logic_vector (mask_i'range)      := (others => '0');
@@ -89,33 +86,54 @@ architecture behavioral of daq is
   signal dna       : std_logic_vector (dna_i'range)       := (others => '0');
   signal hash      : std_logic_vector (15 downto 0)       := (others => '0');
 
-  constant DNA_WORDS         : integer := dna'length / g_WORD_SIZE;
-  constant TIMESTAMP_WORDS   : integer := timestamp'length / g_WORD_SIZE;
-  constant EVENT_CNT_WORDS   : integer := event_cnt'length / g_WORD_SIZE;
-  constant PACKET_CRC_WORDS  : integer := packet_crc'length / g_WORD_SIZE;
-  constant CHANNEL_CRC_WORDS : integer := channel_crc'length / g_WORD_SIZE;
+  constant DNA_WORDS         : positive := dna'length / g_WORD_SIZE;
+  constant TIMESTAMP_WORDS   : positive := timestamp'length / g_WORD_SIZE;
+  constant EVENT_CNT_WORDS   : positive := event_cnt'length / g_WORD_SIZE;
+  constant PACKET_CRC_WORDS  : positive := packet_crc'length / g_WORD_SIZE;
+  constant CHANNEL_CRC_WORDS : positive := channel_crc'length / g_WORD_SIZE;
 
-  signal roi_size : integer range 0 to 1023;
+  signal roi_size : natural range 0 to 1023;
 
-  signal state_word_cnt : integer               := 0;
-  signal channel_cnt    : integer range 0 to 15 := 0;
+  signal state_word_cnt : natural range 0 to 1024 := 0;
+  signal channel_cnt    : natural range 0 to 15   := 0;
+  signal channel_id     : natural range 0 to 17   := 0;
 
   signal dav : boolean := false;
 
-  impure function get_payload_size (drs_id           : integer; packet_dropped : std_logic; packet_roi_size :
-                                    integer; ch_mask : std_logic_vector)
-    return integer is
-    variable id_mask : std_logic_vector (15 downto 0);
+  -- get the first channel which will be read out from a given channel mask
+  function get_first_channel (chmask : std_logic_vector)
+    return natural is
+  begin
+    for I in 0 to chmask'length-1 loop
+      if chmask(I) = '1' then
+        return I;
+      end if;
+    end loop;
+    return 0;
+  end;
+
+  -- get the next channel which will be read out from a given channel mask
+  function get_next_channel (ch : natural; chmask : std_logic_vector)
+    return natural is
+  begin
+    for I in 0 to chmask'length-1 loop
+      if (I > ch) and chmask(I) = '1' then
+        return I;
+      end if;
+    end loop;
+    return 0;
+  end;
+
+  impure function get_payload_size (packet_dropped  : std_logic;
+                                    packet_roi_size : natural;
+                                    ch_mask         : std_logic_vector)
+    return natural is
   begin
     -- size of each readout * number of readouts + 9th channel (if the packet is not empty)
     if (packet_dropped = '1') then
       return 0;
     else
-      if (drs_id = 1) then
-        id_mask := x"FF00";
-      else
-        id_mask := x"00FF";
-      end if;
+
       return (
         -- count the number of channels enabled
         -- if /any/ channel is enabled, then add 1 additional channel for 9th channel
@@ -123,16 +141,16 @@ architecture behavioral of daq is
         --      if 1 selected channels, read 2 (x + 9th)
         --      etc..
         -- Then multiply by roi_size + 1 + 2 (for the crc)
-        ((count_ones(id_mask and ch_mask)) +to_int(or_reduce(id_mask and ch_mask)))
-        * (1+1+packet_roi_size + channel_crc'length / g_WORD_SIZE)
+
+        (count_ones(ch_mask)) * (1+1+packet_roi_size + channel_crc'length / g_WORD_SIZE)
         );
     end if;
   end function;
 
   -- dma expects multiple of 16 words... pad the tail with zeroes
-  function get_packet_padding (packet_size : integer)
-    return integer is
-    variable ret : integer;
+  function get_packet_padding (packet_size : natural)
+    return natural is
+    variable ret : natural;
   begin
     ret := packet_size mod 16;
     if (ret = 0) then
@@ -142,8 +160,8 @@ architecture behavioral of daq is
     end if;
   end function;
 
-  impure function get_packet_size (packet_payload_size : integer)
-    return integer is
+  impure function get_packet_size (packet_payload_size : natural)
+    return natural is
   begin
     return (
       HEAD'length / g_WORD_SIZE
@@ -214,7 +232,7 @@ begin
           debug        <= true;
           dropped      <= '0';
           num_channels <= 9;
-          mask         <= x"00FF";
+          mask         <= '0' & x"00" & '1' & x"FF";
           dna          <= x"FEDCBA9876543210";
           hash         <= x"3210";
           event_cnt    <= x"76543210";
@@ -225,7 +243,7 @@ begin
           status(1)            <= dropped;
           status (15 downto 2) <= (others => '0');
 
-          id(0)           <= to_sl(g_DRS_ID);
+          id(0)           <= '0';
           id(15 downto 8) <= board_id;
           id (7 downto 1) <= (others => '0');
 
@@ -233,10 +251,8 @@ begin
           dna          <= dna_i;
           hash         <= hash_i (23 downto 8);
           debug        <= false;
-          dropped      <= '0';                      -- drs_busy_i; FIXME correct this when there is a real trigger
-          num_channels <= count_ones (mask_i) + 1;  -- FIXME: need to account for drs ID and mask appropriately
-                                                    -- move this to a common function....
-          -- ((count_ones(id_mask and ch_mask)) +to_int(or_reduce(id_mask and ch_mask)))
+          dropped      <= '0';  -- drs_busy_i; FIXME correct this when there is a real trigger
+          num_channels <= count_ones (mask_i);
           mask         <= mask_i;
           event_cnt    <= event_cnt_i;
           timestamp    <= timestamp_i;
@@ -244,7 +260,7 @@ begin
       end if;
 
       -- let this pipeline over 2 clocks
-      payload_size   <= get_payload_size(g_DRS_ID, dropped, roi_size, mask);
+      payload_size   <= get_payload_size(dropped, roi_size, mask);
       packet_length  <= to_slv(get_packet_size(payload_size), packet_length'length);
       packet_padding <= get_packet_padding(to_integer(unsigned(packet_length)));
 
@@ -267,6 +283,7 @@ begin
         when IDLE_state =>
 
           channel_cnt <= 0;
+          channel_id  <= 0;
 
           if (trigger_i = '1' or debug_packet_inject_i = '1') then
             state <= HEAD_state;
@@ -310,8 +327,8 @@ begin
           end if;
 
           data <= dna(g_WORD_SIZE*(DNA_WORDS -state_word_cnt)-1
-                            downto g_WORD_SIZE*(DNA_WORDS -state_word_cnt-1));
-          dav  <= true;
+                      downto g_WORD_SIZE*(DNA_WORDS -state_word_cnt-1));
+          dav <= true;
 
         when HASH_state =>
 
@@ -332,8 +349,10 @@ begin
 
           state <= EVENT_CNT_state;
 
-          data <= mask;
+          data <= mask (16 downto 9) & mask (7 downto 0);
           dav  <= true;
+
+          channel_id <= get_first_channel(mask);
 
         when EVENT_CNT_state =>
 
@@ -377,7 +396,7 @@ begin
             state_word_cnt <= 0;
           end if;
 
-          data <= to_slv (channel_cnt, data'length);
+          data <= to_slv (channel_id, data'length);
           dav  <= true;
 
         when PAYLOAD_state =>
@@ -397,6 +416,7 @@ begin
             state          <= CALC_CH_CRC_state;
             state_word_cnt <= 0;
             channel_cnt    <= channel_cnt + 1;
+            channel_id     <= get_next_channel(channel_id, mask);
           end if;
 
           if (debug) then

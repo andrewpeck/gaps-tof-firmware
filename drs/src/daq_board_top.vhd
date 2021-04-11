@@ -129,16 +129,23 @@ architecture Behavioral of top_readout_board is
   signal start         : std_logic;
   signal transp_mode   : std_logic;
 
-  signal wait_vdd_clocks  : std_logic_vector (15 downto 0);
-  signal readout_mask     : std_logic_vector (7 downto 0);
-  signal drs_reset        : std_logic;
-  signal daq_reset        : std_logic;
-  signal drs_config       : std_logic_vector (7 downto 0);
-  signal chn_config       : std_logic_vector (7 downto 0);
-  signal drs_stop_cell    : std_logic_vector (9 downto 0);
-  signal dna              : std_logic_vector (56 downto 0);
-  signal adc_latency      : std_logic_vector (5 downto 0);
-  signal sample_count_max : std_logic_vector (9 downto 0);
+  signal wait_vdd_clocks   : std_logic_vector (15 downto 0);
+
+  signal readout_mask                  : std_logic_vector (9*2-1 downto 0);
+  signal readout_mask_axi              : std_logic_vector (8 downto 0) := (others => '0');
+  signal readout_mask_trig             : std_logic_vector (8 downto 0) := (others => '0');
+  signal readout_mask_or               : std_logic_vector (8 downto 0) := (others => '0');
+  signal readout_mask_9th_channel_auto : std_logic;
+  signal read_ch8, read_ch17           : std_logic := '0';
+
+  signal drs_reset         : std_logic;
+  signal daq_reset         : std_logic;
+  signal drs_config        : std_logic_vector (7 downto 0);
+  signal chn_config        : std_logic_vector (7 downto 0);
+  signal drs_stop_cell     : std_logic_vector (9 downto 0);
+  signal dna               : std_logic_vector (56 downto 0);
+  signal adc_latency       : std_logic_vector (5 downto 0);
+  signal sample_count_max  : std_logic_vector (9 downto 0);
 
   signal timestamp : unsigned (47 downto 0) := (others => '0');
 
@@ -175,12 +182,12 @@ architecture Behavioral of top_readout_board is
     signal regs_read_ready_arr  : std_logic_vector(REG_DRS_NUM_REGS - 1 downto 0) := (others => '1');
     signal regs_write_done_arr  : std_logic_vector(REG_DRS_NUM_REGS - 1 downto 0) := (others => '1');
     signal regs_writable_arr    : std_logic_vector(REG_DRS_NUM_REGS - 1 downto 0) := (others => '0');
-  -- Connect counter signal declarations
-  signal cnt_sem_corrected : std_logic_vector (15 downto 0) := (others => '0');
-  signal cnt_sem_uncorrectable : std_logic_vector (3 downto 0) := (others => '0');
-  signal cnt_readouts : std_logic_vector (31 downto 0) := (others => '0');
-  signal cnt_lost_events : std_logic_vector (15 downto 0) := (others => '0');
-  signal event_counter : std_logic_vector (31 downto 0) := (others => '0');
+    -- Connect counter signal declarations
+    signal cnt_sem_corrected : std_logic_vector (15 downto 0) := (others => '0');
+    signal cnt_sem_uncorrectable : std_logic_vector (3 downto 0) := (others => '0');
+    signal cnt_readouts : std_logic_vector (31 downto 0) := (others => '0');
+    signal cnt_lost_events : std_logic_vector (15 downto 0) := (others => '0');
+    signal event_counter : std_logic_vector (31 downto 0) := (others => '0');
   ------ Register signals end ----------------------------------------------
 
 
@@ -371,6 +378,14 @@ begin
   -- DRS Control Module
   -------------------------------------------------------------------------------
 
+  -- FIXME: this needs to be expanded when there are two drs chips
+  read_ch8  <= readout_mask_9th_channel_auto and or_reduce(readout_mask_or (7 downto 0));
+  --read_ch17 <= readout_mask_9th_channel_auto and or_reduce(readout_mask_or (16 downto 9));
+
+  readout_mask_or <= readout_mask_trig or readout_mask_axi;
+
+  readout_mask <= '0' & x"00" & (readout_mask_or or (read_ch8 & x"00")); -- or (read_ch17 & '1' & x"00");
+
   drs_config(0) <= dmode;
   drs_config(1) <= '1'; -- pllen
   drs_config(2) <= '0'; -- wrsloop
@@ -396,7 +411,7 @@ begin
       drs_ctl_reinit           => reinit,
       drs_ctl_configure_drs    => configure,
       drs_ctl_chn_config       => chn_config(7 downto 0),
-      drs_ctl_readout_mask_i   => readout_mask(7 downto 0),
+      drs_ctl_readout_mask_i   => readout_mask (8 downto 0),
       drs_ctl_wait_vdd_clocks  => wait_vdd_clocks,
 
       drs_srout_i => drs_srout_i,
@@ -424,10 +439,6 @@ begin
   -------------------------------------------------------------------------------
 
   daq_inst : entity work.daq
-    generic map (
-      g_DRS_ID    => 0,
-      g_WORD_SIZE => 16
-      )
     port map (
       clock                 => clock,
       reset                 => daq_reset or reset,
@@ -435,7 +446,7 @@ begin
       trigger_i             => trigger,
       stop_cell_i           => drs_stop_cell,
       event_cnt_i           => event_counter,
-      mask_i                => x"00" & readout_mask,
+      mask_i                => readout_mask,
       board_id              => (others => '0'),
       sync_err_i            => '0',
       dna_i                 => "0000000" & dna,
@@ -636,7 +647,7 @@ begin
     regs_read_arr(2)(REG_READOUT_ADC_LATENCY_MSB downto REG_READOUT_ADC_LATENCY_LSB) <= adc_latency;
     regs_read_arr(2)(REG_READOUT_SAMPLE_COUNT_MSB downto REG_READOUT_SAMPLE_COUNT_LSB) <= sample_count_max;
     regs_read_arr(2)(REG_READOUT_EN_SPIKE_REMOVAL_BIT) <= spike_removal;
-    regs_read_arr(3)(REG_READOUT_READOUT_MASK_MSB downto REG_READOUT_READOUT_MASK_LSB) <= readout_mask;
+    regs_read_arr(3)(REG_READOUT_READOUT_MASK_MSB downto REG_READOUT_READOUT_MASK_LSB) <= readout_mask_axi;
     regs_read_arr(10)(REG_READOUT_WAIT_VDD_CLKS_MSB downto REG_READOUT_WAIT_VDD_CLKS_LSB) <= wait_vdd_clocks;
     regs_read_arr(11)(REG_FPGA_DNA_DNA_LSBS_MSB downto REG_FPGA_DNA_DNA_LSBS_LSB) <= dna (31 downto 0);
     regs_read_arr(12)(REG_FPGA_DNA_DNA_MSBS_MSB downto REG_FPGA_DNA_DNA_MSBS_LSB) <= dna (56 downto 32);
@@ -671,7 +682,7 @@ begin
     adc_latency <= regs_write_arr(2)(REG_READOUT_ADC_LATENCY_MSB downto REG_READOUT_ADC_LATENCY_LSB);
     sample_count_max <= regs_write_arr(2)(REG_READOUT_SAMPLE_COUNT_MSB downto REG_READOUT_SAMPLE_COUNT_LSB);
     spike_removal <= regs_write_arr(2)(REG_READOUT_EN_SPIKE_REMOVAL_BIT);
-    readout_mask <= regs_write_arr(3)(REG_READOUT_READOUT_MASK_MSB downto REG_READOUT_READOUT_MASK_LSB);
+    readout_mask_axi <= regs_write_arr(3)(REG_READOUT_READOUT_MASK_MSB downto REG_READOUT_READOUT_MASK_LSB);
     wait_vdd_clocks <= regs_write_arr(10)(REG_READOUT_WAIT_VDD_CLKS_MSB downto REG_READOUT_WAIT_VDD_CLKS_LSB);
     ext_trigger_en <= regs_write_arr(17)(REG_TRIGGER_EXT_TRIGGER_EN_BIT);
     ext_trigger_active_hi <= regs_write_arr(17)(REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT);

@@ -69,7 +69,7 @@ module drs #(
                                                   // 2        | 4096              | 00010001 b
                                                   // 1        | 8192              | 00000001
                                                   //
-    input [7:0] drs_ctl_readout_mask_i,           // set a bit to '1' to enable readout of its channel
+    input [8:0] drs_ctl_readout_mask_i,           // set a bit to '1' to enable readout of its channel
 
     //------------------------------------------------------------------------------------------------------------------
     // drs io
@@ -137,7 +137,7 @@ reg trigger, domino_ready;
 reg trigger_last;
 
 // always read the 9th channel if any other channel is enabled
-wire [8:0] drs_ctl_readout_mask = {|(drs_ctl_readout_mask_i), drs_ctl_readout_mask_i};
+wire [8:0] drs_ctl_readout_mask = drs_ctl_readout_mask_i;
 
 always @(posedge clock) begin
   trigger <= (|drs_ctl_readout_mask && domino_ready) ? trigger_i : 0;

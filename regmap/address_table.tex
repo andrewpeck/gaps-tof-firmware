@@ -79,7 +79,7 @@
     ADC\_LATENCY & \texttt{0x10} & \texttt{[9:4]} & rw & \texttt{0x0} & Latency from first sr clock to when ADC data should be valid \\\hline
     SAMPLE\_COUNT & \texttt{0x10} & \texttt{[21:12]} & rw & \texttt{0x3FF} & Number of samples to read out (0 to 1023) \\\hline
     EN\_SPIKE\_REMOVAL & \texttt{0x10} & \texttt{[22:22]} & rw & \texttt{0x1} & set 1 to enable spike removal \\\hline
-    READOUT\_MASK & \texttt{0x11} & \texttt{[7:0]} & rw & \texttt{0xFF} & 8 bit mask, set a bit to 1 to enable readout of that channel. 9th is auto-read if any channel is enabled \\\hline
+    READOUT\_MASK & \texttt{0x11} & \texttt{[8:0]} & rw & \texttt{0x1FF} & 8 bit mask, set a bit to 1 to enable readout of that channel. 9th is auto-read if any channel is enabled \\\hline
     START & \texttt{0x12} & \texttt{[0:0]} & w & Pulse & Write 1 to take the state machine out of idle mode \\\hline
     REINIT & \texttt{0x13} & \texttt{[0:0]} & w & Pulse & Write 1 to reinitialize DRS state machine (restores to idle state) \\\hline
     CONFIGURE & \texttt{0x14} & \texttt{[0:0]} & w & Pulse & Write 1 to configure the DRS. Should be done before data taking \\\hline

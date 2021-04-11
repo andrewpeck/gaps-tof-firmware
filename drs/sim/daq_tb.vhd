@@ -27,7 +27,7 @@ architecture test of daq_tb is
   signal debug_packet_inject_i : std_logic                      := '0';
   signal trigger_i             : std_logic                      := '0';
   signal event_cnt_i           : std_logic_vector (31 downto 0) := x"99999999";
-  signal mask_i                : std_logic_vector (15 downto 0) := x"000f";
+  signal mask_i                : std_logic_vector (17 downto 0) := '0' & x"00" & '1' & x"f0";
   signal board_id              : std_logic_vector (7 downto 0)  := x"77";
   signal sync_err_i            : std_logic                      := '0';
   signal dna_i                 : std_logic_vector (63 downto 0) := x"6666666666666666";
@@ -98,7 +98,6 @@ begin
 
   daq_inst : entity work.daq
     generic map (
-      g_DRS_ID    => 0,
       g_WORD_SIZE => 16
       )
     port map (

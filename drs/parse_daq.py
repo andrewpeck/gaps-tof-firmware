@@ -112,12 +112,13 @@ def read_packet (data, drs_truth, start=0,  verbose=False):
             print("end=%d, data=0x%02X" % (END, data[END-1]))
             print("data" + str(data[START:END]))
             print("crc" + str(data[END:END+2]))
+            print("ch" + str(data[START-1]))
             print("")
 
-        drs.waveforms.append(DRSWaveform(data[START:END], \
-                                    int.from_bytes(data[END:END+2], byteorder="big"), \
-                                            data[START-1]))
-                                    #drs.get_channel_index(ch)))
+        drs.waveforms.append(
+            DRSWaveform(data[START:END],
+                        int.from_bytes(data[END:END+2], byteorder="big"),
+                        data[START-1]))
 
         drs.waveforms[ch].check_crc()
 
@@ -189,7 +190,7 @@ if __name__ == "__main__":
         drs.dna = 0x6666666666666666
         drs.githash = 0xcccc
         drs.board_id = 0x7700
-        drs.ch_mask = 0x0f
+        drs.ch_mask = 0xf0
         drs.event_cnt = 0x99999999
         drs.timestamp = 0x444444444444
 

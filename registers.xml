@@ -80,9 +80,14 @@
 
             <node id="READOUT_MASK" address="0x1" permission="rw"
                 description="8 bit mask, set a bit to 1 to enable readout of that channel. 9th is auto-read if any channel is enabled"
-                mask="0xff"
-                fw_signal="readout_mask"
-                fw_default="0xff"/>
+                mask="0x1ff"
+                fw_signal="readout_mask_axi"
+                fw_default="0x1ff"/>
+            <node id="AUTO_9TH_CHANNEL" address="0x1" permission="rw"
+                description="Set to 1 to auto read the 9th channel"
+                mask="0x200"
+                fw_signal="readout_mask_9th_channel_auto"
+                fw_default="0x1"/>
             <node id="START" address="0x2" permission="w"
                 description="Write 1 to take the state machine out of idle mode"
                 mask="0x1"
