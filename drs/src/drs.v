@@ -196,8 +196,6 @@ reg        drs_old_roi_mode   = 0;
 
 reg [15:0] fifo_wdata=0;
 reg        fifo_wen=0;
-reg        fifo_wen_crc=0;
-reg        fifo_reset=1;
 
 reg drs_stat_busy=1;
 assign busy_o = drs_stat_busy;
@@ -262,10 +260,8 @@ always @(posedge clock) begin
   drs_srclk_en_o       <= 0;
 
   // fifo
-  fifo_reset           <= 1;
   fifo_wdata           <= 0;
   fifo_wen             <= 0;
-  fifo_wen_crc         <= 0;
 
   // internal
   drs_stat_busy        <= 0;
@@ -282,8 +278,6 @@ always @(posedge clock) begin
 
   fifo_wdata        <= 0;
   fifo_wen          <= 0;
-  fifo_wen_crc      <= 0;
-  fifo_reset        <= 0;
   domino_ready      <= 1;
   readout_complete  <= 0;
 
@@ -362,7 +356,6 @@ always @(posedge clock) begin
 
           drs_addr             <= 0;
           drs_nreset_o         <= 1;
-          fifo_wen_crc         <= 0;
           drs_srclk_en_o       <= 0; // disable clock
           drs_srin_o           <= 0;
           drs_rsrload_o        <= 0;
