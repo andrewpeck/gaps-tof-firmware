@@ -98,7 +98,7 @@ module drs #(
     //------------------------------------------------------------------------------------------------------------------
 
     output reg readout_complete, // goes high 1 clock when readout finishes, for counting
-    output     busy_o            // drs is doing a readout
+    output     busy_o            // '1' means DRS cannot accept triggers
 );
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -197,9 +197,6 @@ reg        drs_old_roi_mode   = 0;
 reg [15:0] fifo_wdata=0;
 reg        fifo_wen=0;
 
-reg drs_stat_busy=1;
-assign busy_o = drs_stat_busy;
-
 wire shift_out_config_done = (drs_sr_count == 7);
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -230,8 +227,7 @@ localparam MXSTATEBITS = $clog2(STANDBY);
 
 reg [MXSTATEBITS-1:0] drs_readout_state=0;
 
-
- 
+assign busy_o = (drs_readout_state != RUNNING);
 
 //----------------------------------------------------------------------------------------------------------------------
 // State Machine
@@ -266,7 +262,6 @@ always @(posedge clock) begin
   // internal
   drs_sr_reg           <= 'hf8;
   drs_start_timer      <= 0;
-  drs_stat_busy        <= 0;
   drs_stat_stop_wsr    <= 0;
   drs_stop_wsr         <= 0;
   drs_stop_cell        <= 0;
@@ -322,7 +317,6 @@ always @(posedge clock) begin
           drs_srclk_en_o       <= 0;
           drs_nreset_o         <= 0;
           drs_rsrload_o        <= 0;
-          drs_stat_busy        <= 0;
           drs_reinit_request   <= 0;
           drs_denable_o        <= 0;
           drs_rd_tmp_count     <= drs_rd_tmp_count + 1'b1;
@@ -370,7 +364,6 @@ always @(posedge clock) begin
           drs_srin_o           <= 0;
           drs_rsrload_o        <= 0;
           drs_start_timer      <= 0;
-          drs_stat_busy        <= 0;
           drs_rd_tmp_count     <= 0;
           drs_sr_count         <= 0;
 
@@ -379,9 +372,6 @@ always @(posedge clock) begin
             drs_addr_o <= ADR_TRANSPARENT;  // transparent mode
           else
             drs_addr_o <= ADR_READ_SR;  // address read shift register
-
-          if (~drs_reinit_request && drs_ctl_start)
-            drs_stat_busy      <= 1;   // status reg. busy flag
 
           // detect 1 to 0 transition of readout mode
           // i.e. switching out of roi mode
@@ -675,7 +665,6 @@ always @(posedge clock) begin
 
           if (drs_rd_tmp_count==1024)begin
             drs_readout_state    <= START_RUNNING;
-            drs_stat_busy <= 0;
           end
           //------------------------------------------------------------------------------------------------------------
           // Logic
