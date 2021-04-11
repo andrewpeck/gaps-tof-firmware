@@ -8,7 +8,7 @@ use ieee.std_logic_misc.all;
 use ieee.numeric_std.all;
 
 -- TODO: expand this block to handle 2x DRS chips.
--- TODO: handle the case that we get a trigger but both DRS chips are busy
+-- TODO: handle the case that we get a trigger but DRS chips are busy
 -- TODO: add a timeout watchdog... right now if a trigger is received but the daq block doesnt
 --       generate data it will hang forever :(
 
@@ -425,7 +425,8 @@ begin
           elsif (num_channels > 0) then
 
             if (drs_valid_i = '1') then
-              data <= "00" & drs_data_i;  -- FIXME: upper bits should be parity bits
+              data <= xor_reduce(drs_data_i(13 downto 7)) & xor_reduce(drs_data_i(6 downto 0)) -- parity bits
+                      & drs_data_i; -- adc data
               dav  <= true;
             else
               dav  <= false;
