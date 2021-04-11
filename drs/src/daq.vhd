@@ -309,7 +309,8 @@ begin
             state_word_cnt <= state_word_cnt + 1;
           end if;
 
-          data <= hash;
+          data <= dna(g_WORD_SIZE*(DNA_WORDS -state_word_cnt)-1
+                            downto g_WORD_SIZE*(DNA_WORDS -state_word_cnt-1));
           dav  <= true;
 
         when HASH_state =>
