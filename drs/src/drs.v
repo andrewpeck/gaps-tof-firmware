@@ -170,20 +170,6 @@ always @(posedge clock) begin
 
 end
 
-
-//----------------------------------------------------------------------------------------------------------------------
-// DRS DWrite
-//----------------------------------------------------------------------------------------------------------------------
-
-reg drs_dwrite_set     = 0;
-
-always @(posedge clock) begin
-//  if (trigger)
-//    drs_dwrite_o <= 1'b0;
-//  else
-    drs_dwrite_o <= drs_dwrite_set;
-end
-
 //----------------------------------------------------------------------------------------------------------------------
 // Other signals
 //----------------------------------------------------------------------------------------------------------------------
@@ -272,7 +258,7 @@ always @(posedge clock) begin
   drs_addr_o           <= ADR_STANDBY;  // standby
   drs_on_o             <= 1;
   drs_rsrload_o        <= 0;
-  drs_dwrite_set       <= 0;
+  drs_dwrite_o         <= 0;
   drs_srclk_en_o       <= 0;
 
   // fifo
@@ -422,7 +408,7 @@ always @(posedge clock) begin
           drs_denable_o    <= 1;   // enable and start domino wave
           domino_ready     <= 0;
 
-          drs_dwrite_set <= 1;   // set drs_write_ff in proc_drs_write
+          drs_dwrite_o   <= 1;   // set drs_write_ff in proc_drs_write
 
           // do not go to running until at least 1.5 domino revolutions
           drs_start_timer  <= drs_start_timer + 1;
@@ -445,7 +431,7 @@ always @(posedge clock) begin
 
           if (trigger || drs_ctl_dmode == 1'b0) begin
               drs_readout_state  <= TRIGGER;
-              drs_dwrite_set     <= 0;   // set drs_write_ff in proc_drs_write
+              drs_dwrite_o       <= 0;   // set drs_write_ff in proc_drs_write
           end
 
 
@@ -672,7 +658,7 @@ always @(posedge clock) begin
 
           readout_complete     <= 1;
           fifo_wen             <= 0;
-          drs_dwrite_set       <= 1; // to keep chip "warm"
+          drs_dwrite_o         <= 1; // to keep chip "warm"
 
     end // fini
 
@@ -947,7 +933,7 @@ end
     .probe16 (drs_srout_i),
     .probe17 (drs_addr_o[3:0]),
     .probe18 (drs_denable_o),
-    .probe19 (drs_dwrite),
+    .probe19 (drs_dwrite_o),
     .probe20 (drs_rsrload_o),
     .probe21 (drs_srclk_en_o),
     .probe22 (drs_srin_o),
