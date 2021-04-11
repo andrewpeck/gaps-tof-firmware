@@ -631,6 +631,9 @@ def writeOrgFile (modules, filename):
                 else:
                     description=reg.description
 
+                if (description is None):
+                    description=""
+
                 # write register entry
                 write_reg_entry (f, endpoint_name, address, reg.msb, reg.lsb, reg.permission, reg_default, description)
 
@@ -918,7 +921,7 @@ def writePackageFile (modules, filename):
 
 
 def writeConstantsFile(modules, filename):
-    f = io.open (filename, "w", newline='')
+    f = io.open (filename, "w", newline='', encoding="utf-8")
     f.write('library IEEE;\n'\
             'use IEEE.STD_LOGIC_1164.all;\n\n')
     f.write('-----> !! This package is auto-generated from an address table file using <repo_root>/scripts/generate_registers.py !! <-----\n')
@@ -989,14 +992,14 @@ def updateModuleFile(module):
     print('Updating ' + module.name + ' module in file = ' + module.file)
 
     # copy lines out of source file
-    f = open(module.file, 'r+')
+    f = io.open(module.file, 'r+', encoding="utf-8")
     lines = f.readlines()
     f.close()
 
     # create temp file for writing to
     tempname = tempfile.mktemp()
     shutil.copy (module.file, tempname)
-    f = io.open (tempname, "w", newline='')
+    f = io.open (tempname, "w", newline='', encoding="utf-8")
 
     signalSectionFound = False
     signalSectionDone = False
@@ -1004,7 +1007,7 @@ def updateModuleFile(module):
     slaveSectionDone = False
     registersLibraryFound = False
     for line in lines:
-        line = unicode(line)
+        line = unicode(line) # str to unicode
         if line.startswith('use work.registers.all;'):
             registersLibraryFound = True
 
@@ -1300,7 +1303,7 @@ def updateModuleFile(module):
 def writeStatusBashScript(modules, filename):
     print('Writing CTP7 status bash script')
 
-    f = open(filename, 'w')
+    f = io.open(filename, 'w', encoding="utf-8")
 
     f.write('#!/bin/sh\n\n')
     f.write('MODULE=$1\n')
@@ -1333,7 +1336,7 @@ def writeUHalAddressTable(modules, filename, addrOffset, num_of_oh = None):
     top = rw_reg.getNode('GEM_AMC')
 
     # AMC specific nodes
-    f = open("%s_amc.xml"%(filename), 'w')
+    f = io.open("%s_amc.xml"%(filename), 'w', encoding="utf-8")
     f.write('<?xml version="1.0" encoding="ISO-8859-1"?>\n')
     f.write('<node id="top">\n')
     printNodeToUHALFile(top, f, 1, 0, None, addrOffset)
@@ -1342,7 +1345,7 @@ def writeUHalAddressTable(modules, filename, addrOffset, num_of_oh = None):
 
     # OH specific nodes
     for oh in range(num_of_oh):
-        f = open("%s_link%02d.xml"%(filename,oh), 'w')
+        f = io.open("%s_link%02d.xml"%(filename,oh), 'w', encoding="utf-8")
         f.write('<?xml version="1.0" encoding="ISO-8859-1"?>\n')
         f.write('<node id="top">\n')
         printNodeToUHALFile(top, f, 1, 0, None, addrOffset, oh)
@@ -1414,7 +1417,7 @@ def printNodeToUHALFile(node, file, level, baseAddress, baseName, addrOffset, nu
 def writeRegReadBashScript(modules, filename):
     print('Writing CTP7 reg read bash script')
 
-    f = open(filename, 'w')
+    f = io.open(filename, 'w', encoding="utf-8")
 
     f.write('#!/bin/sh\n\n')
     f.write('REQUEST=$1\n\n')
