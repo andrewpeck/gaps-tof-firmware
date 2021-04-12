@@ -11,6 +11,7 @@ dumb_check:  daq_packet.txt
 	@python3 dumb_parse_daq.py
 
 daq_packet.dat:  daq_tb
+	#cat example_packet.txt >> daq_packet.txt
 	@python3 hex_to_bin.py
 
 daq_tb: $(DAQ_FILES)

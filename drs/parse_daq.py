@@ -122,7 +122,7 @@ def read_packet (data, drs_truth, start=0,  verbose=False):
             print("ch" + str(data[START-1]))
             print("")
 
-        assert ch == drs.get_channel_id(i)
+        #assert ch == drs.get_channel_id(i)
 
         drs.waveforms.append(
             DRSWaveform(data[START:END],
@@ -135,7 +135,6 @@ def read_packet (data, drs_truth, start=0,  verbose=False):
             print(drs.waveforms[i])
 
     drs.stop_cell = data[END+2]
-
     drs.crc = int.from_bytes(data[drs.length-3:drs.length-1], byteorder="big")
     drs.trailer = data[drs.length-1]
 
@@ -149,13 +148,13 @@ def read_packet (data, drs_truth, start=0,  verbose=False):
 
     assert drs_truth.status    == drs.status
     assert drs_truth.dna       == drs.dna
-    assert drs_truth.githash   == drs.githash
+    assert drs_truth.githash   == drs.githash, "read=" + hex(drs.githash)
     assert drs_truth.board_id  == drs.board_id
     assert drs_truth.ch_mask   == drs.ch_mask
     assert drs_truth.event_cnt == drs.event_cnt
     assert drs_truth.timestamp == drs.timestamp
     assert drs_truth.roi_size  == drs.roi_size
-    assert drs_truth.stop_cell  == drs.stop_cell
+    assert drs_truth.stop_cell  == drs.stop_cell, "read=" + hex(drs.stop_cell)
 
     assert drs.header == 0xAAAA
     assert drs.trailer == 0x5555
@@ -208,8 +207,8 @@ if __name__ == "__main__":
         drs = DAQReadout()
 
         drs.status = 0x0000
-        drs.dna = 0x6666666666666666
-        drs.githash = 0xcccc
+        drs.dna = 0xfedcba9876543210
+        drs.githash = 0xabcd
         drs.board_id = 0x7700
         drs.ch_mask = 0xf0
         drs.stop_cell = 0x2aa
@@ -218,3 +217,31 @@ if __name__ == "__main__":
         drs.roi_size = 1023
 
         read_packet(a, drs, 9264, False)
+
+        drs = DAQReadout()
+
+        drs.status = 0x0000
+        drs.dna = 0x6c886c886c886c88
+        drs.githash = 0x6c88
+        drs.board_id = 0x0000
+        drs.ch_mask = 0x03
+        drs.stop_cell = 0x2aa
+        drs.event_cnt = 0xffeeddcc
+        drs.timestamp = 0x0123456789ab
+        drs.roi_size = 1023
+
+        read_packet(a, drs, 14432, False)
+
+        drs = DAQReadout()
+
+        drs.status = 0x0000
+        drs.dna = 0x6c886c886c886c88
+        drs.githash = 0x6c88
+        drs.board_id = 0x0000
+        drs.ch_mask = 0x03
+        drs.stop_cell = 0xb8
+        drs.event_cnt = 0xffeeddcc
+        drs.timestamp = 0x0123456789ab
+        drs.roi_size = 1023
+
+        read_packet(a, drs, 17536, False)

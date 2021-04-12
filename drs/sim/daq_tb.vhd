@@ -30,8 +30,8 @@ architecture test of daq_tb is
   signal mask_i                : std_logic_vector (17 downto 0) := '0' & x"00" & '1' & x"f0";
   signal board_id              : std_logic_vector (7 downto 0)  := x"77";
   signal sync_err_i            : std_logic                      := '0';
-  signal dna_i                 : std_logic_vector (63 downto 0) := x"6666666666666666";
-  signal hash_i                : std_logic_vector (31 downto 0) := x"CCCCCCCC";
+  signal dna_i                 : std_logic_vector (63 downto 0) := x"fedcba9876543210";
+  signal hash_i                : std_logic_vector (31 downto 0) := x"00abcd00";
   signal timestamp_i           : std_logic_vector (47 downto 0) := x"444444444444";
   signal roi_size_i            : std_logic_vector (9 downto 0)  := (others => '1');
   signal drs_busy_i            : std_logic                      := '0';
@@ -61,25 +61,9 @@ begin
     wait;
   end process;
 
-  --proc_sim_period : process
-  --begin
-  --  wait for sim_period/10;
-  --  report integer'image(integer(floor((100.0 * real(now / ns) / (real (sim_period / ns)))))) & "% complete";
-  --end process;
-
-  proc_finish : process
-  begin
-    --wait for sim_period;
-    --std.env.finish;
-    wait until (falling_edge(busy_o));
-    wait until (valid_o='0');
-    wait until (falling_edge(busy_o));
-    wait until (valid_o='0');
-    std.env.finish;
-  end process;
-
   proc_inject : process
   begin
+
     wait for 200 ns;
     wait until rising_edge(clock);
     debug_packet_inject_i <= '1';
@@ -93,19 +77,38 @@ begin
     trigger_i <= '1';
     wait until rising_edge(clock);
     trigger_i <= '0';
-    wait;
+
+    wait for 200 ns;
+
+    wait until busy_o = '0';
+
+    mask_i <= '0' & x"00" & '1' & x"03";
+    dna_i <= x"6c886c886c886c88";
+    hash_i <= x"006c8800";
+    board_id <= (others => '0');
+    event_cnt_i <= x"ffeeddcc";
+    timestamp_i <= x"0123456789AB";
+
+    wait until rising_edge(clock);
+    trigger_i <= '1';
+    wait until rising_edge(clock);
+    trigger_i <= '0';
+
+    wait until (falling_edge(busy_o));
+    wait until (valid_o='0');
+    std.env.finish;
+
   end process;
 
-  process (clock) is
+  rand : process
     variable seed1 : positive;
     variable seed2 : positive;
     variable x : real;
     variable y : integer;
   begin
-    if (rising_edge(clock)) then
-      uniform(seed1, seed2, x);
-      drs_data_i <= std_logic_vector(to_unsigned(integer(floor(x * 16384.0)), 14));
-    end if;
+    wait until rising_edge(clock);
+    uniform(seed1, seed2, x);
+    drs_data_i <= std_logic_vector(to_unsigned(integer(floor(x * 16384.0)), 14));
   end process;
 
   daq_inst : entity work.daq
@@ -143,6 +146,7 @@ begin
   proc_data_o : process
   begin
     wait until rising_edge(clock);
+    wait for 0.1 ns;
     if (valid_o = '1') then
       --assert false report "data" & integer'image(to_integer(unsigned(data_o))) severity note;
       write(file_RESULTS, "0x" & to_hstring(unsigned(data_o)) & LF);  -- Hexadecimal representation
