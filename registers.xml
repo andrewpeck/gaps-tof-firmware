@@ -174,7 +174,7 @@
                 mask="0x1"
                 fw_signal="ext_trigger_en" />
             <node id="EXT_TRIGGER_ACTIVE_HI" address="0x1" permission="rw"
-                description="Generates a trigger"
+                description="Set to 1 for active high external trigger"
                 fw_default="0x1"
                 mask="0x2"
                 fw_signal="ext_trigger_active_hi" />
