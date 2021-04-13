@@ -63,6 +63,10 @@ package registers is
     constant REG_READOUT_READOUT_MASK_LSB     : integer := 0;
     constant REG_READOUT_READOUT_MASK_DEFAULT : std_logic_vector(8 downto 0) := '1' & x"ff";
 
+    constant REG_READOUT_AUTO_9TH_CHANNEL_ADDR    : std_logic_vector(6 downto 0) := "001" & x"1";
+    constant REG_READOUT_AUTO_9TH_CHANNEL_BIT    : integer := 9;
+    constant REG_READOUT_AUTO_9TH_CHANNEL_DEFAULT : std_logic := '1';
+
     constant REG_READOUT_START_ADDR    : std_logic_vector(6 downto 0) := "001" & x"2";
     constant REG_READOUT_START_BIT    : integer := 0;
 

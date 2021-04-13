@@ -648,6 +648,7 @@ begin
   regs_read_arr(2)(REG_READOUT_SAMPLE_COUNT_MSB downto REG_READOUT_SAMPLE_COUNT_LSB)                                <= sample_count_max;
   regs_read_arr(2)(REG_READOUT_EN_SPIKE_REMOVAL_BIT)                                                                <= spike_removal;
   regs_read_arr(3)(REG_READOUT_READOUT_MASK_MSB downto REG_READOUT_READOUT_MASK_LSB)                                <= readout_mask_axi;
+  regs_read_arr(3)(REG_READOUT_AUTO_9TH_CHANNEL_BIT)                                                                <= readout_mask_9th_channel_auto;
   regs_read_arr(10)(REG_READOUT_WAIT_VDD_CLKS_MSB downto REG_READOUT_WAIT_VDD_CLKS_LSB)                             <= wait_vdd_clocks;
   regs_read_arr(11)(REG_FPGA_DNA_DNA_LSBS_MSB downto REG_FPGA_DNA_DNA_LSBS_LSB)                                     <= dna (31 downto 0);
   regs_read_arr(12)(REG_FPGA_DNA_DNA_MSBS_MSB downto REG_FPGA_DNA_DNA_MSBS_LSB)                                     <= dna (56 downto 32);
@@ -674,18 +675,19 @@ begin
   regs_read_arr(34)(REG_SPY_EMPTY_BIT)                                                                              <= spy_empty;
 
   -- Connect write signals
-  dmode                 <= regs_write_arr(0)(REG_CHIP_DMODE_BIT);
-  standby_mode          <= regs_write_arr(0)(REG_CHIP_STANDBY_MODE_BIT);
-  transp_mode           <= regs_write_arr(0)(REG_CHIP_TRANSPARENT_MODE_BIT);
-  chn_config            <= regs_write_arr(0)(REG_CHIP_CHANNEL_CONFIG_MSB downto REG_CHIP_CHANNEL_CONFIG_LSB);
-  roi_mode              <= regs_write_arr(2)(REG_READOUT_ROI_MODE_BIT);
-  adc_latency           <= regs_write_arr(2)(REG_READOUT_ADC_LATENCY_MSB downto REG_READOUT_ADC_LATENCY_LSB);
-  sample_count_max      <= regs_write_arr(2)(REG_READOUT_SAMPLE_COUNT_MSB downto REG_READOUT_SAMPLE_COUNT_LSB);
-  spike_removal         <= regs_write_arr(2)(REG_READOUT_EN_SPIKE_REMOVAL_BIT);
-  readout_mask_axi      <= regs_write_arr(3)(REG_READOUT_READOUT_MASK_MSB downto REG_READOUT_READOUT_MASK_LSB);
-  wait_vdd_clocks       <= regs_write_arr(10)(REG_READOUT_WAIT_VDD_CLKS_MSB downto REG_READOUT_WAIT_VDD_CLKS_LSB);
-  ext_trigger_en        <= regs_write_arr(17)(REG_TRIGGER_EXT_TRIGGER_EN_BIT);
-  ext_trigger_active_hi <= regs_write_arr(17)(REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT);
+  dmode                         <= regs_write_arr(0)(REG_CHIP_DMODE_BIT);
+  standby_mode                  <= regs_write_arr(0)(REG_CHIP_STANDBY_MODE_BIT);
+  transp_mode                   <= regs_write_arr(0)(REG_CHIP_TRANSPARENT_MODE_BIT);
+  chn_config                    <= regs_write_arr(0)(REG_CHIP_CHANNEL_CONFIG_MSB downto REG_CHIP_CHANNEL_CONFIG_LSB);
+  roi_mode                      <= regs_write_arr(2)(REG_READOUT_ROI_MODE_BIT);
+  adc_latency                   <= regs_write_arr(2)(REG_READOUT_ADC_LATENCY_MSB downto REG_READOUT_ADC_LATENCY_LSB);
+  sample_count_max              <= regs_write_arr(2)(REG_READOUT_SAMPLE_COUNT_MSB downto REG_READOUT_SAMPLE_COUNT_LSB);
+  spike_removal                 <= regs_write_arr(2)(REG_READOUT_EN_SPIKE_REMOVAL_BIT);
+  readout_mask_axi              <= regs_write_arr(3)(REG_READOUT_READOUT_MASK_MSB downto REG_READOUT_READOUT_MASK_LSB);
+  readout_mask_9th_channel_auto <= regs_write_arr(3)(REG_READOUT_AUTO_9TH_CHANNEL_BIT);
+  wait_vdd_clocks               <= regs_write_arr(10)(REG_READOUT_WAIT_VDD_CLKS_MSB downto REG_READOUT_WAIT_VDD_CLKS_LSB);
+  ext_trigger_en                <= regs_write_arr(17)(REG_TRIGGER_EXT_TRIGGER_EN_BIT);
+  ext_trigger_active_hi         <= regs_write_arr(17)(REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT);
 
   -- Connect write pulse signals
   start               <= regs_write_pulse_arr(4);
@@ -785,6 +787,7 @@ begin
   regs_defaults(2)(REG_READOUT_SAMPLE_COUNT_MSB downto REG_READOUT_SAMPLE_COUNT_LSB)    <= REG_READOUT_SAMPLE_COUNT_DEFAULT;
   regs_defaults(2)(REG_READOUT_EN_SPIKE_REMOVAL_BIT)                                    <= REG_READOUT_EN_SPIKE_REMOVAL_DEFAULT;
   regs_defaults(3)(REG_READOUT_READOUT_MASK_MSB downto REG_READOUT_READOUT_MASK_LSB)    <= REG_READOUT_READOUT_MASK_DEFAULT;
+  regs_defaults(3)(REG_READOUT_AUTO_9TH_CHANNEL_BIT)                                    <= REG_READOUT_AUTO_9TH_CHANNEL_DEFAULT;
   regs_defaults(10)(REG_READOUT_WAIT_VDD_CLKS_MSB downto REG_READOUT_WAIT_VDD_CLKS_LSB) <= REG_READOUT_WAIT_VDD_CLKS_DEFAULT;
   regs_defaults(17)(REG_TRIGGER_EXT_TRIGGER_EN_BIT)                                     <= REG_TRIGGER_EXT_TRIGGER_EN_DEFAULT;
   regs_defaults(17)(REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT)                              <= REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_DEFAULT;
