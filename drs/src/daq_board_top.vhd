@@ -1,21 +1,15 @@
--- TODO: ADC clock phase??
--- TODO: ADC setup/hold constraints
--- Data outputs are available one propagation delay (tPD = 2ns -- 6ns)
--- after the rising edge of the clock signal.
-
-library work;
-use work.ipbus_pkg.all;
-use work.registers.all;
-use work.types_pkg.all;
-use work.axi_pkg.all;
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_misc.all;
 use ieee.numeric_std.all;
 
-library UNISIM;
-use UNISIM.vcomponents.all;
+use work.ipbus_pkg.all;
+use work.registers.all;
+use work.types_pkg.all;
+use work.axi_pkg.all;
+
+library unisim;
+use unisim.vcomponents.all;
 
 entity top_readout_board is
   generic (
@@ -90,8 +84,7 @@ architecture Behavioral of top_readout_board is
   signal clock  : std_logic;
   signal locked : std_logic;
 
-  signal reset     : std_logic;
-  signal dma_reset : std_logic := '0';
+  signal reset : std_logic;
 
   signal drs_data         : std_logic_vector (13 downto 0);
   signal drs_data_valid   : std_logic;
@@ -111,14 +104,13 @@ architecture Behavioral of top_readout_board is
 
   signal drs_srclk_en            : std_logic;
   signal sem_correction          : std_logic;
-  signal sem_classification      : std_logic;
   signal sem_uncorrectable_error : std_logic;
 
   -------------------------------------------------------------------------------
   -- DRS configuration
   -------------------------------------------------------------------------------
 
-  signal resync        : std_logic;
+  signal resync        : std_logic := '0';
   signal drs_busy      : std_logic;
   signal roi_mode      : std_logic;
   signal spike_removal : std_logic;
@@ -152,10 +144,6 @@ architecture Behavioral of top_readout_board is
   signal dtap_cnt : std_logic_vector (31 downto 0);
 
   signal readout_complete : std_logic;
-
-  -- Read data (send to axi stream etc)
-  signal rd_data   : std_logic_vector (15 downto 0);
-  signal rd_enable : std_logic := '1';
 
   signal spy_data  : std_logic_vector (15 downto 0) := (others => '0');
   signal spy_full  : std_logic                      := '0';
@@ -587,7 +575,7 @@ begin
       ipb_miso_arr => ipb_miso_arr,
       ipb_mosi_arr => ipb_mosi_arr,
 
-      dma_reset => dma_reset
+      dma_reset => '0'
       );
 
   -------------------------------------------------------------------------------------------------

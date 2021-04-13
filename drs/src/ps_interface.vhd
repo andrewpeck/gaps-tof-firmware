@@ -77,7 +77,6 @@ architecture Behavioral of ps_interface is
   signal ipb_axi_aresetn_sync : std_logic := '0';
 
   signal dma_axi_aclk    : std_logic;
-  signal dma_axi_aresetn : std_logic;
 
   signal dma_hp_axi_araddr   : std_logic_vector (31 downto 0);
   signal dma_hp_axi_arburst  : std_logic_vector (1 downto 0);
