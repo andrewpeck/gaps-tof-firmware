@@ -165,7 +165,7 @@
                 <node id="VCCPAUX" address="0x1" permission="r"
                       description="XADC Calibration"
                       mask="0x00000fff"
-                      fw_signal="calibration" />
+                      fw_signal="vccpaux" />
                 <node id="VCCODDR" address="0x1" permission="r"
                       description="XADC vccoddr"
                       mask="0x0fff0000"

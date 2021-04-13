@@ -688,7 +688,7 @@ begin
   regs_read_arr(14)(REG_FPGA_TIMESTAMP_TIMESTAMP_MSBS_MSB downto REG_FPGA_TIMESTAMP_TIMESTAMP_MSBS_LSB)             <= std_logic_vector(timestamp (47 downto 32));
   regs_read_arr(15)(REG_FPGA_XADC_CALIBRATION_MSB downto REG_FPGA_XADC_CALIBRATION_LSB)                             <= calibration;
   regs_read_arr(15)(REG_FPGA_XADC_VCCPINT_MSB downto REG_FPGA_XADC_VCCPINT_LSB)                                     <= vccpint;
-  regs_read_arr(16)(REG_FPGA_XADC_VCCPAUX_MSB downto REG_FPGA_XADC_VCCPAUX_LSB)                                     <= calibration;
+  regs_read_arr(16)(REG_FPGA_XADC_VCCPAUX_MSB downto REG_FPGA_XADC_VCCPAUX_LSB)                                     <= vccpaux;
   regs_read_arr(16)(REG_FPGA_XADC_VCCODDR_MSB downto REG_FPGA_XADC_VCCODDR_LSB)                                     <= vccoddr;
   regs_read_arr(17)(REG_FPGA_XADC_TEMP_MSB downto REG_FPGA_XADC_TEMP_LSB)                                           <= temp;
   regs_read_arr(17)(REG_FPGA_XADC_VCCINT_MSB downto REG_FPGA_XADC_VCCINT_LSB)                                       <= vccint;
