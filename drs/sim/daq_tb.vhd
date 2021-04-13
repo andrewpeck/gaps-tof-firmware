@@ -120,6 +120,7 @@ begin
       reset                 => reset,
       debug_packet_inject_i => debug_packet_inject_i,
       trigger_i             => trigger_i,
+      temperature_i         => (others => '0'),
       event_cnt_i           => event_cnt_i,
       mask_i                => mask_i,
       board_id              => board_id,

@@ -151,6 +151,42 @@
                     mask="0x0000ffff"
                     fw_signal="std_logic_vector(timestamp (47 downto 32))" />
             </node> <!--TIMESTAMP-->
+
+            <node id="XADC" address="0x6"
+                  description="Zynq XADC">
+                <node id="CALIBRATION" address="0x0" permission="r"
+                      description="XADC Calibration"
+                      mask="0x00000fff"
+                      fw_signal="calibration" />
+                <node id="VCCPINT" address="0x0" permission="r"
+                      description="XADC vccpint"
+                      mask="0x0fff0000"
+                      fw_signal="vccpint"/>
+                <node id="VCCPAUX" address="0x1" permission="r"
+                      description="XADC Calibration"
+                      mask="0x00000fff"
+                      fw_signal="calibration" />
+                <node id="VCCODDR" address="0x1" permission="r"
+                      description="XADC vccoddr"
+                      mask="0x0fff0000"
+                      fw_signal="vccoddr"/>
+                <node id="TEMP" address="0x2" permission="r"
+                      description="XADC Temperature"
+                      mask="0x00000fff"
+                      fw_signal="temp" />
+                <node id="VCCINT" address="0x2" permission="r"
+                      description="XADC vccint"
+                      mask="0x0fff0000"
+                      fw_signal="vccint"/>
+                <node id="VCCAUX" address="0x3" permission="r"
+                      description="XADC VCCAUX"
+                      mask="0x00000fff"
+                      fw_signal="vccaux" />
+                <node id="VCCBRAM" address="0x3" permission="r"
+                      description="XADC vccbram"
+                      mask="0x0fff0000"
+                      fw_signal="vccbram"/>
+            </node> <!--XADC-->
         </node> <!--FPGA-->
 
 

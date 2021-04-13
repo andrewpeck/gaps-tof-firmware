@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_DRS_NUM_REGS : integer := 35;
+    constant REG_DRS_NUM_REGS : integer := 39;
     constant REG_DRS_ADDRESS_MSB : integer := 6;
     constant REG_DRS_ADDRESS_LSB : integer := 0;
     constant REG_CHIP_DMODE_ADDR    : std_logic_vector(6 downto 0) := "000" & x"0";
@@ -105,6 +105,38 @@ package registers is
     constant REG_FPGA_TIMESTAMP_TIMESTAMP_MSBS_ADDR    : std_logic_vector(6 downto 0) := "010" & x"5";
     constant REG_FPGA_TIMESTAMP_TIMESTAMP_MSBS_MSB    : integer := 15;
     constant REG_FPGA_TIMESTAMP_TIMESTAMP_MSBS_LSB     : integer := 0;
+
+    constant REG_FPGA_XADC_CALIBRATION_ADDR    : std_logic_vector(6 downto 0) := "010" & x"6";
+    constant REG_FPGA_XADC_CALIBRATION_MSB    : integer := 11;
+    constant REG_FPGA_XADC_CALIBRATION_LSB     : integer := 0;
+
+    constant REG_FPGA_XADC_VCCPINT_ADDR    : std_logic_vector(6 downto 0) := "010" & x"6";
+    constant REG_FPGA_XADC_VCCPINT_MSB    : integer := 27;
+    constant REG_FPGA_XADC_VCCPINT_LSB     : integer := 16;
+
+    constant REG_FPGA_XADC_VCCPAUX_ADDR    : std_logic_vector(6 downto 0) := "010" & x"7";
+    constant REG_FPGA_XADC_VCCPAUX_MSB    : integer := 11;
+    constant REG_FPGA_XADC_VCCPAUX_LSB     : integer := 0;
+
+    constant REG_FPGA_XADC_VCCODDR_ADDR    : std_logic_vector(6 downto 0) := "010" & x"7";
+    constant REG_FPGA_XADC_VCCODDR_MSB    : integer := 27;
+    constant REG_FPGA_XADC_VCCODDR_LSB     : integer := 16;
+
+    constant REG_FPGA_XADC_TEMP_ADDR    : std_logic_vector(6 downto 0) := "010" & x"8";
+    constant REG_FPGA_XADC_TEMP_MSB    : integer := 11;
+    constant REG_FPGA_XADC_TEMP_LSB     : integer := 0;
+
+    constant REG_FPGA_XADC_VCCINT_ADDR    : std_logic_vector(6 downto 0) := "010" & x"8";
+    constant REG_FPGA_XADC_VCCINT_MSB    : integer := 27;
+    constant REG_FPGA_XADC_VCCINT_LSB     : integer := 16;
+
+    constant REG_FPGA_XADC_VCCAUX_ADDR    : std_logic_vector(6 downto 0) := "010" & x"9";
+    constant REG_FPGA_XADC_VCCAUX_MSB    : integer := 11;
+    constant REG_FPGA_XADC_VCCAUX_LSB     : integer := 0;
+
+    constant REG_FPGA_XADC_VCCBRAM_ADDR    : std_logic_vector(6 downto 0) := "010" & x"9";
+    constant REG_FPGA_XADC_VCCBRAM_MSB    : integer := 27;
+    constant REG_FPGA_XADC_VCCBRAM_LSB     : integer := 16;
 
     constant REG_DAQ_INJECT_DEBUG_PACKET_ADDR    : std_logic_vector(6 downto 0) := "011" & x"0";
     constant REG_DAQ_INJECT_DEBUG_PACKET_BIT    : integer := 0;

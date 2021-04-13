@@ -5,6 +5,7 @@ ip/clock_wizard/clock_wizard.xci
 ip/sem_core/sem_core.xci
 ip/ila_axi_ipbus_bridge/ila_axi_ipbus_bridge.xci
 ip/ila_drs/ila_drs.xci
+ip/xadc_wiz/xadc_wiz.xci
 
 # DRS4 Controller
 drs/src/fifo_async.vhd
@@ -22,6 +23,7 @@ drs/src/synchonizer.vhd
 drs/src/types_pkg.vhd
 drs/src/trigger_mux.vhd
 drs/src/dtap.vhd
+drs/src/adc.vhd
 
 drs/src/drs.v
 drs/src/crc32.vhd

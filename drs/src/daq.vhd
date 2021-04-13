@@ -29,12 +29,13 @@ entity daq is
     mask_i      : in std_logic_vector (17 downto 0);
 
     -- status
-    board_id    : in std_logic_vector (7 downto 0);
-    sync_err_i  : in std_logic;
-    dna_i       : in std_logic_vector (63 downto 0);
-    hash_i      : in std_logic_vector (31 downto 0);
-    timestamp_i : in std_logic_vector (47 downto 0);
-    roi_size_i  : in std_logic_vector (9 downto 0);
+    temperature_i : in std_logic_vector (11 downto 0);
+    board_id      : in std_logic_vector (7 downto 0);
+    sync_err_i    : in std_logic;
+    dna_i         : in std_logic_vector (63 downto 0);
+    hash_i        : in std_logic_vector (31 downto 0);
+    timestamp_i   : in std_logic_vector (47 downto 0);
+    roi_size_i    : in std_logic_vector (9 downto 0);
 
     drs_busy_i  : in std_logic;
     drs_data_i  : in std_logic_vector (13 downto 0);
@@ -239,9 +240,10 @@ begin
           timestamp    <= x"BA9876543210";
         else
 
-          status(0)            <= sync_err_i;
-          status(1)            <= dropped;
-          status (15 downto 2) <= (others => '0');
+          status(0)           <= sync_err_i;
+          status(1)           <= dropped;
+          status(3 downto 2)  <= (others => '0');
+          status(15 downto 4) <= temperature_i;
 
           id(0)           <= '0';
           id(15 downto 8) <= board_id;
@@ -251,7 +253,7 @@ begin
           dna          <= dna_i;
           hash         <= hash_i (23 downto 8);
           debug        <= false;
-          dropped      <= '0';  -- drs_busy_i; FIXME correct this when there is a real trigger
+          dropped      <= '0';          -- drs_busy_i; FIXME correct this when there is a real trigger
           num_channels <= count_ones (mask_i);
           mask         <= mask_i;
           event_cnt    <= event_cnt_i;
@@ -425,9 +427,9 @@ begin
           elsif (num_channels > 0) then
 
             if (drs_valid_i = '1') then
-              data <= xor_reduce(drs_data_i(13 downto 7)) & xor_reduce(drs_data_i(6 downto 0)) -- parity bits
-                      & drs_data_i; -- adc data
-              dav  <= true;
+              data <= xor_reduce(drs_data_i(13 downto 7)) & xor_reduce(drs_data_i(6 downto 0))  -- parity bits
+                      & drs_data_i;                                                             -- adc data
+              dav <= true;
             else
               dav  <= false;
               data <= (others => '0');
