@@ -38,6 +38,8 @@ class DAQReadout():
     stop_cell = np.uint16(0)
     ch_mask = np.uint16(0)
     event_cnt = np.uint32(0)
+    dtap0 = np.uint16(0)
+    dtap1 = np.uint16(0)
     timestamp = np.uint64(0)
     crc = np.uint32(0)
 
@@ -77,6 +79,8 @@ class DAQReadout():
         ret += ("MASK      : 0x%0*X\n" % (2, self.ch_mask))
         ret += ("NUM_CH    : %d\n"     % (self.channels))
         ret += ("EVENT_CNT : 0x%0*X\n" % (8, self.event_cnt))
+        ret += ("DTAP0     : 0x%0*X\n" % (4, self.dtap0))
+        ret += ("DTAP1     : 0x%0*X\n" % (4, self.dtap1))
         ret += ("TIMESTAMP : 0x%0*X\n" % (12, self.timestamp))
         ret += ("STOP_CELL : 0x%0*X\n" % (2, self.stop_cell))
         ret += ("CRC       : 0x%0*X\n" % (2, self.crc))
@@ -99,15 +103,18 @@ def read_packet (data, drs_truth, start=0,  verbose=False):
     drs.ch_mask = data[10]
     drs.count_channels()
     drs.event_cnt = int.from_bytes(data[11:13], byteorder="little")
+    drs.dtap0 = data[13]
+    drs.dtap1 = data[14]
     drs.timestamp = int.from_bytes(data[15:18], byteorder="little")
 
+    NUM_HEADERS = 19;
 
     drs.waveforms.clear()
 
     for i in range(drs.channels):
 
-        START = 17+i*(drs.roi_size+1+3)
-        END = 17+i*(drs.roi_size+1+3) + drs.roi_size+1
+        START = NUM_HEADERS+i*(drs.roi_size+1+3)
+        END = NUM_HEADERS+i*(drs.roi_size+1+3) + drs.roi_size+1
 
         start = data[START]
         end = data[END-1]
@@ -204,44 +211,44 @@ if __name__ == "__main__":
 
         read_packet(a, drs, 0, False)
 
-        drs = DAQReadout()
+        #drs = DAQReadout()
 
-        drs.status = 0x0000
-        drs.dna = 0xfedcba9876543210
-        drs.githash = 0xabcd
-        drs.board_id = 0x7700
-        drs.ch_mask = 0xf0
-        drs.stop_cell = 0x2aa
-        drs.event_cnt = 0x99999999
-        drs.timestamp = 0x444444444444
-        drs.roi_size = 1023
+        #drs.status = 0x0000
+        #drs.dna = 0xfedcba9876543210
+        #drs.githash = 0xabcd
+        #drs.board_id = 0x7700
+        #drs.ch_mask = 0xf0
+        #drs.stop_cell = 0x2aa
+        #drs.event_cnt = 0x99999999
+        #drs.timestamp = 0x444444444444
+        #drs.roi_size = 1023
 
-        read_packet(a, drs, 9264, False)
+        #read_packet(a, drs, 9264, False)
 
-        drs = DAQReadout()
+        #drs = DAQReadout()
 
-        drs.status = 0x0000
-        drs.dna = 0x6c886c886c886c88
-        drs.githash = 0x6c88
-        drs.board_id = 0x0000
-        drs.ch_mask = 0x03
-        drs.stop_cell = 0x2aa
-        drs.event_cnt = 0xffeeddcc
-        drs.timestamp = 0x0123456789ab
-        drs.roi_size = 1023
+        #drs.status = 0x0000
+        #drs.dna = 0x6c886c886c886c88
+        #drs.githash = 0x6c88
+        #drs.board_id = 0x0000
+        #drs.ch_mask = 0x03
+        #drs.stop_cell = 0x2aa
+        #drs.event_cnt = 0xffeeddcc
+        #drs.timestamp = 0x0123456789ab
+        #drs.roi_size = 1023
 
-        read_packet(a, drs, 14432, False)
+        #read_packet(a, drs, 14432, True)
 
-        drs = DAQReadout()
+        #drs = DAQReadout()
 
-        drs.status = 0x0000
-        drs.dna = 0x6c886c886c886c88
-        drs.githash = 0x6c88
-        drs.board_id = 0x0000
-        drs.ch_mask = 0x03
-        drs.stop_cell = 0xb8
-        drs.event_cnt = 0xffeeddcc
-        drs.timestamp = 0x0123456789ab
-        drs.roi_size = 1023
+        #drs.status = 0x0000
+        #drs.dna = 0x6c886c886c886c88
+        #drs.githash = 0x6c88
+        #drs.board_id = 0x0000
+        #drs.ch_mask = 0x03
+        #drs.stop_cell = 0xb8
+        #drs.event_cnt = 0xffeeddcc
+        #drs.timestamp = 0x0123456789ab
+        #drs.roi_size = 1023
 
-        read_packet(a, drs, 17536, False)
+        #read_packet(a, drs, 17536, False)
