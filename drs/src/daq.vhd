@@ -36,6 +36,8 @@ entity daq is
     hash_i        : in std_logic_vector (31 downto 0);
     timestamp_i   : in std_logic_vector (47 downto 0);
     roi_size_i    : in std_logic_vector (9 downto 0);
+    dtap0_i       : in std_logic_vector (15 downto 0);
+    dtap1_i       : in std_logic_vector (15 downto 0);
 
     drs_busy_i  : in std_logic;
     drs_data_i  : in std_logic_vector (13 downto 0);
@@ -53,8 +55,8 @@ architecture behavioral of daq is
 
   -- packet processing in python 15% faster by adding a channel header!!
   type state_t is (IDLE_state, ERR_state, HEAD_state, STATUS_state, LENGTH_state, ROI_state,
-                   DNA_state, HASH_state, ID_state, CHMASK_state, EVENT_CNT_state,
-                   TIMESTAMP_state, CALC_CH_CRC_state, CH_CRC_state, CH_HEADER_state,
+                   DNA_state, HASH_state, ID_state, CHMASK_state, EVENT_CNT_state, DTAP0_state,
+                   DTAP1_state, TIMESTAMP_state, CALC_CH_CRC_state, CH_CRC_state, CH_HEADER_state,
                    PAYLOAD_state, STOP_CELL_state, CALC_CRC32_state, CRC32_state, TAIL_state,
                    PAD_state);
 
@@ -175,6 +177,8 @@ architecture behavioral of daq is
       + id'length / g_WORD_SIZE
       + mask'length / g_WORD_SIZE
       + event_cnt'length / g_WORD_SIZE
+      + dtap0_i'length / g_WORD_SIZE
+      + dtap1_i'length / g_WORD_SIZE
       + timestamp'length / g_WORD_SIZE
       + packet_payload_size             -- roi counts from 0
       + packet_crc'length / g_WORD_SIZE
@@ -359,7 +363,7 @@ begin
         when EVENT_CNT_state =>
 
           if (state_word_cnt = event_cnt'length / g_WORD_SIZE - 1) then
-            state          <= TIMESTAMP_state;
+            state          <= DTAP0_state;
             state_word_cnt <= 0;
           else
             state_word_cnt <= state_word_cnt + 1;
@@ -368,6 +372,21 @@ begin
           data <= event_cnt(g_WORD_SIZE*(EVENT_CNT_WORDS -state_word_cnt)-1
                             downto g_WORD_SIZE*(EVENT_CNT_WORDS -state_word_cnt-1));
           dav <= true;
+          dav  <= true;
+
+        when DTAP0_state =>
+
+          state <= DTAP1_state;
+
+          data <= dtap0_i;
+          dav  <= true;
+
+        when DTAP1_state =>
+
+          state <= TIMESTAMP_state;
+
+          data <= dtap1_i;
+          dav  <= true;
 
         when TIMESTAMP_state =>
 
