@@ -14,7 +14,9 @@ use ieee.numeric_std.all;
 
 entity daq is
   generic(
-    g_WORD_SIZE : positive := 16
+    g_WORD_SIZE     : positive := 16;
+    g_MSB_FIRST     : boolean  := true;
+    g_LITTLE_ENDIAN : boolean  := true
     );
   port(
     clock : in std_logic;               -- clock of arbitrary frequency
@@ -127,6 +129,34 @@ architecture behavioral of daq is
     return 0;
   end;
 
+  --
+  function data_sel (msb_first : boolean;
+                     size      : natural;
+                     total     : natural;
+                     cnt       : natural;
+                     payload   : std_logic_vector)
+    return std_logic_vector is
+    variable dout : std_logic_vector (size-1 downto 0);
+  begin
+    if (msb_first) then
+      dout := payload(size*(total-cnt)-1 downto size*(total-cnt-1));
+    else
+      dout := payload(size*(cnt+1)-1 downto size*cnt);
+    end if;
+    return dout;
+  end;
+
+  function swap_data_bytes (swap : boolean;
+                            din  : std_logic_vector (15 downto 0))
+    return std_logic_vector is
+  begin
+    if (swap) then
+      return din(7 downto 0) & din(15 downto 8);
+    else
+      return din;
+    end if;
+  end;
+
   impure function get_payload_size (packet_dropped  : std_logic;
                                     packet_roi_size : natural;
                                     ch_mask         : std_logic_vector)
@@ -202,7 +232,7 @@ begin
   packet_crc32 : entity work.crc32
     port map (
       clock  => clock,
-      data   => data,
+      data   => swap_data_bytes(g_LITTLE_ENDIAN, data),
       reset  => packet_crc_rst,
       enable => packet_crc_en,
       crc    => packet_crc
@@ -211,7 +241,7 @@ begin
   channel_crc32 : entity work.crc32
     port map (
       clock  => clock,
-      data   => data,
+      data   => swap_data_bytes(g_LITTLE_ENDIAN, data),
       enable => channel_crc_en,
       reset  => channel_crc_rst,
       crc    => channel_crc
@@ -332,9 +362,8 @@ begin
             state_word_cnt <= state_word_cnt + 1;
           end if;
 
-          data <= dna(g_WORD_SIZE*(DNA_WORDS -state_word_cnt)-1
-                      downto g_WORD_SIZE*(DNA_WORDS -state_word_cnt-1));
-          dav <= true;
+          data <= data_sel(g_MSB_FIRST, g_WORD_SIZE, DNA_WORDS, state_word_cnt, dna);
+          dav  <= true;
 
         when HASH_state =>
 
@@ -369,9 +398,7 @@ begin
             state_word_cnt <= state_word_cnt + 1;
           end if;
 
-          data <= event_cnt(g_WORD_SIZE*(EVENT_CNT_WORDS -state_word_cnt)-1
-                            downto g_WORD_SIZE*(EVENT_CNT_WORDS -state_word_cnt-1));
-          dav <= true;
+          data <= data_sel(g_MSB_FIRST, g_WORD_SIZE, EVENT_CNT_WORDS, state_word_cnt, event_cnt);
           dav  <= true;
 
         when DTAP0_state =>
@@ -403,9 +430,8 @@ begin
             state_word_cnt <= state_word_cnt + 1;
           end if;
 
-          data <= timestamp(g_WORD_SIZE*(TIMESTAMP_WORDS -state_word_cnt)-1
-                            downto g_WORD_SIZE*(TIMESTAMP_WORDS -state_word_cnt-1));
-          dav <= true;
+          data <= data_sel(g_MSB_FIRST, g_WORD_SIZE, TIMESTAMP_WORDS, state_word_cnt, timestamp);
+          dav  <= true;
 
         when CH_HEADER_state =>
 
@@ -476,9 +502,8 @@ begin
             state_word_cnt <= state_word_cnt + 1;
           end if;
 
-          data <= channel_crc(g_WORD_SIZE*(CHANNEL_CRC_WORDS -state_word_cnt)-1
-                              downto g_WORD_SIZE*(CHANNEL_CRC_WORDS -state_word_cnt-1));
-          dav <= true;
+          data <= data_sel(g_MSB_FIRST, g_WORD_SIZE, CHANNEL_CRC_WORDS, state_word_cnt, channel_crc);
+          dav  <= true;
 
         when STOP_CELL_state =>
 
@@ -507,9 +532,8 @@ begin
             state_word_cnt <= state_word_cnt + 1;
           end if;
 
-          data <= packet_crc(g_WORD_SIZE*(PACKET_CRC_WORDS -state_word_cnt)-1
-                             downto g_WORD_SIZE*(PACKET_CRC_WORDS -state_word_cnt-1));
-          dav <= true;
+          data <= data_sel(g_MSB_FIRST, g_WORD_SIZE, PACKET_CRC_WORDS, state_word_cnt, packet_crc);
+          dav  <= true;
 
         when TAIL_state =>
 
