@@ -1,7 +1,5 @@
-#https://gitlab.com/gitlab-org/gitlab/-/issues/31971
-
 include:
-    - project: 'andrewpeck1/Hog'
+    - project: 'hog-cern/Hog'
       file: '/hog.yml'
-      ref: 'v2.11.0'
+      ref: 'Hog2021.1-2'
     - local: '/Top/readout_board/gitlab-ci.yml'
