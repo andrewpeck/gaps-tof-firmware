@@ -62,7 +62,6 @@ package body types_pkg is
 
   function to_sl (int : integer)
     return std_logic is
-    variable v : std_logic;
   begin
     if (int > 0) then
       return '1';
@@ -73,7 +72,6 @@ package body types_pkg is
 
   function to_slv (int : integer; len : integer)
     return std_logic_vector is
-    variable v : std_logic_vector (len-1 downto 0);
   begin
     return (std_logic_vector(to_unsigned(int, len)));
   end function;
