@@ -45,8 +45,8 @@
                 fw_signal="chn_config"
                 fw_default="0xff"/>
             <node id="DTAP_FREQ" address="0x1" permission="r"
-                description="Frequency of DTAP in MHz"
-                mask="0xffffffff"
+                description="Frequency of DTAP in units of 100Hz"
+                mask="0x0000ffff"
                 fw_signal="dtap_cnt" />
         </node> <!--CONFIG-->
 

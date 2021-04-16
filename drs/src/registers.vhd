@@ -34,7 +34,7 @@ package registers is
     constant REG_CHIP_CHANNEL_CONFIG_DEFAULT : std_logic_vector(31 downto 24) := x"ff";
 
     constant REG_CHIP_DTAP_FREQ_ADDR    : std_logic_vector(6 downto 0) := "000" & x"1";
-    constant REG_CHIP_DTAP_FREQ_MSB    : integer := 31;
+    constant REG_CHIP_DTAP_FREQ_MSB    : integer := 15;
     constant REG_CHIP_DTAP_FREQ_LSB     : integer := 0;
 
     constant REG_READOUT_ROI_MODE_ADDR    : std_logic_vector(6 downto 0) := "001" & x"0";

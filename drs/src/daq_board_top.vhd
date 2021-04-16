@@ -141,7 +141,7 @@ architecture Behavioral of top_readout_board is
 
   signal timestamp : unsigned (47 downto 0) := (others => '0');
 
-  signal dtap_cnt : std_logic_vector (31 downto 0);
+  signal dtap_cnt : std_logic_vector (15 downto 0);
 
   signal readout_complete : std_logic;
 
@@ -329,11 +329,16 @@ begin
   --------------------------------------------------------------------------------
 
   dtap_inst : entity work.dtap
-    port map (
-      clock      => clock,
-      drs_dtap_i => drs_dtap_i,
-      dtap_cnt_o => dtap_cnt
+    generic map (
+      WIDTH => dtap_cnt'length,
+      MHZ   => 33333333,
+      DIV   => 100
       );
+  port map (
+    clock      => clock,
+    drs_dtap_i => drs_dtap_i,
+    dtap_cnt_o => dtap_cnt
+    );
 
   -------------------------------------------------------------------------------
   -- SRCLK ODDR
@@ -451,6 +456,8 @@ begin
       hash_i                => GLOBAL_SHA,
       timestamp_i           => std_logic_vector(timestamp),
       roi_size_i            => sample_count_max,
+      dtap0_i               => dtap_cnt,
+      dtap1_i               => (others => '0'),
       drs_busy_i            => drs_busy,
       drs_data_i            => drs_data(13 downto 0),
       drs_valid_i           => drs_data_valid,

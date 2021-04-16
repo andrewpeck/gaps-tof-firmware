@@ -1,7 +1,8 @@
 .PHONY: check_output
 
 DAQ_FILES=src/crc32.vhd src/types_pkg.vhd src/daq.vhd sim/daq_tb.vhd
-
+ANALYZE=ghdl -a --std=08 --ieee=synopsys -Wunused --warn-runtime-error --warn-body --warn-parenthesis --warn-reserved
+RUN=ghdl -r --std=08
 all: check_output trigger_mux
 
 check_output:  daq_packet.dat
@@ -36,3 +37,8 @@ trigger_mux_questa:
 questa:
 	vcom -2008 $(DAQ_FILES)
 	vsim daq_tb
+
+dtap:
+	$(ANALYZE) src/dtap.vhd sim/dtap_tb.vhd
+	$(RUN) dtap_tb
+
