@@ -333,7 +333,7 @@ begin
       WIDTH => dtap_cnt'length,
       MHZ   => 33333333,
       DIV   => 100
-      );
+      )
   port map (
     clock      => clock,
     drs_dtap_i => drs_dtap_i,
