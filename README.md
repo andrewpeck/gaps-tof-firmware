@@ -8,16 +8,16 @@ Organization
 
 ``` {.example}
 readout-firmware/
-  ├── Hog             : Submodule containing the HOG project
-  ├── Top             : Top level project configuration files for HOG
-  ├── bd              : Block diagram files
-  ├── regmap          : Register XML to VHDL tools
-  ├── tcl             : TCL scripts for ip core creation
-  ├── ip              : Holds both user and Vivado IP cores
-  ├── dma             : Files for DMA driver
-  ├── drs             : Files for DRS4 control
-  ├── xdc             : Xilinx XDC constraint files
-  └── VivadoProject   : Auto-generated directory containing the Vivado project
+  ├── Hog      : Submodule containing the HOG project
+  ├── Top      : Top level project configuration files for HOG
+  ├── bd       : Block diagram files
+  ├── regmap   : Register XML to VHDL tools
+  ├── tcl      : TCL scripts for ip core creation
+  ├── ip       : Holds both user and Vivado IP cores
+  ├── dma      : Files for DMA driver
+  ├── drs      : Files for DRS4 control
+  ├── xdc      : Xilinx XDC constraint files
+  └── Projects : Auto-generated directory containing the Vivado project
 
 ```
 
