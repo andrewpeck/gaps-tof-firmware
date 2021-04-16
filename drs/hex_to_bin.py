@@ -6,5 +6,5 @@ with open("daq_packet.txt", "r") as daq_file:
 
 with open ("daq_packet.dat", "wb+") as bin_file:
     for line in lines:
-        bindata = binascii.unhexlify(line.replace('0x', '').replace('\n', ''))
+        bindata = int(line,16).to_bytes(2, byteorder='little')
         bin_file.write(bindata)

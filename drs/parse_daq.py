@@ -92,14 +92,15 @@ def read_packet (data, drs_truth, start=0,  verbose=False):
     drs.header = data[0]
     drs.status = data[1]
     drs.length = data[2]
-    drs.roi_size = 1023; #data[3]+1  # daq report counts from zero, we count from 1
-    drs.dna = int.from_bytes(data[4:8], byteorder="big")
+    drs.roi_size = data[3]  # daq report counts from zero, we count from 1
+    drs.dna = int.from_bytes(data[4:8], byteorder="little")
     drs.githash = data[8]
     drs.board_id = data[9]
     drs.ch_mask = data[10]
     drs.count_channels()
-    drs.event_cnt = int.from_bytes(data[11:13], byteorder="big")
-    drs.timestamp = int.from_bytes(data[13:16], byteorder="big")
+    drs.event_cnt = int.from_bytes(data[11:13], byteorder="little")
+    drs.timestamp = int.from_bytes(data[15:18], byteorder="little")
+
 
     drs.waveforms.clear()
 
@@ -126,7 +127,7 @@ def read_packet (data, drs_truth, start=0,  verbose=False):
 
         drs.waveforms.append(
             DRSWaveform(data[START:END],
-                        int.from_bytes(data[END:END+2], byteorder="big"),
+                        int.from_bytes(data[END:END+2], byteorder="little"),
                         data[START-1]))
 
         drs.waveforms[i].check_crc()
@@ -135,7 +136,7 @@ def read_packet (data, drs_truth, start=0,  verbose=False):
             print(drs.waveforms[i])
 
     drs.stop_cell = data[END+2]
-    drs.crc = int.from_bytes(data[drs.length-3:drs.length-1], byteorder="big")
+    drs.crc = int.from_bytes(data[drs.length-3:drs.length-1], byteorder="little")
     drs.trailer = data[drs.length-1]
 
     print(drs)
@@ -171,8 +172,7 @@ if __name__ == "__main__":
     #         print("0x%04X" % byte)
     #     i=i+1
 
-    a = np.fromfile("daq_packet.dat", dtype='>u2', count=-1, sep='')
-
+    a = np.fromfile("daq_packet.dat", dtype='<u2', count=-1, sep='')
     np.set_printoptions(formatter={'int':hex})
 
     PROFILE = False
