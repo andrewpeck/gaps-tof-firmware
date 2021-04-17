@@ -907,7 +907,7 @@ def writePackageFile (modules, filename):
 
             if module.isExternal:
                 continue
-            f.write('%s%s(std_match(addr, std_logic_vector(to_unsigned(IPB_SLAVE.%15s,     %d))  & "------------")) then sel := IPB_SLAVE.%s;\n' % (padding, start, module.getVhdlName(), modulebits, module.getVhdlName()))
+            f.write('%s%s(std_match(addr(15 downto 0), std_logic_vector(to_unsigned(IPB_SLAVE.%15s,     %d))  & "------------")) then sel := IPB_SLAVE.%s;\n' % (padding, start, module.getVhdlName(), modulebits, module.getVhdlName()))
 
             imodule = imodule + 1
 
