@@ -1,7 +1,13 @@
 # #################### READOUT-BOARD Project ###########################
-generate_project:readout_board:
+GEN:readout_board:
     extends: .generate_project
     variables:
       extends: .vars
       PROJECT_NAME: readout_board
-      HOG_ONLY_SYNTH: 0 # if 1 runs only the synthesis
+      INTERMEDIATE_BUILD: "1"
+
+GEN:readout_board_master:
+    extends: .generate_project
+    variables:
+      extends: .vars
+      PROJECT_NAME: readout_board
