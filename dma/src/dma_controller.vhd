@@ -278,9 +278,6 @@ architecture Behavioral of dma_controller is
   signal init_cmd : std_logic;
   signal fifo_valid_r1 : std_logic := '0';
 
-  signal nrst_i : std_logic;
-
-==== BASE ====
   ---
   signal delay_counter   : integer range 0 to 21 := 0;
   signal initial_counter : integer;
