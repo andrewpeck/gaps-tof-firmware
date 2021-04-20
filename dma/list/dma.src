@@ -4,6 +4,8 @@
 ip/ila_s2mm/ila_s2mm.xci
 ip/axis2aximm/axis2aximm.xci
 ip/fifo_generator_0/fifo_generator_0.xci
+ip/fifo_1x/fifo_1x.xci
 
 # DMA Files
 dma/src/dma_controller.vhd
+dma/src/converter_16b_to_32b.vhd
