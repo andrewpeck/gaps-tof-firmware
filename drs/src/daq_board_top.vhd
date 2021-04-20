@@ -591,7 +591,8 @@ begin
       ipb_miso_arr => ipb_miso_arr,
       ipb_mosi_arr => ipb_mosi_arr,
 
-      dma_reset => dma_reset
+      dma_reset => dma_reset,
+      daq_busy_in => daq_busy
       );
 
   -------------------------------------------------------------------------------------------------
