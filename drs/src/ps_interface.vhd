@@ -280,7 +280,7 @@ begin
 
   dma_controller_inst : entity dma.dma_controller
     generic map (
-      words_to_send => 16,
+      words_to_send => 32,
       max_address   => x"10800000",
       head          => x"aaaa",
       tail          => x"5555"
