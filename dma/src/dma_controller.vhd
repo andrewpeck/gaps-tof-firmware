@@ -153,7 +153,7 @@ architecture Behavioral of dma_controller is
       rst           : in  std_logic;
       wr_clk        : in  std_logic;
       rd_clk        : in  std_logic;
-      din           : in  std_logic_vector(31 downto 0);
+      din           : in  std_logic_vector(15 downto 0);
       wr_en         : in  std_logic;
       rd_en         : in  std_logic;
       dout          : out std_logic_vector(31 downto 0);
