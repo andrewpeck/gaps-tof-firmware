@@ -29,7 +29,7 @@ entity dma_controller is
     CLK_IN     : in  std_logic;
     CLK_AXI    : in  std_logic;
     RST_IN     : in  std_logic;
-    fifo_in    : in  std_logic_vector(31 downto 0);
+    fifo_in    : in  std_logic_vector(15 downto 0);
     fifo_wr_en : in  std_logic;
     fifo_full  : out std_logic;
     
