@@ -246,24 +246,20 @@ architecture Behavioral of dma_controller is
   signal s2mm_cmd_tdata   : std_logic_vector(71 downto 0);
 
   --data port
-  signal s2mm_tdata_r1    : std_logic_vector(31 downto 0);
-  signal s2mm_tvalid_r1   : std_logic; 
-  signal s2mm_tlast_r1    : std_logic; 
+  signal s2mm_tdata    : std_logic_vector(31 downto 0);
+  signal s2mm_tkeep    : std_logic_vector(3 downto 0);
+  signal s2mm_tlast    : std_logic;
+  signal s2mm_tlast_r1 : std_logic;
+  signal s2mm_tlast_r2 : std_logic;
+  signal s2mm_tvalid   : std_logic;
+  signal s2mm_tready   : std_logic;
   
-  signal s2mm_tkeep       : std_logic_vector(3 downto 0);
-  signal s2mm_tready      : std_logic;
-
-  signal s2mm_tdata_r2    : std_logic_vector(31 downto 0);
-  signal s2mm_tvalid_r2   : std_logic; 
-  signal s2mm_tlast_r2    : std_logic; 
-
   signal btt       : std_logic_vector(22 downto 0);
   signal saddr     : std_logic_vector(31 downto 0);
   signal data_type : std_logic;
 
   signal init_cmd : std_logic;
-  signal fifo_valid_r1 : std_logic := '0';
-
+  
   ---
   signal delay_counter   : integer range 0 to 21 := 0;
   signal initial_counter : integer;
