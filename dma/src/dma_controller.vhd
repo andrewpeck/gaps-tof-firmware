@@ -229,7 +229,7 @@ architecture Behavioral of dma_controller is
 
   --fifo signals
   signal fifo_out         : std_logic_vector(31 downto 0);
-  signal fifo_count       : std_logic_vector(9 downto 0);
+  signal fifo_count       : std_logic_vector(8 downto 0);
   signal fifo_rd_en       : std_logic;
   signal fifo_out_valid   : std_logic;
   signal wfifo_full       : std_logic;
