@@ -215,23 +215,6 @@ architecture Behavioral of dma_controller is
       probe21 : in std_logic_vector(31 downto 0)
       );
   end component;
-  
-    component converter_16b_to_32b is 
-      generic (
-        dwidth_i    : integer := 16;
-        dwidth_o    : integer := 32
-      );
-      port (
-        CLK_IN     : in  std_logic;
-        RST_IN     : in  std_logic;
-        d_i        : in  std_logic_vector(dwidth_i-1 downto 0);
-        wr_i       : in  std_logic;
-        d_last_i   : in  std_logic;
-        d_o        : out std_logic_vector(dwidth_o-1 downto 0);
-        wr_o       : out std_logic;
-        d_last_o   : out  std_logic
-        );
-    end component;
 
   type cmd_state  is (IDLE, SET, DONE);
   type data_state is (IDLE, ASSERT_CMD, DELAY0, READ_FIFO, DONE, DELAY1,CLEAR_MEM,CONTINUE_CLEAR);
