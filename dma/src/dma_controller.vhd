@@ -180,7 +180,7 @@ architecture Behavioral of dma_controller is
       full          : out std_logic;
       empty         : out std_logic;
       valid         : out std_logic;
-      rd_data_count : out std_logic_vector(9 downto 0);
+      rd_data_count : out std_logic_vector(8 downto 0);
       prog_full     : out std_logic;
       prog_empty    : out std_logic;
       wr_rst_busy   : out std_logic;
