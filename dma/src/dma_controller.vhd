@@ -286,7 +286,7 @@ architecture Behavioral of dma_controller is
   signal mem_buff_size     : unsigned(31 downto 0) := to_unsigned(ram_buff_size, 32);
    
 signal daq_status_empty   : std_logic := '0';
-signal status_fifo_count  : std_logic_vector(9 downto 0);
+signal status_fifo_count  : std_logic_vector(8 downto 0);
 signal status_fifo_dout   : std_logic := '0';
 signal status_fifo_valid  : std_logic := '0';
 signal status_fifo_full   : std_logic := '0';
