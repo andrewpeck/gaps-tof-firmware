@@ -17,9 +17,8 @@ entity dma_controller is
   generic (
     C_DEBUG                   : boolean                        := false;
     words_to_send             : integer                        := 16;
+    -- NOTE: words_to_send MUST NOT EXCEED MaxBurst in DataMover core (u1: axis2aximm)!
     ram_buff_size             : integer                        := 67108864;
-    -- NOTE: data_mover_max_burst_size MUST be synchronized with DataMover core (u1: axis2aximm)!
-    data_mover_max_burst_size : integer                        := 16; 
     MAX_ADDRESS               : std_logic_vector(31 downto 0)  := x"1F900000";
     START_ADDRESS             : std_logic_vector(31 downto 0)  := x"1B900000";
     HEAD                      : std_logic_vector(15 downto 0)  := x"AAAA";
@@ -321,7 +320,7 @@ begin
   data_type <= '1';
 
   --bytes to transfer
-  btt <= std_logic_vector(to_signed(data_mover_max_burst_size * 4, 23));
+  btt <= std_logic_vector(to_signed(words_to_send * 4, 23));
 
   --s2mm command signals
   s2mm_cmd_tdata(71 downto 68) <= (others => '0');
@@ -334,7 +333,7 @@ begin
   --s2mm command valid assertion
   s2mm_cmd_tvalid <= '1' when (s2mm_data_state = ASSERT_CMD) else '0';
 
-  s2mm_tvalid_r1 <= fifo_valid_r1 or clear_valid;  
+  s2mm_tvalid <= fifo_out_valid or clear_valid;  
   s2mm_tkeep  <= x"F";
 
   --------------------------------------------------------------------------------------------
@@ -396,21 +395,7 @@ begin
           end if;
         end if;
       end process;
-      
-      
-    u2: converter_16b_to_32b 
-      port map( 
-        CLK_IN    => CLK_AXI,
-        RST_IN    => aresetn,
-        d_i       => s2mm_tdata_r1(15 downto 0),
-        d_last_i  => s2mm_tlast_r1,
-        wr_i      => s2mm_tvalid_r1,
-        d_o       => s2mm_tdata_r2,
-        wr_o      => s2mm_tvalid_r2,
-        d_last_o  => s2mm_tlast_r2
-        ); 
-     
-     
+
   debug : if (C_DEBUG) generate
     ila_s2mm_inst : ila_s2mm
       port map(
@@ -418,10 +403,10 @@ begin
         probe0  => s2mm_cmd_tvalid,
         probe1  => s2mm_cmd_tready,
         probe2  => s2mm_cmd_tdata,
-        probe3  => s2mm_tdata_r1,
+        probe3  => s2mm_tdata,
         probe4  => s2mm_tkeep,
-        probe5  => s2mm_tlast_r1,
-        probe6  => s2mm_tvalid_r1,
+        probe5  => s2mm_tlast,
+        probe6  => s2mm_tvalid,
         probe7  => s2mm_tready,
         probe8  => valid_fifo_data,
         probe9  => fifo_rd_en,
@@ -436,15 +421,9 @@ begin
         probe18 => m_axis_s2mm_sts_tdata_reg,
         probe19 => m_axis_s2mm_sts_tkeep_reg(0),
         probe20 => m_axis_s2mm_sts_tlast_Reg,
-        probe21 => s2mm_tdata_r2
+        probe21 => s2mm_tdata
         );
   end generate;
-
-
-
-
-
-
 
  
   --------------------------------------------------------------------------------------------
@@ -535,8 +514,8 @@ process(CLK_AXI)
         s2mm_data_state         <= IDLE;
         delay_counter           <= 0;
         fifo_rd_en              <= '0';
-        s2mm_tlast_r1           <= '0';
-        s2mm_tdata_r1           <= (others => '0');
+        s2mm_tlast              <= '0';
+        s2mm_tdata              <= (others => '0');
         
         clear_mode <= '0';
       else
@@ -572,29 +551,19 @@ process(CLK_AXI)
                 end if;
 
           when READ_FIFO =>
-                fifo_valid_r1 <= fifo_out_valid;
-                if(fifo_out_valid = '1') then
-                  valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
-                  s2mm_tdata_r1   <= fifo_out;
-                else
-                  valid_fifo_data <=  valid_fifo_data;
-                  s2mm_tdata_r1   <= s2mm_tdata_r1;
-                end if;
-              
-                if(unsigned(valid_fifo_data) >= words_to_send) then 
-                    valid_fifo_data <= (others => '0');
-                    s2mm_tlast_r1   <= '0'; 
-                    s2mm_data_state <= DONE;
-                elsif(unsigned(valid_fifo_data) = words_to_send - 1) then
-                    valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1); 
-                    s2mm_tlast_r1   <= '1';    
-                elsif(unsigned(valid_fifo_data) = words_to_send - 2) then
-                    fifo_rd_en      <= '0'; 
-                else  
-                    fifo_rd_en      <= '1';
-                end if;
-                
-                
+          
+            if(unsigned(valid_fifo_data) >= words_to_send) then
+              s2mm_tdata      <= fifo_out;
+              valid_fifo_data <= (others => '0');
+              s2mm_tlast      <= '1';
+              fifo_rd_en      <= '0';
+              s2mm_data_state <= DONE;
+            else
+              valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
+              s2mm_tdata      <= fifo_out;
+              fifo_rd_en      <= '1';
+            end if;
+
          ------------------------------------------------------------------------------
          -- Clear Memory States
          ------------------------------------------------------------------------------
@@ -610,7 +579,7 @@ process(CLK_AXI)
                     s2mm_tlast_r1      <= '1'; 
                  else
                     valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
-                    s2mm_tdata_r1   <= x"00000000";
+                    s2mm_tdata   <= x"00000000";
                     clear_valid     <= '1';
                 end if; 
         
@@ -626,7 +595,7 @@ process(CLK_AXI)
                 end if;
              
           when DONE =>
-                s2mm_tlast_r1   <= '0';
+                s2mm_tlast   <= '0';
                 s2mm_data_state <= IDLE;
           when others => s2mm_data_state <= IDLE;
         end case;
@@ -649,10 +618,10 @@ process(CLK_AXI)
       s_axis_s2mm_cmd_tready => s2mm_cmd_tready,
       s_axis_s2mm_cmd_tdata  => s2mm_cmd_tdata,
       --s2mm data
-      s_axis_s2mm_tdata      => s2mm_tdata_r2,
+      s_axis_s2mm_tdata      => s2mm_tdata,
       s_axis_s2mm_tkeep      => s2mm_tkeep,
-      s_axis_s2mm_tlast      => s2mm_tlast_r2,
-      s_axis_s2mm_tvalid     => s2mm_tvalid_r2,
+      s_axis_s2mm_tlast      => s2mm_tlast,
+      s_axis_s2mm_tvalid     => s2mm_tvalid,
       s_axis_s2mm_tready     => s2mm_tready,
 
       m_axis_s2mm_cmdsts_awclk   => CLK_AXI,
