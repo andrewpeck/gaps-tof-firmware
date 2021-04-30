@@ -280,7 +280,7 @@ begin
 
   dma_controller_inst : entity dma.dma_controller
     generic map (
-      words_to_send => 32,
+      words_to_send => 16,
       max_address   => x"10800000",
       head          => x"aaaa",
       tail          => x"5555"
@@ -294,7 +294,7 @@ begin
       clk_in     => fifo_clock_in,
       clk_axi    => dma_axi_aclk,
       rst_in     => dma_reset_synced,
-      fifo_in    => x"0000" & fifo_data_in,  -- TODO: this is really inefficient to zero pad..
+      fifo_in    => fifo_data_in,
       fifo_wr_en => fifo_data_wen,
       fifo_full  => open,                    -- TODO: connect to monitor
       daq_busy_in => daq_busy_in,
