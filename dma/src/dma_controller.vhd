@@ -16,7 +16,7 @@ use UNISIM.VComponents.all;
 entity dma_controller is
   generic (
     C_DEBUG                   : boolean                        := false;
-    words_to_send             : integer                        := 32;
+    words_to_send             : integer                        := 16;
     ram_buff_size             : integer                        := 67108864;
     -- NOTE: data_mover_max_burst_size MUST be synchronized with DataMover core (u1: axis2aximm)!
     data_mover_max_burst_size : integer                        := 16; 
