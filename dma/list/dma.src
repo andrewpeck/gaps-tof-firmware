@@ -8,4 +8,3 @@ ip/fifo_generator_1/fifo_generator_1.xci
 
 # DMA Files
 dma/src/dma_controller.vhd
-dma/src/converter_16b_to_32b.vhd
