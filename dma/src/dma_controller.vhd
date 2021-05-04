@@ -15,7 +15,7 @@ use UNISIM.VComponents.all;
 
 entity dma_controller is
   generic (
-    C_DEBUG                   : boolean                        := false;
+    C_DEBUG                   : boolean                        := true;
     words_to_send             : integer                        := 16;
     -- NOTE: words_to_send MUST NOT EXCEED MaxBurst in DataMover core (u1: axis2aximm)!
     ram_buff_size             : integer                        := 67108864;
@@ -211,7 +211,7 @@ architecture Behavioral of dma_controller is
       probe18 : in std_logic_vector(7 downto 0);
       probe19 : in std_logic;
       probe20 : in std_logic;
-      probe21 : in std_logic_vector(31 downto 0)
+      probe21 : in std_logic_vector(15 downto 0)
       );
   end component;
 
@@ -421,7 +421,7 @@ begin
         probe18 => m_axis_s2mm_sts_tdata_reg,
         probe19 => m_axis_s2mm_sts_tkeep_reg(0),
         probe20 => m_axis_s2mm_sts_tlast_Reg,
-        probe21 => s2mm_tdata
+        probe21 => fifo_in
         );
   end generate;
 
@@ -551,16 +551,16 @@ process(CLK_AXI)
                 end if;
 
           when READ_FIFO =>
+          -- Reorder words, otherwise will be swapped by fifo
+          s2mm_tdata       <= fifo_out(15 downto 0) & fifo_out(31 downto 16);
           
             if(unsigned(valid_fifo_data) >= words_to_send) then
-              s2mm_tdata      <= fifo_out;
               valid_fifo_data <= (others => '0');
               s2mm_tlast      <= '1';
               fifo_rd_en      <= '0';
               s2mm_data_state <= DONE;
             else
               valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
-              s2mm_tdata      <= fifo_out;
               fifo_rd_en      <= '1';
             end if;
 
