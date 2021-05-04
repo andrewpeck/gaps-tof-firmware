@@ -464,7 +464,7 @@ process(CLK_AXI)
     if(rising_edge(CLK_AXI)) then
       if RST_IN = RESET_ACTIVE or reset_sys = '1' then
         packet_sent <= (others => '0');
-      elsif (fifo_out(15 downto 0) = TAIL)then
+      elsif ( fifo_rd_en = '1' and (fifo_out(31 downto 16) = TAIL or fifo_out(15 downto 0) = TAIL) ) then
         packet_sent <= std_logic_vector(unsigned(packet_sent) + 1);
       else
         packet_sent <= packet_sent;
