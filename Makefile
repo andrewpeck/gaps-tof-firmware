@@ -42,5 +42,8 @@ synth:
 impl:
 	$(TIMECMD) Hog/LaunchWorkflow.sh -impl_only readout_board $(COLORIZE)
 
+fpgaman_bin:
+	cd util; python3 create_fpga_manager_bin.py
+
 clean:
 	rm -rf VivadoProject/
