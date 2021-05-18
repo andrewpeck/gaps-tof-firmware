@@ -49,6 +49,8 @@ entity ps_interface is
     fifo_data_in  : in std_logic_vector (15 downto 0);
     fifo_clock_in : in std_logic;
     fifo_data_wen : in std_logic;
+    
+    daq_busy_in   : in std_logic;
 
     clk33          : in std_logic;
     pl_mmcm_locked : in std_logic;
@@ -304,14 +306,16 @@ begin
 
       packet_sent => packet_counter_xdma,
       reset_sys   => dma_control_reset_synced,
+      clear_ps_mem => '0', -- TODO: create and connect to ipbus register 
 
       clk_in     => fifo_clock_in,
       clk_axi    => dma_axi_aclk,
       rst_in     => dma_reset_synced,
-      fifo_in    => x"0000" & fifo_data_in,  -- TODO: this is really inefficient to zero pad..
+      fifo_in    => fifo_data_in,
       fifo_wr_en => fifo_data_wen,
       fifo_full  => open,                    -- TODO: connect to monitor
-
+      daq_busy_in => daq_busy_in,
+      
       m_axi_s2mm_awid    => dma_hp_axi_awid (3 downto 0),
       m_axi_s2mm_awaddr  => dma_hp_axi_awaddr,
       m_axi_s2mm_awlen   => dma_hp_axi_awlen (7 downto 0),
