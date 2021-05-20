@@ -85,6 +85,7 @@ architecture Behavioral of top_readout_board is
   signal locked : std_logic;
 
   signal reset : std_logic;
+  signal dma_reset  : std_logic := '0';
 
   signal drs_data         : std_logic_vector (13 downto 0);
   signal drs_data_valid   : std_logic;
