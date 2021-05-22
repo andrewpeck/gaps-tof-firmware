@@ -20,7 +20,7 @@ entity dma_controller is
     -- NOTE: words_to_send MUST NOT EXCEED MaxBurst in DataMover core (u1: axis2aximm)!
     ram_buff_size             : integer                        := 67108864;
     MAX_ADDRESS               : std_logic_vector(31 downto 0)  := x"1F900000";
-    START_ADDRESS             : std_logic_vector(31 downto 0)  := x"1B900000";
+    START_ADDRESS             : std_logic_vector(31 downto 0)  := x"18000000";
     HEAD                      : std_logic_vector(15 downto 0)  := x"AAAA";
     TAIL                      : std_logic_vector(15 downto 0)  := x"5555"
     );
@@ -280,7 +280,8 @@ architecture Behavioral of dma_controller is
   signal s2mm_err_reg               : std_logic := '0';
 
   signal reset_pointer_address      : std_logic := '0';
-  
+  signal reset_pointer_address_r2      : std_logic := '0';
+
   --Circular buffer wrap signals
   signal mem_bytes_written : unsigned(31 downto 0) := (others => '0');
   signal mem_buff_size     : unsigned(31 downto 0) := to_unsigned(ram_buff_size, 32);
@@ -308,6 +309,8 @@ signal daq_status_r5    : std_logic := '0';
 signal clear_r_edge_r1  : std_logic := '0';
 signal clear_r_edge_r2  : std_logic := '0';
 signal clear_pulse_r1   : std_logic := '0'; 
+
+signal saddress_mux     : std_logic_vector(31 downto 0) := START_ADDRESS;
  
 begin
 
@@ -480,21 +483,35 @@ process(CLK_AXI)
     if(rising_edge(CLK_AXI)) then
       if aresetn = '0' then
         reset_pointer_address <= '0';
-      elsif (daq_status_r3 = '0' and mem_bytes_written > mem_buff_size) then
-        reset_pointer_address <= '1'; 
-      elsif ((clear_pulse_r1 = '1' and s2mm_data_state = IDLE ) or (clear_mode = '1' and mem_bytes_written > mem_buff_size)) then
-        reset_pointer_address <= '1';
+        saddress_mux          <= x"1800_0000";
+        -- mem_bytes_written > 66584576 (63.5 MB) and DAQ_BUSY = 0 jump to 0x1C00 0000
       else
-        reset_pointer_address <= '0';
-      end if;
+      
+          if (daq_status_r3 = '0' and mem_bytes_written > mem_buff_size) then
+            reset_pointer_address <= '1';  
+            --jump to 0x1C00_0000
+             if(saddress_mux = x"1800_0000")then
+               saddress_mux <= x"1C00_0000"; 
+             else
+                saddress_mux <= x"1800_0000"; 
+             end if;
+          elsif ((clear_pulse_r1 = '1' and s2mm_data_state = IDLE ) or (clear_mode = '1' and mem_bytes_written > mem_buff_size)) then
+            reset_pointer_address <= '1'; 
+          else
+            reset_pointer_address <= '0';
+          end if; 
+          
+          reset_pointer_address_r2 <= reset_pointer_address; 
+          
+       end if;
     end if;
   end process;
 
   address_handler : process(CLK_AXI)
   begin
     if(rising_edge(CLK_AXI)) then
-      if aresetn = '0' or reset_pointer_address = '1' then
-        saddr <= START_ADDRESS;
+      if aresetn = '0' or reset_pointer_address_r2 = '1' then
+        saddr <= saddress_mux;
         mem_bytes_written <= (others => '0');
       elsif (s2mm_addr_req_posted_reg = '1') then
         saddr <= std_logic_vector(unsigned(saddr) + unsigned(btt));
@@ -585,7 +602,7 @@ process(CLK_AXI)
                 end if; 
         
           when CONTINUE_CLEAR => 
-                if (reset_pointer_address = '1') then
+                if (reset_pointer_address_r2 = '1') then
                     s2mm_data_state <= IDLE; 
                     clear_mode      <= '0';
                 elsif(clear_mode = '1')then 
