@@ -1,0 +1,23 @@
+/include/ "system-conf.dtsi"
+/ {
+	model = "UCLA DRS4";
+	chosen {
+		bootargs = "console=ttyPS0,115200 earlycon mem=380M root=/dev/mmcblk0p2 rw rootwait";
+	};
+};
+
+&sdhci0 {
+	status = "okay";
+	max-frequency = <50000000>;
+	no-1-8-v;
+	disable-wp;
+};
+
+&amba {
+	i2c@e0004000 {
+		clock-frequency = <100000>;
+    };
+};
+
+#include "zynq_enclustra_common.dtsi"
+#include "zynq_enclustra_mars_zx2.dtsi"
