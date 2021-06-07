@@ -40,3 +40,20 @@
 
 };
 
+&i2c0 {
+	status = "okay";
+	clock-frequency = <100000>;
+
+	atsha204a@64 {
+		compatible = "atmel,atsha204a", "atmel,atsha204-i2c";
+		reg = <0x64>;
+	};
+};
+
+&uart0 {
+	u-boot,dm-pre-reloc;
+	status = "okay";
+	cts-override ;
+	device_type = "serial";
+	port-number = <0>;
+};
