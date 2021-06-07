@@ -17,7 +17,9 @@ readout-firmware/
   ├── dma      : Files for DMA driver
   ├── drs      : Files for DRS4 control
   ├── xdc      : Xilinx XDC constraint files
-  └── Projects : Auto-generated directory containing the Vivado project
+  ├── Projects : Auto-generated directory containing the Vivado project
+  ├── util     : Helper scripts for specialized build outputs
+  └── plnx     : PetaLinux source files and documentation
 
 ```
 
