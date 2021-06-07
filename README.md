@@ -50,6 +50,14 @@ A convenient document describing the address table can be seen at:
 Building the Firmware
 ---------------------
 
+### Special note for 2020.1
+ * Remove the following line (29) in `Top/readout_board/readout_board.tcl`:
+```
+STEPS.SYNTH_DESIGN.ARGS.FANOUT_LIMIT 500 \
+```
+ * Hog cannot be used to export hardware `.xsa`. After bitsream is generated use these steps in Vivado
+   * Open BD or Implemented Design: File->Export->Export Hardware (Platform type=Fixed), next-> Check include bitstream, next->set file name/path->finish 
+
 This firmware is using the HOG framework as a build system:
 
 -   HOG Documentation: <http://hog-user-docs.web.cern.ch>
