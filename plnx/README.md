@@ -7,7 +7,7 @@
 ``` {.example}
 plnx/
   ├── dtsi                : Deprecated, old dts config
-  ├── enclustra           : Original source files for Enclustra BSP
+  ├── enclustra           : Original source files for Enclustra Mars ZX2 BSP
   ├── project_spec_config : Deprecated, old plnx config
   └── ucla/project-spec   : Source for UCLA DRS4 PetaLinux build
 ```
@@ -62,3 +62,7 @@ petalinux-package --boot --fsbl images/linux/zynq_fsbl.elf --fpga images/linux/s
    * `BOOT.BIN`
    * `boot.scr`
    * `image.ub`
+
+## TODO
+- [ ] Create unified build approach: start with Enclustra BSP then auto patch UCLA customizations
+
