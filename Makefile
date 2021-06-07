@@ -46,4 +46,4 @@ fpgaman_bin:
 	cd util; python3 create_fpga_manager_bin.py
 
 clean:
-	rm -rf VivadoProject/
+	rm -rf Projects/
