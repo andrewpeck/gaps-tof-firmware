@@ -484,17 +484,17 @@ process(CLK_AXI)
     if(rising_edge(CLK_AXI)) then
       if aresetn = '0' then
         reset_pointer_address <= '0';
-        saddress_mux          <= x"1800_0000";
+        saddress_mux          <= START_ADDRESS;
         -- mem_bytes_written > 66584576 (63.5 MB) and DAQ_BUSY = 0 jump to 0x1C00 0000
       else
       
           if (daq_status_r3 = '0' and mem_bytes_written > mem_buff_size) then
             reset_pointer_address <= '1';  
             --jump to 0x1C00_0000
-             if(saddress_mux = x"1800_0000")then
-               saddress_mux <= x"1C00_0000"; 
+             if(saddress_mux = START_ADDRESS)then
+               saddress_mux <= TOP_HALF_ADDRESS; 
              else
-                saddress_mux <= x"1800_0000"; 
+                saddress_mux <= START_ADDRESS; 
              end if;
           elsif ((clear_pulse_r1 = '1' and s2mm_data_state = IDLE ) or (clear_mode = '1' and mem_bytes_written > mem_buff_size)) then
             reset_pointer_address <= '1'; 
