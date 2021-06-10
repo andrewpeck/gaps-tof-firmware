@@ -2,7 +2,7 @@
 / {
 	model = "Enclustra MA-ZX2-10-2I-D9 SOM";
 	chosen {
-		bootargs = "console=ttyPS0,115200 earlycon memmap=0@380M root=/dev/mmcblk0p2 rw rootwait";
+		bootargs = "console=ttyPS0,115200 earlycon vmalloc=512M root=/dev/mmcblk0p2 rw rootwait";
 	};
 };
 
