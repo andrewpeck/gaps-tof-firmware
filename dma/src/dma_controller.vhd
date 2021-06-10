@@ -485,12 +485,12 @@ process(CLK_AXI)
       if aresetn = '0' then
         reset_pointer_address <= '0';
         saddress_mux          <= START_ADDRESS;
-        -- mem_bytes_written > 66584576 (63.5 MB) and DAQ_BUSY = 0 jump to 0x1C00 0000
+        -- mem_bytes_written > 66584576 (63.5 MB) and DAQ_BUSY = 0 jump to top half of ring -> TOP_HALF_ADDRESS
       else
       
           if (daq_status_r3 = '0' and mem_bytes_written > mem_buff_size) then
             reset_pointer_address <= '1';  
-            --jump to 0x1C00_0000
+            --jump to top half of ring
              if(saddress_mux = START_ADDRESS)then
                saddress_mux <= TOP_HALF_ADDRESS; 
              else
