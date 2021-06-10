@@ -4,6 +4,15 @@
 	chosen {
 		bootargs = "console=ttyPS0,115200 earlycon vmalloc=512M root=/dev/mmcblk0p2 rw rootwait";
 	};
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		fpga_reserved1: rambuffer@0x4000000 {
+			reg = <0x4000000 0x8400000>;
+		};
+	};
 };
 
 &sdhci0 {
