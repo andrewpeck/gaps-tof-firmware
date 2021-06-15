@@ -15,10 +15,13 @@ use UNISIM.VComponents.all;
 
 entity dma_controller is
   generic (
-    C_DEBUG                   : boolean                        := false;
+    C_DEBUG                   : boolean                        := true;
     words_to_send             : integer                        := 16;
     -- NOTE: words_to_send MUST NOT EXCEED MaxBurst in DataMover core (u1: axis2aximm)!
-    ram_buff_size             : integer                        := 67108864;
+    --ram_buff_size             : integer                        := 67108864;
+    
+    ram_buff_size             : integer                        := 4096;
+    
     MAX_ADDRESS               : std_logic_vector(31 downto 0)  := x"1F900000";
     START_ADDRESS             : std_logic_vector(31 downto 0)  := x"18000000";
     HEAD                      : std_logic_vector(15 downto 0)  := x"AAAA";
@@ -252,6 +255,7 @@ architecture Behavioral of dma_controller is
   signal s2mm_tlast_r1 : std_logic;
   signal s2mm_tlast_r2 : std_logic;
   signal s2mm_tvalid   : std_logic;
+  signal s2mm_tvalid_r1 : std_logic;
   signal s2mm_tready   : std_logic;
   
   signal btt       : std_logic_vector(22 downto 0);
@@ -337,7 +341,7 @@ begin
   --s2mm command valid assertion
   s2mm_cmd_tvalid <= '1' when (s2mm_data_state = ASSERT_CMD) else '0';
 
-  s2mm_tvalid <= fifo_out_valid or clear_valid;  
+  s2mm_tvalid <= s2mm_tvalid_r1 or clear_valid;  
   s2mm_tkeep  <= x"F";
 
   --------------------------------------------------------------------------------------------
@@ -571,14 +575,25 @@ process(CLK_AXI)
           when READ_FIFO =>
           -- Reorder words, otherwise will be swapped by fifo
           s2mm_tdata       <= fifo_out(15 downto 0) & fifo_out(31 downto 16);
+          s2mm_tvalid_r1   <= fifo_out_valid;
           
             if(unsigned(valid_fifo_data) >= words_to_send) then
               valid_fifo_data <= (others => '0');
-              s2mm_tlast      <= '1';
+              s2mm_tlast      <= '0';
               fifo_rd_en      <= '0';
+              s2mm_tvalid_r1   <= '0';
               s2mm_data_state <= DONE;
+            elsif(unsigned(valid_fifo_data) >= words_to_send - 1) then
+                    valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
+                    fifo_rd_en <= '0';
+                     s2mm_tlast      <= '1';
+            elsif(unsigned(valid_fifo_data) >= words_to_send - 2) then
+                fifo_rd_en <= '0';
+                valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
+            elsif(fifo_out_valid = '1') then
+                valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
             else
-              valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
+              valid_fifo_data <= valid_fifo_data;
               fifo_rd_en      <= '1';
             end if;
 
@@ -594,7 +609,10 @@ process(CLK_AXI)
                     s2mm_data_state <= CONTINUE_CLEAR;      
                 elsif(unsigned(valid_fifo_data) >= words_to_send - 1) then
                     valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
-                    s2mm_tlast_r1      <= '1'; 
+                    s2mm_tlast_r1      <= '0'; 
+                elsif(unsigned(valid_fifo_data) >= words_to_send - 2) then
+                    valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
+                    s2mm_tlast_r1      <= '1';     
                  else
                     valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
                     s2mm_tdata   <= x"00000000";
