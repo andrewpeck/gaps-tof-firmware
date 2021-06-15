@@ -19,13 +19,6 @@ entity dma_controller is
     words_to_send             : integer                        := 16;
     -- NOTE: words_to_send MUST NOT EXCEED MaxBurst in DataMover core (u1: axis2aximm)!
  
-    --ram_buff_size             : integer                        := 67108864;
-    
-    ram_buff_size             : integer                        := 4096;
-    
-    MAX_ADDRESS               : std_logic_vector(31 downto 0)  := x"1F900000";
-    START_ADDRESS             : std_logic_vector(31 downto 0)  := x"18000000";
- 
     -- TODO: make START_ADDRESS, TOP_HALF_ADDRESS programmable from userspace
     ram_buff_size             : integer                        := 66584576;
     START_ADDRESS             : std_logic_vector(31 downto 0)  := x"04100000";
