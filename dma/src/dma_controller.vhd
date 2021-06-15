@@ -600,19 +600,17 @@ process(CLK_AXI)
          ------------------------------------------------------------------------------
          -- Clear Memory States
          ------------------------------------------------------------------------------
+	  --
           when CLEAR_MEM => 
          
                 if(unsigned(valid_fifo_data) >= words_to_send) then
                     valid_fifo_data <= (others => '0');
-                    s2mm_tlast_r1   <= '0';
+                    s2mm_tlast   <= '0';
                     clear_valid     <= '0';
-                    s2mm_data_state <= CONTINUE_CLEAR;      
+                    s2mm_data_state <= CONTINUE_CLEAR;       
                 elsif(unsigned(valid_fifo_data) >= words_to_send - 1) then
                     valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
-                    s2mm_tlast_r1      <= '0'; 
-                elsif(unsigned(valid_fifo_data) >= words_to_send - 2) then
-                    valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
-                    s2mm_tlast_r1      <= '1';     
+                    s2mm_tlast      <= '1';     
                  else
                     valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
                     s2mm_tdata   <= x"00000000";
