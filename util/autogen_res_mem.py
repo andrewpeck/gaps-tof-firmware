@@ -3,13 +3,11 @@ Author: Sean Quinn (spq@ucla.edu)
 autogen_res_mem.py (c) UCLA 2021
 Desc: Autopopulate start address in dma_controller.vhd from device tree
 Created:  2021-06-15T23:13:01.077Z
-Modified: 2021-06-17T21:14:20.418Z
+Modified: 2021-06-17T21:33:22.435Z
 """
 
-from enum import auto
 import re
 import sys
-import os
 
 class bcolors:
     HEADER = '\033[95m'
