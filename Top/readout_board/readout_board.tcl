@@ -26,7 +26,6 @@ set PROPERTIES [dict create \
   synth_1 [dict create \
                 STEPS.SYNTH_DESIGN.ARGS.ASSERT true \
                 STEPS.SYNTH_DESIGN.ARGS.RETIMING true \
-                STEPS.SYNTH_DESIGN.ARGS.FANOUT_LIMIT 500 \
               ] \
   impl_1 [dict create \
               STEPS.PHYS_OPT_DESIGN.IS_ENABLED true \
