@@ -18,10 +18,17 @@ readout-firmware/
   ├── drs      : Files for DRS4 control
   ├── xdc      : Xilinx XDC constraint files
   ├── Projects : Auto-generated directory containing the Vivado project
-  ├── util     : Helper scripts for specialized build outputs
-  └── plnx     : PetaLinux source files and documentation
-
+  ├── util     : Helper scripts for build system
+  └── plnx     : PetaLinux source files and docs
 ```
+
+## Software dependencies
+ * Xilinx tools
+   * Vivado 2020.1
+ * Build system
+   * git
+   * make
+   * python3.6+ 
 
 Register Access
 ---------------
@@ -50,11 +57,8 @@ A convenient document describing the address table can be seen at:
 Building the Firmware
 ---------------------
 
-### Special note for 2020.1
- * Remove the following line (29) in `Top/readout_board/readout_board.tcl`:
-```
-STEPS.SYNTH_DESIGN.ARGS.FANOUT_LIMIT 500 \
-```
+### Special note for 2020.1 and hardware generation
+
  * Hog cannot be used to export hardware `.xsa`. After bitsream is generated use these steps in Vivado
    * Open BD or Implemented Design: File->Export->Export Hardware (Platform type=Fixed), next-> Check include bitstream, next->set file name/path->finish 
 
