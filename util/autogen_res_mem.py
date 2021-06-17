@@ -3,7 +3,7 @@ Author: Sean Quinn (spq@ucla.edu)
 autogen_res_mem.py (c) UCLA 2021
 Desc: Autopopulate start address in dma_controller.vhd from device tree
 Created:  2021-06-15T23:13:01.077Z
-Modified: 2021-06-17T21:33:22.435Z
+Modified: 2021-06-17T21:37:31.048Z
 """
 
 import re
@@ -106,7 +106,7 @@ for i in range(len(possible_sizes)):
   size_min = possible_sizes[i][0]
   size_max = possible_sizes[i][1]
   if buff_size_int >= size_min and buff_size_int <= size_max:
-    size_str = f'"{size_list[i]:d}"'
+    size_str = f"{size_list[i]:d}"
     # print("size_str: " + size_str)
     top_half_str = f'"0x{top_half_list[i]:08x}"'
     # print("top_half_str: " + top_half_str)
@@ -134,7 +134,7 @@ top_half_str = 'x"' + top_half_str
 
 
 # Final checks
-if not re.match(r'"\d{5,20}"', size_str):
+if not re.match(r'\d{5,20}', size_str):
   print(f"autogen_res_mem.py [{bcolors.FAIL}ERROR{bcolors.ENDC}]: (Sanity checking) Problem with size_str string. Abort.")
   print(f'autogen_res_mem.py [{bcolors.OKCYAN}INFO{bcolors.ENDC}]: (Sanity checking) Must be of form "123456"')
   sys.exit()
