@@ -328,7 +328,7 @@ begin
   data_type <= '1';
 
   --bytes to transfer
-  btt <= std_logic_vector(to_signed(words_to_send * 4, 23));
+  btt <= std_logic_vector(to_unsigned(words_to_send * 4, 23));
 
   --s2mm command signals
   s2mm_cmd_tdata(71 downto 68) <= (others => '0');
