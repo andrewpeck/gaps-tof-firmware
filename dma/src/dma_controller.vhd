@@ -395,7 +395,9 @@ begin
               daq_status_r4 <= '0';
               daq_status_r5 <= '0';
           else
-            daq_status_r1 <= status_fifo_dout;
+            if (status_fifo_valid = '1') then
+                daq_status_r1 <= status_fifo_dout;
+            end if;            
             daq_status_r2 <= daq_status_r1;
             daq_status_r3 <= daq_status_r2;
             daq_status_r4 <= daq_status_r3;
