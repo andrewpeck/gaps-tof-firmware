@@ -328,7 +328,7 @@ begin
   data_type <= '1';
 
   --bytes to transfer
-  btt <= std_logic_vector(to_unsigned(words_to_send * 4, 23));
+  btt <= std_logic_vector(to_unsigned(words_to_send * 4, btt'length));
 
   --s2mm command signals
   s2mm_cmd_tdata(71 downto 68) <= (others => '0');
@@ -585,6 +585,7 @@ process(CLK_AXI)
               fifo_rd_en      <= '0';
               s2mm_tvalid_r1   <= '0';
               s2mm_data_state <= DONE;
+            --XXX: Potential to break things if fifo core is modified (certain options/checkboxes enabled). Hard coded/hand tuned latency workaround?
             elsif(unsigned(valid_fifo_data) >= words_to_send - 1) then
                     valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
                     fifo_rd_en <= '0';
