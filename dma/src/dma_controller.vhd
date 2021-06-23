@@ -17,6 +17,7 @@ entity dma_controller is
   generic (
     C_DEBUG                   : boolean                        := true;
     words_to_send             : integer                        := 16;
+    daq_busy_delay_const      : positive                       := 28;
     -- NOTE: words_to_send MUST NOT EXCEED MaxBurst in DataMover core (u1: axis2aximm)!
  
     -- TODO: make START_ADDRESS, TOP_HALF_ADDRESS programmable from userspace
@@ -314,6 +315,10 @@ signal status_fifo_wr_en  : std_logic := '1';
 signal clear_mode       : std_logic := '0';
 signal clear_ack        : std_logic := '0';
 signal clear_valid      : std_logic := '0';
+-- DAQ busy delay process signals
+signal daq_status_delay_vec : std_ulogic_vector(0 to daq_busy_delay_const - 1);
+signal daq_status_delay_bit : std_logic := '0';
+
 signal daq_status_r1    : std_logic := '0';
 signal daq_status_r2    : std_logic := '0';
 signal daq_status_r3    : std_logic := '0';
@@ -403,26 +408,44 @@ begin
       rd_rst_busy   => rd_status_rst_busy
       );      
 
+    --FIXME: Current behavior shows some latency between DAQ busy deassertion and tail/EOP (end of packet) at data fifo out
+    --Observed to be around ~23 AXI clocks. Use this process to align DAQ busy with data fifo out EOP.
+    --Might not be able to get around this.
      delay_daq_busy : process(CLK_AXI)
      begin
-        if(rising_edge(CLK_AXI))then 
-          if(aresetn = '0') then
-              daq_status_r1 <= '0';
-              daq_status_r2 <= '0';
-              daq_status_r3 <= '0';
-              daq_status_r4 <= '0';
-              daq_status_r5 <= '0';
-          else
-            if (status_fifo_valid = '1') then
-                daq_status_r1 <= (status_fifo_dout(1) or status_fifo_dout(0));
-            end if;            
-            daq_status_r2 <= daq_status_r1;
-            daq_status_r3 <= daq_status_r2;
-            daq_status_r4 <= daq_status_r3;
-            daq_status_r5 <= daq_status_r4;
-          end if;
+        if(rising_edge(CLK_AXI)) then
+            if(aresetn = '0') then
+                daq_status_r1 <= '0';
+                daq_status_delay_vec(daq_busy_delay_const - 1) <= '0';
+            else
+                if (status_fifo_valid = '1') then
+                    daq_status_r1 <= (status_fifo_dout(1) or status_fifo_dout(0));
+                end if;
+                daq_status_delay_vec <= daq_status_r1 & daq_status_delay_vec(0 to daq_busy_delay_const - 2);
+            end if;
         end if;
+-- Previous delay strategy below (cumbersome for more than few clocks)
+--        if(rising_edge(CLK_AXI))then 
+--          if(aresetn = '0') then
+--              daq_status_r1 <= '0';
+--              daq_status_r2 <= '0';
+--              daq_status_r3 <= '0';
+--              daq_status_r4 <= '0';
+--              daq_status_r5 <= '0';
+--          else
+--            if (status_fifo_valid = '1') then
+--                daq_status_r1 <= (status_fifo_dout(1) or status_fifo_dout(0));
+--            end if;            
+--            daq_status_r2 <= daq_status_r1;
+--            daq_status_r3 <= daq_status_r2;
+--            daq_status_r4 <= daq_status_r3;
+--            daq_status_r5 <= daq_status_r4;
+--          end if;
+--        end if;
       end process;
+      
+      --TODO: Replace this signal with daq_status_delay_bit for clarity
+      daq_status_r3 <= daq_status_delay_vec(daq_busy_delay_const - 1);
 
   debug : if (C_DEBUG) generate
     ila_s2mm_inst : ila_s2mm
