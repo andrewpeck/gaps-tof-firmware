@@ -230,7 +230,7 @@ architecture Behavioral of dma_controller is
 
   signal data_counter : std_logic_vector(9 downto 0);
 
-  --fifo signals
+  --data fifo signals
   signal fifo_out         : std_logic_vector(31 downto 0);
   signal fifo_count       : std_logic_vector(8 downto 0);
   signal fifo_rd_en       : std_logic;
@@ -289,7 +289,8 @@ architecture Behavioral of dma_controller is
   --Circular buffer wrap signals
   signal mem_bytes_written : unsigned(31 downto 0) := (others => '0');
   signal mem_buff_size     : unsigned(31 downto 0) := to_unsigned(ram_buff_size, 32);
-   
+
+-- status fifo signals   
 signal daq_status_empty   : std_logic := '0';
 signal status_fifo_count  : std_logic_vector(8 downto 0);
 signal status_fifo_dout   : std_logic_vector(1 downto 0);
@@ -300,6 +301,10 @@ signal status_prog_full   : std_logic := '0';
 signal status_prog_empty  : std_logic := '0';
 signal wr_status_rst_busy : std_logic := '0';
 signal rd_status_rst_busy : std_logic := '0';
+-- always read daq busy signal
+signal status_fifo_rd_en  : std_logic := '1';
+-- always write daq busy signal
+signal status_fifo_wr_en  : std_logic := '1';
 
 signal clear_mode       : std_logic := '0';
 signal clear_ack        : std_logic := '0';
