@@ -585,7 +585,8 @@ process(CLK_AXI)
               fifo_rd_en      <= '0';
               s2mm_tvalid_r1   <= '0';
               s2mm_data_state <= DONE;
-            --XXX: Potential to break things if fifo core is modified (certain options/checkboxes enabled). Hard coded/hand tuned latency workaround?
+            --XXX: Potential to break things if fifo core is modified (certain options/checkboxes enabled). Hard coded/hand tuned latency workaround
+            --XXX: Do not modify Synchronization Stages in FIFO GUI. It will break this.
             elsif(unsigned(valid_fifo_data) >= words_to_send - 1) then
                     valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
                     fifo_rd_en <= '0';
