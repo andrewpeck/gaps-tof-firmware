@@ -179,11 +179,11 @@ architecture Behavioral of dma_controller is
       din           : in  std_logic;
       wr_en         : in  std_logic;
       rd_en         : in  std_logic;
-      dout          : out std_logic;
+      dout          : out std_logic_vector(1 downto 0);
       full          : out std_logic;
       empty         : out std_logic;
       valid         : out std_logic;
-      rd_data_count : out std_logic_vector(8 downto 0);
+      rd_data_count : out std_logic_vector(7 downto 0);
       prog_full     : out std_logic;
       prog_empty    : out std_logic;
       wr_rst_busy   : out std_logic;
@@ -292,7 +292,7 @@ architecture Behavioral of dma_controller is
    
 signal daq_status_empty   : std_logic := '0';
 signal status_fifo_count  : std_logic_vector(8 downto 0);
-signal status_fifo_dout   : std_logic := '0';
+signal status_fifo_dout   : std_logic_vector(1 downto 0);
 signal status_fifo_valid  : std_logic := '0';
 signal status_fifo_full   : std_logic := '0';
 signal status_fifo_empty  : std_logic := '0';
