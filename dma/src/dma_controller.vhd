@@ -215,7 +215,12 @@ architecture Behavioral of dma_controller is
       probe18 : in std_logic_vector(7 downto 0);
       probe19 : in std_logic;
       probe20 : in std_logic;
-      probe21 : in std_logic_vector(15 downto 0)
+      probe21 : in std_logic_vector(15 downto 0);
+      probe22 : in unsigned(31 downto 0);
+      probe23 : in std_logic;
+      probe24 : in std_logic_vector(1 downto 0);
+      probe25 : in std_logic_vector(7 downto 0);
+      probe26 : in std_logic_vector(5 downto 0)
       );
   end component;
 
@@ -320,6 +325,10 @@ signal clear_r_edge_r2  : std_logic := '0';
 signal clear_pulse_r1   : std_logic := '0'; 
 
 signal saddress_mux     : std_logic_vector(31 downto 0) := START_ADDRESS;
+
+--debug
+signal fifo_debug_concat : std_logic_vector(5 downto 0);
+
  
 begin
 
@@ -352,6 +361,10 @@ begin
   --------------------------------------------------------------------------------------------
   -- FIFO Generator
   --------------------------------------------------------------------------------------------
+  
+  -- debug
+  fifo_debug_concat <= fifo_wr_en & fifo_rd_en & wfifo_empty & status_fifo_empty & fifo_out_valid & status_fifo_valid;
+  
   u0 : fifo_generator_0
     port map(
       rst           => not aresetn,
@@ -436,7 +449,12 @@ begin
         probe18 => m_axis_s2mm_sts_tdata_reg,
         probe19 => m_axis_s2mm_sts_tkeep_reg(0),
         probe20 => m_axis_s2mm_sts_tlast_Reg,
-        probe21 => fifo_in
+        probe21 => fifo_in,
+        probe22 => mem_bytes_written,
+        probe23 => daq_status_r3,
+        probe24 => status_fifo_dout,
+        probe25 => status_fifo_count,
+        probe26 => fifo_debug_concat 
         );
   end generate;
 
