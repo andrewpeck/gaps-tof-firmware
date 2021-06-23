@@ -292,7 +292,7 @@ architecture Behavioral of dma_controller is
 
 -- status fifo signals   
 signal daq_status_empty   : std_logic := '0';
-signal status_fifo_count  : std_logic_vector(8 downto 0);
+signal status_fifo_count  : std_logic_vector(7 downto 0);
 signal status_fifo_dout   : std_logic_vector(1 downto 0);
 signal status_fifo_valid  : std_logic := '0';
 signal status_fifo_full   : std_logic := '0';
