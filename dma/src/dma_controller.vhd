@@ -9,6 +9,7 @@ entity dma_controller is
   generic (
     C_DEBUG : boolean := true;
 
+    FIFO_LATENCY : natural := 1;
 
     RESET_ACTIVE : std_logic := '0';    -- set to 1 for active high, 0 for active low
 
@@ -516,15 +517,33 @@ begin
               fifo_rd_en      <= '0';
               s2mm_tvalid_r1  <= '0';
               s2mm_data_state <= DONE;
-            --XXX: Potential to break things if fifo core is modified (certain options/checkboxes enabled). Hard coded/hand tuned latency workaround
-            --XXX: Do not modify Synchronization Stages in FIFO GUI. It will break this.
-            elsif(unsigned(valid_fifo_data) >= words_to_send - 1) then
-                    valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
-                    fifo_rd_en <= '0';
-                     s2mm_tlast      <= '1';
-            elsif(unsigned(valid_fifo_data) >= words_to_send - 2) then
-                fifo_rd_en <= '0';
-                valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
+
+              --XXX: Potential to break things if fifo core is modified (certain
+              --     options/checkboxes enabled). Hard coded/hand tuned latency
+              --     workaround
+              --
+              --     Do not modify Synchronization Stages in FIFO GUI. It will
+              --     break this. make sure to check the Latency in the settings,
+              --     if you change it to anything other than 1 then the firmware
+              --     may not work
+              --
+              --     The issue is that, the avoid reading too much data from the
+              --     FIFO, rd_en has to be de-asserted early. So, e.g., if it
+              --     takes 2 clocks for data to propagate from rd_en to
+              --     data_valid, then if you only want to read 16 words (for a
+              --     burst) you must de-assert rd_enable 2 clocks before the
+              --     16th word.
+              --
+              ----   Should make the FIFO latency a parameter, and just have
+              ----   this subtraction happen automatically.
+
+            elsif(unsigned(valid_fifo_data) >= WORDS_TO_SEND - 1) then
+              valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
+              fifo_rd_en      <= '0';
+              s2mm_tlast      <= '1';
+            elsif(unsigned(valid_fifo_data) >= WORDS_TO_SEND - FIFO_LATENCY - 1) then
+              fifo_rd_en      <= '0';
+              valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
             elsif(fifo_out_valid = '1') then
               valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
             else
