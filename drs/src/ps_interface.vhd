@@ -303,9 +303,9 @@ begin
       )
     port map (
 
-      packet_sent => packet_counter_xdma,
-      reset_sys   => dma_control_reset_synced,
-      clear_ps_mem => '0', -- TODO: create and connect to ipbus register 
+      packet_sent_o => packet_counter_xdma,
+      reset_sys     => dma_control_reset_synced,
+      clear_ps_mem  => '0', -- TODO: create and connect to ipbus register
 
       clk_in     => fifo_clock_in,
       clk_axi    => dma_axi_aclk,

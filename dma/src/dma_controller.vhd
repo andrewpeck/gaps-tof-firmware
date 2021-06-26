@@ -89,7 +89,7 @@ entity dma_controller is
     ----
     -- DMA AXI4 Lite Registers
     ---
-    packet_sent   : out std_logic_vector(31 downto 0) := (others => '0');
+    packet_sent_o : out std_logic_vector(31 downto 0) := (others => '0');
     reset_sys     : in  std_logic                     := '0';
     clear_ps_mem  : in std_logic                      := '0'
     );
@@ -182,6 +182,8 @@ architecture Behavioral of dma_controller is
   signal s2mm_data_state : data_state;
 
   signal data_counter : std_logic_vector(9 downto 0);
+  signal packet_sent    : std_logic_vector(31 downto 0) := (others => '0');
+  signal packet_is_tail : std_logic                     := '0';
 
   --data fifo signals
   --------------------------------------------------------------------------------
@@ -197,7 +199,7 @@ architecture Behavioral of dma_controller is
   signal wr_rst_busy      : std_logic;
   signal rd_rst_busy      : std_logic;
   signal daq_busy_xfifo   : std_logic := '0';
-  signal data_xfifo       : std_logic_vector(31 downto 0);
+  signal data_xfifo, data_xfifo_r : std_logic_vector(31 downto 0);
 
   --datamover signals
   --command port
@@ -314,9 +316,15 @@ begin
   daq_busy_xfifo <= fifo_out(16) and fifo_out(33);
   data_xfifo     <= fifo_out(15 downto 0) & fifo_out(32 downto 17);
 
+  -- add an additional ff stage for timing.. can only use it in some places
+  -- though do to the hard-coded latency constraints, see below.
 
- 
-  --------------------------------------------------------------------------------------------
+  process (clk_axi) is
+  begin
+    if (rising_edge(clk_axi)) then
+      data_xfifo_r <= data_xfifo;
+    end if;
+  end process;
   -- Clear Memory Block Procedure
   --------------------------------------------------------------------------------------------  
 process(CLK_AXI)
@@ -352,14 +360,22 @@ process(CLK_AXI)
   packet_tracker : process(CLK_AXI)
   begin
     if(rising_edge(CLK_AXI)) then
+      packet_sent_o <= packet_sent;
+
+      if (data_xfifo_r(31 downto 16) = TAIL or data_xfifo_r(15 downto 0) = TAIL) then
+        packet_is_tail <= '1';
+      else
+        packet_is_tail <= '0';
+      end if;
+
       if RST_IN = RESET_ACTIVE or reset_sys = '1' then
         packet_sent <= (others => '0');
-      elsif (fifo_rd_en = '1' and
-             (data_xfifo(31 downto 16) = TAIL or data_xfifo(15 downto 0) = TAIL)) then
+      elsif (fifo_rd_en = '1' and packet_is_tail = '1') then
         packet_sent <= std_logic_vector(unsigned(packet_sent) + 1);
       else
         packet_sent <= packet_sent;
       end if;
+
     end if;
   end process;
 
