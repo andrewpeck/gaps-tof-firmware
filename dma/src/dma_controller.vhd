@@ -157,10 +157,10 @@ architecture Behavioral of dma_controller is
       rst           : in  std_logic;
       wr_clk        : in  std_logic;
       rd_clk        : in  std_logic;
-      din           : in  std_logic_vector(15 downto 0);
+      din           : in  std_logic_vector(16 downto 0);
       wr_en         : in  std_logic;
       rd_en         : in  std_logic;
-      dout          : out std_logic_vector(31 downto 0);
+      dout          : out std_logic_vector(33 downto 0);
       full          : out std_logic;
       empty         : out std_logic;
       valid         : out std_logic;
@@ -169,59 +169,6 @@ architecture Behavioral of dma_controller is
       prog_empty    : out std_logic;
       wr_rst_busy   : out std_logic;
       rd_rst_busy   : out std_logic
-      );
-  end component;
-  
-    component fifo_generator_1 is
-    port (
-      rst           : in  std_logic;
-      wr_clk        : in  std_logic;
-      rd_clk        : in  std_logic;
-      din           : in  std_logic;
-      wr_en         : in  std_logic;
-      rd_en         : in  std_logic;
-      dout          : out std_logic_vector(1 downto 0);
-      full          : out std_logic;
-      empty         : out std_logic;
-      valid         : out std_logic;
-      rd_data_count : out std_logic_vector(7 downto 0);
-      prog_full     : out std_logic;
-      prog_empty    : out std_logic;
-      wr_rst_busy   : out std_logic;
-      rd_rst_busy   : out std_logic
-      );
-  end component;
-
-  component ila_s2mm is
-    port (
-      clk     : in std_logic;
-      probe0  : in std_logic;
-      probe1  : in std_logic;
-      probe2  : in std_logic_vector(71 downto 0);
-      probe3  : in std_logic_vector(31 downto 0);
-      probe4  : in std_logic_vector(3 downto 0);
-      probe5  : in std_logic;
-      probe6  : in std_logic;
-      probe7  : in std_logic;
-      probe8  : in std_logic_vector(31 downto 0);
-      probe9  : in std_logic;
-      probe10 : in std_logic_vector(31 downto 0);
-      probe11 : in std_logic;
-      probe12 : in std_logic;
-      probe13 : in std_logic;
-      probe14 : in std_logic;
-      probe15 : in std_logic_vector(7 downto 0);
-      probe16 : in std_logic;
-      probe17 : in std_logic;
-      probe18 : in std_logic_vector(7 downto 0);
-      probe19 : in std_logic;
-      probe20 : in std_logic;
-      probe21 : in std_logic_vector(15 downto 0);
-      probe22 : in unsigned(31 downto 0);
-      probe23 : in std_logic;
-      probe24 : in std_logic_vector(1 downto 0);
-      probe25 : in std_logic_vector(7 downto 0);
-      probe26 : in std_logic_vector(5 downto 0)
       );
   end component;
 
@@ -237,7 +184,9 @@ architecture Behavioral of dma_controller is
   signal data_counter : std_logic_vector(9 downto 0);
 
   --data fifo signals
-  signal fifo_out         : std_logic_vector(31 downto 0);
+  --------------------------------------------------------------------------------
+
+  signal fifo_out         : std_logic_vector(33 downto 0);
   signal fifo_count       : std_logic_vector(8 downto 0);
   signal fifo_rd_en       : std_logic;
   signal fifo_out_valid   : std_logic;
@@ -247,6 +196,8 @@ architecture Behavioral of dma_controller is
   signal wfifo_prog_empty : std_logic;
   signal wr_rst_busy      : std_logic;
   signal rd_rst_busy      : std_logic;
+  signal daq_busy_xfifo   : std_logic := '0';
+  signal data_xfifo       : std_logic_vector(31 downto 0);
 
   --datamover signals
   --command port
@@ -296,43 +247,16 @@ architecture Behavioral of dma_controller is
   signal mem_bytes_written : unsigned(31 downto 0) := (others => '0');
   signal mem_buff_size     : unsigned(31 downto 0) := to_unsigned(ram_buff_size, 32);
 
--- status fifo signals   
-signal daq_status_empty   : std_logic := '0';
-signal status_fifo_count  : std_logic_vector(7 downto 0);
-signal status_fifo_dout   : std_logic_vector(1 downto 0);
-signal status_fifo_valid  : std_logic := '0';
-signal status_fifo_full   : std_logic := '0';
-signal status_fifo_empty  : std_logic := '0';
-signal status_prog_full   : std_logic := '0';
-signal status_prog_empty  : std_logic := '0';
-signal wr_status_rst_busy : std_logic := '0';
-signal rd_status_rst_busy : std_logic := '0';
--- always read daq busy signal
-signal status_fifo_rd_en  : std_logic := '1';
--- always write daq busy signal
-signal status_fifo_wr_en  : std_logic := '1';
 
 signal clear_mode       : std_logic := '0';
 signal clear_ack        : std_logic := '0';
 signal clear_valid      : std_logic := '0';
--- DAQ busy delay process signals
-signal daq_status_delay_vec : std_ulogic_vector(0 to daq_busy_delay_const - 1);
-signal daq_status_delay_bit : std_logic := '0';
-
-signal daq_status_r1    : std_logic := '0';
-signal daq_status_r2    : std_logic := '0';
-signal daq_status_r3    : std_logic := '0';
-signal daq_status_r4    : std_logic := '0';
-signal daq_status_r5    : std_logic := '0';
-
 signal clear_r_edge_r1  : std_logic := '0';
 signal clear_r_edge_r2  : std_logic := '0';
 signal clear_pulse_r1   : std_logic := '0'; 
 
 signal saddress_mux     : std_logic_vector(31 downto 0) := START_ADDRESS;
 
---debug
-signal fifo_debug_concat : std_logic_vector(5 downto 0);
 
  
 begin
@@ -367,15 +291,13 @@ begin
   -- FIFO Generator
   --------------------------------------------------------------------------------------------
   
-  -- debug
-  fifo_debug_concat <= fifo_wr_en & fifo_rd_en & wfifo_empty & status_fifo_empty & fifo_out_valid & status_fifo_valid;
   
   u0 : fifo_generator_0
     port map(
       rst           => not aresetn,
       wr_clk        => CLK_IN,
       rd_clk        => CLK_AXI,
-      din           => fifo_in,
+      din           => daq_busy_in & fifo_in,
       wr_en         => fifo_wr_en,
       rd_en         => fifo_rd_en,
       rd_data_count => fifo_count,
@@ -389,97 +311,9 @@ begin
       rd_rst_busy   => rd_rst_busy
       );
 
-  u3 : fifo_generator_1
-    port map(
-      rst           => not aresetn,
-      wr_clk        => CLK_IN,
-      rd_clk        => CLK_AXI,
-      din           => daq_busy_in,
-      wr_en         => status_fifo_wr_en,
-      rd_en         => status_fifo_rd_en,
-      rd_data_count => status_fifo_count,
-      dout          => status_fifo_dout,
-      valid         => status_fifo_valid,
-      full          => status_fifo_full,
-      empty         => status_fifo_empty,
-      prog_full     => status_prog_full,
-      prog_empty    => status_prog_empty,
-      wr_rst_busy   => wr_status_rst_busy,
-      rd_rst_busy   => rd_status_rst_busy
-      );      
+  daq_busy_xfifo <= fifo_out(16) and fifo_out(33);
+  data_xfifo     <= fifo_out(15 downto 0) & fifo_out(32 downto 17);
 
-    --FIXME: Current behavior shows some latency between DAQ busy deassertion and tail/EOP (end of packet) at data fifo out
-    --Observed to be around ~23 AXI clocks. Use this process to align DAQ busy with data fifo out EOP.
-    --Might not be able to get around this.
-     delay_daq_busy : process(CLK_AXI)
-     begin
-        if(rising_edge(CLK_AXI)) then
-            if(aresetn = '0') then
-                daq_status_r1 <= '0';
-                daq_status_delay_vec(daq_busy_delay_const - 1) <= '0';
-            else
-                if (status_fifo_valid = '1') then
-                    daq_status_r1 <= (status_fifo_dout(1) or status_fifo_dout(0));
-                end if;
-                daq_status_delay_vec <= daq_status_r1 & daq_status_delay_vec(0 to daq_busy_delay_const - 2);
-            end if;
-        end if;
--- Previous delay strategy below (cumbersome for more than few clocks)
---        if(rising_edge(CLK_AXI))then 
---          if(aresetn = '0') then
---              daq_status_r1 <= '0';
---              daq_status_r2 <= '0';
---              daq_status_r3 <= '0';
---              daq_status_r4 <= '0';
---              daq_status_r5 <= '0';
---          else
---            if (status_fifo_valid = '1') then
---                daq_status_r1 <= (status_fifo_dout(1) or status_fifo_dout(0));
---            end if;            
---            daq_status_r2 <= daq_status_r1;
---            daq_status_r3 <= daq_status_r2;
---            daq_status_r4 <= daq_status_r3;
---            daq_status_r5 <= daq_status_r4;
---          end if;
---        end if;
-      end process;
-      
-      --TODO: Replace this signal with daq_status_delay_bit for clarity
-      daq_status_r3 <= daq_status_delay_vec(daq_busy_delay_const - 1);
-
-  debug : if (C_DEBUG) generate
-    ila_s2mm_inst : ila_s2mm
-      port map(
-        clk     => CLK_AXI,
-        probe0  => s2mm_cmd_tvalid,
-        probe1  => s2mm_cmd_tready,
-        probe2  => s2mm_cmd_tdata,
-        probe3  => s2mm_tdata,
-        probe4  => s2mm_tkeep,
-        probe5  => s2mm_tlast,
-        probe6  => s2mm_tvalid,
-        probe7  => s2mm_tready,
-        probe8  => valid_fifo_data,
-        probe9  => fifo_rd_en,
-        probe10 => fifo_out,
-        probe11 => s2mm_allow_addr_req_reg,
-        probe12 => s2mm_addr_req_posted_reg,
-        probe13 => s2mm_wr_xfer_cmplt_reg,
-        probe14 => s2mm_ld_nxt_len_reg,
-        probe15 => s2mm_wr_len_reg,
-        probe16 => s2mm_err_reg,
-        probe17 => m_axis_s2mm_sts_tvalid_reg,
-        probe18 => m_axis_s2mm_sts_tdata_reg,
-        probe19 => m_axis_s2mm_sts_tkeep_reg(0),
-        probe20 => m_axis_s2mm_sts_tlast_Reg,
-        probe21 => fifo_in,
-        probe22 => mem_bytes_written,
-        probe23 => daq_status_r3,
-        probe24 => status_fifo_dout,
-        probe25 => status_fifo_count,
-        probe26 => fifo_debug_concat 
-        );
-  end generate;
 
  
   --------------------------------------------------------------------------------------------
@@ -520,7 +354,8 @@ process(CLK_AXI)
     if(rising_edge(CLK_AXI)) then
       if RST_IN = RESET_ACTIVE or reset_sys = '1' then
         packet_sent <= (others => '0');
-      elsif ( fifo_rd_en = '1' and (fifo_out(31 downto 16) = TAIL or fifo_out(15 downto 0) = TAIL) ) then
+      elsif (fifo_rd_en = '1' and
+             (data_xfifo(31 downto 16) = TAIL or data_xfifo(15 downto 0) = TAIL)) then
         packet_sent <= std_logic_vector(unsigned(packet_sent) + 1);
       else
         packet_sent <= packet_sent;
@@ -538,24 +373,38 @@ process(CLK_AXI)
         saddress_mux          <= START_ADDRESS;
         -- mem_bytes_written > 66584576 (63.5 MB) and DAQ_BUSY = 0 jump to top half of ring -> TOP_HALF_ADDRESS
       else
-      
-          if (daq_status_r3 = '0' and mem_bytes_written > mem_buff_size) then
-            reset_pointer_address <= '1';  
-            --jump to top half of ring
-             if(saddress_mux = START_ADDRESS)then
-               saddress_mux <= TOP_HALF_ADDRESS; 
-             else
-                saddress_mux <= START_ADDRESS; 
-             end if;
-          elsif ((clear_pulse_r1 = '1' and s2mm_data_state = IDLE ) or (clear_mode = '1' and mem_bytes_written > mem_buff_size)) then
-            reset_pointer_address <= '1'; 
+
+        -- switch memory region
+        --   - the dma is now writing into the "overflow region"
+        --   - as soon as the daq is idle (it always goes idle between packets)
+        --     it will jump to the other memory region
+
+        if (daq_busy_xfifo = '0' and mem_bytes_written > mem_buff_size) then
+
+          reset_pointer_address <= '1';
+
+          -- jump to opposite half of ring
+          if(saddress_mux = START_ADDRESS)then
+            saddress_mux <= TOP_HALF_ADDRESS;
           else
-            reset_pointer_address <= '0';
-          end if; 
-          
-          reset_pointer_address_r2 <= reset_pointer_address; 
-          
-       end if;
+            saddress_mux <= START_ADDRESS;
+          end if;
+
+          -- if a wipe of the memory is requested, we switch to the 0th address in
+          -- the memory region
+
+        elsif ((clear_pulse_r1 = '1' and s2mm_data_state = IDLE) or
+               (clear_mode = '1' and mem_bytes_written > mem_buff_size)) then
+          reset_pointer_address <= '1';
+
+        -- nothing requested, just keep going along
+        else
+          reset_pointer_address <= '0';
+        end if;
+
+        reset_pointer_address_r2 <= reset_pointer_address;
+
+      end if;
     end if;
   end process;
 
@@ -743,4 +592,83 @@ process(CLK_AXI)
       s2mm_err             => s2mm_err_reg
 
       );
+
+  -------------------------------------------------------------------------------
+  -- ILA
+  -------------------------------------------------------------------------------
+
+  debug : if (C_DEBUG) generate
+
+    component ila_s2mm is
+      port (
+        clk     : in std_logic;
+        probe0  : in std_logic;
+        probe1  : in std_logic;
+        probe2  : in std_logic_vector(71 downto 0);
+        probe3  : in std_logic_vector(31 downto 0);
+        probe4  : in std_logic_vector(3 downto 0);
+        probe5  : in std_logic;
+        probe6  : in std_logic;
+        probe7  : in std_logic;
+        probe8  : in std_logic_vector(31 downto 0);
+        probe9  : in std_logic;
+        probe10 : in std_logic_vector(31 downto 0);
+        probe11 : in std_logic;
+        probe12 : in std_logic;
+        probe13 : in std_logic;
+        probe14 : in std_logic;
+        probe15 : in std_logic_vector(7 downto 0);
+        probe16 : in std_logic;
+        probe17 : in std_logic;
+        probe18 : in std_logic_vector(7 downto 0);
+        probe19 : in std_logic;
+        probe20 : in std_logic;
+        probe21 : in std_logic_vector(15 downto 0);
+        probe22 : in unsigned(31 downto 0);
+        probe23 : in std_logic;
+        probe24 : in std_logic_vector(33 downto 0);
+        probe25 : in std_logic_vector(7 downto 0);
+        probe26 : in std_logic_vector(5 downto 0)
+        );
+    end component;
+
+    signal fifo_debug_concat : std_logic_vector(5 downto 0);
+
+  begin
+
+    fifo_debug_concat <= fifo_wr_en & fifo_rd_en & wfifo_empty & '0' & fifo_out_valid & reset_pointer_address;
+
+    ila_s2mm_inst : ila_s2mm
+      port map(
+        clk     => clk_axi,
+        probe0  => s2mm_cmd_tvalid,
+        probe1  => s2mm_cmd_tready,
+        probe2  => s2mm_cmd_tdata,
+        probe3  => s2mm_tdata,
+        probe4  => s2mm_tkeep,
+        probe5  => s2mm_tlast,
+        probe6  => s2mm_tvalid,
+        probe7  => s2mm_tready,
+        probe8  => saddr,
+        probe9  => fifo_rd_en,
+        probe10 => data_xfifo,
+        probe11 => s2mm_allow_addr_req_reg,
+        probe12 => s2mm_addr_req_posted_reg,
+        probe13 => s2mm_wr_xfer_cmplt_reg,
+        probe14 => s2mm_ld_nxt_len_reg,
+        probe15 => s2mm_wr_len_reg,
+        probe16 => s2mm_err_reg,
+        probe17 => m_axis_s2mm_sts_tvalid_reg,
+        probe18 => m_axis_s2mm_sts_tdata_reg,
+        probe19 => m_axis_s2mm_sts_tkeep_reg(0),
+        probe20 => m_axis_s2mm_sts_tlast_Reg,
+        probe21 => fifo_in,
+        probe22 => mem_bytes_written,
+        probe23 => daq_busy_xfifo,
+        probe24 => fifo_out,
+        probe25 => (others => '0'),
+        probe26 => fifo_debug_concat
+        );
+  end generate;
+
 end Behavioral;
