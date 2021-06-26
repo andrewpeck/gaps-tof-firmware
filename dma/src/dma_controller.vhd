@@ -506,9 +506,9 @@ begin
             end if;
 
           when READ_FIFO =>
-          s2mm_tdata       <= fifo_out(15 downto 0) & fifo_out(31 downto 16);
 
             -- Reorder words, otherwise will be swapped by fifo
+            s2mm_tdata     <= data_xfifo;
             s2mm_tvalid_r1 <= fifo_out_valid;
 
             if(unsigned(valid_fifo_data) >= WORDS_TO_SEND) then
