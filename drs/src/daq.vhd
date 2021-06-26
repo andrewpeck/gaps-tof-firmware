@@ -14,6 +14,7 @@ use ieee.numeric_std.all;
 
 entity daq is
   generic(
+    g_PACKET_PAD    : positive := 32;
     g_WORD_SIZE     : positive := 16;
     g_MSB_FIRST     : boolean  := true;
     g_LITTLE_ENDIAN : boolean  := true
@@ -80,7 +81,7 @@ architecture behavioral of daq is
 
   signal status         : std_logic_vector (15 downto 0) := (others => '0');
   signal packet_length  : std_logic_vector (15 downto 0) := (others => '0');
-  signal packet_padding : natural range 0 to 16;
+  signal packet_padding : natural range 0 to g_PACKET_PAD;
   signal payload_size   : natural                        := 0;
   signal num_channels   : natural range 0 to 15          := 0;
   signal id             : std_logic_vector (15 downto 0) := (others => '0');
@@ -180,16 +181,16 @@ architecture behavioral of daq is
     end if;
   end function;
 
-  -- dma expects multiple of 16 words... pad the tail with zeroes
+  -- dma expects multiple of g_PACKET_PAD words... pad the tail with zeroes
   function get_packet_padding (packet_size : natural)
     return natural is
     variable ret : natural;
   begin
-    ret := packet_size mod 16;
+    ret := packet_size mod g_PACKET_PAD;
     if (ret = 0) then
       return 0;
     else
-      return 16-ret;
+      return g_PACKET_PAD-ret;
     end if;
   end function;
 
