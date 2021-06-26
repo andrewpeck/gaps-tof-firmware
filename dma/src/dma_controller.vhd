@@ -1,56 +1,46 @@
 ------------------------------------------------------------
 -- DMA Controller 
 ------------------------------------------------------------
-library IEEE;
-use IEEE.STD_LOGIC_1164.all;
-
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
-use IEEE.NUMERIC_STD.all;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx leaf cells in this code.
-library UNISIM;
-use UNISIM.VComponents.all;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 entity dma_controller is
   generic (
-    C_DEBUG                   : boolean                        := true;
-    words_to_send             : integer                        := 16;
-    daq_busy_delay_const      : positive                       := 28;
+    C_DEBUG : boolean := true;
+
+
     RESET_ACTIVE : std_logic := '0';    -- set to 1 for active high, 0 for active low
-    -- NOTE: words_to_send MUST NOT EXCEED MaxBurst in DataMover core (u1: axis2aximm)!
- 
+
+    WORDS_TO_SEND : integer := 16;
+    -- NOTE: WORDS_TO_SEND MUST NOT EXCEED MaxBurst in DataMover core (u1: axis2aximm)!
+
     -- TODO: make START_ADDRESS, TOP_HALF_ADDRESS programmable from userspace
-    ram_buff_size             : integer                        := 66584576;
-    START_ADDRESS             : std_logic_vector(31 downto 0)  := x"04100000";
-    TOP_HALF_ADDRESS          : std_logic_vector(31 downto 0)  := x"08100000";
- 
-    HEAD                      : std_logic_vector(15 downto 0)  := x"AAAA";
-    TAIL                      : std_logic_vector(15 downto 0)  := x"5555"
+    RAM_BUFF_SIZE    : integer                       := 84576;
+    --RAM_BUFF_SIZE    : integer                       := 66584576;
+    START_ADDRESS    : std_logic_vector(31 downto 0) := x"04100000";
+    TOP_HALF_ADDRESS : std_logic_vector(31 downto 0) := x"08100000";
+
+    HEAD : std_logic_vector(15 downto 0) := x"AAAA";
+    TAIL : std_logic_vector(15 downto 0) := x"5555"
     );
   port (
-    CLK_IN     : in  std_logic;
-    CLK_AXI    : in  std_logic;
-    RST_IN     : in  std_logic;
-    fifo_in    : in  std_logic_vector(15 downto 0);
-    fifo_wr_en : in  std_logic;
-    fifo_full  : out std_logic;
-    
-    
-    ----
-    -- DAQ Signal(s)
-    --- 
-    
-    daq_busy_in        : in std_logic;
-    --tlast_i           : in std_logic;
-    
-    --- last signal
-    --- busy high entire packet   
 
-    ----
+    clk_in  : in std_logic;             -- daq clock
+    clk_axi : in std_logic;             -- axi clock
+    rst_in  : in std_logic;             -- active high reset, synchronous to the axi clock
+
+    --------------------------------------------------------------
+    -- DAQ Signal(s)
+    --------------------------------------------------------------
+    fifo_in     : in  std_logic_vector(15 downto 0);
+    fifo_wr_en  : in  std_logic;
+    fifo_full   : out std_logic;
+    daq_busy_in : in  std_logic;
+
+    --------------------------------------------------------------
     -- Datamover AXI4MM Signals
-    ---
+    --------------------------------------------------------------
 
     m_axi_s2mm_awid    : out std_logic_vector(3 downto 0);
     m_axi_s2mm_awaddr  : out std_logic_vector(31 downto 0);
@@ -87,12 +77,14 @@ entity dma_controller is
     m_axi_mm2s_rvalid  : in  std_logic;
     m_axi_mm2s_rready  : out std_logic;
 
-    ----
+    -----------------------------------------------------------------------------
     -- DMA AXI4 Lite Registers
-    ---
+    -----------------------------------------------------------------------------
+
     packet_sent_o : out std_logic_vector(31 downto 0) := (others => '0');
     reset_sys     : in  std_logic                     := '0';
-    clear_ps_mem  : in std_logic                      := '0'
+    clear_ps_mem  : in  std_logic                     := '0'
+
     );
 end dma_controller;
 
@@ -176,53 +168,58 @@ architecture Behavioral of dma_controller is
   type cmd_state  is (IDLE, SET, DONE);
   type data_state is (IDLE, ASSERT_CMD, DELAY0, READ_FIFO, DONE, DELAY1,CLEAR_MEM,CONTINUE_CLEAR);
 
-  signal aresetn         : std_logic := '1';
+  signal aresetn : std_logic := '1';
 
   signal s2mm_cmd_state  : cmd_state;
   signal s2mm_data_state : data_state;
 
-  signal data_counter : std_logic_vector(9 downto 0);
+  signal data_counter   : std_logic_vector(9 downto 0);
   signal packet_sent    : std_logic_vector(31 downto 0) := (others => '0');
   signal packet_is_tail : std_logic                     := '0';
 
+  --------------------------------------------------------------------------------
   --data fifo signals
   --------------------------------------------------------------------------------
 
-  signal fifo_out         : std_logic_vector(33 downto 0);
-  signal fifo_count       : std_logic_vector(8 downto 0);
-  signal fifo_rd_en       : std_logic;
-  signal fifo_out_valid   : std_logic;
-  signal wfifo_full       : std_logic;
-  signal wfifo_empty      : std_logic;
-  signal wfifo_prog_full  : std_logic;
-  signal wfifo_prog_empty : std_logic;
-  signal wr_rst_busy      : std_logic;
-  signal rd_rst_busy      : std_logic;
-  signal daq_busy_xfifo   : std_logic := '0';
+  signal fifo_out                 : std_logic_vector(33 downto 0);
+  signal fifo_count               : std_logic_vector(8 downto 0);
+  signal fifo_rd_en               : std_logic;
+  signal fifo_out_valid           : std_logic;
+  signal wfifo_full               : std_logic;
+  signal wfifo_empty              : std_logic;
+  signal wfifo_prog_full          : std_logic;
+  signal wfifo_prog_empty         : std_logic;
+  signal wr_rst_busy              : std_logic;
+  signal rd_rst_busy              : std_logic;
+  signal daq_busy_xfifo           : std_logic := '0';
   signal data_xfifo, data_xfifo_r : std_logic_vector(31 downto 0);
 
+  --------------------------------------------------------------------------------
   --datamover signals
+  --------------------------------------------------------------------------------
+
   --command port
-  signal s2mm_cmd_tvalid  : std_logic;
-  signal s2mm_cmd_tready  : std_logic;
-  signal s2mm_cmd_tdata   : std_logic_vector(71 downto 0);
+  signal s2mm_cmd_tvalid : std_logic;
+  signal s2mm_cmd_tready : std_logic;
+  signal s2mm_cmd_tdata  : std_logic_vector(71 downto 0);
 
   --data port
-  signal s2mm_tdata    : std_logic_vector(31 downto 0);
-  signal s2mm_tkeep    : std_logic_vector(3 downto 0);
-  signal s2mm_tlast    : std_logic;
-  signal s2mm_tlast_r1 : std_logic;
-  signal s2mm_tlast_r2 : std_logic;
-  signal s2mm_tvalid   : std_logic;
+  signal s2mm_tdata     : std_logic_vector(31 downto 0);
+  signal s2mm_tkeep     : std_logic_vector(3 downto 0);
+  signal s2mm_tlast     : std_logic;
+  signal s2mm_tlast_r1  : std_logic;
+  signal s2mm_tlast_r2  : std_logic;
+  signal s2mm_tvalid    : std_logic;
   signal s2mm_tvalid_r1 : std_logic;
-  signal s2mm_tready   : std_logic;
-  
-  signal btt       : std_logic_vector(22 downto 0);
-  signal saddr     : std_logic_vector(31 downto 0);
-  signal data_type : std_logic;
+  signal s2mm_tready    : std_logic;
+
+  signal btt          : std_logic_vector(22 downto 0);
+  signal saddr        : std_logic_vector(31 downto 0);
+  signal saddress_mux : std_logic_vector(31 downto 0) := START_ADDRESS;
+  signal data_type    : std_logic;
 
   signal init_cmd : std_logic;
-  
+
   ---
   signal delay_counter   : integer range 0 to 21 := 0;
   signal initial_counter : integer;
@@ -242,38 +239,41 @@ architecture Behavioral of dma_controller is
   signal m_axis_s2mm_sts_tlast_Reg  : std_logic;
   signal s2mm_err_reg               : std_logic := '0';
 
-  signal reset_pointer_address      : std_logic := '0';
-  signal reset_pointer_address_r2      : std_logic := '0';
+  signal reset_pointer_address    : std_logic := '0';
+  signal reset_pointer_address_r2 : std_logic := '0';
 
+  --------------------------------------------------------------------------------
   --Circular buffer wrap signals
+  --------------------------------------------------------------------------------
+
   signal mem_bytes_written : unsigned(31 downto 0) := (others => '0');
-  signal mem_buff_size     : unsigned(31 downto 0) := to_unsigned(ram_buff_size, 32);
+  signal mem_buff_size     : unsigned(31 downto 0) := to_unsigned(RAM_BUFF_SIZE, 32);
 
+  --------------------------------------------------------------------------------
+  -- DMA Clear Signals
+  --------------------------------------------------------------------------------
 
-signal clear_mode       : std_logic := '0';
-signal clear_ack        : std_logic := '0';
-signal clear_valid      : std_logic := '0';
-signal clear_r_edge_r1  : std_logic := '0';
-signal clear_r_edge_r2  : std_logic := '0';
-signal clear_pulse_r1   : std_logic := '0'; 
+  signal clear_mode      : std_logic := '0';
+  signal clear_ack       : std_logic := '0';
+  signal clear_valid     : std_logic := '0';
+  signal clear_r_edge_r1 : std_logic := '0';
+  signal clear_r_edge_r2 : std_logic := '0';
+  signal clear_pulse_r1  : std_logic := '0';
 
-signal saddress_mux     : std_logic_vector(31 downto 0) := START_ADDRESS;
-
-
- 
 begin
 
   --active low reset for logic
   aresetn <= not (rst_in or reset_sys);
 
-  --------------------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------
   -- Datamover Commmand Interface Signals
-  --------------------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------
+
   -- incr = 1, fixed = 0
   data_type <= '1';
 
   --bytes to transfer
-  btt <= std_logic_vector(to_unsigned(words_to_send * 4, btt'length));
+  btt <= std_logic_vector(to_unsigned(WORDS_TO_SEND * 4, btt'length));
 
   --s2mm command signals
   s2mm_cmd_tdata(71 downto 68) <= (others => '0');
@@ -286,19 +286,18 @@ begin
   --s2mm command valid assertion
   s2mm_cmd_tvalid <= '1' when (s2mm_data_state = ASSERT_CMD) else '0';
 
-  s2mm_tvalid <= s2mm_tvalid_r1 or clear_valid;  
+  s2mm_tvalid <= s2mm_tvalid_r1 or clear_valid;
   s2mm_tkeep  <= x"F";
 
-  --------------------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------
   -- FIFO Generator
-  --------------------------------------------------------------------------------------------
-  
-  
+  -------------------------------------------------------------------------------
+
   u0 : fifo_generator_0
     port map(
       rst           => not aresetn,
-      wr_clk        => CLK_IN,
-      rd_clk        => CLK_AXI,
+      wr_clk        => clk_in,
+      rd_clk        => clk_axi,
       din           => daq_busy_in & fifo_in,
       wr_en         => fifo_wr_en,
       rd_en         => fifo_rd_en,
@@ -325,41 +324,47 @@ begin
       data_xfifo_r <= data_xfifo;
     end if;
   end process;
+
+
+  -------------------------------------------------------------------------------
   -- Clear Memory Block Procedure
-  --------------------------------------------------------------------------------------------  
-process(CLK_AXI)
+  -------------------------------------------------------------------------------
+
+  process(clk_axi)
   begin
-    if(rising_edge(CLK_AXI)) then
+    if(rising_edge(clk_axi)) then
+
       if aresetn = RESET_ACTIVE then
-           clear_r_edge_r1 <= '0';
-           clear_r_edge_r2 <= '0';
-           clear_pulse_r1  <= '0';
-        else 
-           clear_r_edge_r1 <= clear_ps_mem;
-           clear_r_edge_r2 <= clear_r_edge_r1;
-           
-           if(clear_r_edge_r1 = '1' and clear_r_edge_r2 = '0') then
-            clear_pulse_r1 <= '1';
-           elsif(clear_mode = '1') then
-            clear_pulse_r1 <= '0';
-           else
-            clear_pulse_r1 <= clear_pulse_r1;
-           end if;
-            
-            
-          end if;
+        clear_r_edge_r1 <= '0';
+        clear_r_edge_r2 <= '0';
+        clear_pulse_r1  <= '0';
+      else
+
+        clear_r_edge_r1 <= clear_ps_mem;
+        clear_r_edge_r2 <= clear_r_edge_r1;
+
+        if(clear_r_edge_r1 = '1' and clear_r_edge_r2 = '0') then
+          clear_pulse_r1 <= '1';
+        elsif(clear_mode = '1') then
+          clear_pulse_r1 <= '0';
+        else
+          clear_pulse_r1 <= clear_pulse_r1;
+        end if;
+
+      end if;
     end if;
   end process;
-  
-  
-  --------------------------------------------------------------------------------------------
-  -- AXI Control Signals
-  --------------------------------------------------------------------------------------------
+
+
+  -------------------------------------------------------------------------------
+  -- Post-AXI packet counter
+  -------------------------------------------------------------------------------
 
   --Keep track of packet transfers
-  packet_tracker : process(CLK_AXI)
+  packet_tracker : process(clk_axi)
   begin
-    if(rising_edge(CLK_AXI)) then
+    if(rising_edge(clk_axi)) then
+
       packet_sent_o <= packet_sent;
 
       if (data_xfifo_r(31 downto 16) = TAIL or data_xfifo_r(15 downto 0) = TAIL) then
@@ -379,16 +384,19 @@ process(CLK_AXI)
     end if;
   end process;
 
-         
+  -------------------------------------------------------------------------------
+  -- DMA Write Address Control
+  -------------------------------------------------------------------------------
+
   -- Restart address when x address is reached.
-  address_pointer : process(CLK_AXI)
+  address_pointer : process(clk_axi)
   begin
-    if(rising_edge(CLK_AXI)) then
+    if(rising_edge(clk_axi)) then
 
       if aresetn = RESET_ACTIVE then
         reset_pointer_address <= '0';
         saddress_mux          <= START_ADDRESS;
-        -- mem_bytes_written > 66584576 (63.5 MB) and DAQ_BUSY = 0 jump to top half of ring -> TOP_HALF_ADDRESS
+
       else
 
         -- switch memory region
@@ -407,9 +415,8 @@ process(CLK_AXI)
             saddress_mux <= START_ADDRESS;
           end if;
 
-          -- if a wipe of the memory is requested, we switch to the 0th address in
-          -- the memory region
-
+        -- if a wipe of the memory is requested, we switch to the 0th address in
+        -- the memory region
         elsif ((clear_pulse_r1 = '1' and s2mm_data_state = IDLE) or
                (clear_mode = '1' and mem_bytes_written > mem_buff_size)) then
           reset_pointer_address <= '1';
@@ -425,26 +432,29 @@ process(CLK_AXI)
     end if;
   end process;
 
-  address_handler : process(CLK_AXI)
+  address_handler : process(clk_axi)
   begin
-    if(rising_edge(CLK_AXI)) then
-        saddr <= saddress_mux;
+    if(rising_edge(clk_axi)) then
       if aresetn = RESET_ACTIVE or reset_pointer_address_r2 = '1' then
+        saddr             <= saddress_mux;
         mem_bytes_written <= (others => '0');
       elsif (s2mm_addr_req_posted_reg = '1') then
-        saddr <= std_logic_vector(unsigned(saddr) + unsigned(btt));
+        saddr             <= std_logic_vector(unsigned(saddr) + unsigned(btt));
         mem_bytes_written <= mem_bytes_written + unsigned(btt);
       else
-        saddr <= saddr;
+        saddr             <= saddr;
         mem_bytes_written <= mem_bytes_written;
       end if;
     end if;
   end process;
-   
 
-  s2mm_data_interface : process(CLK_AXI)
+  -------------------------------------------------------------------------------
+  -- DMA State Machine
+  -------------------------------------------------------------------------------
+
+  s2mm_data_interface : process(clk_axi)
   begin
-    if(rising_edge(CLK_AXI)) then
+    if(rising_edge(clk_axi)) then
 
       if aresetn = RESET_ACTIVE then
         s2mm_allow_addr_req_reg <= '0';
@@ -453,50 +463,58 @@ process(CLK_AXI)
         fifo_rd_en              <= '0';
         s2mm_tlast              <= '0';
         s2mm_tdata              <= (others => '0');
-        
+
         clear_mode <= '0';
       else
+
         case s2mm_data_state is
+
           when IDLE =>
-                s2mm_allow_addr_req_reg <= '1';
-                
-                if((unsigned(fifo_count) mod words_to_send) = 0 and unsigned(fifo_count) /= 0 and s2mm_cmd_tready = '1') then
-                  s2mm_data_state <= ASSERT_CMD; 
-                elsif(clear_pulse_r1 = '1' and s2mm_cmd_tready = '1') then
-                    s2mm_data_state <= ASSERT_CMD;
-                    clear_mode      <= '1';
-                 else
-                    s2mm_data_state <= IDLE;
-                    fifo_rd_en      <= '0';
-                end if;  
-            
-             
+
+            s2mm_allow_addr_req_reg <= '1';
+
+            if((unsigned(fifo_count) mod WORDS_TO_SEND) = 0
+               and unsigned(fifo_count) /= 0
+               and s2mm_cmd_tready = '1') then
+              s2mm_data_state <= ASSERT_CMD;
+            elsif(clear_pulse_r1 = '1' and s2mm_cmd_tready = '1') then
+              s2mm_data_state <= ASSERT_CMD;
+              clear_mode      <= '1';
+            else
+              s2mm_data_state <= IDLE;
+              fifo_rd_en      <= '0';
+            end if;
+
+
           when ASSERT_CMD =>
+
             s2mm_data_state <= DELAY0;
-            
+
           when DELAY0 =>
-                if delay_counter > 20 then
-                  s2mm_allow_addr_req_reg <= '0'; 
-                  delay_counter           <= 0;
-                  if(clear_mode = '0') then
-                    s2mm_data_state         <= READ_FIFO;
-                  else
-                    s2mm_data_state         <= CLEAR_MEM;
-                  end if; 
-                else
-                  delay_counter <= delay_counter + 1;
-                end if;
+
+            if delay_counter > 20 then
+              s2mm_allow_addr_req_reg <= '0';
+              delay_counter           <= 0;
+              if(clear_mode = '0') then
+                s2mm_data_state <= READ_FIFO;
+              else
+                s2mm_data_state <= CLEAR_MEM;
+              end if;
+            else
+              delay_counter <= delay_counter + 1;
+            end if;
 
           when READ_FIFO =>
-          -- Reorder words, otherwise will be swapped by fifo
           s2mm_tdata       <= fifo_out(15 downto 0) & fifo_out(31 downto 16);
-          s2mm_tvalid_r1   <= fifo_out_valid;
-          
-            if(unsigned(valid_fifo_data) >= words_to_send) then
+
+            -- Reorder words, otherwise will be swapped by fifo
+            s2mm_tvalid_r1 <= fifo_out_valid;
+
+            if(unsigned(valid_fifo_data) >= WORDS_TO_SEND) then
               valid_fifo_data <= (others => '0');
               s2mm_tlast      <= '0';
               fifo_rd_en      <= '0';
-              s2mm_tvalid_r1   <= '0';
+              s2mm_tvalid_r1  <= '0';
               s2mm_data_state <= DONE;
             --XXX: Potential to break things if fifo core is modified (certain options/checkboxes enabled). Hard coded/hand tuned latency workaround
             --XXX: Do not modify Synchronization Stages in FIFO GUI. It will break this.
@@ -508,58 +526,64 @@ process(CLK_AXI)
                 fifo_rd_en <= '0';
                 valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
             elsif(fifo_out_valid = '1') then
-                valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
+              valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
             else
               valid_fifo_data <= valid_fifo_data;
               fifo_rd_en      <= '1';
             end if;
 
-         ------------------------------------------------------------------------------
-         -- Clear Memory States
-         ------------------------------------------------------------------------------
-	  --
-          when CLEAR_MEM => 
-         
-                if(unsigned(valid_fifo_data) >= words_to_send) then
-                    valid_fifo_data <= (others => '0');
-                    s2mm_tlast   <= '0';
-                    clear_valid     <= '0';
-                    s2mm_data_state <= CONTINUE_CLEAR;       
-                elsif(unsigned(valid_fifo_data) >= words_to_send - 1) then
-                    valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
-                    s2mm_tlast      <= '1';     
-                 else
-                    valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
-                    s2mm_tdata   <= x"00000000";
-                    clear_valid     <= '1';
-                end if; 
-        
-          when CONTINUE_CLEAR => 
-                if (reset_pointer_address_r2 = '1') then
-                    s2mm_data_state <= IDLE; 
-                    clear_mode      <= '0';
-                elsif(clear_mode = '1')then 
-                    s2mm_allow_addr_req_reg <= '1';
-                    s2mm_data_state         <= ASSERT_CMD;
-                else 
-                    s2mm_data_state <= CONTINUE_CLEAR;
-                end if;
-             
+            ------------------------------------------------------------------------------
+            -- Clear Memory States
+            ------------------------------------------------------------------------------
+
+          when CLEAR_MEM =>
+
+            if(unsigned(valid_fifo_data) >= WORDS_TO_SEND) then
+              valid_fifo_data <= (others => '0');
+              s2mm_tlast      <= '0';
+              clear_valid     <= '0';
+              s2mm_data_state <= CONTINUE_CLEAR;
+            elsif(unsigned(valid_fifo_data) >= WORDS_TO_SEND - 1) then
+              valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
+              s2mm_tlast      <= '1';
+            else
+              valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
+              s2mm_tdata      <= x"00000000";
+              clear_valid     <= '1';
+            end if;
+
+          when CONTINUE_CLEAR =>
+
+            if (reset_pointer_address_r2 = '1') then
+              s2mm_data_state <= IDLE;
+              clear_mode      <= '0';
+            elsif(clear_mode = '1')then
+              s2mm_allow_addr_req_reg <= '1';
+              s2mm_data_state         <= ASSERT_CMD;
+            else
+              s2mm_data_state <= CONTINUE_CLEAR;
+            end if;
+
           when DONE =>
-                s2mm_tlast   <= '0';
-                s2mm_data_state <= IDLE;
-          when others => s2mm_data_state <= IDLE;
+
+            s2mm_tlast      <= '0';
+            s2mm_data_state <= IDLE;
+
+          when others =>
+            s2mm_data_state <= IDLE;
+
         end case;
       end if;
     end if;
   end process;
 
-  --------------------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------
   -- Data Mover IP
-  --------------------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------
+
   u1 : axis2aximm
     port map (
-      m_axi_s2mm_aclk    => CLK_AXI,
+      m_axi_s2mm_aclk    => clk_axi,
       m_axi_s2mm_aresetn => aresetn,
       s2mm_halt          => '0',
       s2mm_dbg_sel       => x"0",
@@ -575,7 +599,7 @@ process(CLK_AXI)
       s_axis_s2mm_tvalid     => s2mm_tvalid,
       s_axis_s2mm_tready     => s2mm_tready,
 
-      m_axis_s2mm_cmdsts_awclk   => CLK_AXI,
+      m_axis_s2mm_cmdsts_awclk   => clk_axi,
       m_axis_s2mm_cmdsts_aresetn => aresetn,
 
       m_axis_s2mm_sts_tvalid => m_axis_s2mm_sts_tvalid_reg,
