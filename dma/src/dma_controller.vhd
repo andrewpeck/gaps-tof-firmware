@@ -18,6 +18,7 @@ entity dma_controller is
     C_DEBUG                   : boolean                        := true;
     words_to_send             : integer                        := 16;
     daq_busy_delay_const      : positive                       := 28;
+    RESET_ACTIVE : std_logic := '0';    -- set to 1 for active high, 0 for active low
     -- NOTE: words_to_send MUST NOT EXCEED MaxBurst in DataMover core (u1: axis2aximm)!
  
     -- TODO: make START_ADDRESS, TOP_HALF_ADDRESS programmable from userspace
@@ -176,7 +177,6 @@ architecture Behavioral of dma_controller is
   type data_state is (IDLE, ASSERT_CMD, DELAY0, READ_FIFO, DONE, DELAY1,CLEAR_MEM,CONTINUE_CLEAR);
 
   signal aresetn         : std_logic := '1';
-  signal RESET_ACTIVE    : std_logic := '0';
 
   signal s2mm_cmd_state  : cmd_state;
   signal s2mm_data_state : data_state;
@@ -384,7 +384,8 @@ process(CLK_AXI)
   address_pointer : process(CLK_AXI)
   begin
     if(rising_edge(CLK_AXI)) then
-      if aresetn = '0' then
+
+      if aresetn = RESET_ACTIVE then
         reset_pointer_address <= '0';
         saddress_mux          <= START_ADDRESS;
         -- mem_bytes_written > 66584576 (63.5 MB) and DAQ_BUSY = 0 jump to top half of ring -> TOP_HALF_ADDRESS
@@ -427,8 +428,8 @@ process(CLK_AXI)
   address_handler : process(CLK_AXI)
   begin
     if(rising_edge(CLK_AXI)) then
-      if aresetn = '0' or reset_pointer_address_r2 = '1' then
         saddr <= saddress_mux;
+      if aresetn = RESET_ACTIVE or reset_pointer_address_r2 = '1' then
         mem_bytes_written <= (others => '0');
       elsif (s2mm_addr_req_posted_reg = '1') then
         saddr <= std_logic_vector(unsigned(saddr) + unsigned(btt));
@@ -444,7 +445,8 @@ process(CLK_AXI)
   s2mm_data_interface : process(CLK_AXI)
   begin
     if(rising_edge(CLK_AXI)) then
-      if aresetn = '0' then
+
+      if aresetn = RESET_ACTIVE then
         s2mm_allow_addr_req_reg <= '0';
         s2mm_data_state         <= IDLE;
         delay_counter           <= 0;
