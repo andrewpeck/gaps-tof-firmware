@@ -1,9 +1,14 @@
 # -*- mode: TCL;-*-
 
 # IP Cores
+#
+# MUST remove unused IP in Vivado 2020.1 due to a bug; it crashes when trying to
+# export XSA files when IPs are included in the project, but not used in the
+# design
+
 ip/clock_wizard/clock_wizard.xci
 ip/sem_core/sem_core.xci
-ip/ila_axi_ipbus_bridge/ila_axi_ipbus_bridge.xci
+#ip/ila_axi_ipbus_bridge/ila_axi_ipbus_bridge.xci
 ip/ila_drs/ila_drs.xci
 ip/xadc_wiz/xadc_wiz.xci
 
