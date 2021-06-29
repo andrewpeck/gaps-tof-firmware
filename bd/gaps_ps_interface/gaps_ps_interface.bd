@@ -1,11 +1,12 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0x81757873EC5EE895",
+      "boundary_crc": "0x81757873046529F3",
       "device": "xc7z010clg400-1",
       "name": "gaps_ps_interface",
+      "rev_ctrl_bd_flag": "RevCtrlBdOff",
       "synth_flow_mode": "Hierarchical",
-      "tool_version": "2019.2.1",
+      "tool_version": "2020.1",
       "validated": "true"
     },
     "design_tree": {
@@ -88,6 +89,11 @@
       "DMA_HP_AXI": {
         "mode": "Slave",
         "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
+        "address_space_ref": "DMA_HP_AXI",
+        "base_address": {
+          "minimum": "0x00000000",
+          "maximum": "0xFFFFFFFF"
+        },
         "parameters": {
           "DATA_WIDTH": {
             "value": "32"
@@ -96,7 +102,7 @@
             "value": "AXI4"
           },
           "FREQ_HZ": {
-            "value": "200000000",
+            "value": "100000000",
             "value_src": "user_prop"
           },
           "ID_WIDTH": {
@@ -201,6 +207,7 @@
       "IPB_AXI": {
         "mode": "Master",
         "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
+        "memory_map_ref": "IPB_AXI",
         "parameters": {
           "DATA_WIDTH": {
             "value": "32"
@@ -343,8 +350,12 @@
             "value_src": "default_prop"
           },
           "FREQ_HZ": {
-            "value": "200000000",
+            "value": "100000000",
             "value_src": "user_prop"
+          },
+          "FREQ_TOLERANCE_HZ": {
+            "value": "0",
+            "value_src": "default"
           },
           "INSERT_VIP": {
             "value": "0",
@@ -405,6 +416,10 @@
             "value": "33333336",
             "value_src": "user_prop"
           },
+          "FREQ_TOLERANCE_HZ": {
+            "value": "0",
+            "value_src": "default"
+          },
           "INSERT_VIP": {
             "value": "0",
             "value_src": "default"
@@ -445,7 +460,7 @@
             "value": "10.000000"
           },
           "PCW_ACT_FPGA0_PERIPHERAL_FREQMHZ": {
-            "value": "200.000000"
+            "value": "100.000000"
           },
           "PCW_ACT_FPGA1_PERIPHERAL_FREQMHZ": {
             "value": "33.333336"
@@ -499,7 +514,7 @@
             "value": "111.111115"
           },
           "PCW_CLK0_FREQ": {
-            "value": "200000000"
+            "value": "100000000"
           },
           "PCW_CLK1_FREQ": {
             "value": "33333336"
@@ -601,7 +616,7 @@
             "value": "TRUE"
           },
           "PCW_FPGA0_PERIPHERAL_FREQMHZ": {
-            "value": "200.00000000000000000"
+            "value": "100"
           },
           "PCW_FPGA1_PERIPHERAL_FREQMHZ": {
             "value": "33.33333333333333333333333333333"
@@ -1383,6 +1398,28 @@
           "PCW_WDT_WDT_IO": {
             "value": "EMIO"
           }
+        },
+        "addressing": {
+          "address_spaces": {
+            "Data": {
+              "range": "4G",
+              "width": "32"
+            }
+          },
+          "interface_ports": {
+            "M_AXI_GP1": {
+              "mode": "Master",
+              "address_space_ref": "Data",
+              "base_address": {
+                "minimum": "0x80000000",
+                "maximum": "0xBFFFFFFF"
+              }
+            },
+            "S_AXI_HP0": {
+              "mode": "Slave",
+              "memory_map_ref": "S_AXI_HP0"
+            }
+          }
         }
       },
       "jtag_axi_0": {
@@ -1391,6 +1428,24 @@
         "parameters": {
           "PROTOCOL": {
             "value": "2"
+          }
+        },
+        "addressing": {
+          "address_spaces": {
+            "Data": {
+              "range": "4G",
+              "width": "32"
+            }
+          },
+          "interface_ports": {
+            "M_AXI": {
+              "mode": "Master",
+              "address_space_ref": "Data",
+              "base_address": {
+                "minimum": "0x00000000",
+                "maximum": "0xFFFFFFFF"
+              }
+            }
           }
         }
       },
@@ -1496,6 +1551,22 @@
               "STRATEGY": {
                 "value": "0"
               }
+            },
+            "addressing": {
+              "interface_ports": {
+                "S00_AXI": {
+                  "mode": "Slave",
+                  "bridges": [
+                    "M00_AXI"
+                  ]
+                },
+                "S01_AXI": {
+                  "mode": "Slave",
+                  "bridges": [
+                    "M00_AXI"
+                  ]
+                }
+              }
             }
           },
           "s00_couplers": {
@@ -1554,20 +1625,30 @@
                   "SI_PROTOCOL": {
                     "value": "AXI3"
                   }
+                },
+                "addressing": {
+                  "interface_ports": {
+                    "S_AXI": {
+                      "mode": "Slave",
+                      "bridges": [
+                        "M_AXI"
+                      ]
+                    }
+                  }
                 }
               }
             },
             "interface_nets": {
-              "s00_couplers_to_auto_pc": {
-                "interface_ports": [
-                  "S_AXI",
-                  "auto_pc/S_AXI"
-                ]
-              },
               "auto_pc_to_s00_couplers": {
                 "interface_ports": [
                   "M_AXI",
                   "auto_pc/M_AXI"
+                ]
+              },
+              "s00_couplers_to_auto_pc": {
+                "interface_ports": [
+                  "S_AXI",
+                  "auto_pc/S_AXI"
                 ]
               }
             },
@@ -1696,14 +1777,52 @@
           },
           "s00_mmu": {
             "vlnv": "xilinx.com:ip:axi_mmu:2.1",
-            "xci_name": "gaps_ps_interface_s00_mmu_0"
+            "xci_name": "gaps_ps_interface_s00_mmu_0",
+            "addressing": {
+              "interface_ports": {
+                "S_AXI": {
+                  "mode": "Slave",
+                  "bridges": [
+                    "M_AXI"
+                  ]
+                }
+              }
+            }
           },
           "s01_mmu": {
             "vlnv": "xilinx.com:ip:axi_mmu:2.1",
-            "xci_name": "gaps_ps_interface_s01_mmu_0"
+            "xci_name": "gaps_ps_interface_s01_mmu_0",
+            "addressing": {
+              "interface_ports": {
+                "S_AXI": {
+                  "mode": "Slave",
+                  "bridges": [
+                    "M_AXI"
+                  ]
+                }
+              }
+            }
           }
         },
         "interface_nets": {
+          "s00_mmu_M_AXI": {
+            "interface_ports": [
+              "s00_mmu/M_AXI",
+              "s00_couplers/S_AXI"
+            ]
+          },
+          "s01_mmu_M_AXI": {
+            "interface_ports": [
+              "s01_mmu/M_AXI",
+              "s01_couplers/S_AXI"
+            ]
+          },
+          "xbar_to_m00_couplers": {
+            "interface_ports": [
+              "xbar/M00_AXI",
+              "m00_couplers/S_AXI"
+            ]
+          },
           "s01_couplers_to_xbar": {
             "interface_ports": [
               "s01_couplers/M_AXI",
@@ -1716,40 +1835,22 @@
               "xbar/S00_AXI"
             ]
           },
-          "S01_AXI_1": {
-            "interface_ports": [
-              "S01_AXI",
-              "s01_mmu/S_AXI"
-            ]
-          },
-          "s01_mmu_M_AXI": {
-            "interface_ports": [
-              "s01_mmu/M_AXI",
-              "s01_couplers/S_AXI"
-            ]
-          },
-          "S00_AXI_1": {
-            "interface_ports": [
-              "S00_AXI",
-              "s00_mmu/S_AXI"
-            ]
-          },
           "m00_couplers_to_axi_interconnect_0": {
             "interface_ports": [
               "M00_AXI",
               "m00_couplers/M_AXI"
             ]
           },
-          "s00_mmu_M_AXI": {
+          "S01_AXI_1": {
             "interface_ports": [
-              "s00_mmu/M_AXI",
-              "s00_couplers/S_AXI"
+              "S01_AXI",
+              "s01_mmu/S_AXI"
             ]
           },
-          "xbar_to_m00_couplers": {
+          "S00_AXI_1": {
             "interface_ports": [
-              "xbar/M00_AXI",
-              "m00_couplers/S_AXI"
+              "S00_AXI",
+              "s00_mmu/S_AXI"
             ]
           }
         },
@@ -1910,7 +2011,17 @@
             "components": {
               "s00_regslice": {
                 "vlnv": "xilinx.com:ip:axi_register_slice:2.1",
-                "xci_name": "gaps_ps_interface_s00_regslice_0"
+                "xci_name": "gaps_ps_interface_s00_regslice_0",
+                "addressing": {
+                  "interface_ports": {
+                    "S_AXI": {
+                      "mode": "Slave",
+                      "bridges": [
+                        "M_AXI"
+                      ]
+                    }
+                  }
+                }
               },
               "auto_pc": {
                 "vlnv": "xilinx.com:ip:axi_protocol_converter:2.1",
@@ -1921,6 +2032,16 @@
                   },
                   "SI_PROTOCOL": {
                     "value": "AXI4"
+                  }
+                },
+                "addressing": {
+                  "interface_ports": {
+                    "S_AXI": {
+                      "mode": "Slave",
+                      "bridges": [
+                        "M_AXI"
+                      ]
+                    }
                   }
                 }
               }
@@ -1964,16 +2085,16 @@
           }
         },
         "interface_nets": {
-          "dma_hp_interconnect_to_s00_couplers": {
-            "interface_ports": [
-              "S00_AXI",
-              "s00_couplers/S_AXI"
-            ]
-          },
           "s00_couplers_to_dma_hp_interconnect": {
             "interface_ports": [
               "M00_AXI",
               "s00_couplers/M_AXI"
+            ]
+          },
+          "dma_hp_interconnect_to_s00_couplers": {
+            "interface_ports": [
+              "S00_AXI",
+              "s00_couplers/S_AXI"
             ]
           }
         },
@@ -2012,30 +2133,6 @@
           "dma_hp_interconnect/S00_AXI"
         ]
       },
-      "jtag_axi_0_M_AXI": {
-        "interface_ports": [
-          "jtag_axi_0/M_AXI",
-          "axi_interconnect_0/S01_AXI"
-        ]
-      },
-      "axi_protocol_convert_1_M_AXI": {
-        "interface_ports": [
-          "axi_interconnect_0/S00_AXI",
-          "processing_system/M_AXI_GP1"
-        ]
-      },
-      "processing_system7_0_DDR": {
-        "interface_ports": [
-          "DDR",
-          "processing_system/DDR"
-        ]
-      },
-      "axi_interconnect_0_M00_AXI": {
-        "interface_ports": [
-          "IPB_AXI",
-          "axi_interconnect_0/M00_AXI"
-        ]
-      },
       "processing_system7_0_FIXED_IO": {
         "interface_ports": [
           "FIXED_IO",
@@ -2046,6 +2143,30 @@
         "interface_ports": [
           "dma_hp_interconnect/M00_AXI",
           "processing_system/S_AXI_HP0"
+        ]
+      },
+      "jtag_axi_0_M_AXI": {
+        "interface_ports": [
+          "jtag_axi_0/M_AXI",
+          "axi_interconnect_0/S01_AXI"
+        ]
+      },
+      "axi_interconnect_0_M00_AXI": {
+        "interface_ports": [
+          "IPB_AXI",
+          "axi_interconnect_0/M00_AXI"
+        ]
+      },
+      "processing_system7_0_DDR": {
+        "interface_ports": [
+          "DDR",
+          "processing_system/DDR"
+        ]
+      },
+      "axi_protocol_convert_1_M_AXI": {
+        "interface_ports": [
+          "axi_interconnect_0/S00_AXI",
+          "processing_system/M_AXI_GP1"
         ]
       }
     },
@@ -2129,7 +2250,7 @@
               "Reg": {
                 "base_address": "0",
                 "range": "64K",
-                "width": "32",
+                "width": "16",
                 "usage": "register"
               }
             }
