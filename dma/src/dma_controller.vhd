@@ -14,6 +14,8 @@ entity dma_controller is
     RESET_ACTIVE : std_logic := '0';    -- set to 1 for active high, 0 for active low
 
     WORDS_TO_SEND : integer := 16;
+    
+    BUFF_FRAC_DIVISOR  : integer := 1040384;  --Corresponds to 1/64 of RAM_BUFF_SIZE
     -- NOTE: WORDS_TO_SEND MUST NOT EXCEED MaxBurst in DataMover core (u1: axis2aximm)!
 
     -- TODO: make START_ADDRESS, TOP_HALF_ADDRESS programmable from userspace
@@ -259,7 +261,15 @@ architecture Behavioral of dma_controller is
   signal clear_r_edge_r1 : std_logic := '0';
   signal clear_r_edge_r2 : std_logic := '0';
   signal clear_pulse_r1  : std_logic := '0';
+  
+  --------------------------------------------------------------------------------
+  -- RAM Occupancy Signals
+  --------------------------------------------------------------------------------
 
+  signal ram_buff_a_occupancy  : unsigned(31 downto 0) := (others => '0');
+  signal ram_buff_b_occupancy  : unsigned(31 downto 0) := (others => '0');
+  signal dma_pointer           : unsigned(31 downto 0);
+  
 begin
 
   --active low reset for logic
@@ -594,6 +604,27 @@ begin
       end if;
     end if;
   end process;
+  
+  --------------------------------------------------------------------------------
+  -- RAM Occupancy
+  -- Running count of split buffer fullness in units of 64ths
+  -- Also provides integer value of saddr pointer
+  --------------------------------------------------------------------------------
+  ram_occupancy : process(clk_axi)
+    begin
+    if(rising_edge(clk_axi)) then
+    dma_pointer <= unsigned(saddr);
+      if (mem_bytes_written mod BUFF_FRAC_DIVISOR) = 0 then
+        if (dma_pointer < unsigned(TOP_HALF_ADDRESS)) then
+             ram_buff_a_occupancy <= ram_buff_a_occupancy + 1;
+        end if;
+        if (dma_pointer >= unsigned(TOP_HALF_ADDRESS)) then
+             ram_buff_b_occupancy <= ram_buff_b_occupancy + 1;
+        end if;
+      end if;
+    end if;
+  end process;
+  
 
   -------------------------------------------------------------------------------
   -- Data Mover IP
