@@ -286,7 +286,7 @@ begin
 
           roi_size     <= to_int (roi_size_i);
           dna          <= dna_i;
-          hash         <= hash_i (23 downto 8);
+          hash         <= hash_i (27 downto 12);
           debug        <= false;
           dropped      <= '0';          -- drs_busy_i; FIXME correct this when there is a real trigger
           num_channels <= count_ones (mask_i);
