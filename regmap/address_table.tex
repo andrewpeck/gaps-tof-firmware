@@ -262,6 +262,28 @@
     \vspace{5mm}
 
 
+    \noindent
+    \subsection*{\textcolor{parentcolor}{\textbf{DRS.DMA}}}
+
+    \vspace{4mm}
+    \noindent
+    DMA and ram buffer occupancy
+    \noindent
+
+    \keepXColumns
+    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
+    \hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
+    \nopagebreak
+    RAM\_A\_OCC\_RST & \texttt{0x100} & \texttt{[0:0]} & w & Pulse & Sets RAM buffer a counter to 0 \\\hline
+    RAM\_B\_OCC\_RST & \texttt{0x101} & \texttt{[0:0]} & w & Pulse & Sets RAM buffer b counter to 0 \\\hline
+    RAM\_A\_OCCUPANCY & \texttt{0x102} & \texttt{[31:0]} & r & \texttt{} & RAM buffer a occupancy \\\hline
+    RAM\_B\_OCCUPANCY & \texttt{0x103} & \texttt{[31:0]} & r & \texttt{} & RAM buffer b occupancy \\\hline
+    DMA\_POINTER & \texttt{0x104} & \texttt{[31:0]} & r & \texttt{} & DMA controller pointer \\\hline
+    \end{tabularx}
+    \vspace{5mm}
+
+
 % END: ADDRESS_TABLE :: DO NOT EDIT
 
 \end{document}
