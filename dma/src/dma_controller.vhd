@@ -16,6 +16,7 @@ entity dma_controller is
     WORDS_TO_SEND : integer := 16;
     
     BUFF_FRAC_DIVISOR  : integer := 1040384;  --Corresponds to 1/64 of RAM_BUFF_SIZE
+    
     -- NOTE: WORDS_TO_SEND MUST NOT EXCEED MaxBurst in DataMover core (u1: axis2aximm)!
 
     -- TODO: make START_ADDRESS, TOP_HALF_ADDRESS programmable from userspace
@@ -31,6 +32,18 @@ entity dma_controller is
     clk_in  : in std_logic;             -- daq clock
     clk_axi : in std_logic;             -- axi clock
     rst_in  : in std_logic;             -- active high reset, synchronous to the axi clock
+    
+    --------------------------------------------------------------
+    -- RAM Occupancy signals
+    --------------------------------------------------------------
+    ram_a_occ_rst  : in std_logic;
+    ram_b_occ_rst  : in std_logic;
+
+
+    ram_buff_a_occupancy_o  : out std_logic_vector(31 downto 0) := (others => '0');
+    ram_buff_b_occupancy_o  : out std_logic_vector(31 downto 0) := (others => '0');
+    dma_pointer_o           : out std_logic_vector(31 downto 0);
+
 
     --------------------------------------------------------------
     -- DAQ Signal(s)
@@ -268,6 +281,7 @@ architecture Behavioral of dma_controller is
 
   signal ram_buff_a_occupancy  : unsigned(31 downto 0) := (others => '0');
   signal ram_buff_b_occupancy  : unsigned(31 downto 0) := (others => '0');
+  
   signal dma_pointer           : unsigned(31 downto 0);
   
 begin
@@ -298,7 +312,14 @@ begin
 
   s2mm_tvalid <= s2mm_tvalid_r1 or clear_valid;
   s2mm_tkeep  <= x"F";
+  
+  -- RAM occupancy connections
+  ram_buff_a_occupancy_o <= std_logic_vector(ram_buff_a_occupancy);
+  ram_buff_b_occupancy_o <= std_logic_vector(ram_buff_b_occupancy);
+  dma_pointer_o <= std_logic_vector(dma_pointer);
 
+  assert BUFF_FRAC_DIVISOR rem (WORDS_TO_SEND * 4) = 0 report "BUFF_FRAC_DIVISOR must be divisible by WORDS_TO_SEND * 4" severity ERROR;
+  
   -------------------------------------------------------------------------------
   -- FIFO Generator
   -------------------------------------------------------------------------------
@@ -614,13 +635,21 @@ begin
     begin
     if(rising_edge(clk_axi)) then
     dma_pointer <= unsigned(saddr);
-      if (mem_bytes_written mod BUFF_FRAC_DIVISOR) = 0 then
-        if (dma_pointer < unsigned(TOP_HALF_ADDRESS)) then
-             ram_buff_a_occupancy <= ram_buff_a_occupancy + 1;
-        end if;
-        if (dma_pointer >= unsigned(TOP_HALF_ADDRESS)) then
-             ram_buff_b_occupancy <= ram_buff_b_occupancy + 1;
-        end if;
+      if s2mm_addr_req_posted_reg = '1' then
+          if (mem_bytes_written mod BUFF_FRAC_DIVISOR) = 0 then
+            if (dma_pointer < unsigned(TOP_HALF_ADDRESS)) then
+                 ram_buff_a_occupancy <= ram_buff_a_occupancy + 1;
+            end if;
+            if (dma_pointer >= unsigned(TOP_HALF_ADDRESS)) then
+                 ram_buff_b_occupancy <= ram_buff_b_occupancy + 1;
+            end if;
+          end if;
+      end if;
+      if ram_a_occ_rst = '1' then
+        ram_buff_a_occupancy <= (others => '0');
+      end if;
+      if ram_b_occ_rst = '1' then
+        ram_buff_b_occupancy <= (others => '0');
       end if;
     end if;
   end process;
