@@ -1,0 +1,32 @@
+/include/ "system-conf.dtsi"
+/ {
+	model = "Enclustra MA-ZX2-10-2I-D9 SOM";
+	chosen {
+		bootargs = "console=ttyPS0,115200 earlycon vmalloc=512M root=/dev/mmcblk0p2 rw rootwait";
+	};
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		fpga_reserved1: rambuffer@4000000 {
+			reg = <0x4000000 0x8400000>;
+		};
+	};
+};
+
+&sdhci0 {
+	status = "okay";
+	max-frequency = <50000000>;
+	no-1-8-v;
+	disable-wp;
+};
+
+&amba {
+	i2c@e0004000 {
+		clock-frequency = <100000>;
+    };
+};
+
+#include "zynq_enclustra_common.dtsi"
+#include "zynq_enclustra_mars_zx2.dtsi"

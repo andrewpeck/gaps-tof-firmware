@@ -17,9 +17,18 @@ readout-firmware/
   ├── dma      : Files for DMA driver
   ├── drs      : Files for DRS4 control
   ├── xdc      : Xilinx XDC constraint files
-  └── Projects : Auto-generated directory containing the Vivado project
-
+  ├── Projects : Auto-generated directory containing the Vivado project
+  ├── util     : Helper scripts for build system
+  └── plnx     : PetaLinux source files and docs
 ```
+
+## Software dependencies
+ * Xilinx tools
+   * Vivado 2020.1
+ * Build system
+   * git
+   * make
+   * python3.6+ 
 
 Register Access
 ---------------
@@ -47,6 +56,11 @@ A convenient document describing the address table can be seen at:
 
 Building the Firmware
 ---------------------
+
+### Special note for 2020.1 and hardware generation
+
+ * Hog cannot be used to export hardware `.xsa`. After bitsream is generated use these steps in Vivado
+   * Open BD or Implemented Design: File->Export->Export Hardware (Platform type=Fixed), next-> Check include bitstream, next->set file name/path->finish 
 
 This firmware is using the HOG framework as a build system:
 
