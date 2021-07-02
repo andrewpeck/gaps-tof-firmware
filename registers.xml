@@ -10,7 +10,7 @@
     fw_bus_reset_signal="ipb_reset"
     fw_master_bus_signal="ipb_mosi_arr(0)"
     fw_slave_bus_signal="ipb_miso_arr(0)"
-    fw_reg_addr_msb="6"
+    fw_reg_addr_msb="8"
     fw_reg_addr_lsb="0">
 
         <node id="CHIP" address="0x0" description="Registers for configuring the DRS ASIC Directly">
@@ -271,7 +271,12 @@
             <node id="FULL"  permission="r" address="0x2" mask="0x00000001" description="Spy Buffer Full"  fw_signal="spy_full"/>
             <node id="EMPTY" permission="r" address="0x2" mask="0x00000002" description="Spy Buffer Empty" fw_signal="spy_empty"/>
         </node>
-
+        <node id="DMA" address="0x100" description = "DMA and ram buffer occupancy">
+            <node id="RAM_A_OCC_RST" permission="w" address="0x0" mask="0x00000001" description="Sets RAM buffer a counter to 0" fw_write_pulse_signal="ram_a_occ_rst"/>
+            <node id="RAM_B_OCC_RST" permission="w" address="0x1" mask="0x00000001" description="Sets RAM buffer b counter to 0" fw_write_pulse_signal="ram_b_occ_rst"/>
+            <node id="RAM_A_OCCUPANCY"  permission="r" address="0x2" mask="0xFFFFFFFF" description="RAM buffer a occupancy"  fw_signal="ram_buff_a_occupancy"/>
+            <node id="RAM_B_OCCUPANCY"  permission="r" address="0x3" mask="0xFFFFFFFF" description="RAM buffer b occupancy"  fw_signal="ram_buff_b_occupancy"/>
+            <node id="DMA_POINTER"  permission="r" address="0x4" mask="0xFFFFFFFF" description="DMA controller pointer"  fw_signal="dma_pointer"/>
+        </node>
     </node>
-
 </node>
