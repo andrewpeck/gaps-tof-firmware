@@ -6,21 +6,21 @@ DRS4 Readout Board Firmware
 Organization
 ------------
 
-``` {.example}
+<pre>
 readout-firmware/
-  ├── Hog      : Submodule containing the HOG project
-  ├── Top      : Top level project configuration files for HOG
-  ├── bd       : Block diagram files
-  ├── regmap   : Register XML to VHDL tools
-  ├── tcl      : TCL scripts for ip core creation
-  ├── ip       : Holds both user and Vivado IP cores
-  ├── dma      : Files for DMA driver
-  ├── drs      : Files for DRS4 control
-  ├── xdc      : Xilinx XDC constraint files
+  ├── <a href="./Hog">Hog</a>      : Submodule containing the HOG project
+  ├── <a href="./Top">Top</a>      : Top level project configuration files for HOG
+  ├── <a href="./bd">bd</a>       : Block diagram files
+  ├── <a href="./regmap">regmap</a>   : Register XML to VHDL tools
+  ├── <a href="./tcl">tcl</a>      : TCL scripts for ip core creation
+  ├── <a href="./ip">ip</a>       : Holds both user and Vivado IP cores
+  ├── <a href="./dma">dma</a>      : Files for DMA driver
+  ├── <a href="./drs">drs</a>      : Files for DRS4 control
+  ├── <a href="./xdc">xdc</a>      : Xilinx XDC constraint files
   ├── Projects : Auto-generated directory containing the Vivado project
-  ├── util     : Helper scripts for build system
-  └── plnx     : PetaLinux source files and docs
-```
+  ├── <a href="./util">util</a>     : Helper scripts for build system
+  └── <a href="./plnx">plnx</a>     : PetaLinux source files and docs
+</pre>
 
 ## Software dependencies
  * Xilinx tools
