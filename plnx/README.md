@@ -98,7 +98,42 @@ At the moment a script has only been developed for 8 GB device `8gb_zynq7_sd.sfd
 
 After completing the previous steps run `sync`. Disconnect and reconnect microSD card to PC. For Ubuntu 18+ OS it should automount the disk for you, and `boot` and `root` partitions should be accessible.
 
-Boot files will be located in `plnx_root/images/linux` where `plnx_root` is the root folder of the PetaLinux project.
+Boot files will be located in `plnx_root/images/linux` where `plnx_root` is the root folder of the PetaLinux project. These files are required
+
+* `boot.scr`
+* `BOOT.BIN`
+* `image.ub`
+
+```bash
+cp -t /media/user/boot boot.scr BOOT.BIN image.ub
+```
+
+### Copy root file system
+
+Ensure you're in the directory with the exploded file system. Replase `user` with the username on your system.
+
+Minimal root file systems for Debian and Ubuntu can be obtained from <https://forum.digikey.com/t/debian-getting-started-with-the-zynq-7000/14380>
+
+```bash
+#Ubuntu; Root File System: user@localhost:~$
+sudo tar xfvp ./ubuntu-*-*-armhf-*/armhf-rootfs-*.tar -C /media/user/root/
+sync
+sudo chown root:root /media/user/rootfs/
+sudo chmod 755 /media/user/rootfs/
+```
+
+Setup fstab
+
+```bash
+#user@localhost:~/$
+sudo sh -c "echo '/dev/mmcblk0p2  /  auto  errors=remount-ro  0  1' >> /media/user/root/etc/fstab"
+sudo sh -c "echo '/dev/mmcblk0p1  /boot/uboot  auto  defaults  0  2' >> /media/user/root/etc/fstab"
+
+sync
+#Below optional: could use GUI to eject
+sudo umount /media/user/boot
+sudo umount /media/user/rootfs
+```
 
 ## TODO
 
