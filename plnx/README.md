@@ -86,7 +86,19 @@ Xilinx has provided documentation for formatting and setting up required partiti
 
 #### Automated formatting
 
-To speed up this process the `sfdisk` utility can be used.
+To speed up this process the `sfdisk` utility can be used. This command should only be used after disk has been erased, following `dd` step in Xilinx doc.
+
+```bash
+sudo sfdisk -d /dev/sdX < sd_card/8gb_zynq7_sd.sfdisk
+```
+
+At the moment a script has only been developed for 8 GB device `8gb_zynq7_sd.sfdisk`.
+
+### Copy boot files
+
+After completing the previous steps run `sync`. Disconnect and reconnect microSD card to PC. For Ubuntu 18+ OS it should automount the disk for you, and `boot` and `root` partitions should be accessible.
+
+Boot files will be located in `plnx_root/images/linux` where `plnx_root` is the root folder of the PetaLinux project.
 
 ## TODO
 
