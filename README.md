@@ -1,10 +1,8 @@
-DRS4 Readout Board Firmware
-------------
+# DRS4 Readout Board Firmware
 
 [[_TOC_]]
 
-Organization
-------------
+## Organization
 
 <pre>
 readout-firmware/
@@ -23,15 +21,15 @@ readout-firmware/
 </pre>
 
 ## Software dependencies
- * Xilinx tools
-   * Vivado 2020.1
- * Build system
-   * git
-   * make
-   * python3.6+ 
 
-Register Access
----------------
+* Xilinx tools
+  * Vivado 2020.1
+* Build system
+  * git
+  * make
+  * python3.6+
+
+## Register Access
 
 Firmware registers mapped to a Wishbone-like A32/D32 interface, which is
 accessed through an AXI⟷Wishbone Bridge
@@ -52,37 +50,37 @@ The address table is defined in a "templated" XML file: *registers.xml*
 
 A convenient document describing the address table can be seen at:
 
--   [DRS Address Table](regmap/address_table.org)
+* [DRS Address Table](regmap/address_table.org)
 
-Building the Firmware
----------------------
+## Building the Firmware
 
 ### Special note for 2020.1 and hardware generation
 
 Vivado 2020.1 cannot be used with Hog to export hardware `.xsa` out of the box due to a bug Xilinx shipped in that version. Implement either of two work arounds below.
+
  1. Stock 2020.1: ensure bitstream successfully generated. Open BD or Implemented Design: File->Export->Export Hardware (Platform type=Fixed), next-> Check include bitstream, next->set file name/path->finish.
- 2. Fix 2020.1 with Xilinx "tactical patch". See <https://www.xilinx.com/support/answers/75210.html>. If using this option, no further steps are required when using the Hog build system. 
+ 2. Fix 2020.1 with Xilinx "tactical patch". See <https://www.xilinx.com/support/answers/75210.html>. If using this option, no further steps are required when using the Hog build system.
 
 This firmware is using the HOG framework as a build system:
 
--   HOG Documentation: <http://hog-user-docs.web.cern.ch>
--   HOG Source Code: <https://gitlab.cern.ch/hog/Hog>
+* HOG Documentation: <http://hog-user-docs.web.cern.ch>
+* HOG Source Code: <https://gitlab.cern.ch/hog/Hog>
 
 Clone project recursively to pull all HOG scripts
 
-``` {.example}
+```bash
 git clone --recursive https://gitlab.com/ucla-gaps-tof/firmware.git
 ```
 
 The firmware can then be built with:
 
-``` {.example}
+```bash
 make all
 ```
 
 a list of Make targets will be displayed by typing:
 
-``` {.example}
+```bash
 make
 ```
 
@@ -94,7 +92,7 @@ To make sure the environment variables always set, modify your `.bashrc`
 to contain a similar command as below, depending on where you installed
 Vivado.
 
-``` {.example}
+```bash
 source /home/your_usr_name/Xilinx/Vivado/2019.2/settings64.sh
 ```
 
@@ -105,21 +103,20 @@ Best practice is for released builds the entire repo should be cloned
 from scratch and built from the clean cloned repository to ensure that
 no files are missing, the build directory is clean, and so on.
 
-Block Design Creation
----------------------
+## Block Design Creation
 
 HOG wrappers provide facilities for creation of TCL files from Block
 Designs, and Block Designs from TCL.
 
 To export a TCL file from a block design:
 
-``` {.example}
+```bash
 Hog/CreateProject.sh bd-to-tcl
 ```
 
 To generate a block design from a TCL file:
 
-``` {.example}
+```bash
 Hog/CreateProject.sh tcl-to-bd
 ```
 
@@ -133,8 +130,7 @@ directly (and the tcl should be exported after any changes are made).
 The tcl-to-bd flow can be used when changing versions. There is still
 some version-lock-in but efforts were made to minimize it.
 
-Dataformat
-----------
+## Dataformat
 
   | Field      | Len             | Description                                                                                                                                                                                   |
   | :----      | :---------      | :-------------                                                                                                                                                                                |
@@ -155,8 +151,7 @@ Dataformat
   | CRC32      | `[31:0]`        | Packet CRC (excluding Trailer)                                                                                                                                                                |
   | TAIL       | `[15:0]`        | 0x5555                                                                                                                                                                                        |
 
-Trigger Data Format
--------------------
+## Trigger Data Format
 
   | Field     | Len       | Description                                                                                            |
   | :-------- | :-------- | :-------------                                                                                         |
@@ -172,34 +167,25 @@ Trigger Data Format
   to deassert DWRITE. After that, the data is frozen in the ring buffer so we can wait until the CH\_MASK 
   is received to start the readout. 
 
-Gitlab runner registration
-==========================
+## Gitlab runner registration
 
 Some simple instructions for registering a Gitlab runner
 
-1.  Install gitlab-runner
-    -   <https://docs.gitlab.com/runner/install/>
-2.  Execute `gitlab-runner register`
-3.  At the prompt of "Please enter the gitlab-ci coordinator URL (e.g.
-    <https://gitlab.com/>):", enter:
-```
-https://gitlab.com/
-```
-4.  At the prompt of "Please enter the gitlab-ci token for this
+1. Install gitlab-runner
+   * <https://docs.gitlab.com/runner/install/>
+2. Execute `gitlab-runner register`
+3. At the prompt of "Please enter the gitlab-ci coordinator URL (e.g.
+    <https://gitlab.com/>):", enter: `https://gitlab.com/`
+4. At the prompt of "Please enter the gitlab-ci token for this
     runner:", enter the token that you get from Settings -&gt; CI/CD
     -&gt; Runners --&gt; Set up a specific Runner manually.
-5.  At the prompt of "Please enter the gitlab-ci description for this
+5. At the prompt of "Please enter the gitlab-ci description for this
     runner:", give it a name:
-6.  At the prompt of "Please enter the gitlab-ci tags for this runner
-    (comma separated):", enter
-```
-hog
-```
-7.  At the prompt of: "Please enter the executor: docker+machine,
+6. At the prompt of "Please enter the gitlab-ci tags for this runner
+    (comma separated):", enter `hog`
+7. At the prompt of: "Please enter the executor: docker+machine,
     docker-ssh+machine, kubernetes, parallels, virtualbox, docker-ssh,
-    shell, ssh, custom, docker:", enter:
-```
-shell
-```
+    shell, ssh, custom, docker:", enter: `shell`
+
 Now you can simply start the runner (`gitlab-runner run`). Make sure
 Vivado is in the path.
