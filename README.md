@@ -59,8 +59,9 @@ Building the Firmware
 
 ### Special note for 2020.1 and hardware generation
 
- * Hog cannot be used to export hardware `.xsa`. After bitsream is generated use these steps in Vivado
-   * Open BD or Implemented Design: File->Export->Export Hardware (Platform type=Fixed), next-> Check include bitstream, next->set file name/path->finish 
+Vivado 2020.1 cannot be used with Hog to export hardware `.xsa` out of the box due to a bug Xilinx shipped in that version. Implement either of two work arounds below.
+ 1. Stock 2020.1: ensure bitstream successfully generated. Open BD or Implemented Design: File->Export->Export Hardware (Platform type=Fixed), next-> Check include bitstream, next->set file name/path->finish.
+ 2. Fix 2020.1 with Xilinx "tactical patch". See <https://www.xilinx.com/support/answers/75210.html>. If using this option, no further steps are required when using the Hog build system. 
 
 This firmware is using the HOG framework as a build system:
 
