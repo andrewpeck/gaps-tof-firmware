@@ -4,7 +4,7 @@
 
 ## Organization
 
-``` {.example}
+```
 plnx/
   ├── dtsi                : Deprecated, old dts config
   ├── enclustra           : Original source files for Enclustra Mars ZX2 BSP
@@ -15,7 +15,7 @@ plnx/
 ## Requirements
  * Vivado 2020.1
  * PetaLinux 2020.1
- * [firmware](https://gitlab.com/ucla-gaps-tof/firmware)
+ * [firmware](../firmware)
    * Built using Hog/Vivado
    * Bitstream generated
    * `.xsa` hardware description file exported
@@ -63,6 +63,23 @@ petalinux-package --boot --fsbl images/linux/zynq_fsbl.elf --fpga images/linux/s
    * `boot.scr`
    * `image.ub`
 
+## SD card
+Instructions and tools for creating bootable SD card image with root filesystem.
+
+### Tested parts
+
+| Part number  | Manufacturer | Distributor link                                                                                 | Notes |
+|:-------------|:-------------|:-------------------------------------------------------------------------------------------------|:------|
+| SDSDQAF-008G | SanDisk      | [amzn](https://www.amazon.com/Sandisk-Industrial-MicroSD-UHS-I-SDSDQAF3-008G/dp/B07BLQHVQD?th=1) |       |
+
+
+
+### Formatting
+Xilinx has provided documentation for formatting and setting up required partitions. See <https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/18841655/Prepare+Boot+Medium>. **Important:** above link must be followed to the letter, otherwise the system will not boot.
+
+#### Automated formatting
+
+To speed up this process the `sfdisk` utility can be used.
+
 ## TODO
 - [ ] Create unified build approach: start with Enclustra BSP then auto patch UCLA customizations
-
