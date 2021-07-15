@@ -13,12 +13,13 @@ plnx/
 ```
 
 ## Requirements
- * Vivado 2020.1
- * PetaLinux 2020.1
- * [firmware](../firmware)
-   * Built using Hog/Vivado
-   * Bitstream generated
-   * `.xsa` hardware description file exported
+
+* Vivado 2020.1
+* PetaLinux 2020.1
+* [firmware](../firmware)
+  * Built using Hog/Vivado
+  * Bitstream generated
+  * `.xsa` hardware description file exported
 
 ## Build procedure
 
@@ -29,41 +30,48 @@ There are currently two ways to build the kernel and boot images:
 
 ### Using UCLA BSP
 
- * Download BSP [here](https://gaps1.astro.ucla.edu/gaps/media/drsdev/ucla_drs4_v2_3_xilinx2020_1.bsp). Note download location
- * Create and build project from BSP
-```
+* Download BSP [here](https://gaps1.astro.ucla.edu/gaps/media/drsdev/ucla_drs4_v2_3_xilinx2020_1.bsp). Note download location
+* Create and build project from BSP
+
+```bash
 petalinux-create -t project -s /path/to/ucla.bsp
 petalinux-configure --get-hw-description=/path/to/.xsa
 petalinux-build
 petalinux-package --boot --fsbl images/linux/zynq_fsbl.elf --fpga images/linux/system.bit --u-boot --force
 ```
- * Copy following files to `boot` partition of the SD card
-   * `BOOT.BIN`
-   * `boot.scr`
-   * `image.ub`
+
+* Copy following files to `boot` partition of the SD card
+  * `BOOT.BIN`
+  * `boot.scr`
+  * `image.ub`
   
 ### Using Enclustra BSP
 
- * Download BSP [here](https://github.com/enclustra/Mars_ZX2_EB1_Reference_Design/releases/download/2020.1_v1.1.0/Petalinux_MA-ZX2-10-2I-D9_EB1_SD.bsp)
- * Create project from BSP
- * In config menu, turn on hardware manager
-   * FPGA Manager -> [*] FPGA Manager
-```
+* Download BSP [here](https://github.com/enclustra/Mars_ZX2_EB1_Reference_Design/releases/download/2020.1_v1.1.0/Petalinux_MA-ZX2-10-2I-D9_EB1_SD.bsp)
+* Create project from BSP
+* In config menu, turn on hardware manager
+  * FPGA Manager -> [*] FPGA Manager
+
+```bash
 petalinux-create -t project -s /path/to/enclustra.bsp
 petalinux-configure --get-hw-description=/path/to/.xsa
 ```
- * Modify device tree files to match those of `ucla/project-spec/meta-user/recipes-bsp/device-tree/files` 
- * Build
-```
+
+* Modify device tree files to match those of `ucla/project-spec/meta-user/recipes-bsp/device-tree/files`
+* Build
+
+```bash
 petalinux-build
 petalinux-package --boot --fsbl images/linux/zynq_fsbl.elf --fpga images/linux/system.bit --u-boot --force
 ```
- * Copy following files to `boot` partition of the SD card
-   * `BOOT.BIN`
-   * `boot.scr`
-   * `image.ub`
+
+* Copy following files to `boot` partition of the SD card
+  * `BOOT.BIN`
+  * `boot.scr`
+  * `image.ub`
 
 ## SD card
+
 Instructions and tools for creating bootable SD card image with root filesystem.
 
 ### Tested parts
@@ -72,9 +80,8 @@ Instructions and tools for creating bootable SD card image with root filesystem.
 |:-------------|:-------------|:-------------------------------------------------------------------------------------------------|:------|
 | SDSDQAF-008G | SanDisk      | [amzn](https://www.amazon.com/Sandisk-Industrial-MicroSD-UHS-I-SDSDQAF3-008G/dp/B07BLQHVQD?th=1) |       |
 
-
-
 ### Formatting
+
 Xilinx has provided documentation for formatting and setting up required partitions. See <https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/18841655/Prepare+Boot+Medium>. **Important:** above link must be followed to the letter, otherwise the system will not boot.
 
 #### Automated formatting
@@ -82,4 +89,5 @@ Xilinx has provided documentation for formatting and setting up required partiti
 To speed up this process the `sfdisk` utility can be used.
 
 ## TODO
-- [ ] Create unified build approach: start with Enclustra BSP then auto patch UCLA customizations
+
+* [ ] Create unified build approach: start with Enclustra BSP then auto patch UCLA customizations
