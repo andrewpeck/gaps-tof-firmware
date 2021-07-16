@@ -135,6 +135,32 @@ sudo umount /media/user/boot
 sudo umount /media/user/rootfs
 ```
 
+## First boot
+
+> ⚠️ The system has a weak temporary initial password. Do *not* connect the Ethernet cable during the first boot.
+
+Before powering on the board, connect J12 to a Micro USB cable and PC. This provides a serial connection for shell prompt, and also allows you to see the boot information printed (useful for debugging).
+
+`picocom` is an easy to use Linux serial console command line utility. For an Ubuntu OS
+
+```bash
+sudo apt install picocom
+```
+
+The FTDI should present a new device, e.g. `ttyUSB0`. Connect to it at 115,200 baud
+
+```bash
+sudo picocom -b 115200 /dev/ttyUSB0
+```
+
+You will now have a normal bash terminal.
+
+> ℹ️ The default login credentials are printed to the terminal. Use those to login and change the admin password to something stronger.
+
+After the admin password has been changed, it's safe to connect the Ethernet cable. The OS is configured by default to use DHCP to obtain an IP. Networking should work out of the box without additional configuration on a DHCP capable LAN.
+
+
+
 ## TODO
 
 * [ ] Create unified build approach: start with Enclustra BSP then auto patch UCLA customizations
