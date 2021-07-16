@@ -159,7 +159,37 @@ You will now have a normal bash terminal.
 
 After the admin password has been changed, it's safe to connect the Ethernet cable. The OS is configured by default to use DHCP to obtain an IP. Networking should work out of the box without additional configuration on a DHCP capable LAN.
 
+For board operation and bring up, privileged commands are used frequently, and constantly pasting password can be time consuming. This behavior can be disabled by modifying the sudo config using
 
+```bash
+sudo visudo
+```
+
+And adding the line
+
+```bash
+#Do not require password entry to run sudo commands
+ubuntu ALL=(ALL) NOPASSWD: ALL
+```
+
+## Required packages
+
+The board software (and better overall user experience) requires certain command line utilities, libraries and tools. For convenience they can be installed with these commands
+
+```bash
+sudo apt update
+sudo apt install bash-completion git wget g++ python python3-numpy libi2c-dev make busybox libgsl-dev libzmq3-dev
+```
+
+> ℹ️ nginx web server is installed by default, but can be removed if undesired.
+
+## Board software
+
+The DAQ and slow control software can be obtained from <https://gitlab.com/ucla-gaps-tof/software>
+
+## Board firmware
+
+<https://gitlab.com/ucla-gaps-tof/firmware>
 
 ## TODO
 
