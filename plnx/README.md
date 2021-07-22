@@ -178,7 +178,7 @@ The board software (and better overall user experience) requires certain command
 
 ```bash
 sudo apt update
-sudo apt install bash-completion git wget g++ python python3-numpy libi2c-dev make busybox libgsl-dev libzmq3-dev
+sudo apt install bash-completion git wget g++ python python3-numpy libi2c-dev make busybox libgsl-dev libzmq3-dev lsof
 ```
 
 > ℹ️ nginx web server is installed by default, but can be removed if undesired.
