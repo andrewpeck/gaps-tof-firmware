@@ -183,6 +183,12 @@ sudo apt install bash-completion git wget g++ python python3-numpy libi2c-dev ma
 
 > ℹ️ nginx web server is installed by default, but can be removed if undesired.
 
+### Convenience items
+
+* Symlink busybox devmem
+  * `cd /bin`
+  * `sudo ln -s /bin/busybox devmem`
+
 ## Board software
 
 The DAQ and slow control software can be obtained from <https://gitlab.com/ucla-gaps-tof/software>
