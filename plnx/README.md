@@ -183,6 +183,14 @@ sudo apt install bash-completion git wget g++ python python3-numpy libi2c-dev ma
 
 > ℹ️ nginx web server is installed by default, but can be removed if undesired.
 
+## Changing host name
+
+Use a unique Star Wars themed host name. Do not forget to make an inventory management entry which includes the IP address and physical location of the board.
+
+```bash
+sudo hostnamectl set-hostname drs4-name
+```
+
 ### Convenience items
 
 * Symlink busybox devmem
