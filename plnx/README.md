@@ -191,6 +191,30 @@ Use a unique Star Wars themed host name. Do not forget to make an inventory mana
 sudo hostnamectl set-hostname drs4-name
 ```
 
+Unfortunately this command does not seem to update `/etc/hosts` automatically (perhaps after a reboot). To avoid annoying messages about unresolved host names replace all instances of `arm` (or the original host name) in that file. For example, change the default config file below
+
+```
+127.0.0.1       localhost
+127.0.1.1       arm.localdomain arm
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+```
+
+to
+
+```
+127.0.0.1       localhost
+127.0.1.1       drs4-name.localdomain drs4-name
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+```
+
 ### Convenience items
 
 * Symlink busybox devmem
