@@ -28,6 +28,9 @@ readout-firmware/
   * git
   * make
   * python3.6+
+  * python2
+* Optional
+  * emacs
 
 ## Register Access
 
@@ -51,6 +54,12 @@ The address table is defined in a "templated" XML file: *registers.xml*
 A convenient document describing the address table can be seen at:
 
 * [DRS Address Table](regmap/address_table.org)
+
+To update the address table in the project, make edits directly to `registers.xml`, then build using
+
+```bash
+make reg
+```
 
 ## Building the Firmware
 
