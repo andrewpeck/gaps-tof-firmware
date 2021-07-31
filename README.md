@@ -6,7 +6,7 @@
 
 <pre>
 readout-firmware/
-  ├── <a href="./Hog">Hog</a>      : Submodule containing the HOG project
+  ├── <a href="https://gitlab.cern.ch/hog/Hog">Hog</a>      : Submodule containing the HOG project
   ├── <a href="./Top">Top</a>      : Top level project configuration files for HOG
   ├── <a href="./bd">bd</a>       : Block diagram files
   ├── <a href="./regmap">regmap</a>   : Register XML to VHDL tools
