@@ -220,11 +220,13 @@ architecture behavioral of daq is
 begin
 
   packet_crc_en <= if_then_else ((dav and state /= TAIL_state and state /= CRC32_state), '1', '0');
+  channel_crc_en  <= if_then_else (
+    (state = CALC_CH_CRC_state) or
+    ((state_word_cnt > 0) and dav and state = PAYLOAD_state), '1', '0');
 
   process (clock) is
   begin
     if (rising_edge(clock)) then
-      channel_crc_en  <= if_then_else ((dav and state = PAYLOAD_state), '1', '0');
       packet_crc_rst  <= if_then_else ((state = IDLE_state or state = TAIL_state), '1', '0');
       channel_crc_rst <= if_then_else (((state = CH_CRC_state and state_word_cnt = 0) or state = IDLE_state), '1', '0');
     end if;
@@ -449,18 +451,14 @@ begin
 
         when PAYLOAD_state =>
 
-          if (debug) then
+          if (debug or drs_valid_i = '1') then
             state_word_cnt <= state_word_cnt + 1;
-          else
-            if (drs_valid_i = '1') then
-              state_word_cnt <= state_word_cnt + 1;
-            end if;
           end if;
 
           if (num_channels = 0) then
             state          <= CRC32_state;
             state_word_cnt <= 0;
-          elsif (state_word_cnt = roi_size) then
+          elsif (debug or drs_valid_i = '1') and (state_word_cnt = roi_size) then
             state          <= CALC_CH_CRC_state;
             state_word_cnt <= 0;
             channel_cnt    <= channel_cnt + 1;
