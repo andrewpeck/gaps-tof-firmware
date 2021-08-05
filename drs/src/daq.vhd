@@ -465,20 +465,16 @@ begin
             channel_id     <= get_next_channel(channel_id, mask);
           end if;
 
+          dav  <= false;
+          data <= (others => '0');
+
           if (debug) then
             dav  <= true;
             data <= to_slv(state_word_cnt, g_WORD_SIZE);
-          elsif (num_channels > 0) then
-
-            if (drs_valid_i = '1') then
-              data <= xor_reduce(drs_data_i(13 downto 7)) & xor_reduce(drs_data_i(6 downto 0))  -- parity bits
-                      & drs_data_i;                                                             -- adc data
-              dav <= true;
-            else
-              dav  <= false;
-              data <= (others => '0');
-            end if;
-
+          elsif (drs_valid_i = '1' and num_channels > 0) then
+            data <= xor_reduce(drs_data_i(13 downto 7)) & xor_reduce(drs_data_i(6 downto 0))  -- parity bits
+                    & drs_data_i;                                                             -- adc data
+            dav <= true;
           end if;
 
         when CALC_CH_CRC_state =>
