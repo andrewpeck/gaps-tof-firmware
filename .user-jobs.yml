@@ -1,0 +1,30 @@
+.tag-hog: &tag-hog
+  tags:
+     - hog
+
+.tag-sr: &tag-sr
+  tags:
+     - docker
+
+.only-default: &only-default
+  only:
+    refs:
+      - merge_requests
+      - main # or name of the default official branch
+  except:
+    variables:
+      - $CI_COMMIT_REF_NAME =~ /^test\/.*$/i
+      - $CI_MERGE_REQUEST_TITLE =~ /^Draft:.*$/ && $CI_COMMIT_MESSAGE !~ /^RESOLVE_WIP:/
+
+
+#registers-job:
+#  <<: *only-default
+#  <<: *tag-hog
+#  stage: user_pre
+#  script: "make reg"
+
+daq-sim-job:
+  <<: *only-default
+  <<: *tag-hog
+  stage: user_pre
+  script: "make -C drs/"
