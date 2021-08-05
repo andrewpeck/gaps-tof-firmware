@@ -17,7 +17,7 @@ daq_packet.dat:  daq_tb
 
 daq_tb: $(DAQ_FILES)
 	@ghdl -a --std=08 --ieee=synopsys $(DAQ_FILES)
-	@ghdl -r --std=08 --ieee=synopsys daq_tb
+	@ghdl -r --std=08 --ieee=synopsys daq_tb --wave=daq_tb.ghw
 
 dump: daq_packet.dat
 	@od --width=2 -t x2 --endian big  daq_packet.dat

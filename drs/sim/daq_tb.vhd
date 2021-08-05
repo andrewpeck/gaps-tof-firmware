@@ -27,7 +27,7 @@ architecture test of daq_tb is
   signal debug_packet_inject_i : std_logic                      := '0';
   signal trigger_i             : std_logic                      := '0';
   signal event_cnt_i           : std_logic_vector (31 downto 0) := x"99999999";
-  signal mask_i                : std_logic_vector (17 downto 0) := '0' & x"00" & '1' & x"f0";
+  signal mask_i                : std_logic_vector (17 downto 0) := '0' & x"00" & '1' & x"ff";
   signal board_id              : std_logic_vector (7 downto 0)  := x"77";
   signal sync_err_i            : std_logic                      := '0';
   signal dtap0_i               : std_logic_vector (15 downto 0) := x"abcd";
@@ -84,7 +84,7 @@ begin
 
     wait until busy_o = '0';
 
-    mask_i      <= '0' & x"00" & '1' & x"03";
+    mask_i      <= '0' & x"00" & '1' & x"ff";
     dna_i       <= x"6c886c886c886c88";
     hash_i      <= x"006c8800";
     board_id    <= (others => '0');
@@ -102,6 +102,14 @@ begin
 
   end process;
 
+  process (clock) is
+  begin
+    if (rising_edge(clock)) then
+      drs_valid_i <= not drs_valid_i;
+    end if;
+  end process;
+
+
   rand : process
     variable seed1 : positive;
     variable seed2 : positive;
@@ -109,15 +117,13 @@ begin
   begin
     wait until rising_edge(clock);
     uniform(seed1, seed2, x);
-    --drs_data_i <= std_logic_vector(to_unsigned(integer(floor(x * 16384.0)), 14));
-    drs_data_i <= "00" & x"bbb";
+    drs_data_i <= std_logic_vector(to_unsigned(integer(floor(x * 16384.0)), 14));
+    --drs_data_i <= "00" & x"bbb";
   end process;
 
   daq_inst : entity work.daq
     generic map (
-      g_WORD_SIZE => 16,
-      g_MSB_FIRST     => false,
-      g_LITTLE_ENDIAN => true
+      g_WORD_SIZE => 16
       )
     port map (
       clock                 => clock,

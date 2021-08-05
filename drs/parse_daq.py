@@ -15,7 +15,24 @@ class DRSWaveform():
         return ret
 
     def check_crc(self):
+
+        # print(data[START:END])
+        # print(data[START:END].tobytes())
+        # print(type((data[START:END])))
+        #
+        # print(self.data)
+        # print(len(self.data))
+        # print(type(self.data))
+
         crc = libscrc.crc32(self.data)
+        # print("My:")
+        # print(self.data)
+        # print(type(self.data))
+        # print("Fake:")
+        # print(np.arange(0,1024,dtype='<u2'))
+        # print(type(np.arange(0,1024,dtype='<u2')))
+        #hex(libscrc.crc32(np.arange(0,1024,dtype='<u2')))
+        print (self.data)
 
         if crc != self.crc:
             print("CH%d CRC FAIL calc=0x%08X, read=0x%08X" % (self.channel, crc, self.crc))
@@ -97,30 +114,55 @@ def read_packet (data, drs_truth, start=0,  verbose=False):
     drs.status = data[1]
     drs.length = data[2]
     drs.roi_size = data[3]  # daq report counts from zero, we count from 1
-    drs.dna = int.from_bytes(data[4:8], byteorder="little")
+
+    reverse_words = 1
+
+    dna = data[4:8]
+
+    if (reverse_words):
+        dna = dna[::-1]
+    drs.dna = int.from_bytes(dna, byteorder="little")
+
     drs.githash = data[8]
     drs.board_id = data[9]
     drs.ch_mask = data[10]
     drs.count_channels()
-    drs.event_cnt = int.from_bytes(data[11:13], byteorder="little")
+
+    event_cnt = data[11:13]
+    if (reverse_words):
+        event_cnt = event_cnt[::-1]
+
+    drs.event_cnt = int.from_bytes(event_cnt, byteorder="little")
+
     drs.dtap0 = data[13]
     drs.dtap1 = data[14]
+
     drs.timestamp = int.from_bytes(data[15:18], byteorder="little")
 
-    NUM_HEADERS = 19;
+    timestamp = data[15:18]
+    if (reverse_words):
+        timestamp = timestamp[::-1]
+
+    drs.timestamp = int.from_bytes(timestamp, byteorder="little")
+
+    NUM_HEADERS = 19
 
     drs.waveforms.clear()
 
+    #print (drs.channels)
     for i in range(drs.channels):
 
         START = NUM_HEADERS+i*(drs.roi_size+1+3)
         END = NUM_HEADERS+i*(drs.roi_size+1+3) + drs.roi_size+1
 
         start = data[START]
-        end = data[END-1]
+        #end = data[END-1]
         crc = data[END:END+2]
-        ch = data[START-1]
+        #ch = data[START-1]
         #data" + str(data[START:END]))
+
+        if (reverse_words):
+            crc = crc[::-1]
 
         if (verbose):
             print("start=%d, data=0x%02X" %(START, data[START]))
@@ -130,12 +172,19 @@ def read_packet (data, drs_truth, start=0,  verbose=False):
             print("ch" + str(data[START-1]))
             print("")
 
-        #assert ch == drs.get_channel_id(i)
+        #print(data[START:END])
+        # print(data[START:END].tobytes())
+        # print(type((data[START:END])))
 
-        drs.waveforms.append(
-            DRSWaveform(data[START:END],
-                        int.from_bytes(data[END:END+2], byteorder="little"),
-                        data[START-1]))
+        channel = data[START-1]
+
+        crc = data[END:END+2]
+        if (reverse_words):
+            crc = crc[::-1]
+
+        crc = int.from_bytes(crc, byteorder="little")
+
+        drs.waveforms.append(DRSWaveform(data[START:END], crc, channel))
 
         drs.waveforms[i].check_crc()
 
@@ -143,10 +192,15 @@ def read_packet (data, drs_truth, start=0,  verbose=False):
             print(drs.waveforms[i])
 
     drs.stop_cell = data[END+2]
-    drs.crc = int.from_bytes(data[drs.length-3:drs.length-1], byteorder="little")
+
     drs.trailer = data[drs.length-1]
 
     print(drs)
+
+    crc = data[drs.length-3:drs.length-1]
+    if (reverse_words):
+        crc = crc[::-1]
+    drs.crc = int.from_bytes(crc, byteorder="little")
 
     packet_crc = libscrc.crc32(data[0:drs.length-3])  # subtract trailer + crc
 
@@ -162,7 +216,7 @@ def read_packet (data, drs_truth, start=0,  verbose=False):
     assert drs_truth.event_cnt == drs.event_cnt
     assert drs_truth.timestamp == drs.timestamp
     assert drs_truth.roi_size  == drs.roi_size
-    assert drs_truth.stop_cell  == drs.stop_cell, "read=" + hex(drs.stop_cell)
+    assert drs_truth.stop_cell == drs.stop_cell, "read=" + hex(drs.stop_cell)
 
     assert drs.header == 0xAAAA
     assert drs.trailer == 0x5555
@@ -180,6 +234,7 @@ if __name__ == "__main__":
     #     i=i+1
 
     a = np.fromfile("daq_packet.dat", dtype='<u2', count=-1, sep='')
+    print(a)
     np.set_printoptions(formatter={'int':hex})
 
     PROFILE = False
@@ -207,48 +262,34 @@ if __name__ == "__main__":
         drs.stop_cell = 0x7777
         drs.event_cnt = 0x76543210
         drs.timestamp = 0xba9876543210
+        drs.roi_size = 0x3ff
+
+        read_packet(data=a, drs_truth=drs, start=0, verbose=False)
+
+        drs = DAQReadout()
+
+        drs.status = 0x0000
+        drs.dna = 0xfedcba9876543210
+        drs.githash = 0x0abc
+        drs.board_id = 0x7700
+        drs.ch_mask = 0xff
+        drs.stop_cell = 0x2aa
+        drs.event_cnt = 0x99999999
+        drs.timestamp = 0x444444444444
+        drs.roi_size = 0x3ff
+
+        read_packet(data=a, drs_truth=drs, start=9280, verbose=False)
+
+        drs = DAQReadout()
+
+        drs.status = 0x0000
+        drs.dna = 0x6c886c886c886c88
+        drs.githash = 0x06c8
+        drs.board_id = 0x0000
+        drs.ch_mask = 0xff
+        drs.stop_cell = 0x2aa
+        drs.event_cnt = 0xffeeddcc
+        drs.timestamp = 0x0123456789ab
         drs.roi_size = 1023
 
-        read_packet(a, drs, 0, False)
-
-        #drs = DAQReadout()
-
-        #drs.status = 0x0000
-        #drs.dna = 0xfedcba9876543210
-        #drs.githash = 0xabcd
-        #drs.board_id = 0x7700
-        #drs.ch_mask = 0xf0
-        #drs.stop_cell = 0x2aa
-        #drs.event_cnt = 0x99999999
-        #drs.timestamp = 0x444444444444
-        #drs.roi_size = 1023
-
-        #read_packet(a, drs, 9264, False)
-
-        #drs = DAQReadout()
-
-        #drs.status = 0x0000
-        #drs.dna = 0x6c886c886c886c88
-        #drs.githash = 0x6c88
-        #drs.board_id = 0x0000
-        #drs.ch_mask = 0x03
-        #drs.stop_cell = 0x2aa
-        #drs.event_cnt = 0xffeeddcc
-        #drs.timestamp = 0x0123456789ab
-        #drs.roi_size = 1023
-
-        #read_packet(a, drs, 14432, True)
-
-        #drs = DAQReadout()
-
-        #drs.status = 0x0000
-        #drs.dna = 0x6c886c886c886c88
-        #drs.githash = 0x6c88
-        #drs.board_id = 0x0000
-        #drs.ch_mask = 0x03
-        #drs.stop_cell = 0xb8
-        #drs.event_cnt = 0xffeeddcc
-        #drs.timestamp = 0x0123456789ab
-        #drs.roi_size = 1023
-
-        #read_packet(a, drs, 17536, False)
+        read_packet(data=a, drs_truth=drs, start=18560, verbose=False)
