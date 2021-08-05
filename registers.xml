@@ -79,7 +79,7 @@
 
 
             <node id="READOUT_MASK" address="0x1" permission="rw"
-                description="8 bit mask, set a bit to 1 to enable readout of that channel. 9th is auto-read if any channel is enabled"
+                description="8 bit mask, set a bit to 1 to enable readout of that channel. 9th is auto-read if any channel is enabled *and* AUTO_9TH_CHANNEL set to 1"
                 mask="0x1ff"
                 fw_signal="readout_mask_axi"
                 fw_default="0x1ff"/>
