@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 .PHONY: check_output
 
 DAQ_FILES=src/crc32.vhd src/types_pkg.vhd src/daq.vhd sim/daq_tb.vhd
