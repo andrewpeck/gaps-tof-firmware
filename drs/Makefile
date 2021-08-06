@@ -59,5 +59,5 @@ analyze:
 		fi \
 	)
 	cd software && git checkout data_format_updates && cd -
-	python software/analysis/blob_to_packets.py daq_packet.dat
-	python software/analysis/get_packet_data.py PACKETS_daq_packet/
+	python3 software/analysis/blob_to_packets.py daq_packet.dat
+	python3 software/analysis/get_packet_data.py PACKETS_daq_packet/
