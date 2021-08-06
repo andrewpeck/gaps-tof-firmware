@@ -50,13 +50,12 @@ dtap:
 
 analyze:
 	$(shell \
-		FOLDER=software \
+		FOLDER=software ; \
 		if [ ! -d "$FOLDER" ] ; then \
-				git clone $URL $FOLDER \
-				git clone https://gitlab.com/ucla-gaps-tof/software \
+				git clone https://gitlab.com/ucla-gaps-tof/software  ; \
 		else \
-				cd "$FOLDER" \
-				git pull $URL \
+				cd "$FOLDER" ; \
+				git pull ; \
 		fi \
 	)
 	cd software && git checkout data_format_updates && cd -
