@@ -390,12 +390,14 @@ begin
   -- DRS Control Module
   -------------------------------------------------------------------------------
 
-  -- FIXME: this needs to be expanded when there are two drs chips
-  read_ch8 <= readout_mask_9th_channel_auto and or_reduce(readout_mask_or (7 downto 0));
-  --read_ch17 <= readout_mask_9th_channel_auto and or_reduce(readout_mask_or (16 downto 9));
-
+  -- take the readout mask from either the trigger or axi control
   readout_mask_or <= readout_mask_trig or readout_mask_axi;
 
+  -- TODO: this needs to be expanded when there are two drs chips
+  read_ch8 <= readout_mask_9th_channel_auto and or_reduce(readout_mask_or (7 downto 0));
+--read_ch17 <= readout_mask_9th_channel_auto and or_reduce(readout_mask_or (16 downto 9));
+
+  -- TODO: this needs to be expanded when there are two drs chips
   readout_mask <= '0' & x"00" & (readout_mask_or or (read_ch8 & x"00"));  -- or (read_ch17 & '1' & x"00");
 
   drs_config(0) <= dmode;
