@@ -4,6 +4,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use ieee.math_real.all;
 
 entity dma_controller is
   generic (
@@ -42,7 +43,7 @@ entity dma_controller is
 
     ram_buff_a_occupancy_o  : out std_logic_vector(31 downto 0) := (others => '0');
     ram_buff_b_occupancy_o  : out std_logic_vector(31 downto 0) := (others => '0');
-    dma_pointer_o           : out std_logic_vector(31 downto 0);
+    dma_pointer_o           : out std_logic_vector(31 downto 0) := (others => '0');
 
 
     --------------------------------------------------------------
@@ -237,7 +238,6 @@ architecture Behavioral of dma_controller is
 
   ---
   signal delay_counter   : integer range 0 to 21 := 0;
-  signal initial_counter : integer;
 
   signal valid_fifo_data : std_logic_vector(31 downto 0) := (others => '0');
 
@@ -261,8 +261,10 @@ architecture Behavioral of dma_controller is
   --Circular buffer wrap signals
   --------------------------------------------------------------------------------
 
-  signal mem_bytes_written : unsigned(31 downto 0) := (others => '0');
-  signal mem_buff_size     : unsigned(31 downto 0) := to_unsigned(RAM_BUFF_SIZE, 32);
+  constant RAM_ADRB : integer := integer(ceil(log2(real(RAM_BUFF_SIZE))));
+
+  signal mem_bytes_written : unsigned(RAM_ADRB - 1 downto 0) := (others => '0');
+  signal mem_buff_size     : unsigned(RAM_ADRB - 1 downto 0) := to_unsigned(RAM_BUFF_SIZE, RAM_ADRB);
 
   --------------------------------------------------------------------------------
   -- DMA Clear Signals
@@ -279,10 +281,10 @@ architecture Behavioral of dma_controller is
   -- RAM Occupancy Signals
   --------------------------------------------------------------------------------
 
-  signal ram_buff_a_occupancy  : unsigned(31 downto 0) := (others => '0');
-  signal ram_buff_b_occupancy  : unsigned(31 downto 0) := (others => '0');
-  
-  signal dma_pointer           : unsigned(31 downto 0);
+  signal ram_buff_a_occupancy  : unsigned(RAM_ADRB-1 downto 0) := (others => '0');
+  signal ram_buff_b_occupancy  : unsigned(RAM_ADRB-1 downto 0) := (others => '0');
+
+  signal dma_pointer           : unsigned(RAM_ADRB-1 downto 0);
   
 begin
 
@@ -314,9 +316,18 @@ begin
   s2mm_tkeep  <= x"F";
   
   -- RAM occupancy connections
-  ram_buff_a_occupancy_o <= std_logic_vector(ram_buff_a_occupancy);
-  ram_buff_b_occupancy_o <= std_logic_vector(ram_buff_b_occupancy);
-  dma_pointer_o <= std_logic_vector(dma_pointer);
+  process (clk_axi) is
+  begin
+    if (rising_edge(clk_axi)) then
+      ram_buff_a_occupancy_o <= (others => '0');
+      ram_buff_b_occupancy_o <= (others => '0');
+
+      ram_buff_a_occupancy_o(RAM_ADRB-1 downto 0) <= std_logic_vector(ram_buff_a_occupancy);
+      ram_buff_b_occupancy_o(RAM_ADRB-1 downto 0) <= std_logic_vector(ram_buff_b_occupancy);
+    end if;
+  end process;
+
+  dma_pointer_o(RAM_ADRB-1 downto 0) <= std_logic_vector(dma_pointer);
 
   assert BUFF_FRAC_DIVISOR rem (WORDS_TO_SEND * 4) = 0 report "BUFF_FRAC_DIVISOR must be divisible by WORDS_TO_SEND * 4" severity ERROR;
   
@@ -634,7 +645,7 @@ begin
   ram_occupancy : process(clk_axi)
     begin
     if(rising_edge(clk_axi)) then
-    dma_pointer <= unsigned(saddr);
+      dma_pointer <= unsigned(saddr(RAM_ADRB-1 downto 0));
       if s2mm_addr_req_posted_reg = '1' then
           if (mem_bytes_written mod BUFF_FRAC_DIVISOR) = 0 then
             if (dma_pointer < unsigned(TOP_HALF_ADDRESS)) then
@@ -783,7 +794,8 @@ begin
         probe19 => m_axis_s2mm_sts_tkeep_reg(0),
         probe20 => m_axis_s2mm_sts_tlast_Reg,
         probe21 => fifo_in,
-        probe22 => mem_bytes_written,
+        probe22(RAM_ADRB-1 downto 0) => mem_bytes_written,
+        probe22(31 downto RAM_ADRB ) => (others => '0'),
         probe23 => daq_busy_xfifo,
         probe24 => fifo_out,
         probe25 => (others => '0'),
