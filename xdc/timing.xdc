@@ -39,7 +39,7 @@ set_false_path -to   [get_ports drs_nreset_o]
 
 #set_min_delay -from [get_ports ext_trigger_i_p] -to [get_ports drs_dwrite_o] 8
 # DWRITE Special Output
-set_max_delay -datapath_only -from [get_ports ext_trigger_i_p] -to [get_ports drs_dwrite_o] 14
+set_max_delay -datapath_only -from [get_ports ext_trigger_i_p] -to [get_ports drs_dwrite_o] 19
 
 # false path for dma ILA
 set_false_path \
