@@ -1,6 +1,6 @@
 include:
     - project: 'hog-cern/hog'
       file: '/hog.yml'
-      ref: 'v4.16.6'
+      ref: '243885f'
     - local: '/Top/readout_board/gitlab-ci.yml'
     - local: '/.user-jobs.yml'
