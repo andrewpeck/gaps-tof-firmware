@@ -9,13 +9,8 @@ if [expr {[get_property SLACK [get_timing_paths -delay_type min_max]] < 0}] {
     error "ERROR: Timing failed"
 }
 
-
-
-
-
-
 # create a .bit.bin file using the fpga_manager python script
-
+#
 set cmd "cd [file normalize $PATH_REPO/util] && python3 create_fpga_manager_bin.py && cd -"
 
 #https://www.xilinx.com/support/answers/72570.html
