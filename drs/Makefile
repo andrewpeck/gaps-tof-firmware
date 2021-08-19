@@ -58,5 +58,5 @@ analyze:
 				git pull ; \
 		fi \
 	)
-	python3 software/analysis/blob_to_packets.py daq_packet.dat
-	python3 software/analysis/get_packet_data.py PACKETS_daq_packet/
+	python3 software/parsing/blob_to_packets.py daq_packet.dat
+	python3 software/parsing/get_packet_data.py PACKETS_daq_packet/
