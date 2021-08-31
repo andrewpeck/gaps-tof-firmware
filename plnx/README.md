@@ -118,8 +118,8 @@ Minimal root file systems for Debian and Ubuntu can be obtained from <https://fo
 #Ubuntu; Root File System: user@localhost:~$
 sudo tar xfvp ./ubuntu-*-*-armhf-*/armhf-rootfs-*.tar -C /media/user/root/
 sync
-sudo chown root:root /media/user/rootfs/
-sudo chmod 755 /media/user/rootfs/
+sudo chown root:root /media/user/root/
+sudo chmod 755 /media/user/root/
 ```
 
 Setup fstab
@@ -132,7 +132,7 @@ sudo sh -c "echo '/dev/mmcblk0p1  /boot/uboot  auto  defaults  0  2' >> /media/u
 sync
 #Below optional: could use GUI to eject
 sudo umount /media/user/boot
-sudo umount /media/user/rootfs
+sudo umount /media/user/root
 ```
 
 ## First boot
