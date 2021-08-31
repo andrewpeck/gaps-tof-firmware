@@ -78,7 +78,7 @@ Instructions and tools for creating bootable SD card image with root filesystem.
 
 | Part number  | Manufacturer | Distributor link                                                                                 | Notes |
 |:-------------|:-------------|:-------------------------------------------------------------------------------------------------|:------|
-| SDSDQAF-008G | SanDisk      | [amzn](https://www.amazon.com/Sandisk-Industrial-MicroSD-UHS-I-SDSDQAF3-008G/dp/B07BLQHVQD?th=1) |       |
+| SDSDQAF-008G | SanDisk      | [amzn](https://www.amzn.com/B07BZ5SY18) |       |
 
 ### Formatting
 
