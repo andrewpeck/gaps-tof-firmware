@@ -87,7 +87,7 @@
     DRS\_RESET & \texttt{0x15} & \texttt{[0:0]} & w & Pulse & Write 1 to completely reset the DRS state machine logic \\\hline
     DAQ\_RESET & \texttt{0x16} & \texttt{[0:0]} & w & Pulse & Write 1 to completely reset the DAQ state machine logic \\\hline
     DMA\_RESET & \texttt{0x17} & \texttt{[0:0]} & w & Pulse & Write 1 to completely reset the DMA state machine logic \\\hline
-    WAIT\_VDD\_CLKS & \texttt{0x18} & \texttt{[15:0]} & rw & \texttt{0x4000} & Number of 30 ns clocks to wait before reading out the drs, allowing vdd to stabilize \\\hline
+    WAIT\_VDD\_CLKS & \texttt{0x18} & \texttt{[15:0]} & rw & \texttt{0x1000} & Number of ADC clocks to wait before reading out the drs, allowing vdd to stabilize \\\hline
     \end{tabularx}
     \vspace{5mm}
 
