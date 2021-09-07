@@ -74,10 +74,10 @@ entity top_readout_board is
     ddr_dm            : inout std_logic_vector (3 downto 0);
     ddr_dq            : inout std_logic_vector (31 downto 0);
     ddr_dqs_n         : inout std_logic_vector (3 downto 0);
-    ddr_dqs_p         : inout std_logic_vector (3 downto 0);
+    ddr_dqs_p         : inout std_logic_vector (3 downto 0)
 
-    gpio_p : inout std_logic_vector (9 downto 0);
-    gpio_n : inout std_logic_vector (9 downto 0)
+    -- gpio_p : inout std_logic_vector (9 downto 0);
+    -- gpio_n : inout std_logic_vector (9 downto 0)
 
     );
 end top_readout_board;
@@ -911,6 +911,7 @@ begin
     regs_defaults(10)(REG_READOUT_WAIT_VDD_CLKS_MSB downto REG_READOUT_WAIT_VDD_CLKS_LSB) <= REG_READOUT_WAIT_VDD_CLKS_DEFAULT;
     regs_defaults(21)(REG_TRIGGER_EXT_TRIGGER_EN_BIT) <= REG_TRIGGER_EXT_TRIGGER_EN_DEFAULT;
     regs_defaults(21)(REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT) <= REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_DEFAULT;
+
     regs_defaults(44)(REG_GFP_EVENTID_SPI_EN_BIT) <= REG_GFP_EVENTID_SPI_EN_DEFAULT;
 
     -- Define writable regs

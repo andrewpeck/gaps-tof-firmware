@@ -10,8 +10,8 @@ set_property IOSTANDARD LVCMOS25 [get_ports {gfp_s[*]}]
 
 set_property IOSTANDARD LVDS_25 [get_ports ext_trigger_i_*]
 
-set_property IOSTANDARD LVDS_25 [get_ports {gpio_p[*]}]
-set_property IOSTANDARD LVDS_25 [get_ports {gpio_n[*]}]
+# set_property IOSTANDARD LVDS_25 [get_ports {gpio_p[*]}]
+# set_property IOSTANDARD LVDS_25 [get_ports {gpio_n[*]}]
 
 set_property IOSTANDARD LVDS_25 [get_ports clock_i_*]
 
@@ -22,26 +22,26 @@ set_property IOSTANDARD LVDS_25 [get_ports clock_i_*]
 set_property PACKAGE_PIN E17 [get_ports {ext_trigger_i_p}]; # IO_B35_L3_AD1_E17_P
 set_property PACKAGE_PIN D18 [get_ports {ext_trigger_i_n}]; # IO_B35_L3_AD1_D18_N
 
-set_property PACKAGE_PIN D19 [get_ports {gpio_p[0]}]; # IO_B35_L4_D19_P
-set_property PACKAGE_PIN D20 [get_ports {gpio_n[0]}]; # IO_B35_L4_D20_N
-set_property PACKAGE_PIN C20 [get_ports {gpio_p[1]}]; # IO_B35_L1_AD0_C20_P
-set_property PACKAGE_PIN B20 [get_ports {gpio_n[1]}]; # IO_B35_L1_AD0_B20_N
-set_property PACKAGE_PIN B19 [get_ports {gpio_p[2]}]; # IO_B35_L2_AD8_B19_P
-set_property PACKAGE_PIN A20 [get_ports {gpio_n[2]}]; # IO_B35_L2_AD8_A20_N
-set_property PACKAGE_PIN H15 [get_ports {gpio_p[3]}]; # IO_B35_L19_H15_P
-set_property PACKAGE_PIN G15 [get_ports {gpio_n[3]}]; # IO_B35_L19_VREF_G15_N
-set_property PACKAGE_PIN M17 [get_ports {gpio_p[4]}]; # IO_B35_L8_AD10_M17_P
-set_property PACKAGE_PIN M18 [get_ports {gpio_n[4]}]; # IO_B35_L8_AD10_M18_N
-set_property PACKAGE_PIN K17 [get_ports {gpio_p[5]}]; # IO_B35_L12_MRCC_K17_P
-set_property PACKAGE_PIN K18 [get_ports {gpio_n[5]}]; # IO_B35_L12_MRCC_K18_N
-set_property PACKAGE_PIN K16 [get_ports {gpio_p[6]}]; # IO_B35_L24_AD15_K16_P
-set_property PACKAGE_PIN J16 [get_ports {gpio_n[6]}]; # IO_B35_L24_AD15_J16_N
-set_property PACKAGE_PIN G17 [get_ports {gpio_p[7]}]; # IO_B35_L16_G17_P
-set_property PACKAGE_PIN G18 [get_ports {gpio_n[7]}]; # IO_B35_L16_G18_N
-set_property PACKAGE_PIN F16 [get_ports {gpio_p[8]}]; # IO_B35_L6_F16_P
-set_property PACKAGE_PIN F17 [get_ports {gpio_n[8]}]; # IO_B35_L6_VREF_F17_N
-set_property PACKAGE_PIN E18 [get_ports {gpio_p[9]}]; # IO_B35_L5_AD9_E18_P
-set_property PACKAGE_PIN E19 [get_ports {gpio_n[9]}]; # IO_B35_L5_AD9_E19_N
+# set_property PACKAGE_PIN D19 [get_ports {gpio_p[0]}]; # IO_B35_L4_D19_P
+# set_property PACKAGE_PIN D20 [get_ports {gpio_n[0]}]; # IO_B35_L4_D20_N
+# set_property PACKAGE_PIN C20 [get_ports {gpio_p[1]}]; # IO_B35_L1_AD0_C20_P
+# set_property PACKAGE_PIN B20 [get_ports {gpio_n[1]}]; # IO_B35_L1_AD0_B20_N
+# set_property PACKAGE_PIN B19 [get_ports {gpio_p[2]}]; # IO_B35_L2_AD8_B19_P
+# set_property PACKAGE_PIN A20 [get_ports {gpio_n[2]}]; # IO_B35_L2_AD8_A20_N
+# set_property PACKAGE_PIN H15 [get_ports {gpio_p[3]}]; # IO_B35_L19_H15_P
+# set_property PACKAGE_PIN G15 [get_ports {gpio_n[3]}]; # IO_B35_L19_VREF_G15_N
+# set_property PACKAGE_PIN M17 [get_ports {gpio_p[4]}]; # IO_B35_L8_AD10_M17_P
+# set_property PACKAGE_PIN M18 [get_ports {gpio_n[4]}]; # IO_B35_L8_AD10_M18_N
+# set_property PACKAGE_PIN K17 [get_ports {gpio_p[5]}]; # IO_B35_L12_MRCC_K17_P
+# set_property PACKAGE_PIN K18 [get_ports {gpio_n[5]}]; # IO_B35_L12_MRCC_K18_N
+# set_property PACKAGE_PIN K16 [get_ports {gpio_p[6]}]; # IO_B35_L24_AD15_K16_P
+# set_property PACKAGE_PIN J16 [get_ports {gpio_n[6]}]; # IO_B35_L24_AD15_J16_N
+# set_property PACKAGE_PIN G17 [get_ports {gpio_p[7]}]; # IO_B35_L16_G17_P
+# set_property PACKAGE_PIN G18 [get_ports {gpio_n[7]}]; # IO_B35_L16_G18_N
+# set_property PACKAGE_PIN F16 [get_ports {gpio_p[8]}]; # IO_B35_L6_F16_P
+# set_property PACKAGE_PIN F17 [get_ports {gpio_n[8]}]; # IO_B35_L6_VREF_F17_N
+# set_property PACKAGE_PIN E18 [get_ports {gpio_p[9]}]; # IO_B35_L5_AD9_E18_P
+# set_property PACKAGE_PIN E19 [get_ports {gpio_n[9]}]; # IO_B35_L5_AD9_E19_N
 
 #DRS4
 #set_property PACKAGE_PIN T17      [get_ports drs_wsrin_o] # IO_B34_L20_T17_P
@@ -82,5 +82,5 @@ set_property PACKAGE_PIN V15 [get_ports {adc_data_i[12]}]; # IO_B34_L10_V15_P
 set_property PACKAGE_PIN R17 [get_ports {adc_data_i[13]}]; # IO_B34_L19_R17_N
 
 # GFP Trigger
-set_property PACKAGE_PIN G17 [get_ports gfp_sdat];
-set_property PACKAGE_PIN R17 [get_ports gfp_sclk];
+set_property PACKAGE_PIN G17 [get_ports gfp_sdat];# IO_B35_L16_G17_P
+set_property PACKAGE_PIN G18 [get_ports gfp_sclk];# IO_B35_L16_G18_N
