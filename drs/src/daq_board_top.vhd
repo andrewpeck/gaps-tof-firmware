@@ -323,11 +323,17 @@ begin
       valid_o => gfp_eventid_rx_valid
       );
 
+  -- process to latch the SPI received event ID and send up a valid flag the
+  -- flag and latched data will remain high until the daq reads out the event
+  --
+  -- when the daq reads from the gfp event id, it asserts "gfp_eventid_read"
+  -- which will de-assert the valid flag and re-arm for another readout
+
   process (clock) is
   begin
     if (rising_edge(clock)) then
 
-      if (gfp_eventid_rx_read = '1') then
+      if (gfp_eventid_read = '1') then
         gfp_eventid_valid <= '0';
         gfp_eventid <= x"FFFFFFFE";
       -- don't overwrite existing triggers until they are already read
