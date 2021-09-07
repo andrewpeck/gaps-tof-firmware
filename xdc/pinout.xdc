@@ -6,8 +6,6 @@ set_property IOSTANDARD LVCMOS25 [get_ports {drs_*}]
 
 set_property IOSTANDARD LVCMOS25 [get_ports {adc_data_i[*]}]
 
-set_property IOSTANDARD LVCMOS25 [get_ports {gfp_s[*]}]
-
 set_property IOSTANDARD LVDS_25 [get_ports ext_trigger_i_*]
 
 # set_property IOSTANDARD LVDS_25 [get_ports {gpio_p[*]}]
@@ -82,5 +80,6 @@ set_property PACKAGE_PIN V15 [get_ports {adc_data_i[12]}]; # IO_B34_L10_V15_P
 set_property PACKAGE_PIN R17 [get_ports {adc_data_i[13]}]; # IO_B34_L19_R17_N
 
 # GFP Trigger
+set_property IOSTANDARD LVCMOS25 [get_ports {gfp_s*}]
 set_property PACKAGE_PIN G17 [get_ports gfp_sdat];# IO_B35_L16_G17_P
 set_property PACKAGE_PIN G18 [get_ports gfp_sclk];# IO_B35_L16_G18_N
