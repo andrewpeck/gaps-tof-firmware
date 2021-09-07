@@ -24,6 +24,8 @@
 #  script: "make reg"
 
 daq-sim-job:
+  variables:
+    GIT_STRATEGY: clone
   <<: *only-default
   <<: *tag-hog
   stage: user_pre
