@@ -92,6 +92,9 @@ architecture behavioral of daq is
 
   signal mask      : std_logic_vector (mask_i'range)      := (others => '0');
   signal event_cnt : std_logic_vector (event_cnt_i'range) := (others => '0');
+  -- mux the event count between normal daq and gfp
+  signal event_cnt_mux : std_logic_vector (event_cnt_i'range) := (others => '0');
+
   signal timestamp : std_logic_vector (timestamp_i'range) := (others => '0');
   signal dna       : std_logic_vector (dna_i'range)       := (others => '0');
   signal hash      : std_logic_vector (15 downto 0)       := (others => '0');
@@ -392,7 +395,8 @@ begin
           if (gfp_use_eventid_i = '1') then
             state <= WAIT_EVENT_CNT_state;
           else
-            state <= EVENT_CNT_state;
+            state         <= EVENT_CNT_state;
+            event_cnt_mux <= event_cnt;
           end if;
 
           data <= mask (16 downto 9) & mask (7 downto 0);
@@ -402,11 +406,12 @@ begin
 
         when WAIT_EVENT_CNT_state =>
 
-          if (gfp_eventid_valid_i) then
+          if (gfp_eventid_valid_i = '1') then
             state              <= EVENT_CNT_state;
-            event_cnt          <= gfp_eventid_i;
+            event_cnt_mux      <= gfp_eventid_i;
             gfp_eventid_read_o <= '1';
           end if;
+          dav <= false;
 
         when EVENT_CNT_state =>
 
@@ -419,7 +424,7 @@ begin
             state_word_cnt <= state_word_cnt + 1;
           end if;
 
-          data <= data_sel(g_MSB_FIRST, g_WORD_SIZE, EVENT_CNT_WORDS, state_word_cnt, event_cnt);
+          data <= data_sel(g_MSB_FIRST, g_WORD_SIZE, EVENT_CNT_WORDS, state_word_cnt, event_cnt_mux);
           dav  <= true;
 
         when DTAP0_state =>

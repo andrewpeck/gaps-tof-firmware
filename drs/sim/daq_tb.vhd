@@ -133,7 +133,7 @@ begin
       gfp_use_eventid_i     => '0',
       gfp_eventid_i         => (others => '0'),
       gfp_eventid_valid_i   => '0',
-      gfp_eventid_read_o    => '0',
+      gfp_eventid_read_o    => open,
 
       trigger_i             => trigger_i,
       temperature_i         => (others => '0'),
