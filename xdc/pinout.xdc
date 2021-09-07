@@ -79,3 +79,7 @@ set_property PACKAGE_PIN Y16 [get_ports {adc_data_i[10]}]; # IO_B34_L7_Y16_P
 set_property PACKAGE_PIN W15 [get_ports {adc_data_i[11]}]; # IO_B34_L10_W15_N
 set_property PACKAGE_PIN V15 [get_ports {adc_data_i[12]}]; # IO_B34_L10_V15_P
 set_property PACKAGE_PIN R17 [get_ports {adc_data_i[13]}]; # IO_B34_L19_R17_N
+
+# GFP Trigger
+set_property PACKAGE_PIN G17 [get_ports gfp_sdat];
+set_property PACKAGE_PIN R17 [get_ports gfp_sclk];

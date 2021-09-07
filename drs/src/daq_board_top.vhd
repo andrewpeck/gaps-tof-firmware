@@ -49,6 +49,10 @@ entity top_readout_board is
     ext_trigger_i_p : in std_logic;     -- trigger_i from rj45
     ext_trigger_i_n : in std_logic;     -- trigger_i from rj45
 
+    -- GFP io
+    gfp_sclk : in std_logic;
+    gfp_sdat : in std_logic;
+
     -- Zynq IO
     fixed_io_mio      : inout std_logic_vector (53 downto 0);
     fixed_io_ddr_vrn  : inout std_logic;
@@ -85,16 +89,16 @@ architecture Behavioral of top_readout_board is
   signal locked : std_logic;
 
   signal reset : std_logic;
-  
+
   -- DMA 
-  signal dma_reset  : std_logic := '0';
-  
+  signal dma_reset : std_logic := '0';
+
   -- RAM Buffer occupancy
-  signal ram_buff_a_occupancy  : std_logic_vector(31 downto 0) := (others => '0');
-  signal ram_buff_b_occupancy  : std_logic_vector(31 downto 0) := (others => '0');
-  signal dma_pointer           : std_logic_vector(31 downto 0);
-  signal ram_a_occ_rst         : std_logic;
-  signal ram_b_occ_rst         : std_logic;
+  signal ram_buff_a_occupancy : std_logic_vector(31 downto 0) := (others => '0');
+  signal ram_buff_b_occupancy : std_logic_vector(31 downto 0) := (others => '0');
+  signal dma_pointer          : std_logic_vector(31 downto 0);
+  signal ram_a_occ_rst        : std_logic;
+  signal ram_b_occ_rst        : std_logic;
 
   signal drs_data         : std_logic_vector (13 downto 0);
   signal drs_data_valid   : std_logic;
@@ -197,6 +201,12 @@ architecture Behavioral of top_readout_board is
     signal event_counter : std_logic_vector (31 downto 0) := (others => '0');
   ------ Register signals end ----------------------------------------------
 
+  signal gfp_use_eventid      : std_logic;
+  signal gfp_eventid_rx       : std_logic_vector (31 downto 0);
+  signal gfp_eventid_rx_valid : std_logic;
+  signal gfp_eventid          : std_logic_vector (31 downto 0);
+  signal gfp_eventid_valid    : std_logic;
+  signal gfp_eventid_read     : std_logic;
 
   --IPbus
   signal ipb_reset    : std_logic;
@@ -304,6 +314,32 @@ begin
   -- Trigger Input
   -------------------------------------------------------------------------------
 
+  gfp_spi_rx : entity work.spi_rx
+    port map (
+      clock   => clock,
+      sclk    => gfp_sclk,
+      sdat    => gfp_sdat,
+      data_o  => gfp_eventid_rx,
+      valid_o => gfp_eventid_rx_valid
+      );
+
+  process (clock) is
+  begin
+    if (rising_edge(clock)) then
+
+      if (gfp_eventid_rx_read = '1') then
+        gfp_eventid_valid <= '0';
+        gfp_eventid <= x"FFFFFFFE";
+      -- don't overwrite existing triggers until they are already read
+      elsif (gfp_eventid_valid = '0' and gfp_eventid_rx_valid = '1') then
+        gfp_eventid_valid <= '1';
+        gfp_eventid <= gfp_eventid_rx;
+      end if;
+
+    end if;
+  end process;
+
+
   ibuftrigger : IBUFDS
     generic map (                       --
       DIFF_TERM    => true,             -- Differential Termination
@@ -344,11 +380,11 @@ begin
       MHZ   => 33333333,
       DIV   => 100
       )
-  port map (
-    clock      => clock,
-    drs_dtap_i => drs_dtap_i,
-    dtap_cnt_o => dtap_cnt
-    );
+    port map (
+      clock      => clock,
+      drs_dtap_i => drs_dtap_i,
+      dtap_cnt_o => dtap_cnt
+      );
 
   -------------------------------------------------------------------------------
   -- SRCLK ODDR
@@ -461,22 +497,28 @@ begin
       trigger_i             => trigger,
       stop_cell_i           => drs_stop_cell,
       event_cnt_i           => event_counter,
-      mask_i                => readout_mask,
-      board_id              => (others => '0'),
-      sync_err_i            => '0',
-      dna_i                 => "0000000" & dna,
-      hash_i                => GLOBAL_SHA,
-      timestamp_i           => std_logic_vector(timestamp),
-      roi_size_i            => sample_count_max,
-      dtap0_i               => dtap_cnt,
-      dtap1_i               => (others => '0'),
-      drs_busy_i            => drs_busy,
-      drs_data_i            => drs_data(13 downto 0),
-      drs_valid_i           => drs_data_valid,
-      data_o                => fifo_data_out,
-      valid_o               => fifo_data_wen,
-      busy_o                => daq_busy,
-      done_o                => readout_complete
+
+      gfp_use_eventid_i   => gfp_use_eventid,
+      gfp_eventid_i       => gfp_eventid,
+      gfp_eventid_valid_i => gfp_eventid_valid,
+      gfp_eventid_read_o  => gfp_eventid_read,
+
+      mask_i      => readout_mask,
+      board_id    => (others => '0'),
+      sync_err_i  => '0',
+      dna_i       => "0000000" & dna,
+      hash_i      => GLOBAL_SHA,
+      timestamp_i => std_logic_vector(timestamp),
+      roi_size_i  => sample_count_max,
+      dtap0_i     => dtap_cnt,
+      dtap1_i     => (others => '0'),
+      drs_busy_i  => drs_busy,
+      drs_data_i  => drs_data(13 downto 0),
+      drs_valid_i => drs_data_valid,
+      data_o      => fifo_data_out,
+      valid_o     => fifo_data_wen,
+      busy_o      => daq_busy,
+      done_o      => readout_complete
       );
 
   -------------------------------------------------------------------------------
@@ -597,14 +639,14 @@ begin
       -- DMA
       dma_reset   => dma_reset,
       daq_busy_in => daq_busy,
-      
+
       -- RAM occupancy monitoring
-      ram_a_occ_rst_i  => ram_a_occ_rst,
-      ram_b_occ_rst_i  => ram_b_occ_rst,
+      ram_a_occ_rst_i        => ram_a_occ_rst,
+      ram_b_occ_rst_i        => ram_b_occ_rst,
       ram_buff_a_occupancy_o => ram_buff_a_occupancy,
       ram_buff_b_occupancy_o => ram_buff_b_occupancy,
-      dma_pointer_o => dma_pointer
-      
+      dma_pointer_o          => dma_pointer
+
       );
 
   -------------------------------------------------------------------------------------------------
@@ -644,50 +686,52 @@ begin
       );
 
     -- Addresses
-    regs_addresses(0)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"00";
-    regs_addresses(1)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"01";
-    regs_addresses(2)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"10";
-    regs_addresses(3)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"11";
-    regs_addresses(4)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"12";
-    regs_addresses(5)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"13";
-    regs_addresses(6)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"14";
-    regs_addresses(7)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"15";
-    regs_addresses(8)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"16";
-    regs_addresses(9)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"17";
-    regs_addresses(10)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"18";
-    regs_addresses(11)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"20";
-    regs_addresses(12)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"21";
-    regs_addresses(13)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"24";
-    regs_addresses(14)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"25";
-    regs_addresses(15)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"26";
-    regs_addresses(16)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"27";
-    regs_addresses(17)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"28";
-    regs_addresses(18)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"29";
-    regs_addresses(19)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"30";
-    regs_addresses(20)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"40";
-    regs_addresses(21)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"41";
-    regs_addresses(22)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"50";
-    regs_addresses(23)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"51";
-    regs_addresses(24)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"52";
-    regs_addresses(25)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"53";
-    regs_addresses(26)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"54";
-    regs_addresses(27)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"55";
-    regs_addresses(28)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"60";
-    regs_addresses(29)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"61";
-    regs_addresses(30)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"62";
-    regs_addresses(31)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"63";
-    regs_addresses(32)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"64";
-    regs_addresses(33)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"65";
-    regs_addresses(34)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"66";
-    regs_addresses(35)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"67";
-    regs_addresses(36)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"70";
-    regs_addresses(37)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"71";
-    regs_addresses(38)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '0' & x"72";
-    regs_addresses(39)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '1' & x"00";
-    regs_addresses(40)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '1' & x"01";
-    regs_addresses(41)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '1' & x"02";
-    regs_addresses(42)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '1' & x"03";
-    regs_addresses(43)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= '1' & x"04";
+    regs_addresses(0)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"00";
+    regs_addresses(1)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"01";
+    regs_addresses(2)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"10";
+    regs_addresses(3)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"11";
+    regs_addresses(4)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"12";
+    regs_addresses(5)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"13";
+    regs_addresses(6)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"14";
+    regs_addresses(7)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"15";
+    regs_addresses(8)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"16";
+    regs_addresses(9)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"17";
+    regs_addresses(10)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"18";
+    regs_addresses(11)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"20";
+    regs_addresses(12)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"21";
+    regs_addresses(13)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"24";
+    regs_addresses(14)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"25";
+    regs_addresses(15)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"26";
+    regs_addresses(16)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"27";
+    regs_addresses(17)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"28";
+    regs_addresses(18)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"29";
+    regs_addresses(19)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"30";
+    regs_addresses(20)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"40";
+    regs_addresses(21)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"41";
+    regs_addresses(22)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"50";
+    regs_addresses(23)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"51";
+    regs_addresses(24)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"52";
+    regs_addresses(25)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"53";
+    regs_addresses(26)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"54";
+    regs_addresses(27)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"55";
+    regs_addresses(28)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"60";
+    regs_addresses(29)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"61";
+    regs_addresses(30)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"62";
+    regs_addresses(31)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"63";
+    regs_addresses(32)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"64";
+    regs_addresses(33)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"65";
+    regs_addresses(34)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"66";
+    regs_addresses(35)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"67";
+    regs_addresses(36)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"70";
+    regs_addresses(37)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"71";
+    regs_addresses(38)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"72";
+    regs_addresses(39)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"00";
+    regs_addresses(40)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"01";
+    regs_addresses(41)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"02";
+    regs_addresses(42)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"03";
+    regs_addresses(43)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"04";
+    regs_addresses(44)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "10" & x"00";
+    regs_addresses(45)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "10" & x"01";
 
     -- Connect read signals
     regs_read_arr(0)(REG_CHIP_DMODE_BIT) <= dmode;
@@ -738,6 +782,8 @@ begin
     regs_read_arr(41)(REG_DMA_RAM_A_OCCUPANCY_MSB downto REG_DMA_RAM_A_OCCUPANCY_LSB) <= ram_buff_a_occupancy;
     regs_read_arr(42)(REG_DMA_RAM_B_OCCUPANCY_MSB downto REG_DMA_RAM_B_OCCUPANCY_LSB) <= ram_buff_b_occupancy;
     regs_read_arr(43)(REG_DMA_DMA_POINTER_MSB downto REG_DMA_DMA_POINTER_LSB) <= dma_pointer;
+    regs_read_arr(44)(REG_GFP_EVENTID_SPI_EN_BIT) <= gfp_use_eventid;
+    regs_read_arr(45)(REG_GFP_EVENTID_RX_MSB downto REG_GFP_EVENTID_RX_LSB) <= gfp_eventid_rx;
 
     -- Connect write signals
     dmode <= regs_write_arr(0)(REG_CHIP_DMODE_BIT);
@@ -753,6 +799,7 @@ begin
     wait_vdd_clocks <= regs_write_arr(10)(REG_READOUT_WAIT_VDD_CLKS_MSB downto REG_READOUT_WAIT_VDD_CLKS_LSB);
     ext_trigger_en <= regs_write_arr(21)(REG_TRIGGER_EXT_TRIGGER_EN_BIT);
     ext_trigger_active_hi <= regs_write_arr(21)(REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT);
+    gfp_use_eventid <= regs_write_arr(44)(REG_GFP_EVENTID_SPI_EN_BIT);
 
     -- Connect write pulse signals
     start <= regs_write_pulse_arr(4);
@@ -858,6 +905,7 @@ begin
     regs_defaults(10)(REG_READOUT_WAIT_VDD_CLKS_MSB downto REG_READOUT_WAIT_VDD_CLKS_LSB) <= REG_READOUT_WAIT_VDD_CLKS_DEFAULT;
     regs_defaults(21)(REG_TRIGGER_EXT_TRIGGER_EN_BIT) <= REG_TRIGGER_EXT_TRIGGER_EN_DEFAULT;
     regs_defaults(21)(REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT) <= REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_DEFAULT;
+    regs_defaults(44)(REG_GFP_EVENTID_SPI_EN_BIT) <= REG_GFP_EVENTID_SPI_EN_DEFAULT;
 
     -- Define writable regs
     regs_writable_arr(0) <= '1';
@@ -865,6 +913,7 @@ begin
     regs_writable_arr(3) <= '1';
     regs_writable_arr(10) <= '1';
     regs_writable_arr(21) <= '1';
+    regs_writable_arr(44) <= '1';
 
   --==== Registers end ============================================================================
 

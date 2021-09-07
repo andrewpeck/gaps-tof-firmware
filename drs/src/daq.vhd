@@ -31,6 +31,11 @@ entity daq is
     event_cnt_i : in std_logic_vector (31 downto 0);
     mask_i      : in std_logic_vector (17 downto 0);
 
+    gfp_use_eventid_i   : in  std_logic;
+    gfp_eventid_i       : in  std_logic_vector (31 downto 0);
+    gfp_eventid_valid_i : in  std_logic;
+    gfp_eventid_read_o  : out std_logic;
+
     -- status
     temperature_i : in std_logic_vector (11 downto 0);
     board_id      : in std_logic_vector (7 downto 0);
@@ -56,12 +61,11 @@ end daq;
 
 architecture behavioral of daq is
 
-  -- packet processing in python 15% faster by adding a channel header!!
   type state_t is (IDLE_state, ERR_state, HEAD_state, STATUS_state, LENGTH_state, ROI_state,
-                   DNA_state, HASH_state, ID_state, CHMASK_state, EVENT_CNT_state, DTAP0_state,
-                   DTAP1_state, TIMESTAMP_state, CALC_CH_CRC_state, CH_CRC_state, CH_HEADER_state,
-                   PAYLOAD_state, STOP_CELL_state, CALC_CRC32_state, CRC32_state, TAIL_state,
-                   PAD_state);
+                   DNA_state, HASH_state, ID_state, CHMASK_state, WAIT_EVENT_CNT_state,
+                   EVENT_CNT_state, DTAP0_state, DTAP1_state, TIMESTAMP_state, CALC_CH_CRC_state,
+                   CH_CRC_state, CH_HEADER_state, PAYLOAD_state, STOP_CELL_state, CALC_CRC32_state,
+                   CRC32_state, TAIL_state, PAD_state);
 
   signal state : state_t := IDLE_state;
 
@@ -220,7 +224,7 @@ architecture behavioral of daq is
 begin
 
   packet_crc_en <= if_then_else ((dav and state /= TAIL_state and state /= CRC32_state), '1', '0');
-  channel_crc_en  <= if_then_else (
+  channel_crc_en <= if_then_else (
     (state = CALC_CH_CRC_state) or
     ((state_word_cnt > 0) and dav and state = PAYLOAD_state), '1', '0');
 
@@ -385,14 +389,28 @@ begin
 
         when CHMASK_state =>
 
-          state <= EVENT_CNT_state;
+          if (gfp_use_eventid_i = '1') then
+            state <= WAIT_EVENT_CNT_state;
+          else
+            state <= EVENT_CNT_state;
+          end if;
 
           data <= mask (16 downto 9) & mask (7 downto 0);
           dav  <= true;
 
           channel_id <= get_first_channel(mask);
 
+        when WAIT_EVENT_CNT_state =>
+
+          if (gfp_eventid_valid_i) then
+            state              <= EVENT_CNT_state;
+            event_cnt          <= gfp_eventid_i;
+            gfp_eventid_read_o <= '1';
+          end if;
+
         when EVENT_CNT_state =>
+
+          gfp_eventid_read_o <= '0';
 
           if (state_word_cnt = event_cnt'length / g_WORD_SIZE - 1) then
             state          <= DTAP0_state;

@@ -284,6 +284,25 @@
     \vspace{5mm}
 
 
+    \noindent
+    \subsection*{\textcolor{parentcolor}{\textbf{DRS.GFP}}}
+
+    \vspace{4mm}
+    \noindent
+    GFP Registers
+    \noindent
+
+    \keepXColumns
+    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
+    \hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
+    \nopagebreak
+    EVENTID\_SPI\_EN & \texttt{0x200} & \texttt{[0:0]} & rw & \texttt{0x0} & 1 to enable GFP Event ID from SPI \\\hline
+    EVENTID\_RX & \texttt{0x201} & \texttt{[31:0]} & r & \texttt{} & Event ID from GFP SPI Interface \\\hline
+    \end{tabularx}
+    \vspace{5mm}
+
+
 % END: ADDRESS_TABLE :: DO NOT EDIT
 
 \end{document}
