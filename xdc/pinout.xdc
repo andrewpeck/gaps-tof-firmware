@@ -6,6 +6,7 @@ set_property IOSTANDARD LVCMOS25 [get_ports {drs_*}]
 
 set_property IOSTANDARD LVCMOS25 [get_ports {adc_data_i[*]}]
 
+set_property IOSTANDARD LVCMOS25 [get_ports {gfp_s[*]}]
 
 set_property IOSTANDARD LVDS_25 [get_ports ext_trigger_i_*]
 
