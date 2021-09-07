@@ -29,6 +29,7 @@ drs/src/types_pkg.vhd
 drs/src/trigger_mux.vhd
 drs/src/dtap.vhd
 drs/src/adc.vhd
+drs/src/spi_rx.vhd
 
 drs/src/drs.v
 drs/src/crc32.vhd
