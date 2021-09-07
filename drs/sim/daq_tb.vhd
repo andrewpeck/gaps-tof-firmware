@@ -118,7 +118,7 @@ begin
     wait until rising_edge(clock);
     uniform(seed1, seed2, x);
     drs_data_i <= std_logic_vector(to_unsigned(integer(floor(x * 16384.0)), 14));
-    --drs_data_i <= "00" & x"bbb";
+  --drs_data_i <= "00" & x"bbb";
   end process;
 
   daq_inst : entity work.daq
@@ -129,6 +129,12 @@ begin
       clock                 => clock,
       reset                 => reset,
       debug_packet_inject_i => debug_packet_inject_i,
+
+      gfp_use_eventid_i     => '0',
+      gfp_eventid_i         => (others => '0'),
+      gfp_eventid_valid_i   => '0',
+      gfp_eventid_read_o    => '0',
+
       trigger_i             => trigger_i,
       temperature_i         => (others => '0'),
       event_cnt_i           => event_cnt_i,
