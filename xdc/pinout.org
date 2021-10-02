@@ -41,8 +41,8 @@ set_property PACKAGE_PIN R18 [get_ports        drs_denable_o]; # IO_B34_L20_R18_
 set_property PACKAGE_PIN T12 [get_ports         drs_dwrite_o]; # IO_B34_L2_T12_P
 set_property PACKAGE_PIN U12 [get_ports        drs_plllock_i]; # IO_B34_L2_U12_N
 set_property PACKAGE_PIN V16 [get_ports           drs_dtap_i]; # IO_B34_L18_V16_P
-set_property PACKAGE_PIN W16 [get_ports       drs_daddr_o[3]]; # IO_B34_L18_W16_N
-set_property PACKAGE_PIN R16 [get_ports       drs_daddr_o[2]]; # IO_B34_L19_R16_P
+set_property PACKAGE_PIN W16 [get_ports        drs_addr_o[3]]; # IO_B34_L18_W16_N
+set_property PACKAGE_PIN R16 [get_ports        drs_addr_o[2]]; # IO_B34_L19_R16_P
 set_property PACKAGE_PIN R17 [get_ports       adc_data_i[13]]; # IO_B34_L19_VREF_R17_N
 set_property PACKAGE_PIN V15 [get_ports       adc_data_i[12]]; # IO_B34_L10_V15_P
 set_property PACKAGE_PIN W15 [get_ports       adc_data_i[11]]; # IO_B34_L10_W15_N
@@ -79,8 +79,8 @@ set_property PACKAGE_PIN P18 [get_ports        drs_denable_o]; # IO_B34_L20_P18_
 set_property PACKAGE_PIN P16 [get_ports         drs_dwrite_o]; # IO_B34_L24_P16_P
 set_property PACKAGE_PIN R16 [get_ports        drs_plllock_i]; # IO_B34_L24_R16_N
 set_property PACKAGE_PIN P20 [get_ports           drs_dtap_i]; # IO_B34_L18_P20_P
-set_property PACKAGE_PIN P21 [get_ports       drs_daddr_o[3]]; # IO_B34_L18_P21_N
-set_property PACKAGE_PIN N15 [get_ports       drs_daddr_o[2]]; # IO_B34_L19_N15_P
+set_property PACKAGE_PIN P21 [get_ports        drs_addr_o[3]]; # IO_B34_L18_P21_N
+set_property PACKAGE_PIN N15 [get_ports        drs_addr_o[2]]; # IO_B34_L19_N15_P
 set_property PACKAGE_PIN P15 [get_ports       adc_data_i[13]]; # IO_B34_L19_VREF_P15_N
 set_property PACKAGE_PIN R20 [get_ports       adc_data_i[12]]; # IO_B34_L17_R20_P
 set_property PACKAGE_PIN R21 [get_ports       adc_data_i[11]]; # IO_B34_L17_R21_N
@@ -111,7 +111,7 @@ set_property PACKAGE_PIN A16 [get_ports      ext_trigger_i_p]; # IO_B35_L9_AD3_A
 set_property PACKAGE_PIN A17 [get_ports      ext_trigger_i_n]; # IO_B35_L9_AD3_A17_N
 #+end_example
 
-#+TBLNAME: mars-pinouts
+#+TBLNAME: pinout
 |-----+---------------------------+---------------------------+-----------------+-----------|
 | Pin | ZX2                       | ZX3                       | RB Assignment   | Note      |
 |-----+---------------------------+---------------------------+-----------------+-----------|
@@ -130,9 +130,9 @@ set_property PACKAGE_PIN A17 [get_ports      ext_trigger_i_n]; # IO_B35_L9_AD3_A
 |  25 | IO_B34_L2_U12_N           | IO_B34_L24_R16_N          | drs_plllock_i   |           |
 |  27 | GND                       | GND                       |                 |           |
 |  29 | IO_B34_L18_V16_P          | IO_B34_L18_P20_P          | drs_dtap_i      |           |
-|  31 | IO_B34_L18_W16_N          | IO_B34_L18_P21_N          | drs_daddr_o[3]  |           |
+|  31 | IO_B34_L18_W16_N          | IO_B34_L18_P21_N          | drs_addr_o[3]   |           |
 |  33 | GND                       | GND                       |                 |           |
-|  35 | IO_B34_L19_R16_P          | IO_B34_L19_N15_P          | drs_daddr_o[2]  |           |
+|  35 | IO_B34_L19_R16_P          | IO_B34_L19_N15_P          | drs_addr_o[2]   |           |
 |  37 | IO_B34_L19_VREF_R17_N     | IO_B34_L19_VREF_P15_N     | adc_data_i[13]  |           |
 |  39 | GND                       | GND                       |                 |           |
 |     | 1.8V Key                  | 1.8V Key                  |                 |           |

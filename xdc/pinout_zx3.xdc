@@ -6,8 +6,8 @@ set_property PACKAGE_PIN P18 [get_ports        drs_denable_o]; # IO_B34_L20_P18_
 set_property PACKAGE_PIN P16 [get_ports         drs_dwrite_o]; # IO_B34_L24_P16_P
 set_property PACKAGE_PIN R16 [get_ports        drs_plllock_i]; # IO_B34_L24_R16_N
 set_property PACKAGE_PIN P20 [get_ports           drs_dtap_i]; # IO_B34_L18_P20_P
-set_property PACKAGE_PIN P21 [get_ports       drs_daddr_o[3]]; # IO_B34_L18_P21_N
-set_property PACKAGE_PIN N15 [get_ports       drs_daddr_o[2]]; # IO_B34_L19_N15_P
+set_property PACKAGE_PIN P21 [get_ports        drs_addr_o[3]]; # IO_B34_L18_P21_N
+set_property PACKAGE_PIN N15 [get_ports        drs_addr_o[2]]; # IO_B34_L19_N15_P
 set_property PACKAGE_PIN P15 [get_ports       adc_data_i[13]]; # IO_B34_L19_VREF_P15_N
 set_property PACKAGE_PIN R20 [get_ports       adc_data_i[12]]; # IO_B34_L17_R20_P
 set_property PACKAGE_PIN R21 [get_ports       adc_data_i[11]]; # IO_B34_L17_R21_N
