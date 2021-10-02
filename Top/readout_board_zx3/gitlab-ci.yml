@@ -1,0 +1,13 @@
+# #################### READOUT-BOARD Project ###########################
+GEN:readout_board:
+    extends: .generate_project
+    variables:
+      extends: .vars
+      PROJECT_NAME: readout_board_zx3
+      INTERMEDIATE_BUILD: "1"
+
+GEN:readout_board_master:
+    extends: .generate_project
+    variables:
+      extends: .vars
+      PROJECT_NAME: readout_board_zx2

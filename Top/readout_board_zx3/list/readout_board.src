@@ -1,0 +1,5 @@
+drs/list/drs.src lib=drs
+dma/list/dma.src lib=dma
+
+# Block Design
+bd/gaps_ps_interface/gaps_ps_interface.bd

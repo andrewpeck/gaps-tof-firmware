@@ -1,0 +1,320 @@
+
+#+begin_src  python :results output
+
+import csv
+import re
+
+for board in ["zx2", "zx3"]:
+
+    if board=="zx2":
+        pinrow = 1
+    if board=="zx3":
+        pinrow = 2
+
+    print ("#"*80)
+    print(board)
+    print ("#"*80)
+    with open('pinout.csv', newline='') as csvfile:
+        spamreader = csv.reader(csvfile, delimiter=',')
+
+        for row in spamreader:
+            if row[0]=="Pin":
+                continue
+            port = row[3]
+
+            if len(port) > 0:
+
+                io = row[pinrow]
+                pin = re.search(".*_([0-9,A-z]+)_[PN]", io).group(1)
+                print("set_property PACKAGE_PIN %s [get_ports %20s]; # %s" % (pin, port, io))
+
+
+#+end_src
+
+#+RESULTS:
+#+begin_example
+################################################################################
+zx2
+################################################################################
+set_property PACKAGE_PIN T17 [get_ports          drs_wsrin_o]; # IO_B34_L20_T17_P
+set_property PACKAGE_PIN R18 [get_ports        drs_denable_o]; # IO_B34_L20_R18_N
+set_property PACKAGE_PIN T12 [get_ports         drs_dwrite_o]; # IO_B34_L2_T12_P
+set_property PACKAGE_PIN U12 [get_ports        drs_plllock_i]; # IO_B34_L2_U12_N
+set_property PACKAGE_PIN V16 [get_ports           drs_dtap_i]; # IO_B34_L18_V16_P
+set_property PACKAGE_PIN W16 [get_ports       drs_daddr_o[3]]; # IO_B34_L18_W16_N
+set_property PACKAGE_PIN R16 [get_ports       drs_daddr_o[2]]; # IO_B34_L19_R16_P
+set_property PACKAGE_PIN R17 [get_ports       adc_data_i[13]]; # IO_B34_L19_VREF_R17_N
+set_property PACKAGE_PIN V15 [get_ports       adc_data_i[12]]; # IO_B34_L10_V15_P
+set_property PACKAGE_PIN W15 [get_ports       adc_data_i[11]]; # IO_B34_L10_W15_N
+set_property PACKAGE_PIN Y16 [get_ports       adc_data_i[10]]; # IO_B34_L7_Y16_P
+set_property PACKAGE_PIN Y17 [get_ports        adc_data_i[9]]; # IO_B34_L7_Y17_N
+set_property PACKAGE_PIN Y18 [get_ports        adc_data_i[8]]; # IO_B34_L17_Y18_P
+set_property PACKAGE_PIN Y19 [get_ports        adc_data_i[7]]; # IO_B34_L17_Y19_N
+set_property PACKAGE_PIN W18 [get_ports        adc_data_i[6]]; # IO_B34_L22_W18_P
+set_property PACKAGE_PIN W19 [get_ports        adc_data_i[5]]; # IO_B34_L22_W19_N
+set_property PACKAGE_PIN N15 [get_ports        adc_data_i[4]]; # IO_B35_L21_AD14_N15_P
+set_property PACKAGE_PIN N16 [get_ports        adc_data_i[3]]; # IO_B35_L21_AD14_N16_N
+set_property PACKAGE_PIN M19 [get_ports        adc_data_i[2]]; # IO_B35_L7_AD2_M19_P
+set_property PACKAGE_PIN M20 [get_ports        adc_data_i[1]]; # IO_B35_L7_AD2_M20_N
+set_property PACKAGE_PIN L19 [get_ports        adc_data_i[0]]; # IO_B35_L9_AD3_L19_P
+set_property PACKAGE_PIN L20 [get_ports         drs_nreset_o]; # IO_B35_L9_AD3_L20_N
+set_property PACKAGE_PIN K19 [get_ports        drs_addr_o[1]]; # IO_B35_L10_AD11_K19_P
+set_property PACKAGE_PIN J19 [get_ports        drs_addr_o[0]]; # IO_B35_L10_AD11_J19_N
+set_property PACKAGE_PIN J18 [get_ports        drs_rsrload_o]; # IO_B35_L14_AD4_SRCC_J18_P
+set_property PACKAGE_PIN H18 [get_ports          drs_srclk_o]; # IO_B35_L14_AD4_SRCC_H18_N
+set_property PACKAGE_PIN G19 [get_ports           drs_srin_o]; # IO_B35_L18_AD13_G19_P
+set_property PACKAGE_PIN G20 [get_ports          drs_srout_i]; # IO_B35_L18_AD13_G20_N
+set_property PACKAGE_PIN F19 [get_ports         drs_wsrout_i]; # IO_B35_L15_AD12_F19_P
+set_property PACKAGE_PIN U18 [get_ports            clock_i_p]; # IO_B34_L12_MRCC_U18_P
+set_property PACKAGE_PIN U19 [get_ports            clock_i_n]; # IO_B34_L12_MRCC_U19_N
+set_property PACKAGE_PIN G17 [get_ports             gfp_sdat]; # IO_B35_L16_G17_P
+set_property PACKAGE_PIN G18 [get_ports             gfp_sclk]; # IO_B35_L16_G18_N
+set_property PACKAGE_PIN E17 [get_ports      ext_trigger_i_p]; # IO_B35_L3_AD1_E17_P
+set_property PACKAGE_PIN D18 [get_ports      ext_trigger_i_n]; # IO_B35_L3_AD1_D18_N
+################################################################################
+zx3
+################################################################################
+set_property PACKAGE_PIN P17 [get_ports          drs_wsrin_o]; # IO_B34_L20_P17_P
+set_property PACKAGE_PIN P18 [get_ports        drs_denable_o]; # IO_B34_L20_P18_N
+set_property PACKAGE_PIN P16 [get_ports         drs_dwrite_o]; # IO_B34_L24_P16_P
+set_property PACKAGE_PIN R16 [get_ports        drs_plllock_i]; # IO_B34_L24_R16_N
+set_property PACKAGE_PIN P20 [get_ports           drs_dtap_i]; # IO_B34_L18_P20_P
+set_property PACKAGE_PIN P21 [get_ports       drs_daddr_o[3]]; # IO_B34_L18_P21_N
+set_property PACKAGE_PIN N15 [get_ports       drs_daddr_o[2]]; # IO_B34_L19_N15_P
+set_property PACKAGE_PIN P15 [get_ports       adc_data_i[13]]; # IO_B34_L19_VREF_P15_N
+set_property PACKAGE_PIN R20 [get_ports       adc_data_i[12]]; # IO_B34_L17_R20_P
+set_property PACKAGE_PIN R21 [get_ports       adc_data_i[11]]; # IO_B34_L17_R21_N
+set_property PACKAGE_PIN M21 [get_ports       adc_data_i[10]]; # IO_B34_L15_M21_P
+set_property PACKAGE_PIN M22 [get_ports        adc_data_i[9]]; # IO_B34_L15_M22_N
+set_property PACKAGE_PIN L21 [get_ports        adc_data_i[8]]; # IO_B34_L10_L21_P
+set_property PACKAGE_PIN L22 [get_ports        adc_data_i[7]]; # IO_B34_L10_L22_N
+set_property PACKAGE_PIN J21 [get_ports        adc_data_i[6]]; # IO_B34_L8_J21_P
+set_property PACKAGE_PIN J22 [get_ports        adc_data_i[5]]; # IO_B34_L8_J22_N
+set_property PACKAGE_PIN E19 [get_ports        adc_data_i[4]]; # IO_B35_L21_AD14_E19_P
+set_property PACKAGE_PIN E20 [get_ports        adc_data_i[3]]; # IO_B35_L21_AD14_E20_N
+set_property PACKAGE_PIN H22 [get_ports        adc_data_i[2]]; # IO_B35_L24_AD15_H22_P
+set_property PACKAGE_PIN G22 [get_ports        adc_data_i[1]]; # IO_B35_L24_AD15_G22_N
+set_property PACKAGE_PIN F21 [get_ports        adc_data_i[0]]; # IO_B35_L23_F21_P
+set_property PACKAGE_PIN F22 [get_ports         drs_nreset_o]; # IO_B35_L23_F22_N
+set_property PACKAGE_PIN E21 [get_ports        drs_addr_o[1]]; # IO_B35_L17_AD5_E21_P
+set_property PACKAGE_PIN D21 [get_ports        drs_addr_o[0]]; # IO_B35_L17_AD5_D21_N
+set_property PACKAGE_PIN D20 [get_ports        drs_rsrload_o]; # IO_B35_L14_SRCC_AD4_D20_P
+set_property PACKAGE_PIN C20 [get_ports          drs_srclk_o]; # IO_B35_L14_SRCC_AD4_C20_N
+set_property PACKAGE_PIN B21 [get_ports           drs_srin_o]; # IO_B35_L18_AD13_B21_P
+set_property PACKAGE_PIN B22 [get_ports          drs_srout_i]; # IO_B35_L18_AD13_B22_N
+set_property PACKAGE_PIN A21 [get_ports         drs_wsrout_i]; # IO_B35_L15_AD12_A21_P
+set_property PACKAGE_PIN L18 [get_ports            clock_i_p]; # IO_B34_L12_MRCC_L18_P
+set_property PACKAGE_PIN L19 [get_ports            clock_i_n]; # IO_B34_L12_MRCC_L19_N
+set_property PACKAGE_PIN A18 [get_ports             gfp_sdat]; # IO_B35_L10_AD11_A18_P
+set_property PACKAGE_PIN A19 [get_ports             gfp_sclk]; # IO_B35_L10_AD11_A19_N
+set_property PACKAGE_PIN A16 [get_ports      ext_trigger_i_p]; # IO_B35_L9_AD3_A16_P
+set_property PACKAGE_PIN A17 [get_ports      ext_trigger_i_n]; # IO_B35_L9_AD3_A17_N
+#+end_example
+
+#+TBLNAME: mars-pinouts
+|-----+---------------------------+---------------------------+-----------------+-----------|
+| Pin | ZX2                       | ZX3                       | RB Assignment   | Note      |
+|-----+---------------------------+---------------------------+-----------------+-----------|
+|   1 | VCC_MOD                   | VCC_MOD                   |                 |           |
+|   3 | VCC_MOD                   | VCC_MOD                   |                 |           |
+|   5 | VCC_MOD                   | VCC_MOD                   |                 |           |
+|   7 | VCC_MOD                   | VCC_MOD                   |                 |           |
+|   9 | VCC_MOD                   | VCC_MOD                   |                 |           |
+|  11 | VCC_MOD                   | VCC_MOD                   |                 |           |
+|  13 | PWR_EN                    | PWR_EN                    |                 |           |
+|  15 | GND                       | GND                       |                 |           |
+|  17 | IO_B34_L20_T17_P          | IO_B34_L20_P17_P          | drs_wsrin_o     |           |
+|  19 | IO_B34_L20_R18_N          | IO_B34_L20_P18_N          | drs_denable_o   |           |
+|  21 | GND                       | GND                       |                 |           |
+|  23 | IO_B34_L2_T12_P           | IO_B34_L24_P16_P          | drs_dwrite_o    |           |
+|  25 | IO_B34_L2_U12_N           | IO_B34_L24_R16_N          | drs_plllock_i   |           |
+|  27 | GND                       | GND                       |                 |           |
+|  29 | IO_B34_L18_V16_P          | IO_B34_L18_P20_P          | drs_dtap_i      |           |
+|  31 | IO_B34_L18_W16_N          | IO_B34_L18_P21_N          | drs_daddr_o[3]  |           |
+|  33 | GND                       | GND                       |                 |           |
+|  35 | IO_B34_L19_R16_P          | IO_B34_L19_N15_P          | drs_daddr_o[2]  |           |
+|  37 | IO_B34_L19_VREF_R17_N     | IO_B34_L19_VREF_P15_N     | adc_data_i[13]  |           |
+|  39 | GND                       | GND                       |                 |           |
+|     | 1.8V Key                  | 1.8V Key                  |                 |           |
+|  41 | VCC_1V35                  | VCC_DDR3L                 |                 |           |
+|  43 | IO_B34_L13_MRCC_N18_P     | IO_B34_L13_MRCC_M19_P     |                 |           |
+|  45 | IO_B34_L13_MRCC_P19_N     | IO_B34_L13_MRCC_M20_N     |                 |           |
+|  47 | GND                       | GND                       |                 |           |
+|  49 | IO_B34_L14_SRCC_N20_P     | IO_B34_L14_SRCC_N19_P     |                 |           |
+|  51 | IO_B34_L14_SRCC_P20_N     | IO_B34_L14_SRCC_N20_N     |                 |           |
+|  53 | VCC_IO_B34                | VCC_IO_B34                |                 |           |
+|  55 | IO_B34_L10_V15_P          | IO_B34_L17_R20_P          | adc_data_i[12]  |           |
+|  57 | IO_B34_L10_W15_N          | IO_B34_L17_R21_N          | adc_data_i[11]  |           |
+|  59 | IO_B34_L7_Y16_P           | IO_B34_L15_M21_P          | adc_data_i[10]  |           |
+|  61 | IO_B34_L7_Y17_N           | IO_B34_L15_M22_N          | adc_data_i[9]   |           |
+|  63 | GND                       | GND                       |                 |           |
+|  65 | IO_B34_L17_Y18_P          | IO_B34_L10_L21_P          | adc_data_i[8]   |           |
+|  67 | IO_B34_L17_Y19_N          | IO_B34_L10_L22_N          | adc_data_i[7]   |           |
+|  69 | IO_B34_L22_W18_P          | IO_B34_L8_J21_P           | adc_data_i[6]   |           |
+|  71 | IO_B34_L22_W19_N          | IO_B34_L8_J22_N           | adc_data_i[5]   |           |
+|  73 | VCC_IO_B34                | VCC_IO_B34                |                 |           |
+|  75 | IO_B35_L21_AD14_N15_P     | IO_B35_L21_AD14_E19_P     | adc_data_i[4]   |           |
+|  77 | IO_B35_L21_AD14_N16_N     | IO_B35_L21_AD14_E20_N     | adc_data_i[3]   |           |
+|  79 | IO_B35_L7_AD2_M19_P       | IO_B35_L24_AD15_H22_P     | adc_data_i[2]   |           |
+|  81 | IO_B35_L7_AD2_M20_N       | IO_B35_L24_AD15_G22_N     | adc_data_i[1]   |           |
+|  83 | GND                       | GND                       |                 |           |
+|  85 | IO_B35_L13_MRCC_H16_P     | IO_B35_L13_MRCC_B19_P     |                 |           |
+|  87 | IO_B35_L13_MRCC_H17_N     | IO_B35_L13_MRCC_B20_N     |                 |           |
+|  89 | VCC_1V8_PS                | VCC_1V8                   |                 |           |
+|  91 | IO_B35_L9_AD3_L19_P       | IO_B35_L23_F21_P          | adc_data_i[0]   |           |
+|  93 | IO_B35_L9_AD3_L20_N       | IO_B35_L23_F22_N          | drs_nreset_o    |           |
+|  95 | GND                       | GND                       |                 |           |
+|  97 | IO_B35_L10_AD11_K19_P     | IO_B35_L17_AD5_E21_P      | drs_addr_o[1]   |           |
+|  99 | IO_B35_L10_AD11_J19_N     | IO_B35_L17_AD5_D21_N      | drs_addr_o[0]   |           |
+| 101 | VCC_1V8_PS                | VCC_1V8                   |                 |           |
+| 103 | IO_B35_L14_AD4_SRCC_J18_P | IO_B35_L14_SRCC_AD4_D20_P | drs_rsrload_o   |           |
+| 105 | IO_B35_L14_AD4_SRCC_H18_N | IO_B35_L14_SRCC_AD4_C20_N | drs_srclk_o     |           |
+| 107 | GND                       | GND                       |                 |           |
+| 109 | IO_B35_L17_AD5_J20_P      | IO_B35_L16_D22_P          |                 |           |
+| 111 | IO_B35_L17_AD5_H20_N      | IO_B35_L16_C22_N          |                 |           |
+| 113 | IO_B35_L18_AD13_G19_P     | IO_B35_L18_AD13_B21_P     | drs_srin_o      |           |
+| 115 | IO_B35_L18_AD13_G20_N     | IO_B35_L18_AD13_B22_N     | drs_srout_i     |           |
+| 117 | VCC_IO_B35                | VCC_IO_B35                |                 |           |
+| 119 | IO_B35_L15_AD12_F19_P     | IO_B35_L15_AD12_A21_P     | drs_wsrout_i    |           |
+| 121 | IO_B35_L15_AD12_F20_N     | IO_B35_L15_AD12_A22_N     |                 |           |
+| 123 | IO_B35_L4_D19_P           | IO_B35_L5_AD9_F18_P       |                 | gpio_p[0] |
+| 125 | IO_B35_L4_D20_N           | IO_B35_L5_AD9_E18_N       |                 | gpio_n[0] |
+| 127 | GND                       | GND                       |                 |           |
+| 129 | IO_B35_L1_AD0_C20_P       | IO_B35_L7_AD2_C15_P       |                 | gpio_p[1] |
+| 131 | IO_B35_L1_AD0_B20_N       | IO_B35_L7_AD2_B15_N       |                 | gpio_n[1] |
+| 133 | IO_B35_L2_AD8_B19_P       | IO_B35_L8_AD10_B16_P      |                 | gpio_p[2] |
+| 135 | IO_B35_L2_AD8_A20_N       | IO_B35_L8_AD10_B17_N      |                 | gpio_n[2] |
+| 137 | VCC_CFG_MIO_B13           | VCC_CFG_PS_B13_B33        |                 |           |
+| 139 | IO_MIO40_B13_L16_W10      | IO_MIO40_B33_L12_Y18      |                 |           |
+| 141 | IO_MIO41_B13_L16_W9       | IO_MIO41_B33_L12_AA18     |                 |           |
+| 143 | IO_MIO42_B13_L18_W11      | IO_MIO42_B33_L17_AA17     |                 |           |
+| 145 | IO_MIO43_B13_L18_Y11      | IO_MIO43_B33_L17_AB17     |                 |           |
+| 147 | GND                       | GND                       |                 |           |
+| 149 | IO_MIO44_B13_L14_SRCC_Y9  | IO_MIO44_B33_L16_U17      |                 |           |
+| 151 | IO_MIO45_B13_L14_Y8       | IO_MIO45_B33_L16_V17      |                 |           |
+| 153 | IO_MIO46_B13_L19_T5       | IO_MIO46_B33_L15_U15      |                 |           |
+| 155 | IO_MIO47_B13_L19_U5       | IO_MIO47_B33_L15_U16      |                 |           |
+| 157 | GND                       | GND                       |                 |           |
+| 159 | USB_D_P                   | USB_D_P                   |                 |           |
+| 161 | USB_D_N                   | USB_D_N                   |                 |           |
+| 163 | USB_VBUS                  | USB_VBUS                  |                 |           |
+| 165 | USB_ID                    | USB_ID                    |                 |           |
+| 167 | GND                       | GND                       |                 |           |
+| 169 | ETH_A_N                   | ETH_A_N                   |                 |           |
+| 171 | ETH_A_P                   | ETH_A_P                   |                 |           |
+| 173 | ETH_LED1#                 | ETH_LED1#                 |                 |           |
+| 175 | ETH_LED2#                 | ETH_LED2#                 |                 |           |
+| 177 | ETH_B_N                   | ETH_B_N                   |                 |           |
+| 179 | ETH_B_P                   | ETH_B_P                   |                 |           |
+| 181 | ETH_CTREF                 | ETH_CTREF                 |                 |           |
+| 183 | ETH_C_N                   | ETH_C_N                   |                 |           |
+| 185 | ETH_C_P                   | ETH_C_P                   |                 |           |
+| 187 | -                         | -                         |                 |           |
+| 189 | -                         | -                         |                 |           |
+| 191 | ETH_D_N                   | ETH_D_N                   |                 |           |
+| 193 | ETH_D_P                   | ETH_D_P                   |                 |           |
+| 195 | GND                       | GND                       |                 |           |
+| 197 | VCC_3V3                   | VCC_3V3                   |                 |           |
+| 199 | VCC_3V3                   | VCC_3V3                   |                 |           |
+|   2 | GND                       | GND                       |                 |           |
+|   4 | IO_B34_L12_MRCC_U18_P     | IO_B34_L12_MRCC_L18_P     | clock_i_p       |           |
+|   6 | IO_B34_L12_MRCC_U19_N     | IO_B34_L12_MRCC_L19_N     | clock_i_n       |           |
+|   8 | GND                       | GND                       |                 |           |
+|  10 | IO_B34_L11_SRCC_U14_P     | IO_B34_L11_SRCC_K19_P     |                 |           |
+|  12 | IO_B34_L11_SRCC_U15_N     | IO_B34_L11_SRCC_K20_N     |                 |           |
+|  14 | GND                       | GND                       |                 |           |
+|  16 | IO_B34_L21_V17_P          | IO_B34_L21_T16_P          |                 |           |
+|  18 | IO_B34_L21_V18_N          | IO_B34_L21_T17_N          |                 |           |
+|  20 | GND                       | GND                       |                 |           |
+|  22 | IO_B34_L3_PUDC#_U13_P     | IO_B34_L23_R18_P          |                 |           |
+|  24 | IO_B34_L3_V13_N           | IO_B34_L23_T18_N          |                 |           |
+|  26 | GND                       | GND                       |                 |           |
+|  28 | IO_B34_L1_T11_P           | IO_B34_L22_R19_P          |                 |           |
+|  30 | IO_B34_L1_T10_N           | IO_B34_L22_T19_N          |                 |           |
+|  32 | GND                       | GND                       |                 |           |
+|  34 | IO_B34_L4_V12_P           | IO_B34_L5_N17_P           |                 |           |
+|  36 | IO_B34_L4_W13_N           | IO_B34_L5_N18_N           |                 |           |
+|  38 | GND                       | GND                       |                 |           |
+|  40 | PWR_GOOD                  | PWR_GOOD                  |                 |           |
+|     | 1.8V Key                  | 1.8V Key                  |                 |           |
+|  42 | VCC_1V0_PS                | VCC_1V0                   |                 |           |
+|  44 | IO_B34_L8_W14_P           | IO_B34_L16_N22_P          |                 |           |
+|  46 | IO_B34_L8_Y14_N           | IO_B34_L16_P22_N          |                 |           |
+|  48 | IO_B34_L6_P14_P           | IO_B34_L6_M15_P           |                 |           |
+|  50 | IO_B34_L6_VREF_R14_N      | IO_B34_L6_VREF_M16_N      |                 |           |
+|  52 | GND                       | GND                       |                 |           |
+|  54 | IO_B34_L5_T14_P           | IO_B34_L4_L17_P           |                 |           |
+|  56 | IO_B34_L5_T15_N           | IO_B34_L4_M17_N           |                 |           |
+|  58 | IO_B34_L9_T16_P           | IO_B34_L9_J20_P           |                 |           |
+|  60 | IO_B34_L9_U17_N           | IO_B34_L9_K21_N           |                 |           |
+|  62 | VCC_IO_B34                | VCC_IO_B34                |                 |           |
+|  64 | IO_B34_L24_P15_P          | IO_B34_L2_J16_P           |                 |           |
+|  66 | IO_B34_L24_P16_N          | IO_B34_L2_J17_N           |                 |           |
+|  68 | IO_B34_L23_N17_P          | IO_B34_L3_PUDC#_K16_P     |                 |           |
+|  70 | IO_B34_L23_P18_N          | IO_B34_L3_L16_N           |                 |           |
+|  72 | GND                       | GND                       |                 |           |
+|  74 | IO_B34_L16_V20_P          | IO_B34_L7_J18_P           |                 |           |
+|  76 | IO_B34_L16_W20_N          | IO_B34_L7_K18_N           |                 |           |
+|  78 | IO_B34_L15_T20_P          | IO_B34_L1_J15_P           |                 |           |
+|  80 | IO_B34_L15_U20_N          | IO_B34_L1_K15_N           |                 |           |
+|  82 | VCC_IO_B35                | VCC_IO_B35                |                 |           |
+|  84 | IO_B35_L23_M14_P          | IO_B35_L19_H19_P          |                 |           |
+|  86 | IO_B35_L23_M15_N          | IO_B35_L19_VREF_H20_N     |                 |           |
+|  88 | GND                       | GND                       |                 |           |
+|  90 | IO_B35_L22_AD7_L14_P      | IO_B35_L22_AD7_G20_P      |                 |           |
+|  92 | IO_B35_L22_AD7_L15_N      | IO_B35_L22_AD7_G21_N      |                 |           |
+|  94 | VCC_1V8_PS                | VCC_1V8                   |                 |           |
+|  96 | IO_B35_L20_AD6_K14_P      | IO_B35_L20_AD6_G19_P      |                 |           |
+|  98 | IO_B35_L20_AD6_J14_N      | IO_B35_L20_AD6_F19_N      |                 |           |
+| 100 | GND                       | GND                       |                 |           |
+| 102 | IO_B35_L19_H15_P          | IO_B35_L6_G17_P           |                 | gpio_p[3] |
+| 104 | IO_B35_L19_VREF_G15_N     | IO_B35_L6_VREF_F17_N      |                 | gpio_n[3] |
+| 106 | VCC_1V8_PS                | VCC_1V8                   |                 |           |
+| 108 | IO_B35_L8_AD10_M17_P      | IO_B35_L1_AD0_F16_P       |                 | gpio_p[4] |
+| 110 | IO_B35_L8_AD10_M18_N      | IO_B35_L1_AD0_E16_N       |                 | gpio_n[4] |
+| 112 | IO_B35_L12_MRCC_K17_P     | IO_B35_L12_MRCC_D18_P     |                 | gpio_p[5] |
+| 114 | IO_B35_L12_MRCC_K18_N     | IO_B35_L12_MRCC_C19_N     |                 | gpio_n[5] |
+| 116 | GND                       | GND                       |                 |           |
+| 118 | IO_B35_L24_AD15_K16_P     | IO_B35_L2_AD8_D16_P       |                 | gpio_p[6] |
+| 120 | IO_B35_L24_AD15_J16_N     | IO_B35_L2_AD8_D17_N       |                 | gpio_n[6] |
+| 122 | IO_B35_L16_G17_P          | IO_B35_L10_AD11_A18_P     | gfp_sdat        | gpio_p[7] |
+| 124 | IO_B35_L16_G18_N          | IO_B35_L10_AD11_A19_N     | gfp_sclk        | gpio_n[7] |
+| 126 | VCC_IO_B35                | VCC_IO_B35                |                 |           |
+| 128 | IO_B35_L11_SRCC_L16_P     | IO_B35_L11_SRCC_C17_P     |                 |           |
+| 130 | IO_B35_L11_SRCC_L17_N     | IO_B35_L11_SRCC_C18_N     |                 |           |
+| 132 | IO_B35_L6_F16_P           | IO_B35_L3_AD1_E15_P       |                 | gpio_p[8] |
+| 134 | IO_B35_L6_VREF_F17_N      | IO_B35_L3_AD1_D15_N       |                 | gpio_n[8] |
+| 136 | GND                       | GND                       |                 |           |
+| 138 | IO_B35_L5_AD9_E18_P       | IO_B35_L4_G15_P           |                 | gpio_p[9] |
+| 140 | IO_B35_L5_AD9_E19_N       | IO_B35_L4_G16_N           |                 | gpio_n[9] |
+| 142 | IO_B35_L3_AD1_E17_P       | IO_B35_L9_AD3_A16_P       | ext_trigger_i_p |           |
+| 144 | IO_B35_L3_AD1_D18_N       | IO_B35_L9_AD3_A17_N       | ext_trigger_i_n |           |
+| 146 | VCC_CFG_MIO_B13           | VCC_CFG_PS_B13_B33        |                 |           |
+| 148 | IO_MIO48_B13_L11_SRCC_U7  | IO_MIO48_B33_L14_W16      |                 |           |
+| 150 | IO_MIO49_B13_L11_V7       | IO_MIO49_B33_L14_Y16      |                 |           |
+| 152 | IO_MIO50_B13_L12_MRCC_T9  | IO_MIO50_B33_L13_W17      |                 |           |
+| 154 | IO_MIO51_B13_L12_U10      | IO_MIO51_B33_L13_W18      |                 |           |
+| 156 | GND                       | GND                       |                 |           |
+| 158 | JTAG_TCK                  | JTAG_TCK                  |                 |           |
+| 160 | JTAG_TDI                  | JTAG_TDI                  |                 |           |
+| 162 | JTAG_TMS                  | JTAG_TMS                  |                 |           |
+| 164 | JTAG_TDO                  | JTAG_TDO                  |                 |           |
+| 166 | USB_CPEN                  | USB_CPEN                  |                 |           |
+| 168 | - (*6)                    | FPGA_V_P                  |                 |           |
+| 170 | -                         | FPGA_V_N                  |                 |           |
+| 172 | GND                       | GND                       |                 |           |
+| 174 | I2C_INT#                  | I2C_INT#                  |                 |           |
+| 176 | I2C_SDA                   | I2C_SDA                   |                 |           |
+| 178 | I2C_SCL                   | I2C_SCL                   |                 |           |
+| 180 | GND                       | GND                       |                 |           |
+| 182 | FLASH_CLK                 | FLASH_CLK                 |                 |           |
+| 184 | FLASH_DO                  | FLASH_DO                  |                 |           |
+| 186 | FLASH_DI                  | FLASH_DI                  |                 |           |
+| 188 | FLASH_CS#                 | FLASH_CS#                 |                 |           |
+| 190 | BOOT_MODE                 | BOOT_MODE                 |                 |           |
+| 192 | PS_SRST#                  | PS_SRST#                  |                 |           |
+| 194 | FPGA_DONE                 | FPGA_DONE                 |                 |           |
+| 196 | PS_POR#                   | PS_POR#                   |                 |           |
+| 198 | VMON_1V2                  | VMON_1V2                  |                 |           |
+| 200 | VCC_BAT                   | VCC_BAT                   |                 |           |
+|-----+---------------------------+---------------------------+-----------------+-----------|
