@@ -88,6 +88,8 @@ architecture Behavioral of ps_interface is
 
   signal dma_reset_synced         : std_logic;
   signal dma_control_reset_synced : std_logic;
+  signal dma_control_reset_cnt    : integer range 0 to 7;
+  signal dma_control_reset_long   : std_logic;
 
   signal ipb_reset_async      : std_logic := '0';
   signal ipb_axi_aresetn_sync : std_logic := '0';
@@ -391,6 +393,18 @@ begin
       dest_rst => ram_b_occ_rst
       );
 
+  process (dma_axi_aclk) is
+  begin
+    if (rising_edge(dma_axi_aclk)) then
+      if (dma_control_reset_synced='1') then
+        dma_control_reset_cnt <= 7;
+      elsif (dma_control_reset_cnt > 0) then
+        dma_control_reset_cnt <= dma_control_reset_cnt - 1;
+      end if;
+    end if;
+  end process;
+
+  dma_control_reset_long <= '1' when dma_control_reset_cnt /= 0 else '0';
 
   dma_controller_inst : entity dma.dma_controller
     generic map (
@@ -401,7 +415,7 @@ begin
     port map (
 
       packet_sent_o => packet_counter_xdma,
-      reset_sys     => dma_control_reset_synced,
+      reset_sys     => dma_control_reset_long,
       clear_ps_mem  => '0', -- TODO: create and connect to ipbus register
 
       clk_in     => fifo_clock_in,
