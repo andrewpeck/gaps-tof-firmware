@@ -21,12 +21,10 @@ entity input_rx is
 
     data_i : in std_logic_vector (NUM_LT_INPUTS-1 downto 0);
 
-    --clk_delays_i  : in lt_clk_fine_delays_array_t;
-
     fine_delays_i   : in lt_fine_delays_array_t;
     coarse_delays_i : in lt_coarse_delays_array_t;
 
-    hits_o : channel_array_t
+    hits_o : out channel_array_t
     );
 end input_rx;
 
@@ -34,7 +32,7 @@ architecture behavioral of input_rx is
 
   signal clocks : std_logic_vector (NUM_CLOCKS-1 downto 0) := (others => '0');
 
-  signal hits : channel_array_t;
+  signal data : lt_channel_array_t;
 
 begin
 
@@ -52,10 +50,6 @@ begin
       port map (
         clk    => clk,
         clk200 => clk200,               -- for idelay
-
-        --clk_delay     => clk_delays_i(I),
-        --clock_i_p => clock_i_p,
-        --clock_i_n => '0',
 
         fine_delays   => fine_delays_i(I),
         coarse_delays => coarse_delays_i(I),
@@ -78,16 +72,18 @@ begin
         data_o => data (I)
         );
 
-    process (clk) is
-    begin
-      if (rising_edge(clk)) then
-        hits_o <= hits(I);
-      end if;
-    end process;
-
   end generate;
 
+  process (clk) is
+  begin
+    if (rising_edge(clk)) then
+      hits_o <= reshape(data);
+    end if;
+  end process;
+
 end behavioral;
+
+
 
 -- prbs_any_gen : entity work.prbs_any
 --   generic map (
