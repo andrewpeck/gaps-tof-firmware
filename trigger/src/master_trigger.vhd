@@ -33,7 +33,8 @@ entity gaps_mt is
     -- eth_tx_clk : out std_logic;
 
     --
-    lt_clks_i : in std_logic_vector (NUM_CLOCKS-1 downto 0);
+ -- lt_clks_i : in std_logic_vector (NUM_CLOCKS-1 downto 0);
+
     lt_data_i : in std_logic_vector (NUM_LT_INPUTS-1 downto 0);
 
     --
@@ -103,17 +104,18 @@ begin
   input_rx : entity work.input_rx
     port map (
       -- system clock
-      clock => clk100,
+      clk      => clk100, -- logic clock
+      clk200   => clk200, -- for idelay
 
       -- clock and data from lt boards
-      clocks_i => lt_clks_i,
+      clocks_i => (others => clk100),
       data_i   => lt_data_i,
 
       -- idelay settings (in units of 80ps)
-      clk_delays_i  => clk_delays,
+      clk_delays_i => clk_delays,
 
       -- sr delay settings (in units of 1 clock cycle)
-      data_delays_i => fine_delays,
+      data_delays_i        => fine_delays,
       data_coarse_delays_i => coarse_delays,
 
       -- parameter to optionally stretch pulses
@@ -146,13 +148,28 @@ begin
       clk              => clk,
       rst_i            => not locked or rst_event_cnt,
       global_trigger_i => global_trigger,
-      trigger_i        => triggers,
+    --trigger_i        => triggers,
       event_count_o    => event_cnt
       );
 
   sump_o <= global_trigger xor reduce_or(event_cnt);
 
+  -- trg_tx_1: entity work.trg_tx
+  --   generic map (
+  --     EN_MASK   => EN_MASK,
+  --     EVENTCNTB => EVENTCNTB,
+  --     MASKCNTB  => MASKCNTB)
+  --   port map (
+  --     clock       => clock,
+  --     reset       => reset,
+  --     serial_o    => serial_o,
+  --     trg_i       => trg_i,
+  --     resync_i    => resync_i,
+  --     event_cnt_i => event_cnt_i,
+  --     ch_mask_i   => ch_mask_i);
+
   -- serialize output to the readout boards
+  --
   -- output_tx : entity work.output_tx
   --   port map (
   --     clk           => clk,

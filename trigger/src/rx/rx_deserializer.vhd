@@ -1,19 +1,20 @@
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_misc.all;
 use ieee.numeric_std.all;
+use ieee.math_real.all;
+
 
 entity rx_deserializer is
   generic(
-    NCH       : integer := 4;
+    NCH       : integer := -1;
     WORD_SIZE : integer := 16
     );
   port(
 
-    clock  : in std_logic;
-    data_i : in std_logic_vector (NCH-1 downto 0);
-    data_o : in std_logic_vector (WORD_SIZE-1 downto 0)
+    clock  : in  std_logic;
+    data_i : in  std_logic_vector (NCH-1 downto 0);
+    data_o : out std_logic_vector (WORD_SIZE-1 downto 0)
     );
 end rx_deserializer;
 
@@ -22,7 +23,7 @@ architecture behavioral of rx_deserializer is
   signal data_buf : std_logic_vector (WORD_SIZE+1-1 downto 0) := (others => '0');
 
   type rx_state_t is (IDLE, RX);
-  signal rx_state : rx_state_t := IDLE;
+  signal state : rx_state_t := IDLE;
 
   constant MAX_WORDS : integer := integer(ceil(real((WORD_SIZE+1)/NCH)));
 
@@ -51,9 +52,10 @@ begin
 
         when RX =>
 
+          -- FIXME: this isn't done at all
           if (word_cnt = MAX_WORDS-1) then
             state    <= IDLE;
-            data_o   <= data(data_o'length downto 1);
+            data_o   <= data_buf(data_o'length downto 1);
             word_cnt <= 0;
           end if;
 

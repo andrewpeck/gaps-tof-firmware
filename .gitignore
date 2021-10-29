@@ -8,6 +8,6 @@ tags
 daq_tb
 *.cf
 ip/*/*
-!ip/*/*.xci
+!ip/*/*/*.xci
 bd/*
 !bd/*.bd

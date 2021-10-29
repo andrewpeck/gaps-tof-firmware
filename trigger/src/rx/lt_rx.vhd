@@ -6,24 +6,27 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_misc.all;
 use ieee.numeric_std.all;
 
+use work.mt_types.all;
+
 entity lt_rx is
   generic(
     DIFFERENTIAL_DATA  : boolean  := false;
     DIFFERENTIAL_CLOCK : boolean  := false;
-    NUM_LT_CHANNELS    : positive := 4
+    NUM_LT_CHANNELS    : positive := 2
     );
   port(
-    clock : in std_logic;
+    clk : in std_logic;
 
-    clk_delay   : in tap_delay_t;
-    data_delays : in lt_data_delays_t;
+    --clk_delay   : in lt_clk_delays_array_t;
+    coarse_delays : in lt_coarse_delays_t;
+    fine_delays   : in lt_fine_delays_t;
 
-    clk200    : in  std_logic;
-    data_i_p  : in  std_logic_vector(NUM_LT_CHANNELS-1 downto 0);
-    data_i_n  : in  std_logic_vector(NUM_LT_CHANNELS-1 downto 0);
-    clock_i_p : in  std_logic_vector(NUM_LT_CHANNELS-1 downto 0);
-    clock_i_n : in  std_logic_vector(NUM_LT_CHANNELS-1 downto 0);
-    data_o    : out std_logic_vector(NUM_RB_CHANNELS-1 downto 0)
+    clk200   : in  std_logic;
+    --clock_i_p : in  std_logic;
+    --clock_i_n : in  std_logic;
+    data_i_p : in  std_logic_vector(NUM_LT_CHANNELS-1 downto 0);
+    data_i_n : in  std_logic_vector(NUM_LT_CHANNELS-1 downto 0);
+    data_o   : out std_logic_vector(NUM_LT_CHANNELS-1 downto 0)
 
     );
 end lt_rx;
@@ -48,55 +51,56 @@ begin
   -- IBUFGDS → BUFGCE
   --------------------------------------------------------------------------------
 
-  clock_gen : if (true) generate
-    signal clock_i, clock_idelay, clock_ibufds : std_logic := '0';
-  begin
+  -- clock_gen : if (true) generate
+  --   signal clock_i, clock_idelay, clock_ibufds : std_logic := '0';
+  -- begin
 
-    diff_gen : if (DIFFERENTIAL_DATA) generate
-      ibufclock : IBUFGDS
-        generic map (
-          DIFF_TERM    => true,         -- Differential Termination
-          IBUF_LOW_PWR => false         -- Low power="TRUE", Highest performance="FALSE"
-          )
-        port map (
-          O  => clock_ibufds,
-          I  => clock_i_p,
-          IB => clock_i_n
-          );
-    end generate;
+  --   diff_gen : if (DIFFERENTIAL_DATA) generate
+  --     ibufclock : IBUFGDS
+  --       generic map (
+  --         DIFF_TERM    => true,         -- Differential Termination
+  --         IBUF_LOW_PWR => false         -- Low power="TRUE", Highest performance="FALSE"
+  --         )
+  --       port map (
+  --         O  => clock_ibufds,
+  --         I  => clock_i_p,
+  --         IB => clock_i_n
+  --         );
+  --   end generate;
 
-    single_ended_gen : if (not DIFFERENTIAL_DATA) generate
-      ibufclock : IBUFG
-        generic map (
-          IBUF_LOW_PWR => true,         -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
-          IOSTANDARD   => "DEFAULT")
-        port map (
-          O => clock_ibufds,
-          I => clock_i_p
-          );
-    end generate;
+  --   single_ended_gen : if (not DIFFERENTIAL_DATA) generate
+  --     ibufclock : IBUFG
+  --       generic map (
+  --         IBUF_LOW_PWR => true,         -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
+  --         IOSTANDARD   => "DEFAULT")
+  --       port map (
+  --         O => clock_ibufds,
+  --         I => clock_i_p
+  --         );
+  --   end generate;
 
-    iclk_bufio_inst : BUFIO
-      port map (
-        O => clock_i_io,
-        I => clock_idelay
-        );
+  -- iclk_bufio_inst : BUFIO
+  --   port map (
+  --     O => clock_i_io,
+  --     I => clock_idelay
+  --     );
 
-    iclk_bufg_inst : BUFG
-      port map (
-        O => clock_i,
-        I => clock_idelay
-        );
+  -- iclk_bufg_inst : BUFG
+  --   port map (
+  --     O => clock_i,
+  --     I => clock_idelay
+  --     );
 
-    idelay_inst : entity work.idelay
-      generic map (PATTERN => "CLOCK")
-      port map (
-        clock => clk200,
-        taps  => clk_delay,
-        din   => clock_ibufds,
-        dout  => clock_idelay
-        );
-  end generate;
+  -- idelay_inst : entity work.idelay
+  --   generic map (PATTERN => "CLOCK")
+  --   port map (
+  --     clock => clk200,
+  --     taps  => 0,
+  --     din   => clock_ibufds,
+  --     dout  => clock_idelay
+  --     );
+
+  -- end generate;
 
   --------------------------------------------------------------------------------
   -- RX Data
@@ -116,8 +120,8 @@ begin
           )
         port map (
           O  => data_ibufds,
-          I  => data_i_p,
-          IB => data_i_n
+          I  => data_i_p(I),
+          IB => data_i_n(I)
           );
     end generate;
 
@@ -128,7 +132,7 @@ begin
           IOSTANDARD   => "DEFAULT")
         port map (
           O => data_ibufds,             -- Buffer output
-          I => data_i_p                 -- Buffer input (connect directly to top-level port)
+          I => data_i_p(I)              -- Buffer input (connect directly to top-level port)
           );
     end generate;
 
@@ -152,8 +156,8 @@ begin
     idelay_inst : entity work.idelay
       generic map (PATTERN => "DATA")
       port map (
-        clock => clock,
-        taps  => data_delay(I),
+        clock => clk200,
+        taps  => fine_delays(I),
         din   => data_ibufds,
         dout  => data_idelay);
 
@@ -166,9 +170,9 @@ begin
 
   end generate;
 
-  process (clock) is
+  process (clk) is
   begin
-    if (rising_edge(clock)) then
+    if (rising_edge(clk)) then
       data_r <= data_i;
       data_o <= data_r;
     end if;

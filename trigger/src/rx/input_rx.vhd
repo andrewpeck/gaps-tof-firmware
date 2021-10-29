@@ -6,23 +6,24 @@ use ieee.numeric_std.all;
 
 library work;
 use work.constants.all;
-use work.types.all;
+use work.mt_types.all;
 
 entity input_rx is
   generic(
-    NUM_INPUTS : positive := NUM_LTS * NUM_LT_RB_LINKS;
+    NUM_INPUTS : positive := NUM_LT_INPUTS;
     NUM_CLOCKS : positive := NUM_LT_CLOCKS
     );
   port(
-    clock : in std_logic;
+    clk    : in std_logic;
+    clk200 : in std_logic;              -- for idelay
 
     clocks_i : in std_logic_vector (NUM_CLOCKS-1 downto 0);
 
-    data_i : in std_logic_vector (NUM_INPUTS-1 downto 0);
+    data_i : in std_logic_vector (NUM_LT_INPUTS-1 downto 0);
 
-    clk_delays_i  : in lt_clk_fine_delays_array_t;
+    --clk_delays_i  : in lt_clk_fine_delays_array_t;
 
-    fine_delays_i : in lt_data_fine_delays_array_t;
+    fine_delays_i   : in lt_fine_delays_array_t;
     coarse_delays_i : in lt_coarse_delays_array_t;
 
     hits_o : channel_array_t
@@ -37,45 +38,49 @@ architecture behavioral of input_rx is
 
 begin
 
-  genloop : for I in 0 to NUM_RBS-1 generate
-    signal data_rx : std_logic_vector(NUM_LT_RB_LINKS-1 downto 0);
+  genloop : for I in 0 to NUM_LTS-1 generate
+    signal data_rx : std_logic_vector(NUM_LT_MT_LINKS-1 downto 0);
   begin
 
+    -- input delays + ffs for single LT board
     lt_rx_1 : entity work.lt_rx
       generic map (
         DIFFERENTIAL_DATA  => false,
         DIFFERENTIAL_CLOCK => false,
-        NUM_LT_CHANNELS    => NUM_LT_RB_LINKS
+        NUM_LT_CHANNELS    => NUM_LT_MT_LINKS
         )
       port map (
-        clock  => clock,
-        clk200 => clk200,
+        clk    => clk,
+        clk200 => clk200,               -- for idelay
 
-        clk_delay     => clk_delays_i(I),
-        data_delays   => fine_delays_i(I),
+        --clk_delay     => clk_delays_i(I),
+        --clock_i_p => clock_i_p,
+        --clock_i_n => '0',
+
+        fine_delays   => fine_delays_i(I),
         coarse_delays => coarse_delays_i(I),
 
-        data_i_p  => data_i_p,
-        data_i_n  => '0',
-        clock_i_p => clock_i_p,
-        clock_i_n => '0',
-        data_o    => data_rx
+        data_i_p => data_i,
+        data_i_n => (others => '0'),
+        data_o   => data_rx
         );
 
+    -- deserializes the XX MHz single bit serial data and puts out a parallel
+    -- data output 16 bits wide
     rx_deserializer_inst : entity work.rx_deserializer
       generic map (
-        NCH       => NUM_LT_RB_LINKS,
+        NCH       => NUM_LT_MT_LINKS,
         WORD_SIZE => NUM_LT_BITS
         )
       port map (
-        clock  => clock,
+        clock  => clk,
         data_i => data_rx,
         data_o => data (I)
         );
 
-    process (clock) is
+    process (clk) is
     begin
-      if (rising_edge(clock)) then
+      if (rising_edge(clk)) then
         hits_o <= hits(I);
       end if;
     end process;
