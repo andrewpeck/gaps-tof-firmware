@@ -112,6 +112,7 @@ class Register:
     fw_cnt_increment_step = '1'
     fw_cnt_reset_signal   = None
     fw_cnt_en_signal      = None
+    fw_make_signal        = 'true'
 
     fw_rate_clk_frequency = 40079000 # clock frequency in Hz
     fw_rate_reset_signal  = None     # Reset input
@@ -364,6 +365,8 @@ def findRegisters(node, baseName, baseAddress, modules, currentModule, vars, isG
 
             if node.get('fw_cnt_en_signal') is not None:
                 reg.fw_cnt_en_signal = substituteVars (node.get('fw_cnt_en_signal'),vars)
+            if node.get('fw_make_signal') is not None:
+                reg.fw_make_signal = substituteVars (node.get('fw_make_signal'),vars)
             if node.get('fw_cnt_reset_signal') is not None:
                 reg.fw_cnt_reset_signal = substituteVars (node.get('fw_cnt_reset_signal'),vars)
             else:
@@ -509,7 +512,7 @@ def writeOrgFile (modules, filename):
                 f.write('|%s | ~0x%x~ | ~%s~ | %s | %s | %s | \n' % (endpoint_name, address, bitstr, permission, default, convert_newlines(text[i])))
             else:
                 f.write('|  |  |  |  |  |%s|\n' % text[i])
-                print text[i]
+                print(text[i])
         f.write('|------------+------+---------+-----+-----+----------------------------|\n')
 
     def writeDoc (filename):
@@ -1007,7 +1010,7 @@ def updateModuleFile(module):
     slaveSectionDone = False
     registersLibraryFound = False
     for line in lines:
-        line = unicode(line) # str to unicode
+        #line = unicode(line) # str to unicode
         if line.startswith('use work.registers.all;'):
             registersLibraryFound = True
 
@@ -1043,7 +1046,8 @@ def updateModuleFile(module):
                     if (not header_written):
                         f.write('    -- Connect counter signal declarations\n')
                         header_written = True;
-                    f.write ('    signal %s : std_logic_vector (%s downto 0) := (others => \'0\');\n' % (reg.signal,  reg.msb-reg.lsb))
+                    if (reg.fw_make_signal != "false"):
+                        f.write ('    signal %s : std_logic_vector (%s downto 0) := (others => \'0\');\n' % (reg.signal,  reg.msb-reg.lsb))
 
             header_written = False;
             for reg in module.regs:
@@ -1170,7 +1174,7 @@ def updateModuleFile(module):
             for reg in module.regs:
 
                 # COUNTER WITH SNAP
-                if reg.fw_cnt_en_signal is not None and reg.fw_cnt_snap_signal is not '\'1\'':
+                if (reg.fw_cnt_en_signal is not None):
                     f.write ("\n")
                     f.write ('    COUNTER_%s : entity work.counter_snap\n' % (reg.getVhdlName()))
                     f.write ('    generic map (\n')
