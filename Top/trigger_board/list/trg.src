@@ -1,0 +1,5 @@
+trigger/src/master_trigger.vhd top=gaps_mt
+trigger/src/*.vhd
+trigger/src/*/*.vhd
+common/src/*.vhd
+ip/master_trigger/*/*.xci
