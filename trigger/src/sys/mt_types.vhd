@@ -13,7 +13,8 @@ package mt_types is
   --------------------------------------------------------------------------------
 
   -- flattened array of all channels
-  subtype channel_array_t is std_logic_vector (NUM_RB_CHANNELS*NUM_RBS-1 downto 0);
+  subtype channel_array_t is std_logic_vector
+    (NUM_RB_CHANNELS*NUM_RBS-1 downto 0);
 
   -- channels grouped by rb (groups of 8)
   type rb_channel_array_t is array (integer range NUM_RBS-1 downto 0) of
@@ -71,7 +72,7 @@ package body mt_types is
     variable result: rb_channel_array_t;
   begin
     for I in 0 to result'length-1 loop
-      result(I) := arr(I*(NUM_RB_CHANNELS+1)-1 downto NUM_RB_CHANNELS*I);
+      result(I) := arr((I+1)*NUM_RB_CHANNELS-1 downto NUM_RB_CHANNELS*I);
     end loop;
     return result;
   end function;
@@ -80,7 +81,7 @@ package body mt_types is
     variable result: lt_channel_array_t;
   begin
     for I in 0 to result'length-1 loop
-      result(I) := arr(I*(NUM_LT_CHANNELS+1)-1 downto NUM_LT_CHANNELS*I);
+      result(I) := arr((I+1)*NUM_LT_CHANNELS-1 downto NUM_LT_CHANNELS*I);
     end loop;
     return result;
   end function;
@@ -89,7 +90,7 @@ package body mt_types is
     variable result: channel_array_t;
   begin
     for I in 0 to arr'length-1 loop
-      result(I*(NUM_LT_CHANNELS+1)-1 downto NUM_LT_CHANNELS*I) := arr(I);
+      result((I+1)*(NUM_LT_CHANNELS)-1 downto NUM_LT_CHANNELS*I) := arr(I);
     end loop;
     return result;
   end function;
@@ -98,7 +99,7 @@ package body mt_types is
     variable result: channel_array_t;
   begin
     for I in 0 to arr'length-1 loop
-      result(I*(NUM_RB_CHANNELS+1)-1 downto NUM_RB_CHANNELS*I) := arr(I);
+      result((I+1)*NUM_RB_CHANNELS-1 downto NUM_RB_CHANNELS*I) := arr(I);
     end loop;
     return result;
   end function;

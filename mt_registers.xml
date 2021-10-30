@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<node>
+  <node id="MT"  address="0x0000"
+        description="Implements various control and monitoring functions of the DRS Logic"
+        fw_is_module="true"
+        fw_use_tmr="true"
+        fw_module_file="../trigger/src/master_trigger.vhd"
+        fw_user_clock_signal="clock"
+        fw_bus_clock_signal="ipb_clk"
+        fw_bus_reset_signal="ipb_reset"
+        fw_master_bus_signal="ipb_mosi_arr(0)"
+        fw_slave_bus_signal="ipb_miso_arr(0)"
+        fw_reg_addr_msb="8"
+        fw_reg_addr_lsb="0">
+
+    <node id="HIT_COUNTERS" address="0x10" description="Counters">
+      <node id="RB${RB_IDX}" address="0x0"
+            generate="true"
+            generate_size="40"
+            generate_address_step="1"
+            generate_idx_var="RB_IDX"
+            permission="r"
+            mask="0x0000ffff"
+            description="hit count on LT=${RB_IDX}"
+            fw_make_signal="false"
+            fw_signal="hit_count(${RB_IDX})"
+            fw_cnt_en_signal="or_reduce(rb_hits(${RB_IDX}))">
+      </node>
+    </node>
+
+    <!-- <node id="HIT_COUNTERS" address="0x10" description="Counters"> -->
+    <!--     <node id="RB${RB_IDX}" address="0x0" generate="true" -->
+    <!--           generate_size="20" generate_address_step="16" generate_idx_var="RB_IDX"> -->
+    <!--         <node id="CH${CH_IDX}" address="0x0" mask="0x0000ffff" permission="r" -->
+    <!--               generate="true" generate_size="16" generate_address_step="0x1" generate_idx_var="CH_IDX" -->
+    <!--               description="hit count on LT=${RB_IDX}, CH=${CH_IDX}" -->
+    <!--               fw_make_signal="false" -->
+    <!--               fw_signal="hit_count(${RB_IDX})(${CH_IDX})" -->
+    <!--               fw_cnt_en_signal="hits(${RB_IDX})(${CH_IDX})"> -->
+    <!--         </node> -->
+    <!--     </node> -->
+    <!-- </node> -->
+
+    <node id="HOG" address="0x60" description = "HOG Parameters">
+      <node id="GLOBAL_DATE" mask="0xFFFFFFFF" permission="r" address="0x0" description="HOG Global Date"    fw_signal="GLOBAL_DATE"/>
+      <node id="GLOBAL_TIME" mask="0xFFFFFFFF" permission="r" address="0x1" description="HOG Global Time"    fw_signal="GLOBAL_TIME"/>
+      <node id="GLOBAL_VER"  mask="0xFFFFFFFF" permission="r" address="0x2" description="HOG Global Version" fw_signal="GLOBAL_VER"/>
+      <node id="GLOBAL_SHA"  mask="0xFFFFFFFF" permission="r" address="0x3" description="HOG Global SHA"     fw_signal="GLOBAL_SHA"/>
+      <node id="TOP_SHA"     mask="0xFFFFFFFF" permission="r" address="0x4" description="HOG Top SHA"        fw_signal="TOP_SHA"/>
+      <node id="TOP_VER"     mask="0xFFFFFFFF" permission="r" address="0x5" description="HOG Top Version"    fw_signal="TOP_VER"/>
+      <node id="HOG_SHA"     mask="0xFFFFFFFF" permission="r" address="0x6" description="HOG SHA"            fw_signal="HOG_SHA"/>
+      <node id="HOG_VER"     mask="0xFFFFFFFF" permission="r" address="0x7" description="HOG Version"        fw_signal="HOG_VER"/>
+    </node> <!--HOG-->
+
+  </node>
+</node>

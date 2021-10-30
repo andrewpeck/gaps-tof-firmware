@@ -11,9 +11,9 @@ entity trigger is
 
     clk : in std_logic;
 
-    single_hit_en_i  : in std_logic;
+    single_hit_en_i : in std_logic;
 
-    hits_i           : in  channel_array_t;
+    hits_i : in channel_array_t;
 
     triggers_o       : out channel_array_t;
     rb_triggers_o    : out std_logic_vector (NUM_RBS-1 downto 0);
@@ -24,8 +24,7 @@ end trigger;
 
 architecture behavioral of trigger is
 
-  signal single_hit_triggers : channel_array_t;
-
+  signal single_hit_triggers  : channel_array_t;
   signal triggers, triggers_r : channel_array_t;
   signal rb_triggers          : rb_channel_array_t;
 
@@ -41,7 +40,7 @@ begin
     process (clk) is
     begin
       if (rising_edge(clk)) then
-        if (single_hit_en_i='1') then
+        if (single_hit_en_i = '1') then
           single_hit_triggers(I) <= hits_i(I);
         else
           single_hit_triggers(I) <= '0';
@@ -50,7 +49,14 @@ begin
     end process;
   end generate;
 
-  or_gen : for I in 0 to hits_i'length-1 generate
+  process (clk) is
+  begin
+    if (rising_edge(clk)) then
+      triggers <= single_hit_triggers;
+    end if;
+  end process;
+
+  or_gen : for I in 0 to rb_ors'length-1 generate
   begin
     process (clk) is
     begin

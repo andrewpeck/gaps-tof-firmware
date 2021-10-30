@@ -22,6 +22,19 @@ use work.ipbus_pkg.all;
 use work.types_pkg.all;
 
 entity gaps_mt is
+  generic (
+    EN_TMR_IPB_SLAVE_MT : integer range 0 to 1 := 0;
+
+    -- these generics get set by hog at synthesis
+    GLOBAL_DATE : std_logic_vector (31 downto 0) := x"00000000";
+    GLOBAL_TIME : std_logic_vector (31 downto 0) := x"00000000";
+    GLOBAL_VER  : std_logic_vector (31 downto 0) := x"00000000";
+    GLOBAL_SHA  : std_logic_vector (31 downto 0) := x"00000000";
+    TOP_VER     : std_logic_vector (31 downto 0) := x"00000000";
+    TOP_SHA     : std_logic_vector (31 downto 0) := x"00000000";
+    HOG_SHA     : std_logic_vector (31 downto 0) := x"00000000";
+    HOG_VER     : std_logic_vector (31 downto 0) := x"00000000"
+    ); 
   port(
     --
     clk_i : in std_logic;
@@ -34,9 +47,9 @@ entity gaps_mt is
     -- eth_tx_dv  : out std_logic;
     -- eth_tx_clk : out std_logic;
 
-    lt_data_i : in std_logic_vector (NUM_LT_INPUTS-1 downto 0);
+    lt_data_i : in  std_logic_vector (NUM_LT_INPUTS-1 downto 0);
     rb_data_o : out std_logic_vector (NUM_RB_OUTPUTS-1 downto 0);
-    sump_o : out std_logic
+    sump_o    : out std_logic
     );
 end gaps_mt;
 
@@ -60,6 +73,7 @@ architecture structural of gaps_mt is
     := (others => '0');
 
   signal hits           : channel_array_t;
+  signal rb_hits        : rb_channel_array_t;
   signal global_trigger : std_logic;
   signal triggers       : channel_array_t;
 
@@ -87,6 +101,10 @@ architecture structural of gaps_mt is
     signal regs_writable_arr    : std_logic_vector(REG_MT_NUM_REGS - 1 downto 0) := (others => '0');
     -- Connect counter signal declarations
   ------ Register signals end ----------------------------------------------
+  ------
+
+  -- FIXME: generate registers doesn't dump counter signals when it is in a looped xml
+  signal hit_count : t_std16_array (NUM_RBS-1 downto 0); 
 
 begin
 
@@ -126,6 +144,8 @@ begin
       hits_o => hits
       );
 
+  rb_hits <= reshape(hits); 
+
   -- core trigger logic:
   --   take in a list of hits on channels
   --   return a global OR of the trigger list
@@ -156,7 +176,9 @@ begin
       event_count_o    => event_cnt
       );
 
-  sump_o <= global_trigger xor reduce_or(event_cnt);
+  sump_o <= global_trigger xor xor_reduce(event_cnt);
+
+  rb_data_o <= (others => '0');
 
   -- trg_tx_1: entity work.trg_tx
   --   generic map (
@@ -238,14 +260,34 @@ begin
     regs_addresses(17)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"21";
     regs_addresses(18)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"22";
     regs_addresses(19)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"23";
-    regs_addresses(20)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"60";
-    regs_addresses(21)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"61";
-    regs_addresses(22)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"62";
-    regs_addresses(23)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"63";
-    regs_addresses(24)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"64";
-    regs_addresses(25)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"65";
-    regs_addresses(26)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"66";
-    regs_addresses(27)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"67";
+    regs_addresses(20)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"24";
+    regs_addresses(21)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"25";
+    regs_addresses(22)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"26";
+    regs_addresses(23)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"27";
+    regs_addresses(24)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"28";
+    regs_addresses(25)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"29";
+    regs_addresses(26)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"2a";
+    regs_addresses(27)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"2b";
+    regs_addresses(28)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"2c";
+    regs_addresses(29)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"2d";
+    regs_addresses(30)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"2e";
+    regs_addresses(31)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"2f";
+    regs_addresses(32)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"30";
+    regs_addresses(33)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"31";
+    regs_addresses(34)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"32";
+    regs_addresses(35)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"33";
+    regs_addresses(36)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"34";
+    regs_addresses(37)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"35";
+    regs_addresses(38)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"36";
+    regs_addresses(39)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"37";
+    regs_addresses(40)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"60";
+    regs_addresses(41)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"61";
+    regs_addresses(42)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"62";
+    regs_addresses(43)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"63";
+    regs_addresses(44)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"64";
+    regs_addresses(45)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"65";
+    regs_addresses(46)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"66";
+    regs_addresses(47)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= '0' & x"67";
 
     -- Connect read signals
     regs_read_arr(0)(REG_MT_HIT_COUNTERS_RB0_MSB downto REG_MT_HIT_COUNTERS_RB0_LSB) <= hit_count(0);
@@ -268,14 +310,34 @@ begin
     regs_read_arr(17)(REG_MT_HIT_COUNTERS_RB17_MSB downto REG_MT_HIT_COUNTERS_RB17_LSB) <= hit_count(17);
     regs_read_arr(18)(REG_MT_HIT_COUNTERS_RB18_MSB downto REG_MT_HIT_COUNTERS_RB18_LSB) <= hit_count(18);
     regs_read_arr(19)(REG_MT_HIT_COUNTERS_RB19_MSB downto REG_MT_HIT_COUNTERS_RB19_LSB) <= hit_count(19);
-    regs_read_arr(20)(REG_MT_HOG_GLOBAL_DATE_MSB downto REG_MT_HOG_GLOBAL_DATE_LSB) <= GLOBAL_DATE;
-    regs_read_arr(21)(REG_MT_HOG_GLOBAL_TIME_MSB downto REG_MT_HOG_GLOBAL_TIME_LSB) <= GLOBAL_TIME;
-    regs_read_arr(22)(REG_MT_HOG_GLOBAL_VER_MSB downto REG_MT_HOG_GLOBAL_VER_LSB) <= GLOBAL_VER;
-    regs_read_arr(23)(REG_MT_HOG_GLOBAL_SHA_MSB downto REG_MT_HOG_GLOBAL_SHA_LSB) <= GLOBAL_SHA;
-    regs_read_arr(24)(REG_MT_HOG_TOP_SHA_MSB downto REG_MT_HOG_TOP_SHA_LSB) <= TOP_SHA;
-    regs_read_arr(25)(REG_MT_HOG_TOP_VER_MSB downto REG_MT_HOG_TOP_VER_LSB) <= TOP_VER;
-    regs_read_arr(26)(REG_MT_HOG_HOG_SHA_MSB downto REG_MT_HOG_HOG_SHA_LSB) <= HOG_SHA;
-    regs_read_arr(27)(REG_MT_HOG_HOG_VER_MSB downto REG_MT_HOG_HOG_VER_LSB) <= HOG_VER;
+    regs_read_arr(20)(REG_MT_HIT_COUNTERS_RB20_MSB downto REG_MT_HIT_COUNTERS_RB20_LSB) <= hit_count(20);
+    regs_read_arr(21)(REG_MT_HIT_COUNTERS_RB21_MSB downto REG_MT_HIT_COUNTERS_RB21_LSB) <= hit_count(21);
+    regs_read_arr(22)(REG_MT_HIT_COUNTERS_RB22_MSB downto REG_MT_HIT_COUNTERS_RB22_LSB) <= hit_count(22);
+    regs_read_arr(23)(REG_MT_HIT_COUNTERS_RB23_MSB downto REG_MT_HIT_COUNTERS_RB23_LSB) <= hit_count(23);
+    regs_read_arr(24)(REG_MT_HIT_COUNTERS_RB24_MSB downto REG_MT_HIT_COUNTERS_RB24_LSB) <= hit_count(24);
+    regs_read_arr(25)(REG_MT_HIT_COUNTERS_RB25_MSB downto REG_MT_HIT_COUNTERS_RB25_LSB) <= hit_count(25);
+    regs_read_arr(26)(REG_MT_HIT_COUNTERS_RB26_MSB downto REG_MT_HIT_COUNTERS_RB26_LSB) <= hit_count(26);
+    regs_read_arr(27)(REG_MT_HIT_COUNTERS_RB27_MSB downto REG_MT_HIT_COUNTERS_RB27_LSB) <= hit_count(27);
+    regs_read_arr(28)(REG_MT_HIT_COUNTERS_RB28_MSB downto REG_MT_HIT_COUNTERS_RB28_LSB) <= hit_count(28);
+    regs_read_arr(29)(REG_MT_HIT_COUNTERS_RB29_MSB downto REG_MT_HIT_COUNTERS_RB29_LSB) <= hit_count(29);
+    regs_read_arr(30)(REG_MT_HIT_COUNTERS_RB30_MSB downto REG_MT_HIT_COUNTERS_RB30_LSB) <= hit_count(30);
+    regs_read_arr(31)(REG_MT_HIT_COUNTERS_RB31_MSB downto REG_MT_HIT_COUNTERS_RB31_LSB) <= hit_count(31);
+    regs_read_arr(32)(REG_MT_HIT_COUNTERS_RB32_MSB downto REG_MT_HIT_COUNTERS_RB32_LSB) <= hit_count(32);
+    regs_read_arr(33)(REG_MT_HIT_COUNTERS_RB33_MSB downto REG_MT_HIT_COUNTERS_RB33_LSB) <= hit_count(33);
+    regs_read_arr(34)(REG_MT_HIT_COUNTERS_RB34_MSB downto REG_MT_HIT_COUNTERS_RB34_LSB) <= hit_count(34);
+    regs_read_arr(35)(REG_MT_HIT_COUNTERS_RB35_MSB downto REG_MT_HIT_COUNTERS_RB35_LSB) <= hit_count(35);
+    regs_read_arr(36)(REG_MT_HIT_COUNTERS_RB36_MSB downto REG_MT_HIT_COUNTERS_RB36_LSB) <= hit_count(36);
+    regs_read_arr(37)(REG_MT_HIT_COUNTERS_RB37_MSB downto REG_MT_HIT_COUNTERS_RB37_LSB) <= hit_count(37);
+    regs_read_arr(38)(REG_MT_HIT_COUNTERS_RB38_MSB downto REG_MT_HIT_COUNTERS_RB38_LSB) <= hit_count(38);
+    regs_read_arr(39)(REG_MT_HIT_COUNTERS_RB39_MSB downto REG_MT_HIT_COUNTERS_RB39_LSB) <= hit_count(39);
+    regs_read_arr(40)(REG_MT_HOG_GLOBAL_DATE_MSB downto REG_MT_HOG_GLOBAL_DATE_LSB) <= GLOBAL_DATE;
+    regs_read_arr(41)(REG_MT_HOG_GLOBAL_TIME_MSB downto REG_MT_HOG_GLOBAL_TIME_LSB) <= GLOBAL_TIME;
+    regs_read_arr(42)(REG_MT_HOG_GLOBAL_VER_MSB downto REG_MT_HOG_GLOBAL_VER_LSB) <= GLOBAL_VER;
+    regs_read_arr(43)(REG_MT_HOG_GLOBAL_SHA_MSB downto REG_MT_HOG_GLOBAL_SHA_LSB) <= GLOBAL_SHA;
+    regs_read_arr(44)(REG_MT_HOG_TOP_SHA_MSB downto REG_MT_HOG_TOP_SHA_LSB) <= TOP_SHA;
+    regs_read_arr(45)(REG_MT_HOG_TOP_VER_MSB downto REG_MT_HOG_TOP_VER_LSB) <= TOP_VER;
+    regs_read_arr(46)(REG_MT_HOG_HOG_SHA_MSB downto REG_MT_HOG_HOG_SHA_LSB) <= HOG_SHA;
+    regs_read_arr(47)(REG_MT_HOG_HOG_VER_MSB downto REG_MT_HOG_HOG_VER_LSB) <= HOG_VER;
 
     -- Connect write signals
 
@@ -294,7 +356,7 @@ begin
     port map (
         ref_clk_i => clock,
         reset_i   => ipb_reset,
-        en_i      => reduce_or(hits(0)),
+        en_i      => or_reduce(rb_hits(0)),
         snap_i    => '1',
         count_o   => hit_count(0)
     );
@@ -307,7 +369,7 @@ begin
     port map (
         ref_clk_i => clock,
         reset_i   => ipb_reset,
-        en_i      => reduce_or(hits(1)),
+        en_i      => or_reduce(rb_hits(1)),
         snap_i    => '1',
         count_o   => hit_count(1)
     );
@@ -320,7 +382,7 @@ begin
     port map (
         ref_clk_i => clock,
         reset_i   => ipb_reset,
-        en_i      => reduce_or(hits(2)),
+        en_i      => or_reduce(rb_hits(2)),
         snap_i    => '1',
         count_o   => hit_count(2)
     );
@@ -333,7 +395,7 @@ begin
     port map (
         ref_clk_i => clock,
         reset_i   => ipb_reset,
-        en_i      => reduce_or(hits(3)),
+        en_i      => or_reduce(rb_hits(3)),
         snap_i    => '1',
         count_o   => hit_count(3)
     );
@@ -346,7 +408,7 @@ begin
     port map (
         ref_clk_i => clock,
         reset_i   => ipb_reset,
-        en_i      => reduce_or(hits(4)),
+        en_i      => or_reduce(rb_hits(4)),
         snap_i    => '1',
         count_o   => hit_count(4)
     );
@@ -359,7 +421,7 @@ begin
     port map (
         ref_clk_i => clock,
         reset_i   => ipb_reset,
-        en_i      => reduce_or(hits(5)),
+        en_i      => or_reduce(rb_hits(5)),
         snap_i    => '1',
         count_o   => hit_count(5)
     );
@@ -372,7 +434,7 @@ begin
     port map (
         ref_clk_i => clock,
         reset_i   => ipb_reset,
-        en_i      => reduce_or(hits(6)),
+        en_i      => or_reduce(rb_hits(6)),
         snap_i    => '1',
         count_o   => hit_count(6)
     );
@@ -385,7 +447,7 @@ begin
     port map (
         ref_clk_i => clock,
         reset_i   => ipb_reset,
-        en_i      => reduce_or(hits(7)),
+        en_i      => or_reduce(rb_hits(7)),
         snap_i    => '1',
         count_o   => hit_count(7)
     );
@@ -398,7 +460,7 @@ begin
     port map (
         ref_clk_i => clock,
         reset_i   => ipb_reset,
-        en_i      => reduce_or(hits(8)),
+        en_i      => or_reduce(rb_hits(8)),
         snap_i    => '1',
         count_o   => hit_count(8)
     );
@@ -411,7 +473,7 @@ begin
     port map (
         ref_clk_i => clock,
         reset_i   => ipb_reset,
-        en_i      => reduce_or(hits(9)),
+        en_i      => or_reduce(rb_hits(9)),
         snap_i    => '1',
         count_o   => hit_count(9)
     );
@@ -424,7 +486,7 @@ begin
     port map (
         ref_clk_i => clock,
         reset_i   => ipb_reset,
-        en_i      => reduce_or(hits(10)),
+        en_i      => or_reduce(rb_hits(10)),
         snap_i    => '1',
         count_o   => hit_count(10)
     );
@@ -437,7 +499,7 @@ begin
     port map (
         ref_clk_i => clock,
         reset_i   => ipb_reset,
-        en_i      => reduce_or(hits(11)),
+        en_i      => or_reduce(rb_hits(11)),
         snap_i    => '1',
         count_o   => hit_count(11)
     );
@@ -450,7 +512,7 @@ begin
     port map (
         ref_clk_i => clock,
         reset_i   => ipb_reset,
-        en_i      => reduce_or(hits(12)),
+        en_i      => or_reduce(rb_hits(12)),
         snap_i    => '1',
         count_o   => hit_count(12)
     );
@@ -463,7 +525,7 @@ begin
     port map (
         ref_clk_i => clock,
         reset_i   => ipb_reset,
-        en_i      => reduce_or(hits(13)),
+        en_i      => or_reduce(rb_hits(13)),
         snap_i    => '1',
         count_o   => hit_count(13)
     );
@@ -476,7 +538,7 @@ begin
     port map (
         ref_clk_i => clock,
         reset_i   => ipb_reset,
-        en_i      => reduce_or(hits(14)),
+        en_i      => or_reduce(rb_hits(14)),
         snap_i    => '1',
         count_o   => hit_count(14)
     );
@@ -489,7 +551,7 @@ begin
     port map (
         ref_clk_i => clock,
         reset_i   => ipb_reset,
-        en_i      => reduce_or(hits(15)),
+        en_i      => or_reduce(rb_hits(15)),
         snap_i    => '1',
         count_o   => hit_count(15)
     );
@@ -502,7 +564,7 @@ begin
     port map (
         ref_clk_i => clock,
         reset_i   => ipb_reset,
-        en_i      => reduce_or(hits(16)),
+        en_i      => or_reduce(rb_hits(16)),
         snap_i    => '1',
         count_o   => hit_count(16)
     );
@@ -515,7 +577,7 @@ begin
     port map (
         ref_clk_i => clock,
         reset_i   => ipb_reset,
-        en_i      => reduce_or(hits(17)),
+        en_i      => or_reduce(rb_hits(17)),
         snap_i    => '1',
         count_o   => hit_count(17)
     );
@@ -528,7 +590,7 @@ begin
     port map (
         ref_clk_i => clock,
         reset_i   => ipb_reset,
-        en_i      => reduce_or(hits(18)),
+        en_i      => or_reduce(rb_hits(18)),
         snap_i    => '1',
         count_o   => hit_count(18)
     );
@@ -541,9 +603,269 @@ begin
     port map (
         ref_clk_i => clock,
         reset_i   => ipb_reset,
-        en_i      => reduce_or(hits(19)),
+        en_i      => or_reduce(rb_hits(19)),
         snap_i    => '1',
         count_o   => hit_count(19)
+    );
+
+
+    COUNTER_MT_HIT_COUNTERS_RB20 : entity work.counter_snap
+    generic map (
+        g_COUNTER_WIDTH  => 16
+    )
+    port map (
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => or_reduce(rb_hits(20)),
+        snap_i    => '1',
+        count_o   => hit_count(20)
+    );
+
+
+    COUNTER_MT_HIT_COUNTERS_RB21 : entity work.counter_snap
+    generic map (
+        g_COUNTER_WIDTH  => 16
+    )
+    port map (
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => or_reduce(rb_hits(21)),
+        snap_i    => '1',
+        count_o   => hit_count(21)
+    );
+
+
+    COUNTER_MT_HIT_COUNTERS_RB22 : entity work.counter_snap
+    generic map (
+        g_COUNTER_WIDTH  => 16
+    )
+    port map (
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => or_reduce(rb_hits(22)),
+        snap_i    => '1',
+        count_o   => hit_count(22)
+    );
+
+
+    COUNTER_MT_HIT_COUNTERS_RB23 : entity work.counter_snap
+    generic map (
+        g_COUNTER_WIDTH  => 16
+    )
+    port map (
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => or_reduce(rb_hits(23)),
+        snap_i    => '1',
+        count_o   => hit_count(23)
+    );
+
+
+    COUNTER_MT_HIT_COUNTERS_RB24 : entity work.counter_snap
+    generic map (
+        g_COUNTER_WIDTH  => 16
+    )
+    port map (
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => or_reduce(rb_hits(24)),
+        snap_i    => '1',
+        count_o   => hit_count(24)
+    );
+
+
+    COUNTER_MT_HIT_COUNTERS_RB25 : entity work.counter_snap
+    generic map (
+        g_COUNTER_WIDTH  => 16
+    )
+    port map (
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => or_reduce(rb_hits(25)),
+        snap_i    => '1',
+        count_o   => hit_count(25)
+    );
+
+
+    COUNTER_MT_HIT_COUNTERS_RB26 : entity work.counter_snap
+    generic map (
+        g_COUNTER_WIDTH  => 16
+    )
+    port map (
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => or_reduce(rb_hits(26)),
+        snap_i    => '1',
+        count_o   => hit_count(26)
+    );
+
+
+    COUNTER_MT_HIT_COUNTERS_RB27 : entity work.counter_snap
+    generic map (
+        g_COUNTER_WIDTH  => 16
+    )
+    port map (
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => or_reduce(rb_hits(27)),
+        snap_i    => '1',
+        count_o   => hit_count(27)
+    );
+
+
+    COUNTER_MT_HIT_COUNTERS_RB28 : entity work.counter_snap
+    generic map (
+        g_COUNTER_WIDTH  => 16
+    )
+    port map (
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => or_reduce(rb_hits(28)),
+        snap_i    => '1',
+        count_o   => hit_count(28)
+    );
+
+
+    COUNTER_MT_HIT_COUNTERS_RB29 : entity work.counter_snap
+    generic map (
+        g_COUNTER_WIDTH  => 16
+    )
+    port map (
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => or_reduce(rb_hits(29)),
+        snap_i    => '1',
+        count_o   => hit_count(29)
+    );
+
+
+    COUNTER_MT_HIT_COUNTERS_RB30 : entity work.counter_snap
+    generic map (
+        g_COUNTER_WIDTH  => 16
+    )
+    port map (
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => or_reduce(rb_hits(30)),
+        snap_i    => '1',
+        count_o   => hit_count(30)
+    );
+
+
+    COUNTER_MT_HIT_COUNTERS_RB31 : entity work.counter_snap
+    generic map (
+        g_COUNTER_WIDTH  => 16
+    )
+    port map (
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => or_reduce(rb_hits(31)),
+        snap_i    => '1',
+        count_o   => hit_count(31)
+    );
+
+
+    COUNTER_MT_HIT_COUNTERS_RB32 : entity work.counter_snap
+    generic map (
+        g_COUNTER_WIDTH  => 16
+    )
+    port map (
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => or_reduce(rb_hits(32)),
+        snap_i    => '1',
+        count_o   => hit_count(32)
+    );
+
+
+    COUNTER_MT_HIT_COUNTERS_RB33 : entity work.counter_snap
+    generic map (
+        g_COUNTER_WIDTH  => 16
+    )
+    port map (
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => or_reduce(rb_hits(33)),
+        snap_i    => '1',
+        count_o   => hit_count(33)
+    );
+
+
+    COUNTER_MT_HIT_COUNTERS_RB34 : entity work.counter_snap
+    generic map (
+        g_COUNTER_WIDTH  => 16
+    )
+    port map (
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => or_reduce(rb_hits(34)),
+        snap_i    => '1',
+        count_o   => hit_count(34)
+    );
+
+
+    COUNTER_MT_HIT_COUNTERS_RB35 : entity work.counter_snap
+    generic map (
+        g_COUNTER_WIDTH  => 16
+    )
+    port map (
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => or_reduce(rb_hits(35)),
+        snap_i    => '1',
+        count_o   => hit_count(35)
+    );
+
+
+    COUNTER_MT_HIT_COUNTERS_RB36 : entity work.counter_snap
+    generic map (
+        g_COUNTER_WIDTH  => 16
+    )
+    port map (
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => or_reduce(rb_hits(36)),
+        snap_i    => '1',
+        count_o   => hit_count(36)
+    );
+
+
+    COUNTER_MT_HIT_COUNTERS_RB37 : entity work.counter_snap
+    generic map (
+        g_COUNTER_WIDTH  => 16
+    )
+    port map (
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => or_reduce(rb_hits(37)),
+        snap_i    => '1',
+        count_o   => hit_count(37)
+    );
+
+
+    COUNTER_MT_HIT_COUNTERS_RB38 : entity work.counter_snap
+    generic map (
+        g_COUNTER_WIDTH  => 16
+    )
+    port map (
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => or_reduce(rb_hits(38)),
+        snap_i    => '1',
+        count_o   => hit_count(38)
+    );
+
+
+    COUNTER_MT_HIT_COUNTERS_RB39 : entity work.counter_snap
+    generic map (
+        g_COUNTER_WIDTH  => 16
+    )
+    port map (
+        ref_clk_i => clock,
+        reset_i   => ipb_reset,
+        en_i      => or_reduce(rb_hits(39)),
+        snap_i    => '1',
+        count_o   => hit_count(39)
     );
 
 
