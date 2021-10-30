@@ -199,47 +199,30 @@ begin
       );
 
   --------------------------------------------------------------------------------
-  -- Signal Sump
+  -- trigger tx
   --------------------------------------------------------------------------------
-
-  rb_data_o <= (others => '0');
-
-  --------------------------------------------------------------------------------
-  -- event counter:
-  --------------------------------------------------------------------------------
+  --
+  -- takes in triggers, returns a serialized packet to send to the readout board
   --
   --------------------------------------------------------------------------------
 
-  -- trg_tx_1: entity work.trg_tx
-  --   generic map (
-  --     EN_MASK   => EN_MASK,
-  --     EVENTCNTB => EVENTCNTB,
-  --     MASKCNTB  => MASKCNTB)
-  --   port map (
-  --     clock       => clock,
-  --     reset       => reset,
-  --     serial_o    => serial_o,
-  --     trg_i       => trg_i,
-  --     resync_i    => resync_i,
-  --     event_cnt_i => event_cnt_i,
-  --     ch_mask_i   => ch_mask_i);
-
-  --------------------------------------------------------------------------------
-  -- event counter:
-  --------------------------------------------------------------------------------
-  --
-  --------------------------------------------------------------------------------
-
-  -- serialize output to the readout boards
-  --
-  -- output_tx : entity work.output_tx
-  --   port map (
-  --     clk           => clk,
-  --     rst           => not locked,
-  --     event_count_i => event_cnt,
-  --     trigger_i     => triggers,
-  --     trigger_o     => rb_data_o
-  --     );
+  trg_tx_gen : for I in 0 to NUM_RBS-1 generate
+  begin
+    trg_tx_inst : entity work.trg_tx
+      generic map (
+        EVENTCNTB => EVENTCNTB,
+        MASKCNTB  => NUM_RB_CHANNELS
+        )
+      port map (
+        clock       => clock,
+        reset       => not locked,
+        serial_o    => rb_data_o(I),
+        trg_i       => triggers(I),
+        resync_i    => '0',
+        event_cnt_i => event_cnt,
+        ch_mask_i   => rb_hits(I)
+        );
+  end generate;
 
   --------------------------------------------------------------------------------
   -- Signal Sump
