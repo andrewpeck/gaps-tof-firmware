@@ -9,10 +9,14 @@ use work.constants.all;
 entity trigger is
   port(
 
-    clock : in std_logic;
+    clk : in std_logic;
+
+    single_hit_en_i  : in std_logic;
 
     hits_i           : in  channel_array_t;
-    triggers_o       : in  channel_array_t;
+
+    triggers_o       : out channel_array_t;
+    rb_triggers_o    : out std_logic_vector (NUM_RBS-1 downto 0);
     global_trigger_o : out std_logic
 
     );
@@ -20,49 +24,51 @@ end trigger;
 
 architecture behavioral of trigger is
 
-  signal lt_hits_i : lt_channel_array_t;
+  signal single_hit_triggers : channel_array_t;
 
-  signal triggers, triggers_r : lt_channel_array_t;
+  signal triggers, triggers_r : channel_array_t;
+  signal rb_triggers          : rb_channel_array_t;
 
-  signal or_reduction : std_logic_vector (NUM_LTS-1 downto 0) := (others => '0');
+  signal rb_ors : std_logic_vector (NUM_RBS-1 downto 0)
+    := (others => '0');
 
 begin
 
-  lt_hits_i <= reshape(hits_i);
+  rb_triggers <= reshape(triggers);
 
-  rbgen : for I in 0 to NUM_RBS-1 generate
+  single_hit_trg_gen : for I in 0 to hits_i'length-1 generate
   begin
-    hitgen : for J in 0 to NUM_LT_CHANNELS-1 generate
+    process (clk) is
     begin
-
-      process (clock) is
-      begin
-        if (rising_edge(clock)) then
-          triggers(I)(J) <= lt_hits_i(I)(J);
+      if (rising_edge(clk)) then
+        if (single_hit_en_i='1') then
+          single_hit_triggers(I) <= hits_i(I);
+        else
+          single_hit_triggers(I) <= '0';
         end if;
-      end process;
-
-    end generate;
-  end generate;
-
-  or_reduction_loop : for I in 0 to NUM_RBS-1 generate
-  begin
-    process (clock) is
-    begin
-      if (rising_edge(clock)) then
-        or_reduction(I) <= or_reduce(triggers(I));
       end if;
     end process;
   end generate;
 
-  process (clock) is
+  or_gen : for I in 0 to hits_i'length-1 generate
   begin
-    if (rising_edge(clock)) then
+    process (clk) is
+    begin
+      if (rising_edge(clk)) then
+        rb_ors(I) <= or_reduce(rb_triggers(I));
+      end if;
+    end process;
+  end generate;
+
+  process (clk) is
+  begin
+    if (rising_edge(clk)) then
       global_trigger_o <= or_reduce(rb_ors);
 
-      -- delay by 1 clock to align with global trigger
-      triggers_r <= triggers;
-      triggers_o <= triggers_r;
+      -- delay by 1 clk to align with global trigger
+      rb_triggers_o <= rb_ors;
+      triggers_r    <= triggers;
+      triggers_o    <= triggers_r;
     end if;
   end process;
 

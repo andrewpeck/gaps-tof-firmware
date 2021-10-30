@@ -6,27 +6,27 @@ use ieee.numeric_std.all;
 
 entity clocking is
   port(
-    clock_i  : in  std_logic;
-    clk100 :  out std_logic;
-    clk200 :  out std_logic;
-    locked : out std_logic
+    clock_i : in  std_logic;
+    clk100  : out std_logic;
+    clk200  : out std_logic;
+    locked  : out std_logic
     );
 end clocking;
 
 architecture structural of clocking is
 
-component mt_clk_wiz
-port
- (-- Clock in ports
-  -- Clock out ports
-  clk_out1          : out    std_logic;
-  clk_out2          : out    std_logic;
-  -- Status and control signals
-  reset             : in     std_logic;
-  locked            : out    std_logic;
-  clk_in1           : in     std_logic
- );
-end component;
+  component mt_clk_wiz
+    port
+      (                                 -- Clock in ports
+        -- Clock out ports
+        clk_out1 : out std_logic;
+        clk_out2 : out std_logic;
+        -- Status and control signals
+        reset    : in  std_logic;
+        locked   : out std_logic;
+        clk_in1  : in  std_logic
+        );
+  end component;
 
 begin
 

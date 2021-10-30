@@ -21,6 +21,8 @@ entity input_rx is
 
     data_i : in std_logic_vector (NUM_LT_INPUTS-1 downto 0);
 
+    pulse_stretch_i : in std_logic_vector (3 downto 0);  -- FIXME: connect this
+
     fine_delays_i   : in lt_fine_delays_array_t;
     coarse_delays_i : in lt_coarse_delays_array_t;
 
