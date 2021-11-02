@@ -3,3 +3,5 @@ trigger/src/*.vhd
 trigger/src/*/*.vhd
 common/src/*.vhd
 ip/master_trigger/*/*.xci
+
+trigger/src/sys/eth_infra.vhd

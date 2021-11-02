@@ -8,6 +8,9 @@ use ieee.numeric_std.all;
 
 package mt_types is
 
+  type ip_addr_t is array (integer range 3 downto 0) of integer range 0 to 255;
+  function to_slv (addr : ip_addr_t) return std_logic_vector;
+
   --------------------------------------------------------------------------------
   -- channel data / trigger data
   --------------------------------------------------------------------------------
@@ -103,5 +106,15 @@ package body mt_types is
     end loop;
     return result;
   end function;
+
+  function to_slv (addr : ip_addr_t) return std_logic_vector is
+    variable slv : std_logic_vector(31 downto 0);
+  begin
+    slv(31 downto 24) := std_logic_vector(to_unsigned(addr(3), 8));
+    slv(23 downto 16) := std_logic_vector(to_unsigned(addr(2), 8));
+    slv(15 downto 8)  := std_logic_vector(to_unsigned(addr(1), 8));
+    slv(7 downto 0)   := std_logic_vector(to_unsigned(addr(0), 8));
+    return slv;
+  end;
 
 end package body;

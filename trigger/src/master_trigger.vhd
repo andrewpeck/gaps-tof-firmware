@@ -25,6 +25,9 @@ entity gaps_mt is
   generic (
     EN_TMR_IPB_SLAVE_MT : integer range 0 to 1 := 0;
 
+    MAC_ADDR : std_logic_vector (47 downto 0) := x"00_08_20_83_53_00";
+    IP_ADDR  : ip_addr_t                      := (192, 168, 0, 10);
+
     -- these generics get set by hog at synthesis
     GLOBAL_DATE : std_logic_vector (31 downto 0) := x"00000000";
     GLOBAL_TIME : std_logic_vector (31 downto 0) := x"00000000";
@@ -34,19 +37,20 @@ entity gaps_mt is
     TOP_SHA     : std_logic_vector (31 downto 0) := x"00000000";
     HOG_SHA     : std_logic_vector (31 downto 0) := x"00000000";
     HOG_VER     : std_logic_vector (31 downto 0) := x"00000000"
-    ); 
+    );
   port(
     --
     clk_i : in std_logic;
 
-    --
-    -- eth_rx_d   : in  std_logic_vector (3 downto 0);
-    -- eth_rx_dv  : in  std_logic;
-    -- eth_rx_clk : in  std_logic;
-    -- eth_tx_d   : out std_logic_vector (3 downto 0);
-    -- eth_tx_dv  : out std_logic;
-    -- eth_tx_clk : out std_logic;
+    -- RGMII interface
+    rgmii_rx_clk : in  std_logic;
+    rgmii_rxd    : in  std_logic_vector(3 downto 0);
+    rgmii_rx_ctl : in  std_logic;
+    rgmii_tx_clk : out std_logic;
+    rgmii_txd    : out std_logic_vector(3 downto 0);
+    rgmii_tx_ctl : out std_logic;
 
+    --
     lt_data_i : in  std_logic_vector (NUM_LT_INPUTS-1 downto 0);
     rb_data_o : out std_logic_vector (NUM_RB_OUTPUTS-1 downto 0);
     sump_o    : out std_logic
@@ -56,9 +60,9 @@ end gaps_mt;
 architecture structural of gaps_mt is
 
   signal locked : std_logic;
-
-  signal clk100, clk200 : std_logic;
   signal clock : std_logic;
+
+  signal clk100,  clk200,  clk125,  clk125_90 : std_logic;
 
   signal event_cnt     : std_logic_vector (EVENTCNTB-1 downto 0);
   signal rst_event_cnt : std_logic := '0';
@@ -104,11 +108,30 @@ architecture structural of gaps_mt is
   ------
 
   -- FIXME: generate registers doesn't dump counter signals when it is in a looped xml
-  signal hit_count : t_std16_array (NUM_RBS-1 downto 0); 
+  signal hit_count : t_std16_array (NUM_RBS-1 downto 0);
 
 begin
 
   clock <= clk100;
+
+  eth_infra_inst : entity work.eth_infra
+    port map (
+      clock        => clk100,
+      reset        => not locked,
+      gtx_clk      => clk125,
+      gtx_clk90    => clk125_90,
+      gtx_rst      => not locked,
+      rgmii_rx_clk => rgmii_rx_clk,
+      rgmii_rxd    => rgmii_rxd,
+      rgmii_rx_ctl => rgmii_rx_ctl,
+      rgmii_tx_clk => rgmii_tx_clk,
+      rgmii_txd    => rgmii_txd,
+      rgmii_tx_ctl => rgmii_tx_ctl,
+      mac_addr     => MAC_ADDR,
+      ip_addr      => IP_ADDR,
+      ipb_in       => ipb_in,
+      ipb_out      => ipb_out
+      );
 
   --------------------------------------------------------------------------------
   -- take in a global clock, generate system clocks at the correct frequency
@@ -116,10 +139,12 @@ begin
 
   clocking : entity work.clocking
     port map (
-      clock_i => clk_i,
-      clk100  => clk100,                -- system clock
-      clk200  => clk200,                -- 200mhz for iodelay
-      locked  => locked                 -- mmcm locked
+      clock_i   => clk_i,
+      clk100    => clk100,               -- system clock
+      clk200    => clk200,               -- 200mhz for iodelay
+      clk125    => clk125,
+      clk125_90 => clk125_90,
+      locked    => locked               -- mmcm locked
       );
 
   --------------------------------------------------------------------------------
@@ -133,8 +158,8 @@ begin
   input_rx : entity work.input_rx
     port map (
       -- system clock
-      clk      => clk100, -- logic clock
-      clk200   => clk200, -- for idelay
+      clk      => clk100,  -- logic clock
+      clk200   => clk200,  -- for idelay
 
       -- clock and data from lt boards
       clocks_i => (others => clk100),
@@ -154,7 +179,7 @@ begin
       hits_o => hits
       );
 
-  rb_hits <= reshape(hits); 
+  rb_hits <= reshape(hits);
 
   --------------------------------------------------------------------------------
   -- core trigger logic:
@@ -174,11 +199,11 @@ begin
       -- hits from input stage (20x16 array of hits)
       hits_i => hits,
 
-      single_hit_en_i => '1', 
+      single_hit_en_i => '1',
 
       -- ouptut from trigger logic
-      global_trigger_o => global_trigger,  -- OR of the trigger menu
-      rb_triggers_o    => open,            -- 40 trigger outputs  (1 per rb) 
+      global_trigger_o => global_trigger,   -- OR of the trigger menu
+      rb_triggers_o    => open,             -- 40 trigger outputs  (1 per rb)
       triggers_o       => triggers         -- trigger output (320 trigger outputs) 
       );
 
@@ -889,7 +914,7 @@ begin
         ref_clk_i => clock,
         reset_i   => ipb_reset,
         en_i      => or_reduce(rb_hits(39)),
-        snap_i    => '1',
+        snap_i    => '1', 
         count_o   => hit_count(39)
     );
 
