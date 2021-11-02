@@ -187,6 +187,13 @@
                       mask="0x0fff0000"
                       fw_signal="vccbram"/>
             </node> <!--XADC-->
+
+            <node id="BOARD_ID" address="0xA" permission="rw"
+                  description="Board ID Number"
+                  mask="0xff"
+                  fw_default="0x00"
+                  fw_signal="board_id"/>
+
         </node> <!--FPGA-->
 
 
