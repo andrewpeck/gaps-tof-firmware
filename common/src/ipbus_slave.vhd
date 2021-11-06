@@ -15,7 +15,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
 
-use work.ipbus_pkg.all;
+use work.ipbus.all;
 use work.types_pkg.all;
 
 entity ipbus_slave is

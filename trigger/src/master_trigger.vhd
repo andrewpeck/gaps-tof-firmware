@@ -18,8 +18,11 @@ use work.constants.all;
 use work.components.all;
 use work.registers.all;
 use work.mt_types.all;
-use work.ipbus_pkg.all;
 use work.types_pkg.all;
+use work.ipbus.all;
+
+library unisim;
+use unisim.vcomponents.all;
 
 entity gaps_mt is
   generic (
@@ -79,6 +82,7 @@ architecture structural of gaps_mt is
   signal hits           : channel_array_t;
   signal rb_hits        : rb_channel_array_t;
   signal global_trigger : std_logic;
+  signal rb_triggers    : std_logic_vector (NUM_RBS-1 downto 0);
   signal triggers       : channel_array_t;
 
   --IPbus
@@ -112,6 +116,13 @@ architecture structural of gaps_mt is
 
 begin
 
+  delayctrl_inst : IDELAYCTRL
+    port map (
+      RDY    => open,
+      REFCLK => clk200,
+      RST    => not locked
+      );
+
   clock <= clk100;
 
   eth_infra_inst : entity work.eth_infra
@@ -128,9 +139,9 @@ begin
       rgmii_txd    => rgmii_txd,
       rgmii_tx_ctl => rgmii_tx_ctl,
       mac_addr     => MAC_ADDR,
-      ip_addr      => IP_ADDR,
-      ipb_in       => ipb_in,
-      ipb_out      => ipb_out
+      ip_addr      => to_slv(IP_ADDR),
+      ipb_in       => ipb_miso_arr(0),
+      ipb_out      => ipb_mosi_arr(0)
       );
 
   --------------------------------------------------------------------------------
@@ -200,11 +211,12 @@ begin
       hits_i => hits,
 
       single_hit_en_i => '1',
+      bool_trg_en_i   => '1',
 
       -- ouptut from trigger logic
-      global_trigger_o => global_trigger,   -- OR of the trigger menu
-      rb_triggers_o    => open,             -- 40 trigger outputs  (1 per rb)
-      triggers_o       => triggers         -- trigger output (320 trigger outputs) 
+      global_trigger_o => global_trigger,  -- OR of the trigger menu
+      rb_triggers_o    => rb_triggers,     -- 40 trigger outputs  (1 per rb)
+      triggers_o       => triggers         -- trigger output (320 trigger outputs)
       );
 
   --------------------------------------------------------------------------------
@@ -242,7 +254,7 @@ begin
         clock       => clock,
         reset       => not locked,
         serial_o    => rb_data_o(I),
-        trg_i       => triggers(I),
+        trg_i       => rb_triggers(I),
         resync_i    => '0',
         event_cnt_i => event_cnt,
         ch_mask_i   => rb_hits(I)

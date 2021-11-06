@@ -2,7 +2,7 @@ library xpm;
 use xpm.vcomponents.all;
 
 library work;
-use work.ipbus_pkg.all;
+use work.ipbus.all;
 use work.registers.all;
 use work.types_pkg.all;
 use work.axi_pkg.all;

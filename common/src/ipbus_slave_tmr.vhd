@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_misc.all;
 use ieee.numeric_std.all;
 
-use work.ipbus_pkg.all;
+use work.ipbus.all;
 use work.types_pkg.all;
 
 entity ipbus_slave_tmr is

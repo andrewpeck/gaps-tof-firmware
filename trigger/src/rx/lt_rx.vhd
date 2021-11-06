@@ -43,7 +43,7 @@ architecture behavioral of lt_rx is
     end if;
   end if_then_else;
 
-  signal data_i, data_idelay, data_r :
+  signal data_i, data_idelay, data_r, data_ibuf :
     std_logic_vector (NUM_LT_CHANNELS-1 downto 0)
     := (others => '0');
 
@@ -52,11 +52,10 @@ begin
   --------------------------------------------------------------------------------
   -- RX Data
   --
-  -- IBUFDS → IDELAY → IDDR
+  -- IBUFDS → IDELAY → FF
   --------------------------------------------------------------------------------
 
   rx_gen : for I in 0 to NUM_LT_CHANNELS-1 generate
-    signal data_idelay, data_ibuf : std_logic := '0';
   begin
 
     diff_gen : if (DIFFERENTIAL_DATA) generate
@@ -66,7 +65,7 @@ begin
           IBUF_LOW_PWR => true          -- Low power="TRUE", Highest performance="FALSE"
           )
         port map (
-          O  => data_ibuf,
+          O  => data_ibuf(I),
           I  => data_i_p(I),
           IB => data_i_n(I)
           );
@@ -78,35 +77,19 @@ begin
           IBUF_LOW_PWR => true,         -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
           IOSTANDARD   => "DEFAULT")
         port map (
-          O => data_ibuf,               -- Buffer output
+          O => data_ibuf(I),            -- Buffer output
           I => data_i_p(I)              -- Buffer input (connect directly to top-level port)
           );
     end generate;
-
-    -- IDDR_data : IDDR
-    --   generic map (
-    --     DDR_CLK_EDGE => "SAME_EDGE_PIPELINED",  -- IDDRE1 mode (OPPOSITE_EDGE, SAME_EDGE, SAME_EDGE_PIPELINED)
-    --     INIT_Q1      => '0',                    -- Initial value of Q1: '0' or '1'
-    --     INIT_Q2      => '0',                    -- Initial value of Q2: '0' or '1'
-    --     SRTYPE       => "SYNC"                  -- Set/Reset type: "SYNC" or "ASYNC"
-    --     )
-    --   port map (
-    --     Q1 => data_i(2*I + 0),                  -- 1-bit output: Registered parallel output 1
-    --     Q2 => data_i(2*I + 1),                  -- 1-bit output: Registered parallel output 2
-    --     C  => clock_i_io,                       -- 1-bit input: High-speed clock
-    --     CE => '1',                              -- 1-bit input: Inversion of High-speed clock C
-    --     D  => data_idelay,                      -- 1-bit input: Serial Data Input
-    --     R  => '0',                              -- 1-bit input: Active-High Async Reset
-    --     S  => '0'
-    --     );
 
     idelay_inst : entity work.idelay
       generic map (PATTERN => "DATA")
       port map (
         clock => clk200,
         taps  => fine_delays(I),
-        din   => data_ibuf,
-        dout  => data_idelay);
+        din   => data_ibuf(I),
+        dout  => data_idelay(I)
+        );
 
   end generate;
 

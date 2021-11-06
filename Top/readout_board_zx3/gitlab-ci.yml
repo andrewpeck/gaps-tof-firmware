@@ -1,4 +1,3 @@
-# #################### READOUT-BOARD Project ###########################
 GEN:readout_board_zx3:
     extends: .generate_project
     variables:

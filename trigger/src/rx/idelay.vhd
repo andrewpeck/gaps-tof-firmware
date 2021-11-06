@@ -11,7 +11,6 @@ entity idelay is
     PATTERN : string                    -- "DATA or CLOCK"
     );
   port(
-
     clock : in  std_logic;
     taps  : in  std_logic_vector (4 downto 0);
     din   : in  std_logic;

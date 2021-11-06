@@ -2,13 +2,13 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-package ipbus_pkg is
+package ipbus is
 
   constant IPB_MASTERS      : integer := 1;
   constant IPB_SLAVES       : integer := 1;
   constant C_NUM_IPB_SLAVES : integer := IPB_SLAVES;
 
-  constant IPB_ADDR_SIZE : integer := 30;
+  constant IPB_ADDR_SIZE : integer := 32;
 
   -- Wishbone options
 
@@ -65,9 +65,12 @@ package ipbus_pkg is
 
   function ipb_addr_sel(signal addr : in std_logic_vector(IPB_ADDR_SIZE-1 downto 0)) return integer;
 
-end ipbus_pkg;
+  type ipb_mac_cfg is (EXTERNAL, INTERNAL);
+  type ipb_ip_cfg is (EXTERNAL, INTERNAL);
 
-package body ipbus_pkg is
+end ipbus;
+
+package body ipbus is
 
   --== Address decoder ==--
 
@@ -87,4 +90,4 @@ package body ipbus_pkg is
     return sel;
   end ipb_addr_sel;
 
-end ipbus_pkg;
+end ipbus;

@@ -1,16 +1,9 @@
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.std_logic_misc.all;
 use ieee.numeric_std.all;
 
-library work;
-use work.ipbus_pkg.all;
-
-library ipbus;
-use ipbus.ipbus_trans_decl.all;
-
-library unisim;
-use unisim.vcomponents.all;
-
+use work.ipbus.all;
 
 entity eth_infra is
   generic(
@@ -48,7 +41,7 @@ architecture rtl of eth_infra is
   component eth_mac_1g_rgmii
     generic (
       -- target ("SIM", "GENERIC", "XILINX", "ALTERA")
-      TARGET            : string  := "GENERIC";
+      TARGET            : string  := "XILINX";
       -- IODDR style ("IODDR"; "IODDR2")
       -- Use IODDR for Virtex-4; Virtex-5; Virtex-6; 7 Series; Ultrascale
       -- Use IODDR2 for Spartan-6
@@ -175,7 +168,7 @@ begin
       );
 
 
-  ipbus_inst : entity ipbus.ipbus_ctrl
+  ipbus_inst : entity work.ipbus_ctrl
     port map(
       mac_clk    => gtx_clk,
       rst_macclk => reset,
