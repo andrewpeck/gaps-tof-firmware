@@ -24,17 +24,18 @@ architecture behavioral of event_counter is
 
 begin
 
+  event_count_o <= std_logic_vector(event_count);
+
   process (clk) is
   begin
     if (rising_edge(clk)) then
       if (rst_i = '1') then
         event_count <= (others => '0');
-      -- saturate at max count
-      elsif (event_count = event_count_max-1) then
-        event_count <= event_count;
       -- increment
-      elsif (global_trigger_i = '1') then
+      elsif (event_count /= event_count_max and global_trigger_i = '1') then
         event_count <= event_count + 1;
+      else
+        event_count <= event_count;
       end if;
     end if;
   end process;
