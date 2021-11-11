@@ -19,6 +19,7 @@ entity lt_rx is
 
     --clk_delay   : in lt_clk_delays_array_t;
     coarse_delays : in lt_coarse_delays_t;
+    posnegs       : in std_logic_vector(NUM_LT_CHANNELS-1 downto 0);
     fine_delays   : in lt_fine_delays_t;
 
     clk200   : in  std_logic;
@@ -43,7 +44,8 @@ architecture behavioral of lt_rx is
     end if;
   end if_then_else;
 
-  signal data_i, data_idelay, data_r, data_ibuf :
+  signal data_i, data_idelay, data_pos,
+    data_neg, data_r, data_ibuf :
     std_logic_vector (NUM_LT_CHANNELS-1 downto 0)
     := (others => '0');
 
@@ -99,7 +101,23 @@ begin
   process (clk) is
   begin
     if (rising_edge(clk)) then
-      data_r <= data_idelay;
+      data_pos <= data_idelay;
+    end if;
+    if (falling_edge(clk)) then
+      data_neg <= data_idelay;
+    end if;
+  end process;
+
+  process (clk) is
+  begin
+    if (rising_edge(clk)) then
+      for I in 0 to NUM_LT_CHANNELS-1 loop
+        if (posnegs(I) = '0') then
+          data_r <= data_pos;
+        else
+          data_r <= data_neg;
+        end if;
+      end loop;
     end if;
   end process;
 

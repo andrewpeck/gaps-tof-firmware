@@ -39,6 +39,24 @@
 
     \renewcommand{\arraystretch}{1.3}
     \noindent
+    \subsection*{\textcolor{parentcolor}{\textbf{MT}}}
+
+    \vspace{4mm}
+    \noindent
+    Implements various control and monitoring functions of the DRS Logic
+    \noindent
+
+    \keepXColumns
+    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
+    \hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
+    \nopagebreak
+    PULSE\_STRETCH & \texttt{0xf} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock cycles to stretch hits by \\\hline
+    \end{tabularx}
+    \vspace{5mm}
+
+
+    \noindent
     \subsection*{\textcolor{parentcolor}{\textbf{MT.HIT\_COUNTERS}}}
 
     \vspace{4mm}
@@ -133,6 +151,162 @@
 
 
     \noindent
+    \subsection*{\textcolor{parentcolor}{\textbf{MT.FINE\_DELAYS}}}
+
+    \keepXColumns
+    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
+    \hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
+    \nopagebreak
+    LT0\_CH0 & \texttt{0x60} & \texttt{[4:0]} & rw & \texttt{0x0} & 78 ps delay of LT0 CH0 \\\hline
+    LT0\_CH1 & \texttt{0x60} & \texttt{[12:8]} & rw & \texttt{0x0} & 78 ps delay of LT0 CH1 \\\hline
+    LT1\_CH0 & \texttt{0x61} & \texttt{[4:0]} & rw & \texttt{0x0} & 78 ps delay of LT1 CH0 \\\hline
+    LT1\_CH1 & \texttt{0x61} & \texttt{[12:8]} & rw & \texttt{0x0} & 78 ps delay of LT1 CH1 \\\hline
+    LT2\_CH0 & \texttt{0x62} & \texttt{[4:0]} & rw & \texttt{0x0} & 78 ps delay of LT2 CH0 \\\hline
+    LT2\_CH1 & \texttt{0x62} & \texttt{[12:8]} & rw & \texttt{0x0} & 78 ps delay of LT2 CH1 \\\hline
+    LT3\_CH0 & \texttt{0x63} & \texttt{[4:0]} & rw & \texttt{0x0} & 78 ps delay of LT3 CH0 \\\hline
+    LT3\_CH1 & \texttt{0x63} & \texttt{[12:8]} & rw & \texttt{0x0} & 78 ps delay of LT3 CH1 \\\hline
+    LT4\_CH0 & \texttt{0x64} & \texttt{[4:0]} & rw & \texttt{0x0} & 78 ps delay of LT4 CH0 \\\hline
+    LT4\_CH1 & \texttt{0x64} & \texttt{[12:8]} & rw & \texttt{0x0} & 78 ps delay of LT4 CH1 \\\hline
+    LT5\_CH0 & \texttt{0x65} & \texttt{[4:0]} & rw & \texttt{0x0} & 78 ps delay of LT5 CH0 \\\hline
+    LT5\_CH1 & \texttt{0x65} & \texttt{[12:8]} & rw & \texttt{0x0} & 78 ps delay of LT5 CH1 \\\hline
+    LT6\_CH0 & \texttt{0x66} & \texttt{[4:0]} & rw & \texttt{0x0} & 78 ps delay of LT6 CH0 \\\hline
+    LT6\_CH1 & \texttt{0x66} & \texttt{[12:8]} & rw & \texttt{0x0} & 78 ps delay of LT6 CH1 \\\hline
+    LT7\_CH0 & \texttt{0x67} & \texttt{[4:0]} & rw & \texttt{0x0} & 78 ps delay of LT7 CH0 \\\hline
+    LT7\_CH1 & \texttt{0x67} & \texttt{[12:8]} & rw & \texttt{0x0} & 78 ps delay of LT7 CH1 \\\hline
+    LT8\_CH0 & \texttt{0x68} & \texttt{[4:0]} & rw & \texttt{0x0} & 78 ps delay of LT8 CH0 \\\hline
+    LT8\_CH1 & \texttt{0x68} & \texttt{[12:8]} & rw & \texttt{0x0} & 78 ps delay of LT8 CH1 \\\hline
+    LT9\_CH0 & \texttt{0x69} & \texttt{[4:0]} & rw & \texttt{0x0} & 78 ps delay of LT9 CH0 \\\hline
+    LT9\_CH1 & \texttt{0x69} & \texttt{[12:8]} & rw & \texttt{0x0} & 78 ps delay of LT9 CH1 \\\hline
+    LT10\_CH0 & \texttt{0x6a} & \texttt{[4:0]} & rw & \texttt{0x0} & 78 ps delay of LT10 CH0 \\\hline
+    LT10\_CH1 & \texttt{0x6a} & \texttt{[12:8]} & rw & \texttt{0x0} & 78 ps delay of LT10 CH1 \\\hline
+    LT11\_CH0 & \texttt{0x6b} & \texttt{[4:0]} & rw & \texttt{0x0} & 78 ps delay of LT11 CH0 \\\hline
+    LT11\_CH1 & \texttt{0x6b} & \texttt{[12:8]} & rw & \texttt{0x0} & 78 ps delay of LT11 CH1 \\\hline
+    LT12\_CH0 & \texttt{0x6c} & \texttt{[4:0]} & rw & \texttt{0x0} & 78 ps delay of LT12 CH0 \\\hline
+    LT12\_CH1 & \texttt{0x6c} & \texttt{[12:8]} & rw & \texttt{0x0} & 78 ps delay of LT12 CH1 \\\hline
+    LT13\_CH0 & \texttt{0x6d} & \texttt{[4:0]} & rw & \texttt{0x0} & 78 ps delay of LT13 CH0 \\\hline
+    LT13\_CH1 & \texttt{0x6d} & \texttt{[12:8]} & rw & \texttt{0x0} & 78 ps delay of LT13 CH1 \\\hline
+    LT14\_CH0 & \texttt{0x6e} & \texttt{[4:0]} & rw & \texttt{0x0} & 78 ps delay of LT14 CH0 \\\hline
+    LT14\_CH1 & \texttt{0x6e} & \texttt{[12:8]} & rw & \texttt{0x0} & 78 ps delay of LT14 CH1 \\\hline
+    LT15\_CH0 & \texttt{0x6f} & \texttt{[4:0]} & rw & \texttt{0x0} & 78 ps delay of LT15 CH0 \\\hline
+    LT15\_CH1 & \texttt{0x6f} & \texttt{[12:8]} & rw & \texttt{0x0} & 78 ps delay of LT15 CH1 \\\hline
+    LT16\_CH0 & \texttt{0x70} & \texttt{[4:0]} & rw & \texttt{0x0} & 78 ps delay of LT16 CH0 \\\hline
+    LT16\_CH1 & \texttt{0x70} & \texttt{[12:8]} & rw & \texttt{0x0} & 78 ps delay of LT16 CH1 \\\hline
+    LT17\_CH0 & \texttt{0x71} & \texttt{[4:0]} & rw & \texttt{0x0} & 78 ps delay of LT17 CH0 \\\hline
+    LT17\_CH1 & \texttt{0x71} & \texttt{[12:8]} & rw & \texttt{0x0} & 78 ps delay of LT17 CH1 \\\hline
+    LT18\_CH0 & \texttt{0x72} & \texttt{[4:0]} & rw & \texttt{0x0} & 78 ps delay of LT18 CH0 \\\hline
+    LT18\_CH1 & \texttt{0x72} & \texttt{[12:8]} & rw & \texttt{0x0} & 78 ps delay of LT18 CH1 \\\hline
+    LT19\_CH0 & \texttt{0x73} & \texttt{[4:0]} & rw & \texttt{0x0} & 78 ps delay of LT19 CH0 \\\hline
+    LT19\_CH1 & \texttt{0x73} & \texttt{[12:8]} & rw & \texttt{0x0} & 78 ps delay of LT19 CH1 \\\hline
+    \end{tabularx}
+    \vspace{5mm}
+
+
+    \noindent
+    \subsection*{\textcolor{parentcolor}{\textbf{MT.COARSE\_DELAYS}}}
+
+    \keepXColumns
+    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
+    \hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
+    \nopagebreak
+    LT0\_CH0 & \texttt{0x80} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT0 CH0 \\\hline
+    LT0\_CH1 & \texttt{0x80} & \texttt{[7:4]} & rw & \texttt{0x0} & Integer clock delay of LT0 CH1 \\\hline
+    LT1\_CH0 & \texttt{0x81} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT1 CH0 \\\hline
+    LT1\_CH1 & \texttt{0x81} & \texttt{[7:4]} & rw & \texttt{0x0} & Integer clock delay of LT1 CH1 \\\hline
+    LT2\_CH0 & \texttt{0x82} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT2 CH0 \\\hline
+    LT2\_CH1 & \texttt{0x82} & \texttt{[7:4]} & rw & \texttt{0x0} & Integer clock delay of LT2 CH1 \\\hline
+    LT3\_CH0 & \texttt{0x83} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT3 CH0 \\\hline
+    LT3\_CH1 & \texttt{0x83} & \texttt{[7:4]} & rw & \texttt{0x0} & Integer clock delay of LT3 CH1 \\\hline
+    LT4\_CH0 & \texttt{0x84} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT4 CH0 \\\hline
+    LT4\_CH1 & \texttt{0x84} & \texttt{[7:4]} & rw & \texttt{0x0} & Integer clock delay of LT4 CH1 \\\hline
+    LT5\_CH0 & \texttt{0x85} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT5 CH0 \\\hline
+    LT5\_CH1 & \texttt{0x85} & \texttt{[7:4]} & rw & \texttt{0x0} & Integer clock delay of LT5 CH1 \\\hline
+    LT6\_CH0 & \texttt{0x86} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT6 CH0 \\\hline
+    LT6\_CH1 & \texttt{0x86} & \texttt{[7:4]} & rw & \texttt{0x0} & Integer clock delay of LT6 CH1 \\\hline
+    LT7\_CH0 & \texttt{0x87} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT7 CH0 \\\hline
+    LT7\_CH1 & \texttt{0x87} & \texttt{[7:4]} & rw & \texttt{0x0} & Integer clock delay of LT7 CH1 \\\hline
+    LT8\_CH0 & \texttt{0x88} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT8 CH0 \\\hline
+    LT8\_CH1 & \texttt{0x88} & \texttt{[7:4]} & rw & \texttt{0x0} & Integer clock delay of LT8 CH1 \\\hline
+    LT9\_CH0 & \texttt{0x89} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT9 CH0 \\\hline
+    LT9\_CH1 & \texttt{0x89} & \texttt{[7:4]} & rw & \texttt{0x0} & Integer clock delay of LT9 CH1 \\\hline
+    LT10\_CH0 & \texttt{0x8a} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT10 CH0 \\\hline
+    LT10\_CH1 & \texttt{0x8a} & \texttt{[7:4]} & rw & \texttt{0x0} & Integer clock delay of LT10 CH1 \\\hline
+    LT11\_CH0 & \texttt{0x8b} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT11 CH0 \\\hline
+    LT11\_CH1 & \texttt{0x8b} & \texttt{[7:4]} & rw & \texttt{0x0} & Integer clock delay of LT11 CH1 \\\hline
+    LT12\_CH0 & \texttt{0x8c} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT12 CH0 \\\hline
+    LT12\_CH1 & \texttt{0x8c} & \texttt{[7:4]} & rw & \texttt{0x0} & Integer clock delay of LT12 CH1 \\\hline
+    LT13\_CH0 & \texttt{0x8d} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT13 CH0 \\\hline
+    LT13\_CH1 & \texttt{0x8d} & \texttt{[7:4]} & rw & \texttt{0x0} & Integer clock delay of LT13 CH1 \\\hline
+    LT14\_CH0 & \texttt{0x8e} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT14 CH0 \\\hline
+    LT14\_CH1 & \texttt{0x8e} & \texttt{[7:4]} & rw & \texttt{0x0} & Integer clock delay of LT14 CH1 \\\hline
+    LT15\_CH0 & \texttt{0x8f} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT15 CH0 \\\hline
+    LT15\_CH1 & \texttt{0x8f} & \texttt{[7:4]} & rw & \texttt{0x0} & Integer clock delay of LT15 CH1 \\\hline
+    LT16\_CH0 & \texttt{0x90} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT16 CH0 \\\hline
+    LT16\_CH1 & \texttt{0x90} & \texttt{[7:4]} & rw & \texttt{0x0} & Integer clock delay of LT16 CH1 \\\hline
+    LT17\_CH0 & \texttt{0x91} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT17 CH0 \\\hline
+    LT17\_CH1 & \texttt{0x91} & \texttt{[7:4]} & rw & \texttt{0x0} & Integer clock delay of LT17 CH1 \\\hline
+    LT18\_CH0 & \texttt{0x92} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT18 CH0 \\\hline
+    LT18\_CH1 & \texttt{0x92} & \texttt{[7:4]} & rw & \texttt{0x0} & Integer clock delay of LT18 CH1 \\\hline
+    LT19\_CH0 & \texttt{0x93} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT19 CH0 \\\hline
+    LT19\_CH1 & \texttt{0x93} & \texttt{[7:4]} & rw & \texttt{0x0} & Integer clock delay of LT19 CH1 \\\hline
+    \end{tabularx}
+    \vspace{5mm}
+
+
+    \noindent
+    \subsection*{\textcolor{parentcolor}{\textbf{MT.POSNEGS}}}
+
+    \keepXColumns
+    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
+    \hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
+    \nopagebreak
+    LT0\_CH0 & \texttt{0x100} & \texttt{[0:0]} & rw & \texttt{0x0} & Posneg of LT0 CH0 \\\hline
+    LT0\_CH1 & \texttt{0x100} & \texttt{[4:4]} & rw & \texttt{0x0} & Posneg of LT0 CH1 \\\hline
+    LT1\_CH0 & \texttt{0x101} & \texttt{[0:0]} & rw & \texttt{0x0} & Posneg of LT1 CH0 \\\hline
+    LT1\_CH1 & \texttt{0x101} & \texttt{[4:4]} & rw & \texttt{0x0} & Posneg of LT1 CH1 \\\hline
+    LT2\_CH0 & \texttt{0x102} & \texttt{[0:0]} & rw & \texttt{0x0} & Posneg of LT2 CH0 \\\hline
+    LT2\_CH1 & \texttt{0x102} & \texttt{[4:4]} & rw & \texttt{0x0} & Posneg of LT2 CH1 \\\hline
+    LT3\_CH0 & \texttt{0x103} & \texttt{[0:0]} & rw & \texttt{0x0} & Posneg of LT3 CH0 \\\hline
+    LT3\_CH1 & \texttt{0x103} & \texttt{[4:4]} & rw & \texttt{0x0} & Posneg of LT3 CH1 \\\hline
+    LT4\_CH0 & \texttt{0x104} & \texttt{[0:0]} & rw & \texttt{0x0} & Posneg of LT4 CH0 \\\hline
+    LT4\_CH1 & \texttt{0x104} & \texttt{[4:4]} & rw & \texttt{0x0} & Posneg of LT4 CH1 \\\hline
+    LT5\_CH0 & \texttt{0x105} & \texttt{[0:0]} & rw & \texttt{0x0} & Posneg of LT5 CH0 \\\hline
+    LT5\_CH1 & \texttt{0x105} & \texttt{[4:4]} & rw & \texttt{0x0} & Posneg of LT5 CH1 \\\hline
+    LT6\_CH0 & \texttt{0x106} & \texttt{[0:0]} & rw & \texttt{0x0} & Posneg of LT6 CH0 \\\hline
+    LT6\_CH1 & \texttt{0x106} & \texttt{[4:4]} & rw & \texttt{0x0} & Posneg of LT6 CH1 \\\hline
+    LT7\_CH0 & \texttt{0x107} & \texttt{[0:0]} & rw & \texttt{0x0} & Posneg of LT7 CH0 \\\hline
+    LT7\_CH1 & \texttt{0x107} & \texttt{[4:4]} & rw & \texttt{0x0} & Posneg of LT7 CH1 \\\hline
+    LT8\_CH0 & \texttt{0x108} & \texttt{[0:0]} & rw & \texttt{0x0} & Posneg of LT8 CH0 \\\hline
+    LT8\_CH1 & \texttt{0x108} & \texttt{[4:4]} & rw & \texttt{0x0} & Posneg of LT8 CH1 \\\hline
+    LT9\_CH0 & \texttt{0x109} & \texttt{[0:0]} & rw & \texttt{0x0} & Posneg of LT9 CH0 \\\hline
+    LT9\_CH1 & \texttt{0x109} & \texttt{[4:4]} & rw & \texttt{0x0} & Posneg of LT9 CH1 \\\hline
+    LT10\_CH0 & \texttt{0x10a} & \texttt{[0:0]} & rw & \texttt{0x0} & Posneg of LT10 CH0 \\\hline
+    LT10\_CH1 & \texttt{0x10a} & \texttt{[4:4]} & rw & \texttt{0x0} & Posneg of LT10 CH1 \\\hline
+    LT11\_CH0 & \texttt{0x10b} & \texttt{[0:0]} & rw & \texttt{0x0} & Posneg of LT11 CH0 \\\hline
+    LT11\_CH1 & \texttt{0x10b} & \texttt{[4:4]} & rw & \texttt{0x0} & Posneg of LT11 CH1 \\\hline
+    LT12\_CH0 & \texttt{0x10c} & \texttt{[0:0]} & rw & \texttt{0x0} & Posneg of LT12 CH0 \\\hline
+    LT12\_CH1 & \texttt{0x10c} & \texttt{[4:4]} & rw & \texttt{0x0} & Posneg of LT12 CH1 \\\hline
+    LT13\_CH0 & \texttt{0x10d} & \texttt{[0:0]} & rw & \texttt{0x0} & Posneg of LT13 CH0 \\\hline
+    LT13\_CH1 & \texttt{0x10d} & \texttt{[4:4]} & rw & \texttt{0x0} & Posneg of LT13 CH1 \\\hline
+    LT14\_CH0 & \texttt{0x10e} & \texttt{[0:0]} & rw & \texttt{0x0} & Posneg of LT14 CH0 \\\hline
+    LT14\_CH1 & \texttt{0x10e} & \texttt{[4:4]} & rw & \texttt{0x0} & Posneg of LT14 CH1 \\\hline
+    LT15\_CH0 & \texttt{0x10f} & \texttt{[0:0]} & rw & \texttt{0x0} & Posneg of LT15 CH0 \\\hline
+    LT15\_CH1 & \texttt{0x10f} & \texttt{[4:4]} & rw & \texttt{0x0} & Posneg of LT15 CH1 \\\hline
+    LT16\_CH0 & \texttt{0x110} & \texttt{[0:0]} & rw & \texttt{0x0} & Posneg of LT16 CH0 \\\hline
+    LT16\_CH1 & \texttt{0x110} & \texttt{[4:4]} & rw & \texttt{0x0} & Posneg of LT16 CH1 \\\hline
+    LT17\_CH0 & \texttt{0x111} & \texttt{[0:0]} & rw & \texttt{0x0} & Posneg of LT17 CH0 \\\hline
+    LT17\_CH1 & \texttt{0x111} & \texttt{[4:4]} & rw & \texttt{0x0} & Posneg of LT17 CH1 \\\hline
+    LT18\_CH0 & \texttt{0x112} & \texttt{[0:0]} & rw & \texttt{0x0} & Posneg of LT18 CH0 \\\hline
+    LT18\_CH1 & \texttt{0x112} & \texttt{[4:4]} & rw & \texttt{0x0} & Posneg of LT18 CH1 \\\hline
+    LT19\_CH0 & \texttt{0x113} & \texttt{[0:0]} & rw & \texttt{0x0} & Posneg of LT19 CH0 \\\hline
+    LT19\_CH1 & \texttt{0x113} & \texttt{[4:4]} & rw & \texttt{0x0} & Posneg of LT19 CH1 \\\hline
+    \end{tabularx}
+    \vspace{5mm}
+
+
+    \noindent
     \subsection*{\textcolor{parentcolor}{\textbf{MT.HOG}}}
 
     \vspace{4mm}
@@ -145,14 +319,14 @@
     \hline
     \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
     \nopagebreak
-    GLOBAL\_DATE & \texttt{0x100} & \texttt{[31:0]} & r & \texttt{} & HOG Global Date \\\hline
-    GLOBAL\_TIME & \texttt{0x101} & \texttt{[31:0]} & r & \texttt{} & HOG Global Time \\\hline
-    GLOBAL\_VER & \texttt{0x102} & \texttt{[31:0]} & r & \texttt{} & HOG Global Version \\\hline
-    GLOBAL\_SHA & \texttt{0x103} & \texttt{[31:0]} & r & \texttt{} & HOG Global SHA \\\hline
-    TOP\_SHA & \texttt{0x104} & \texttt{[31:0]} & r & \texttt{} & HOG Top SHA \\\hline
-    TOP\_VER & \texttt{0x105} & \texttt{[31:0]} & r & \texttt{} & HOG Top Version \\\hline
-    HOG\_SHA & \texttt{0x106} & \texttt{[31:0]} & r & \texttt{} & HOG SHA \\\hline
-    HOG\_VER & \texttt{0x107} & \texttt{[31:0]} & r & \texttt{} & HOG Version \\\hline
+    GLOBAL\_DATE & \texttt{0x200} & \texttt{[31:0]} & r & \texttt{} & HOG Global Date \\\hline
+    GLOBAL\_TIME & \texttt{0x201} & \texttt{[31:0]} & r & \texttt{} & HOG Global Time \\\hline
+    GLOBAL\_VER & \texttt{0x202} & \texttt{[31:0]} & r & \texttt{} & HOG Global Version \\\hline
+    GLOBAL\_SHA & \texttt{0x203} & \texttt{[31:0]} & r & \texttt{} & HOG Global SHA \\\hline
+    TOP\_SHA & \texttt{0x204} & \texttt{[31:0]} & r & \texttt{} & HOG Top SHA \\\hline
+    TOP\_VER & \texttt{0x205} & \texttt{[31:0]} & r & \texttt{} & HOG Top Version \\\hline
+    HOG\_SHA & \texttt{0x206} & \texttt{[31:0]} & r & \texttt{} & HOG SHA \\\hline
+    HOG\_VER & \texttt{0x207} & \texttt{[31:0]} & r & \texttt{} & HOG Version \\\hline
     \end{tabularx}
     \vspace{5mm}
 

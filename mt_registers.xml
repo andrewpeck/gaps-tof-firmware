@@ -10,8 +10,16 @@
         fw_bus_reset_signal="ipb_reset"
         fw_master_bus_signal="ipb_mosi_arr(0)"
         fw_slave_bus_signal="ipb_miso_arr(0)"
-        fw_reg_addr_msb="8"
+        fw_reg_addr_msb="9"
         fw_reg_addr_lsb="0">
+
+    <node id="PULSE_STRETCH"
+          address="0xf"
+          permission="rw"
+          mask="0x0000000f"
+          description="Integer clock cycles to stretch hits by"
+          fw_default="0x0"
+          fw_signal="pulse_stretch"/>
 
     <node id="HIT_COUNTERS" address="0x10" description="Counters">
       <node id="RB${RB_IDX}" address="0x0"
@@ -43,6 +51,87 @@
       </node>
     </node>
 
+    <node id="FINE_DELAYS" address="0x60">
+      <node id="LT${LT_IDX}_CH0" address="0x0"
+            generate="true"
+            generate_size="20"
+            generate_address_step="1"
+            generate_idx_var="LT_IDX"
+            permission="rw"
+            fw_default="0x00"
+            mask="0x0000001f"
+            description="78 ps delay of LT${LT_IDX} CH0"
+            fw_signal="fine_delays(${LT_IDX})(0)"
+            >
+      </node>
+      <node id="LT${LT_IDX}_CH1" address="0x0"
+            generate="true"
+            generate_size="20"
+            generate_address_step="1"
+            generate_idx_var="LT_IDX"
+            permission="rw"
+            fw_default="0x00"
+            mask="0x00001f00"
+            description="78 ps delay of LT${LT_IDX} CH1"
+            fw_signal="fine_delays(${LT_IDX})(1)"
+            >
+      </node>
+    </node>
+
+    <node id="COARSE_DELAYS" address="0x80">
+      <node id="LT${LT_IDX}_CH0" address="0x0"
+            generate="true"
+            generate_size="20"
+            generate_address_step="1"
+            generate_idx_var="LT_IDX"
+            permission="rw"
+            fw_default="0x00"
+            mask="0x0000000f"
+            description="Integer clock delay of LT${LT_IDX} CH0"
+            fw_signal="coarse_delays(${LT_IDX})(0)"
+            >
+      </node>
+      <node id="LT${LT_IDX}_CH1" address="0x0"
+            generate="true"
+            generate_size="20"
+            generate_address_step="1"
+            generate_idx_var="LT_IDX"
+            permission="rw"
+            fw_default="0x00"
+            mask="0x000000f0"
+            description="Integer clock delay of LT${LT_IDX} CH1"
+            fw_signal="coarse_delays(${LT_IDX})(1)"
+            >
+      </node>
+    </node>
+
+    <node id="POSNEGS" address="0x100">
+      <node id="LT${LT_IDX}_CH0" address="0x0"
+            generate="true"
+            generate_size="20"
+            generate_address_step="1"
+            generate_idx_var="LT_IDX"
+            permission="rw"
+            fw_default="0x00"
+            mask="0x00000001"
+            description="Posneg of LT${LT_IDX} CH0"
+            fw_signal="posnegs(${LT_IDX})(0)"
+            >
+      </node>
+      <node id="LT${LT_IDX}_CH1" address="0x0"
+            generate="true"
+            generate_size="20"
+            generate_address_step="1"
+            generate_idx_var="LT_IDX"
+            permission="rw"
+            fw_default="0x00"
+            mask="0x00000010"
+            description="Posneg of LT${LT_IDX} CH1"
+            fw_signal="posnegs(${LT_IDX})(1)"
+            >
+      </node>
+    </node>
+
     <!-- <node id="HIT_COUNTERS" address="0x10" description="Counters"> -->
     <!--     <node id="RB${RB_IDX}" address="0x0" generate="true" -->
     <!--           generate_size="20" generate_address_step="16" generate_idx_var="RB_IDX"> -->
@@ -56,7 +145,7 @@
     <!--     </node> -->
     <!-- </node> -->
 
-    <node id="HOG" address="0x100" description = "HOG Parameters">
+    <node id="HOG" address="0x200" description = "HOG Parameters">
       <node id="GLOBAL_DATE" mask="0xFFFFFFFF" permission="r" address="0x0" description="HOG Global Date"    fw_signal="GLOBAL_DATE"/>
       <node id="GLOBAL_TIME" mask="0xFFFFFFFF" permission="r" address="0x1" description="HOG Global Time"    fw_signal="GLOBAL_TIME"/>
       <node id="GLOBAL_VER"  mask="0xFFFFFFFF" permission="r" address="0x2" description="HOG Global Version" fw_signal="GLOBAL_VER"/>

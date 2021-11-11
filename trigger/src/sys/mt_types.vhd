@@ -67,6 +67,14 @@ package mt_types is
   -- data delays 2x20
   type lt_fine_delays_array_t is array (integer range 0 to NUM_LTS-1) of
     lt_fine_delays_t;
+
+  --------------------------------------------------------------------------------
+  -- Posnegs
+  --------------------------------------------------------------------------------
+
+  type lt_posnegs_array_t is array (integer range 0 to NUM_LTS-1)
+    of std_logic_vector(NUM_LT_MT_LINKS-1 downto 0);
+
 end package mt_types;
 
 package body mt_types is

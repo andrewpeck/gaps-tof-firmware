@@ -25,6 +25,7 @@ entity input_rx is
 
     fine_delays_i   : in lt_fine_delays_array_t;
     coarse_delays_i : in lt_coarse_delays_array_t;
+    posnegs_i       : in lt_posnegs_array_t;
 
     hits_o : out channel_array_t
     );
@@ -61,6 +62,7 @@ begin
 
         fine_delays   => fine_delays_i(I),
         coarse_delays => coarse_delays_i(I),
+        posnegs       => posnegs_i(I),
 
         data_i_p => data_i((I+1)*NUM_LT_MT_LINKS-1 downto I*NUM_LT_MT_LINKS),
         data_i_n => (others => '0'),
