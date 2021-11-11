@@ -132,19 +132,6 @@
       </node>
     </node>
 
-    <!-- <node id="HIT_COUNTERS" address="0x10" description="Counters"> -->
-    <!--     <node id="RB${RB_IDX}" address="0x0" generate="true" -->
-    <!--           generate_size="20" generate_address_step="16" generate_idx_var="RB_IDX"> -->
-    <!--         <node id="CH${CH_IDX}" address="0x0" mask="0x0000ffff" permission="r" -->
-    <!--               generate="true" generate_size="16" generate_address_step="0x1" generate_idx_var="CH_IDX" -->
-    <!--               description="hit count on LT=${RB_IDX}, CH=${CH_IDX}" -->
-    <!--               fw_make_signal="false" -->
-    <!--               fw_signal="hit_count(${RB_IDX})(${CH_IDX})" -->
-    <!--               fw_cnt_en_signal="hits(${RB_IDX})(${CH_IDX})"> -->
-    <!--         </node> -->
-    <!--     </node> -->
-    <!-- </node> -->
-
     <node id="HOG" address="0x200" description = "HOG Parameters">
       <node id="GLOBAL_DATE" mask="0xFFFFFFFF" permission="r" address="0x0" description="HOG Global Date"    fw_signal="GLOBAL_DATE"/>
       <node id="GLOBAL_TIME" mask="0xFFFFFFFF" permission="r" address="0x1" description="HOG Global Time"    fw_signal="GLOBAL_TIME"/>
