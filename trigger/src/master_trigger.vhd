@@ -164,6 +164,10 @@ architecture structural of gaps_mt is
 
 begin
 
+  ipb_reset <= not locked;
+  ipb_clk   <= clock;
+  clock <= clk100;
+
   delayctrl_inst : IDELAYCTRL
     port map (
       RDY    => open,
@@ -171,11 +175,9 @@ begin
       RST    => not locked
       );
 
-  clock <= clk100;
-
   eth_infra_inst : entity work.eth_infra
     port map (
-      clock        => clk100,
+      clock        => clock,
       reset        => not locked,
       gtx_clk      => clk125,
       gtx_clk90    => clk125_90,
@@ -217,7 +219,7 @@ begin
   input_rx : entity work.input_rx
     port map (
       -- system clock
-      clk      => clk100,  -- logic clock
+      clk      => clock,  -- logic clock
       clk200   => clk200,  -- for idelay
 
       -- clock and data from lt boards
@@ -253,9 +255,9 @@ begin
   --------------------------------------------------------------------------------
 
   -- optionally mask off hot channels
-  process (clk100) is
+  process (clock) is
   begin
-    if (rising_edge(clk100)) then
+    if (rising_edge(clock)) then
       for I in 0 to hits'length-1 loop
         hits_masked(I) <= hits(I) and hit_mask_flat(I);
       end loop;
@@ -265,7 +267,7 @@ begin
   trigger : entity work.trigger
     port map (
       -- system clock
-      clk => clk100,
+      clk => clock,
 
       -- hits from input stage (20x16 array of hits)
       hits_i => hits,
