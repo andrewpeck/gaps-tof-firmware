@@ -22,9 +22,24 @@
             permission="r"
             mask="0x0000ffff"
             description="hit count on LT=${RB_IDX}"
-            fw_make_signal="false"
-            fw_signal="hit_count(${RB_IDX})"
+            fw_make_signal="true"
+            fw_signal="hit_count_${RB_IDX}"
             fw_cnt_en_signal="or_reduce(rb_hits(${RB_IDX}))">
+      </node>
+    </node>
+
+    <node id="HIT_MASK" address="0x40" description="1 to mask a channel">
+      <node id="LT${LT_IDX}" address="0x0"
+            generate="true"
+            generate_size="20"
+            generate_address_step="1"
+            generate_idx_var="LT_IDX"
+            permission="rw"
+            fw_default="0x00"
+            mask="0x0000ffff"
+            description="1 to mask a channel of LT=${LT_IDX}"
+            fw_signal="hit_mask(${LT_IDX})"
+            >
       </node>
     </node>
 
@@ -41,7 +56,7 @@
     <!--     </node> -->
     <!-- </node> -->
 
-    <node id="HOG" address="0x60" description = "HOG Parameters">
+    <node id="HOG" address="0x100" description = "HOG Parameters">
       <node id="GLOBAL_DATE" mask="0xFFFFFFFF" permission="r" address="0x0" description="HOG Global Date"    fw_signal="GLOBAL_DATE"/>
       <node id="GLOBAL_TIME" mask="0xFFFFFFFF" permission="r" address="0x1" description="HOG Global Time"    fw_signal="GLOBAL_TIME"/>
       <node id="GLOBAL_VER"  mask="0xFFFFFFFF" permission="r" address="0x2" description="HOG Global Version" fw_signal="GLOBAL_VER"/>
