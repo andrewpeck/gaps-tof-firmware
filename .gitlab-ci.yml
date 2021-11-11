@@ -4,4 +4,5 @@ include:
       ref: '243885f'
     - local: '/Top/readout_board_zx3/gitlab-ci.yml'
     - local: '/Top/readout_board_zx2/gitlab-ci.yml'
+    - local: '/Top/trigger_board/gitlab-ci.yml'
 #   - local: '/.user-jobs.yml'
