@@ -12,7 +12,7 @@ entity event_counter is
     clk              : in  std_logic;
     rst_i            : in  std_logic;
     global_trigger_i : in  std_logic;
-  --trigger_i        : in  channel_array_t;
+    --trigger_i        : in  channel_array_t;
     event_count_o    : out std_logic_vector (EVENTCNTB-1 downto 0)
     );
 end event_counter;
@@ -29,8 +29,10 @@ begin
     if (rising_edge(clk)) then
       if (rst_i = '1') then
         event_count <= (others => '0');
-      elsif (event_count /= event_count_max) then
+      -- saturate at max count
+      elsif (event_count = event_count_max-1) then
         event_count <= event_count;
+      -- increment
       elsif (global_trigger_i = '1') then
         event_count <= event_count + 1;
       end if;

@@ -291,7 +291,7 @@ begin
   event_counter : entity work.event_counter
     port map (
       clk              => clock,
-      rst_i            => not locked or rst_event_cnt,
+      rst_i            => (not locked) or rst_event_cnt,
       global_trigger_i => global_trigger,
     --trigger_i        => triggers,
       event_count_o    => event_cnt
@@ -327,7 +327,7 @@ begin
   -- Signal Sump
   --------------------------------------------------------------------------------
 
-  sump_o <= global_trigger xor xor_reduce(event_cnt);
+  sump_o <= global_trigger;
 
   ----------------------------------------------------------------------------------
   --
