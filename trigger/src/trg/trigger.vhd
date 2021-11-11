@@ -387,7 +387,7 @@ begin
   process (clk) is
   begin
     if (rising_edge(clk)) then
-      triggers <= single_hit_triggers;
+      triggers <= single_hit_triggers or bool_triggers;
     end if;
   end process;
 
