@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<node>
+    <node id="DRS"  address="0x0000"
+    description="Implements various control and monitoring functions of the DRS Logic"
+    fw_is_module="true"
+    fw_use_tmr="true"
+    fw_module_file="../drs/src/daq_board_top.vhd"
+    fw_user_clock_signal="clock"
+    fw_bus_clock_signal="ipb_clk"
+    fw_bus_reset_signal="ipb_reset"
+    fw_master_bus_signal="ipb_mosi_arr(0)"
+    fw_slave_bus_signal="ipb_miso_arr(0)"
+    fw_reg_addr_msb="9"
+    fw_reg_addr_lsb="0">
+
+        <node id="CHIP" address="0x0" description="Registers for configuring the DRS ASIC Directly">
+            <node id="DMODE" address="0x0" permission="rw"
+                description="set 1 = continuous domino, 0=single shot"
+                mask="0x2"
+                fw_signal="dmode"
+                fw_default="0x1"/>
+            <node id="STANDBY_MODE" address="0x0" permission="rw"
+                description="set 1 = shutdown drs"
+                mask="0x4"
+                fw_signal="standby_mode"
+                fw_default="0x0"/>
+            <node id="TRANSPARENT_MODE" address="0x0" permission="rw"
+                description="set 1 = transparent mode"
+                mask="0x8"
+                fw_signal="transp_mode"
+                fw_default="0x0"/>
+            <node id="DRS_PLL_LOCK" address="0x0" permission="r"
+                description="DRS PLL Locked"
+                mask="0x10"
+                fw_signal="drs_plllock_i" />
+            <node id="CHANNEL_CONFIG" address="0x0" permission="rw"
+                description="Write Shift Register Configuration
+                            \\ # of chn - # of cells per ch - bit pattern
+                            \\ 8        - 1024              - 11111111b
+                            \\ 4        - 2048              - 01010101b
+                            \\ 2        - 4096              - 00010001b
+                            \\ 1        - 8192              - 00000001b"
+
+                mask="0xff000000"
+                fw_signal="chn_config"
+                fw_default="0xff"/>
+            <node id="DTAP_FREQ" address="0x1" permission="r"
+                description="Frequency of DTAP in units of 100Hz"
+                mask="0x0000ffff"
+                fw_signal="dtap_cnt" />
+        </node> <!--CONFIG-->
+
+        <node id="READOUT" address="0x10" description="Registers for configuring the readout state machine">
+
+            <node id="ROI_MODE" address="0x0" permission="rw"
+                description="Set to 1 to enable Region of Interest Readout"
+                mask="0x1"
+                fw_signal="roi_mode"
+                fw_default="0x1"/>
+            <node id="BUSY" address="0x0" permission="r"
+                description="DRS is busy"
+                mask="0x2"
+                fw_signal="drs_busy" />
+            <node id="ADC_LATENCY" address="0x0" permission="rw"
+                description="Latency from first sr clock to when ADC data should be valid"
+                mask="0x3f0"
+                fw_signal="adc_latency"
+                fw_default="0x0"/>
+            <node id="SAMPLE_COUNT" address="0x0" permission="rw"
+                description="Number of samples to read out (0 to 1023)"
+                mask="0x3ff000"
+                fw_signal="sample_count_max"
+                fw_default="0x3FF"/>
+            <node id="EN_SPIKE_REMOVAL" address="0x0" permission="rw"
+                description="set 1 to enable spike removal"
+                mask="0x400000"
+                fw_signal="spike_removal"
+                fw_default="0x1"/>
+
+
+            <node id="READOUT_MASK" address="0x1" permission="rw"
+                description="8 bit mask, set a bit to 1 to enable readout of that channel. 9th is auto-read if any channel is enabled *and* AUTO_9TH_CHANNEL set to 1"
+                mask="0x1ff"
+                fw_signal="readout_mask_axi"
+                fw_default="0x1ff"/>
+            <node id="AUTO_9TH_CHANNEL" address="0x1" permission="rw"
+                description="Set to 1 to auto read the 9th channel"
+                mask="0x200"
+                fw_signal="readout_mask_9th_channel_auto"
+                fw_default="0x1"/>
+            <node id="START" address="0x2" permission="w"
+                description="Write 1 to take the state machine out of idle mode"
+                mask="0x1"
+                fw_write_pulse_signal="start" />
+
+            <node id="REINIT" address="0x3" permission="w"
+                description="Write 1 to reinitialize DRS state machine (restores to idle state)"
+                mask="0x1"
+                fw_write_pulse_signal="reinit" />
+
+            <node id="CONFIGURE" address="0x4" permission="w"
+                description="Write 1 to configure the DRS. Should be done before data taking"
+                mask="0x1"
+                fw_write_pulse_signal="configure" />
+
+            <node id="DRS_RESET" address="0x5" permission="w"
+                description="Write 1 to completely reset the DRS state machine logic"
+                mask="0x1"
+                fw_write_pulse_signal="drs_reset" />
+            <node id="DAQ_RESET" address="0x6" permission="w"
+                description="Write 1 to completely reset the DAQ state machine logic"
+                mask="0x1"
+                fw_write_pulse_signal="daq_reset" />
+            <node id="DMA_RESET" address="0x7" permission="w"
+                description="Write 1 to completely reset the DMA state machine logic"
+                mask="0x1"
+                fw_write_pulse_signal="dma_control_reset"/>
+
+            <node id="WAIT_VDD_CLKS" address="0x8" permission="rw"
+                description="Number of ADC clocks to wait before reading out the drs, allowing vdd to stabilize"
+                mask="0xffff"
+                fw_default="0x1000"
+                fw_signal="wait_vdd_clocks"/>
+        </node> <!--READOUT-->
+
+
+        <node id="FPGA" address="0x020" description="FPGA Status">
+
+            <node id="DNA" address="0x0"
+                description="FPGA Device DNA">
+                <node id="DNA_LSBS" address="0x0" permission="r"
+                    description="Device DNA [31:0]"
+                    mask="0xffffffff"
+                    fw_signal="dna (31 downto 0)" />
+
+                <node id="DNA_MSBS" address="0x1" permission="r"
+                    description="Device DNA [56:32]"
+                    mask="0x1ffffff"
+                    fw_signal="dna (56 downto 32)" />
+            </node> <!--DNA-->
+
+            <node id="TIMESTAMP" address="0x4"
+                description="Timestamp">
+                <node id="TIMESTAMP_LSBS" address="0x0" permission="r"
+                    description="Device TIMESTAMP [31:0]"
+                    mask="0xffffffff"
+                    fw_signal="std_logic_vector(timestamp (31 downto 0))" />
+
+                <node id="TIMESTAMP_MSBS" address="0x1" permission="r"
+                    description="Device TIMESTAMP [47:32]"
+                    mask="0x0000ffff"
+                    fw_signal="std_logic_vector(timestamp (47 downto 32))" />
+            </node> <!--TIMESTAMP-->
+
+            <node id="XADC" address="0x6"
+                  description="Zynq XADC">
+                <node id="CALIBRATION" address="0x0" permission="r"
+                      description="XADC Calibration"
+                      mask="0x00000fff"
+                      fw_signal="calibration" />
+                <node id="VCCPINT" address="0x0" permission="r"
+                      description="XADC vccpint"
+                      mask="0x0fff0000"
+                      fw_signal="vccpint"/>
+                <node id="VCCPAUX" address="0x1" permission="r"
+                      description="XADC Calibration"
+                      mask="0x00000fff"
+                      fw_signal="vccpaux" />
+                <node id="VCCODDR" address="0x1" permission="r"
+                      description="XADC vccoddr"
+                      mask="0x0fff0000"
+                      fw_signal="vccoddr"/>
+                <node id="TEMP" address="0x2" permission="r"
+                      description="XADC Temperature"
+                      mask="0x00000fff"
+                      fw_signal="temp" />
+                <node id="VCCINT" address="0x2" permission="r"
+                      description="XADC vccint"
+                      mask="0x0fff0000"
+                      fw_signal="vccint"/>
+                <node id="VCCAUX" address="0x3" permission="r"
+                      description="XADC VCCAUX"
+                      mask="0x00000fff"
+                      fw_signal="vccaux" />
+                <node id="VCCBRAM" address="0x3" permission="r"
+                      description="XADC vccbram"
+                      mask="0x0fff0000"
+                      fw_signal="vccbram"/>
+            </node> <!--XADC-->
+
+            <node id="BOARD_ID" address="0xA" permission="rw"
+                  description="Board ID Number"
+                  mask="0xff"
+                  fw_default="0x00"
+                  fw_signal="board_id"/>
+
+        </node> <!--FPGA-->
+
+
+        <node id="DAQ" address="0x30"
+            description="DAQ">
+            <node id="INJECT_DEBUG_PACKET" address="0x0" permission="w"
+                description="Injects a fixed format debug packet into the DAQ"
+                mask="0x1"
+                fw_write_pulse_signal="debug_packet_inject" />
+        </node> <!--DAQ-->
+
+        <node id="TRIGGER" address="0x40"
+            description="Trigger">
+            <node id="FORCE_TRIGGER" address="0x0" permission="w"
+                description="Generates a trigger"
+                mask="0x1"
+                fw_write_pulse_signal="force_trig" />
+            <node id="EXT_TRIGGER_EN" address="0x1" permission="rw"
+                description="Set to 1 to enable the external trigger"
+                fw_default="0x1"
+                mask="0x1"
+                fw_signal="ext_trigger_en" />
+            <node id="EXT_TRIGGER_ACTIVE_HI" address="0x1" permission="rw"
+                description="Set to 1 for active high external trigger"
+                fw_default="0x1"
+                mask="0x2"
+                fw_signal="ext_trigger_active_hi" />
+        </node> <!--TRIGGER-->
+
+        <node id="COUNTERS" address="0x50" description="Counters">
+            <node id="CNT_SEM_CORRECTION" address="0x0" permission="r"
+                description="Number of Single Event Errors corrected by the scrubber"
+                mask="0xffff"
+                fw_cnt_en_signal="sem_correction"
+                fw_signal="cnt_sem_corrected"/>
+
+            <node id="CNT_SEM_UNCORRECTABLE" address="0x1" permission="r"
+                description="Number of Critical Single Event Errors (uncorrectable by scrubber)"
+                mask="0xf0000"
+                fw_cnt_en_signal="sem_uncorrectable_error"
+                fw_signal="cnt_sem_uncorrectable"/>
+
+            <node id="CNT_READOUTS_COMPLETED" address="0x2" permission="r"
+                description="Number of readouts completed since reset"
+                mask="0xffffffff"
+                fw_cnt_en_signal="readout_complete"
+                fw_signal="cnt_readouts"/>
+
+            <node id="CNT_DMA_READOUTS_COMPLETED" address="0x3" permission="r"
+                description="Number of readouts completed since reset"
+                mask="0xffffffff"
+                fw_signal="dma_packet_counter"/>
+
+            <node id="CNT_LOST_EVENT" address="0x4" permission="r"
+                description="Number of trigger lost due to deadtime"
+                mask="0xffff0000"
+                fw_cnt_en_signal="trigger and drs_busy"
+                fw_signal="cnt_lost_events"/>
+
+            <node id="CNT_EVENT" address="0x5" permission="r"
+                description="Number of triggers received"
+                mask="0xffffffff"
+                fw_cnt_en_signal="trigger"
+                fw_signal="event_counter"/>
+        </node> <!--COUNTERS-->
+
+        <node id="HOG" address="0x60" description = "HOG Parameters">
+            <node id="GLOBAL_DATE" mask="0xFFFFFFFF" permission="r" address="0x0" description="HOG Global Date"    fw_signal="GLOBAL_DATE"/>
+            <node id="GLOBAL_TIME" mask="0xFFFFFFFF" permission="r" address="0x1" description="HOG Global Time"    fw_signal="GLOBAL_TIME"/>
+            <node id="GLOBAL_VER"  mask="0xFFFFFFFF" permission="r" address="0x2" description="HOG Global Version" fw_signal="GLOBAL_VER"/>
+            <node id="GLOBAL_SHA"  mask="0xFFFFFFFF" permission="r" address="0x3" description="HOG Global SHA"     fw_signal="GLOBAL_SHA"/>
+            <node id="TOP_SHA"     mask="0xFFFFFFFF" permission="r" address="0x4" description="HOG Top SHA"        fw_signal="TOP_SHA"/>
+            <node id="TOP_VER"     mask="0xFFFFFFFF" permission="r" address="0x5" description="HOG Top Version"    fw_signal="TOP_VER"/>
+            <node id="HOG_SHA"     mask="0xFFFFFFFF" permission="r" address="0x6" description="HOG SHA"            fw_signal="HOG_SHA"/>
+            <node id="HOG_VER"     mask="0xFFFFFFFF" permission="r" address="0x7" description="HOG Version"        fw_signal="HOG_VER"/>
+        </node> <!--HOG-->
+
+        <node id="SPY" address="0x70" description = "Spy Buffer">
+            <node id="RESET" permission="w" address="0x0" mask="0x00000001" description="Spy Buffer Reset" fw_write_pulse_signal="spy_reset"/>
+            <node id="DATA"  permission="r" address="0x1" mask="0x0000FFFF" description="Spy Read Data"
+                fw_signal="spy_data" fw_read_pulse_signal="spy_rd_en" fw_read_ready_signal="spy_valid"/>
+            <node id="FULL"  permission="r" address="0x2" mask="0x00000001" description="Spy Buffer Full"  fw_signal="spy_full"/>
+            <node id="EMPTY" permission="r" address="0x2" mask="0x00000002" description="Spy Buffer Empty" fw_signal="spy_empty"/>
+        </node>
+        <node id="DMA" address="0x100" description = "DMA and ram buffer occupancy">
+            <node id="RAM_A_OCC_RST" permission="w" address="0x0" mask="0x00000001" description="Sets RAM buffer a counter to 0" fw_write_pulse_signal="ram_a_occ_rst"/>
+            <node id="RAM_B_OCC_RST" permission="w" address="0x1" mask="0x00000001" description="Sets RAM buffer b counter to 0" fw_write_pulse_signal="ram_b_occ_rst"/>
+            <node id="RAM_A_OCCUPANCY"  permission="r" address="0x2" mask="0xFFFFFFFF" description="RAM buffer a occupancy"  fw_signal="ram_buff_a_occupancy"/>
+            <node id="RAM_B_OCCUPANCY"  permission="r" address="0x3" mask="0xFFFFFFFF" description="RAM buffer b occupancy"  fw_signal="ram_buff_b_occupancy"/>
+            <node id="DMA_POINTER"  permission="r" address="0x4" mask="0xFFFFFFFF" description="DMA controller pointer"  fw_signal="dma_pointer"/>
+        </node>
+        <node id="GFP" address="0x200" description = "GFP Registers">
+            <node id="EVENTID_SPI_EN"  fw_default="0x0" permission="rw" address="0x0" mask="0x1" description="1 to enable GFP Event ID from SPI"  fw_signal="gfp_use_eventid"/>
+            <node id="EVENTID_RX"  permission="r" address="0x1" mask="0xFFFFFFFF" description="Event ID from GFP SPI Interface"  fw_signal="gfp_eventid_rx"/>
+        </node>
+    </node>
+</node>

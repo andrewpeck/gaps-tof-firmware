@@ -926,7 +926,7 @@ begin
         ref_clk_i => clock,
         reset_i   => ipb_reset,
         en_i      => or_reduce(rb_hits(39)),
-        snap_i    => '1', 
+        snap_i    => '1',
         count_o   => hit_count(39)
     );
 
