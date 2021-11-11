@@ -21,7 +21,7 @@ entity input_rx is
 
     data_i : in std_logic_vector (NUM_LT_INPUTS-1 downto 0);
 
-    pulse_stretch_i : in std_logic_vector (3 downto 0);  -- FIXME: connect this
+    pulse_stretch_i : in std_logic_vector (3 downto 0);
 
     fine_delays_i   : in lt_fine_delays_array_t;
     coarse_delays_i : in lt_coarse_delays_array_t;
@@ -30,11 +30,17 @@ entity input_rx is
     );
 end input_rx;
 
-architecture behavioral of input_rx is
+architecture rtl of input_rx is
 
   signal clocks : std_logic_vector (NUM_CLOCKS-1 downto 0) := (others => '0');
 
   signal data : lt_channel_array_t;
+  signal hits : channel_array_t;
+
+  type hit_stretch_cnt_array_t is array (integer range <>) of
+    std_logic_vector(pulse_stretch_i'range);
+  signal hit_stretch_cnt : hit_stretch_cnt_array_t(hits'length-1 downto 0)
+    := (others => (others => '0'));
 
 begin
 
@@ -76,16 +82,39 @@ begin
 
   end generate;
 
+  --------------------------------------------------------------------------------
+  -- Output hit processing / pulse stretching
+  --------------------------------------------------------------------------------
+
+  hits <= reshape(data);
+
   process (clk) is
   begin
     if (rising_edge(clk)) then
-      hits_o <= reshape(data);
+
+      for I in 0 to hits_o'length-1 loop
+
+        if (to_integer(unsigned(hit_stretch_cnt(I))) = 0) then
+          hits_o(I) <= hits(I);
+        elsif (to_integer(unsigned(hit_stretch_cnt(I))) /= 0) then
+          hits_o(I) <= '1';
+        else
+          hits_o(I) <= '0';
+        end if;
+
+
+        if (hits(i) = '1') then
+          hit_stretch_cnt(I) <= pulse_stretch_i;
+        elsif (to_integer(unsigned(hit_stretch_cnt(I))) /= 0) then
+          hit_stretch_cnt(I) <=
+            std_logic_vector(unsigned(hit_stretch_cnt(I))-1);
+        end if;
+
+      end loop;
     end if;
   end process;
 
-end behavioral;
-
-
+end rtl;
 
 -- prbs_any_gen : entity work.prbs_any
 --   generic map (
