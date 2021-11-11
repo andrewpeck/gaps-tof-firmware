@@ -47,6 +47,9 @@ architecture behavioral of lt_rx is
     std_logic_vector (NUM_LT_CHANNELS-1 downto 0)
     := (others => '0');
 
+  type srl_array_t is array (integer range <>) of std_logic_vector(15 downto 0);
+  signal data_srls : srl_array_t (NUM_LT_CHANNELS-1 downto 0);
+
 begin
 
   --------------------------------------------------------------------------------
@@ -97,9 +100,40 @@ begin
   begin
     if (rising_edge(clk)) then
       data_r <= data_idelay;
-      data_o <= data_r;
     end if;
   end process;
 
+  --------------------------------------------------------------------------------
+  -- coarse delays
+  --------------------------------------------------------------------------------
+
+  process (clk) is
+  begin
+    if (rising_edge(clk)) then
+      for CH in 0 to NUM_LT_CHANNELS-1 loop
+
+        --------------------------------------------------------------------------------
+        -- shift register
+        --------------------------------------------------------------------------------
+
+        data_srls(CH)(0) <= data_r(CH);
+        for SR in 1 to 15 loop
+          data_srls(CH)(SR) <= data_srls(CH)(SR-1);
+        end loop;
+
+        --------------------------------------------------------------------------------
+        -- output mux
+        --------------------------------------------------------------------------------
+
+        if (to_integer(unsigned(coarse_delays(CH))) = 0) then
+          data_o(CH) <= data_r(CH);
+        else
+          data_o(CH) <= data_srls(CH)
+                        (to_integer(unsigned(coarse_delays(CH))-1));
+        end if;
+
+      end loop;
+    end if;
+  end process;
 
 end behavioral;
