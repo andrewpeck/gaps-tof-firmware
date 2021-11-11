@@ -35,8 +35,6 @@ architecture behavioral of trigger is
 
 begin
 
-  rb_triggers <= reshape(triggers);
-
   single_hit_trg_gen : for I in 0 to hits_i'length-1 generate
   begin
     process (clk) is
@@ -1670,6 +1668,9 @@ begin
       triggers <= single_hit_triggers or bool_triggers;
     end if;
   end process;
+
+  -- reshape the data type
+  rb_triggers <= reshape(triggers);
 
   or_gen : for I in 0 to rb_ors'length-1 generate
   begin
