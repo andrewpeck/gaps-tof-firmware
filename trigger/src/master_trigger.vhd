@@ -241,7 +241,7 @@ begin
       hits_o => hits
       );
 
-  rb_hits <= reshape(hits);
+  rb_hits <= reshape(hits_masked);
   hit_mask_flat <= reshape(hit_mask);
 
   --------------------------------------------------------------------------------
@@ -270,7 +270,7 @@ begin
       clk => clock,
 
       -- hits from input stage (20x16 array of hits)
-      hits_i => hits,
+      hits_i => hits_masked,
 
       single_hit_en_i => '1',
       bool_trg_en_i   => '1',
