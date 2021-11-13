@@ -133,7 +133,6 @@ end
 //----------------------------------------------------------------------------------------------------------------------
 
 reg trigger, domino_ready;
-reg trigger_last;
 
 // always read the 9th channel if any other channel is enabled
 wire [8:0] drs_ctl_readout_mask = drs_ctl_readout_mask_i;
@@ -177,8 +176,6 @@ reg [7:0]  drs_sr_reg='hf8;
 
 // TODO: merge with the other counter
 reg [6:0] drs_start_timer = 0; // startup timer to make sure the domino is running before allowing triggers
-
-wire [21:0] crc;
 
 // reg [7:0]  drs_stat_stop_wsr=0;
 // reg        drs_stop_wsr=0;
