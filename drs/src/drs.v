@@ -151,21 +151,10 @@ reg [3:0] drs_ctl_next_chn;
 
 reg [8:0] readout_mask_sr;
 
-integer i,j,k;
 always @(posedge clock) begin
-
-  for( i = 8; i >= 0; i=i-1)
-    if (readout_mask_sr[i]) 
-        drs_ctl_next_chn=i[3:0];
-
-  for( j = 8; j >= 0; j=j-1)
-    if (drs_ctl_readout_mask[j])
-        drs_ctl_first_chn=j[3:0];
-
-  for( k = 0; k <= 8; k=k+1)
-    if (drs_ctl_readout_mask[k])
-        drs_ctl_last_chn=k[3:0];
-
+   drs_ctl_next_chn  <= prienc9(readout_mask_sr);
+   drs_ctl_first_chn <= prienc9(drs_ctl_readout_mask);
+   drs_ctl_last_chn  <= prienc9_rev(drs_ctl_readout_mask);
 end
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -940,6 +929,45 @@ end
   );
 `endif
 
+function [3:0] prienc9_rev;
+ input [8:0] select;
+ reg   [3:0] out;
+ begin
+   casex(select)
+     9'b1xxxxxxxx: out = 4'h8;
+     9'b01xxxxxxx: out = 4'h7;
+     9'b001xxxxxx: out = 4'h6;
+     9'b0001xxxxx: out = 4'h5;
+     9'b00001xxxx: out = 4'h4;
+     9'b000001xxx: out = 4'h3;
+     9'b0000001xx: out = 4'h2;
+     9'b00000001x: out = 4'h1;
+     9'b000000001: out = 4'h0;
+     default: out = 4'h0;
+   endcase
+   prienc9_rev = out ;
+ end
+endfunction
+
+function [3:0] prienc9;
+ input [8:0] select;
+ reg   [3:0] out;
+ begin
+   casex(select)
+     9'bxxxxxxxx1: out = 4'h0;
+     9'bxxxxxxx10: out = 4'h1;
+     9'bxxxxxx100: out = 4'h2;
+     9'bxxxxx1000: out = 4'h3;
+     9'bxxxx10000: out = 4'h4;
+     9'bxxx100000: out = 4'h5;
+     9'bxx1000000: out = 4'h6;
+     9'bx10000000: out = 4'h7;
+     9'b100000000: out = 4'h8;
+     default: out = 4'h0;
+   endcase
+   prienc9 = out ;
+ end
+endfunction
 
 //----------------------------------------------------------------------------------------------------------------------
 endmodule
