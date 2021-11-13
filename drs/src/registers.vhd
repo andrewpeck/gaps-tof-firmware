@@ -88,7 +88,7 @@ package registers is
     constant REG_READOUT_WAIT_VDD_CLKS_ADDR    : std_logic_vector(9 downto 0) := "00" & x"18";
     constant REG_READOUT_WAIT_VDD_CLKS_MSB    : integer := 15;
     constant REG_READOUT_WAIT_VDD_CLKS_LSB     : integer := 0;
-    constant REG_READOUT_WAIT_VDD_CLKS_DEFAULT : std_logic_vector(15 downto 0) := x"1000";
+    constant REG_READOUT_WAIT_VDD_CLKS_DEFAULT : std_logic_vector(15 downto 0) := x"014d";
 
     constant REG_FPGA_DNA_DNA_LSBS_ADDR    : std_logic_vector(9 downto 0) := "00" & x"20";
     constant REG_FPGA_DNA_DNA_LSBS_MSB    : integer := 31;

@@ -117,9 +117,9 @@
                 fw_write_pulse_signal="dma_control_reset"/>
 
             <node id="WAIT_VDD_CLKS" address="0x8" permission="rw"
-                description="Number of ADC clocks to wait before reading out the drs, allowing vdd to stabilize"
+                description="Number of ADC clocks to wait before reading out the drs, allowing vdd to stabilize; default=0x14d=10us"
                 mask="0xffff"
-                fw_default="0x1000"
+                fw_default="0x14d"
                 fw_signal="wait_vdd_clocks"/>
         </node> <!--READOUT-->
 
