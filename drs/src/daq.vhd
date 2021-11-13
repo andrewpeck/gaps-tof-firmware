@@ -47,9 +47,10 @@ entity daq is
     dtap0_i       : in std_logic_vector (15 downto 0);
     dtap1_i       : in std_logic_vector (15 downto 0);
 
-    drs_busy_i  : in std_logic;
-    drs_data_i  : in std_logic_vector (13 downto 0);
-    drs_valid_i : in std_logic;
+    drs_busy_i  : in  std_logic;
+    drs_data_i  : in  std_logic_vector (13 downto 0);
+    drs_valid_i : in  std_logic;
+    drs_rden_o  : out std_logic := '0';
 
     data_o  : out std_logic_vector (g_WORD_SIZE-1 downto 0);  -- receive 16 bits / bx
     valid_o : out std_logic;
@@ -90,8 +91,8 @@ architecture behavioral of daq is
   signal num_channels   : natural range 0 to 15          := 0;
   signal id             : std_logic_vector (15 downto 0) := (others => '0');
 
-  signal mask      : std_logic_vector (mask_i'range)      := (others => '0');
-  signal event_cnt : std_logic_vector (event_cnt_i'range) := (others => '0');
+  signal mask          : std_logic_vector (mask_i'range)      := (others => '0');
+  signal event_cnt     : std_logic_vector (event_cnt_i'range) := (others => '0');
   -- mux the event count between normal daq and gfp
   signal event_cnt_mux : std_logic_vector (event_cnt_i'range) := (others => '0');
 
@@ -321,8 +322,9 @@ begin
   begin
     if (rising_edge(clock)) then
 
-      dav  <= false;
-      data <= (others => '0');
+      dav        <= false;
+      data       <= (others => '0');
+      drs_rden_o <= '0';
 
       case state is
 
@@ -467,12 +469,15 @@ begin
           else
             state          <= PAYLOAD_state;
             state_word_cnt <= 0;
+            drs_rden_o     <= '1';
           end if;
 
           data <= to_slv (channel_id, data'length);
           dav  <= true;
 
         when PAYLOAD_state =>
+
+          drs_rden_o <= '1';
 
           if (debug or drs_valid_i = '1') then
             state_word_cnt <= state_word_cnt + 1;
@@ -481,11 +486,13 @@ begin
           if (num_channels = 0) then
             state          <= CRC32_state;
             state_word_cnt <= 0;
+            drs_rden_o     <= '0';
           elsif (debug or drs_valid_i = '1') and (state_word_cnt = roi_size) then
             state          <= CALC_CH_CRC_state;
             state_word_cnt <= 0;
             channel_cnt    <= channel_cnt + 1;
             channel_id     <= get_next_channel(channel_id, mask);
+            drs_rden_o     <= '0';
           end if;
 
           dav  <= false;

@@ -6,9 +6,10 @@ use ieee.std_logic_1164.all;
 
 entity fifo_sync is
   generic (
-    DEPTH    : integer := 512;
-    WR_WIDTH : integer := 64;
-    RD_WIDTH : integer := 64
+    DEPTH     : integer := 512;
+    WR_WIDTH  : integer := 64;
+    RD_WIDTH  : integer := 64;
+    read_mode : string  := "fwft"
     );
   port (
     rst     : in  std_logic;
@@ -19,9 +20,7 @@ entity fifo_sync is
     dout    : out std_logic_vector(RD_WIDTH-1 downto 0);
     valid   : out std_logic;
     full    : out std_logic;
-    empty   : out std_logic;
-    sbiterr : out std_logic;
-    dbiterr : out std_logic
+    empty   : out std_logic
     );
 end fifo_sync;
 
@@ -31,14 +30,14 @@ begin
   xpm_fifo_sync_inst : xpm_fifo_sync
     generic map (
       DOUT_RESET_VALUE    => "0",       -- String
-      ECC_MODE            => "en_ecc",  -- String
+      ECC_MODE            => "no_ecc",  -- String
       FIFO_MEMORY_TYPE    => "block",   -- String
-      FIFO_READ_LATENCY   => 2,         -- DECIMAL
+      FIFO_READ_LATENCY   => 0,         -- DECIMAL
       FULL_RESET_VALUE    => 0,         -- DECIMAL
       PROG_EMPTY_THRESH   => 3,         -- DECIMAL
       PROG_FULL_THRESH    => 3,         -- DECIMAL
-      read_mode           => "std",     -- String
-      USE_ADV_FEATURES    => "0707",    -- String
+      read_mode           => read_mode, -- String
+      USE_ADV_FEATURES    => "1707",    -- String
       WAKEUP_TIME         => 0,         -- DECIMAL
       FIFO_WRITE_DEPTH    => DEPTH,     -- DECIMAL
       READ_DATA_WIDTH     => RD_WIDTH,  -- DECIMAL
@@ -52,8 +51,8 @@ begin
       data_valid    => valid, -- 1-bit output: Read Data Valid: When asserted, this signal indicates that valid data is available on the output bus (dout).
       dbiterr       => open,  -- 1-bit output: Double Bit Error: Indicates that the ECC decoder detected a double-bit error and data in the FIFO core is corrupted.
       dout          => dout,  -- READ_DATA_WIDTH-bit output: Read Data: The output data bus is driven when reading the FIFO.
-      empty         => open,  -- 1-bit output: Empty Flag: When asserted, this signal indicates that the FIFO is empty. Read requests are ignored when the FIFO is empty, initiating a read while empty is not destructive to the FIFO.
-      full          => open,  -- 1-bit output: Full Flag: When asserted, this signal indicates that the FIFO is full. Write requests are ignored when the FIFO is full, initiating a write when the FIFO is full is not destructive to the contents of the FIFO.
+      empty         => empty, -- 1-bit output: Empty Flag: When asserted, this signal indicates that the FIFO is empty. Read requests are ignored when the FIFO is empty, initiating a read while empty is not destructive to the FIFO.
+      full          => full,  -- 1-bit output: Full Flag: When asserted, this signal indicates that the FIFO is full. Write requests are ignored when the FIFO is full, initiating a write when the FIFO is full is not destructive to the contents of the FIFO.
       overflow      => open,  -- 1-bit output: Overflow: This signal indicates that a write request (wren) during the prior clock cycle was rejected, because the FIFO is full. Overflowing the FIFO is not destructive to the contents of the FIFO.
       prog_empty    => open,  -- 1-bit output: Programmable Empty: This signal is asserted when the number of words in the FIFO is less than or equal to the programmable empty threshold value. It is de-asserted when the number of words in the FIFO exceeds the programmable empty threshold value.
       prog_full     => open,  -- 1-bit output: Programmable Full: This signal is asserted when the number of words in the FIFO is greater than or equal to the programmable full threshold value. It is de-asserted when the number of words in the FIFO is less than the programmable full threshold value.

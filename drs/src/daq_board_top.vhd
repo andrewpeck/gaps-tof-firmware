@@ -101,6 +101,7 @@ architecture Behavioral of top_readout_board is
   signal ram_b_occ_rst        : std_logic;
 
   signal drs_data         : std_logic_vector (13 downto 0);
+  signal drs_rden  : std_logic := '0';
   signal drs_data_valid   : std_logic;
   signal drs_dwrite_sync  : std_logic;
   signal drs_dwrite_async : std_logic;
@@ -168,6 +169,10 @@ architecture Behavioral of top_readout_board is
   signal spy_valid : std_logic                      := '0';
 
   -- ADC Readout
+  signal daq_data  : std_logic_vector (13 downto 0);
+  signal daq_valid : std_logic := '0';
+  signal daq_empty : std_logic := '0';
+
   signal fifo_data_out : std_logic_vector (15 downto 0);
   signal fifo_data_wen : std_logic;
   --fifo_fifo_busy : in std_logic;
@@ -495,6 +500,25 @@ begin
   -- DAQ
   -------------------------------------------------------------------------------
 
+  daq_fifo_inst : entity work.fifo_sync
+    generic map (
+      DEPTH    => 1024,
+      WR_WIDTH => 14,
+      RD_WIDTH => 14,
+      read_mode => "fwft"
+      )
+    port map (
+      rst    => reset,
+      clk    => clock,                  -- daq_clock
+      wr_en  => drs_data_valid,
+      rd_en  => drs_rden,
+      din    => drs_data,
+      dout   => daq_data,
+      valid  => daq_valid,
+      full   => open,
+      empty  => daq_empty
+      );
+
   daq_inst : entity work.daq
     port map (
       clock                 => clock,
@@ -519,9 +543,12 @@ begin
       roi_size_i  => sample_count_max,
       dtap0_i     => dtap_cnt,
       dtap1_i     => (others => '0'),
-      drs_busy_i  => drs_busy,
-      drs_data_i  => drs_data(13 downto 0),
-      drs_valid_i => drs_data_valid,
+
+      drs_busy_i  => '0', -- FIXME
+      drs_data_i  => daq_data(13 downto 0),
+      drs_valid_i => daq_valid,
+      drs_rden_o  => drs_rden,
+
       data_o      => fifo_data_out,
       valid_o     => fifo_data_wen,
       busy_o      => daq_busy,

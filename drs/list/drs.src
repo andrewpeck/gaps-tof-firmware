@@ -14,6 +14,7 @@ ip/xadc_wiz/xadc_wiz.xci
 
 # DRS4 Controller
 drs/src/fifo_async.vhd
+drs/src/fifo_sync.vhd
 drs/src/axi_ipbus_bridge.vhd
 drs/src/axi_pkg.vhd
 drs/src/counter_snap.vhd
