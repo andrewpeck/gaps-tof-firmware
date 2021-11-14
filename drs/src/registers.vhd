@@ -47,7 +47,7 @@ package registers is
     constant REG_READOUT_ADC_LATENCY_ADDR    : std_logic_vector(9 downto 0) := "00" & x"10";
     constant REG_READOUT_ADC_LATENCY_MSB    : integer := 9;
     constant REG_READOUT_ADC_LATENCY_LSB     : integer := 4;
-    constant REG_READOUT_ADC_LATENCY_DEFAULT : std_logic_vector(9 downto 4) := "00" & x"0";
+    constant REG_READOUT_ADC_LATENCY_DEFAULT : std_logic_vector(9 downto 4) := "00" & x"9";
 
     constant REG_READOUT_SAMPLE_COUNT_ADDR    : std_logic_vector(9 downto 0) := "00" & x"10";
     constant REG_READOUT_SAMPLE_COUNT_MSB    : integer := 21;

@@ -65,7 +65,7 @@
                 description="Latency from first sr clock to when ADC data should be valid"
                 mask="0x3f0"
                 fw_signal="adc_latency"
-                fw_default="0x0"/>
+                fw_default="0x9"/>
             <node id="SAMPLE_COUNT" address="0x0" permission="rw"
                 description="Number of samples to read out (0 to 1023)"
                 mask="0x3ff000"

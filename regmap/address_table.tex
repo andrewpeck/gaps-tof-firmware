@@ -76,7 +76,7 @@
     \nopagebreak
     ROI\_MODE & \texttt{0x10} & \texttt{[0:0]} & rw & \texttt{0x1} & Set to 1 to enable Region of Interest Readout \\\hline
     BUSY & \texttt{0x10} & \texttt{[1:1]} & r & \texttt{} & DRS is busy \\\hline
-    ADC\_LATENCY & \texttt{0x10} & \texttt{[9:4]} & rw & \texttt{0x0} & Latency from first sr clock to when ADC data should be valid \\\hline
+    ADC\_LATENCY & \texttt{0x10} & \texttt{[9:4]} & rw & \texttt{0x9} & Latency from first sr clock to when ADC data should be valid \\\hline
     SAMPLE\_COUNT & \texttt{0x10} & \texttt{[21:12]} & rw & \texttt{0x3FF} & Number of samples to read out (0 to 1023) \\\hline
     EN\_SPIKE\_REMOVAL & \texttt{0x10} & \texttt{[22:22]} & rw & \texttt{0x1} & set 1 to enable spike removal \\\hline
     READOUT\_MASK & \texttt{0x11} & \texttt{[8:0]} & rw & \texttt{0x1FF} & 8 bit mask, set a bit to 1 to enable readout of that channel. 9th is auto-read if any channel is enabled *and* AUTO\_9TH\_CHANNEL set to 1 \\\hline
