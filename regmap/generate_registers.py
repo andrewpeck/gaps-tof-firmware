@@ -483,9 +483,9 @@ def writeOrgFile (modules, filename):
             f.write('Generated range of %s is ~[%d:0]~ adr_step = ~0x%X~ (%d)\n' % (idx_to_xyz(varKey), parent.gensize[varKey]-1, parent.genstep[varKey], parent.genstep[varKey]))
 
     def write_start_of_reg_table (f):
-        f.write('|------------+------+---------+------+-----+----------------------------|\n')
-        f.write('| Node       | Adr  | Bits    | Perm | Def | Description                |\n')
-        f.write('|------------+------+---------+------+-----+----------------------------|\n')
+        f.write('|------------+-------+-------+---------+------+-----+----------------------------|\n')
+        f.write('| Node       |  Adr  | Adr8  | Bits    | Perm | Def | Description                |\n')
+        f.write('|------------+-------+-------+---------+------+-----+----------------------------|\n')
 
     def write_reg_entry (f, endpoint_name, address, bithi, bitlo, permission, default, description):
 
@@ -506,11 +506,11 @@ def writeOrgFile (modules, filename):
         for i in range(0,len(text)):
             #print text
             if (i==0):
-                f.write('|%s | ~0x%x~ | ~%s~ | %s | %s | %s | \n' % (endpoint_name, address, bitstr, permission, default, convert_newlines(text[i])))
+                f.write('|%s | ~0x%x~ | ~0x%x~ | ~%s~ | %s | %s | %s | \n' % (endpoint_name, address, address*4, bitstr, permission, default, convert_newlines(text[i])))
             else:
-                f.write('|  |  |  |  |  |%s|\n' % text[i])
+                f.write('|  |  |  |  |  |  |%s|\n' % text[i])
                 print text[i]
-        f.write('|------------+------+---------+-----+-----+----------------------------|\n')
+        f.write('|------------+---+---+---------+-----+-----+----------------------------|\n')
 
     def writeDoc (filename):
 

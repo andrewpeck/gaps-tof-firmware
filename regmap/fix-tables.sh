@@ -1,13 +1,10 @@
 #!/bin/bash
-# -*- mode: shell-script -*-
-#
-# tangle files with org-mode
-#
+
 DIR=$(pwd)
 FILES=""
 # wrap each argument in the code required to call tangle on it
 for i in "$@"; do
-FILES="$FILES \"$i\""
+    FILES="$FILES \"$i\""
 done
 
 if ! command -v emacs &> /dev/null
@@ -18,9 +15,11 @@ fi
 
 emacs -Q --batch \
 --eval "(progn
-     (require 'org)(require 'org-table)
+     (require 'org)
+     (require 'org-table)
      (mapc (lambda (file)
             (find-file (expand-file-name file \"$DIR\"))
+            (print (format \"Fixing tables in %s\" buffer-file-name))
             (org-table-map-tables 'org-table-align)
-            (write-file file nil)
+            (save-buffer)
             (kill-buffer)) '($FILES)))"
