@@ -121,6 +121,12 @@
                 mask="0xffff"
                 fw_default="0x14d"
                 fw_signal="wait_vdd_clocks"/>
+
+            <node id="DRS_DIAGNOSTIC_MODE" address="0x9" permission="rw"
+                description="1 will make the DRS read out the cell ID instead of ADC data"
+                mask="0x1"
+                fw_default="0x0"
+                fw_signal="drs_diagnostic_mode"/>
         </node> <!--READOUT-->
 
 

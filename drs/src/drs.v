@@ -40,6 +40,8 @@ module drs #(
     // drs control
     //------------------------------------------------------------------------------------------------------------------
 
+    input        diagnostic_mode,
+
     input        drs_ctl_spike_removal,           // set 1 for spike removal
     input        drs_ctl_roi_mode,                // set 1 for region of interest mode
     input        drs_ctl_dmode,                   // set 1 = continuous domino, 0=single shot
@@ -563,7 +565,12 @@ always @(posedge clock) begin
           // ADC delivers data at its outputs with 7 clock cycles delay
           // with respect to its external clock pin
           if (drs_rd_tmp_count > {10'b0, drs_ctl_adc_latency}) begin
-            fifo_wdata[13:0]  <= adc_data[13:0];  // ADC data
+
+             if (diagnostic_mode)
+               fifo_wdata[13:0] <= {4'b0, drs_sample_count};
+             else
+               fifo_wdata[13:0]  <= adc_data[13:0];  // ADC data
+
             fifo_wen          <= 1'b1;
             drs_sample_count  <= drs_sample_count + 1'b1;
           end
