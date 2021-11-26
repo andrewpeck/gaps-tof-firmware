@@ -1,4 +1,3 @@
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_misc.all;
@@ -22,7 +21,7 @@ architecture behavioral of spi_rx is
 
   signal bit_cnt : integer range 0 to 31 := 31;
 
-  constant timeout_cnt_max : integer                            := 500;
+  constant timeout_cnt_max : integer                            := 4000;
   signal timeout_cnt       : integer range 0 to timeout_cnt_max := 0;
 
   signal done : boolean := false;
