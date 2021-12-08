@@ -99,6 +99,7 @@ architecture Behavioral of top_readout_board is
   signal dma_pointer          : std_logic_vector(31 downto 0);
   signal ram_a_occ_rst        : std_logic;
   signal ram_b_occ_rst        : std_logic;
+  signal ram_toggle_request   : std_logic;
 
   signal drs_data         : std_logic_vector (13 downto 0);
   signal drs_rden  : std_logic := '0';
@@ -676,7 +677,7 @@ begin
       ipb_mosi_arr => ipb_mosi_arr,
 
       -- DMA
-      dma_reset   => dma_reset,
+      dma_reset_i => dma_reset,
       daq_busy_in => daq_busy,
 
       -- RAM occupancy monitoring
@@ -771,8 +772,9 @@ begin
     regs_addresses(43)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"02";
     regs_addresses(44)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"03";
     regs_addresses(45)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"04";
-    regs_addresses(46)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "10" & x"00";
-    regs_addresses(47)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "10" & x"01";
+    regs_addresses(46)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"05";
+    regs_addresses(47)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "10" & x"00";
+    regs_addresses(48)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "10" & x"01";
 
     -- Connect read signals
     regs_read_arr(0)(REG_CHIP_DMODE_BIT) <= dmode;
@@ -825,8 +827,8 @@ begin
     regs_read_arr(43)(REG_DMA_RAM_A_OCCUPANCY_MSB downto REG_DMA_RAM_A_OCCUPANCY_LSB) <= ram_buff_a_occupancy;
     regs_read_arr(44)(REG_DMA_RAM_B_OCCUPANCY_MSB downto REG_DMA_RAM_B_OCCUPANCY_LSB) <= ram_buff_b_occupancy;
     regs_read_arr(45)(REG_DMA_DMA_POINTER_MSB downto REG_DMA_DMA_POINTER_LSB) <= dma_pointer;
-    regs_read_arr(46)(REG_GFP_EVENTID_SPI_EN_BIT) <= gfp_use_eventid;
-    regs_read_arr(47)(REG_GFP_EVENTID_RX_MSB downto REG_GFP_EVENTID_RX_LSB) <= gfp_eventid_rx;
+    regs_read_arr(47)(REG_GFP_EVENTID_SPI_EN_BIT) <= gfp_use_eventid;
+    regs_read_arr(48)(REG_GFP_EVENTID_RX_MSB downto REG_GFP_EVENTID_RX_LSB) <= gfp_eventid_rx;
 
     -- Connect write signals
     dmode <= regs_write_arr(0)(REG_CHIP_DMODE_BIT);
@@ -844,7 +846,7 @@ begin
     board_id <= regs_write_arr(20)(REG_FPGA_BOARD_ID_MSB downto REG_FPGA_BOARD_ID_LSB);
     ext_trigger_en <= regs_write_arr(23)(REG_TRIGGER_EXT_TRIGGER_EN_BIT);
     ext_trigger_active_hi <= regs_write_arr(23)(REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT);
-    gfp_use_eventid <= regs_write_arr(46)(REG_GFP_EVENTID_SPI_EN_BIT);
+    gfp_use_eventid <= regs_write_arr(47)(REG_GFP_EVENTID_SPI_EN_BIT);
 
     -- Connect write pulse signals
     start <= regs_write_pulse_arr(4);
@@ -858,6 +860,7 @@ begin
     spy_reset <= regs_write_pulse_arr(38);
     ram_a_occ_rst <= regs_write_pulse_arr(41);
     ram_b_occ_rst <= regs_write_pulse_arr(42);
+    ram_toggle_request <= regs_write_pulse_arr(46);
 
     -- Connect write done signals
 
@@ -952,7 +955,7 @@ begin
     regs_defaults(20)(REG_FPGA_BOARD_ID_MSB downto REG_FPGA_BOARD_ID_LSB) <= REG_FPGA_BOARD_ID_DEFAULT;
     regs_defaults(23)(REG_TRIGGER_EXT_TRIGGER_EN_BIT) <= REG_TRIGGER_EXT_TRIGGER_EN_DEFAULT;
     regs_defaults(23)(REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT) <= REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_DEFAULT;
-    regs_defaults(46)(REG_GFP_EVENTID_SPI_EN_BIT) <= REG_GFP_EVENTID_SPI_EN_DEFAULT;
+    regs_defaults(47)(REG_GFP_EVENTID_SPI_EN_BIT) <= REG_GFP_EVENTID_SPI_EN_DEFAULT;
 
     -- Define writable regs
     regs_writable_arr(0) <= '1';
@@ -962,7 +965,7 @@ begin
     regs_writable_arr(11) <= '1';
     regs_writable_arr(20) <= '1';
     regs_writable_arr(23) <= '1';
-    regs_writable_arr(46) <= '1';
+    regs_writable_arr(47) <= '1';
 
   -- --==== Registers end ============================================================================
 

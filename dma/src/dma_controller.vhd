@@ -37,18 +37,20 @@ entity dma_controller is
     --------------------------------------------------------------
     -- RAM Occupancy signals
     --------------------------------------------------------------
+
     ram_a_occ_rst  : in std_logic;
     ram_b_occ_rst  : in std_logic;
 
+    ram_toggle_request_i : in std_logic := '0';
 
     ram_buff_a_occupancy_o  : out std_logic_vector(31 downto 0) := (others => '0');
     ram_buff_b_occupancy_o  : out std_logic_vector(31 downto 0) := (others => '0');
     dma_pointer_o           : out std_logic_vector(31 downto 0) := (others => '0');
 
-
     --------------------------------------------------------------
     -- DAQ Signal(s)
     --------------------------------------------------------------
+
     fifo_in     : in  std_logic_vector(15 downto 0);
     fifo_wr_en  : in  std_logic;
     fifo_full   : out std_logic;
@@ -285,7 +287,9 @@ architecture Behavioral of dma_controller is
   signal ram_buff_b_occupancy  : unsigned(RAM_ADRB-1 downto 0) := (others => '0');
 
   signal dma_pointer           : unsigned(RAM_ADRB-1 downto 0);
-  
+
+  signal toggle_buffer : std_logic := '0';
+
 begin
 
   --active low reset for logic
@@ -438,15 +442,25 @@ begin
       if aresetn = RESET_ACTIVE then
         reset_pointer_address <= '0';
         saddress_mux          <= START_ADDRESS;
-
+        toggle_buffer         <= '0';
       else
 
+        -- we have a request to toggle the ram buffer...
+        -- save the request until it can be attended to at a ram boundary
+        if (ram_toggle_request_i = '1') then
+          toggle_buffer <= '1';
+        end if;
+
         -- switch memory region
-        --   - the dma is now writing into the "overflow region"
+        --   - the dma is now writing into the "overflow region", or a switch between
+        --     regions is requested
         --   - as soon as the daq is idle (it always goes idle between packets)
         --     it will jump to the other memory region
 
-        if (daq_busy_xfifo = '0' and mem_bytes_written > mem_buff_size) then
+        if (daq_busy_xfifo = '0'
+            and (toggle_buffer='1' or mem_bytes_written > mem_buff_size)) then
+
+          toggle_buffer <= '0';
 
           reset_pointer_address <= '1';
 
