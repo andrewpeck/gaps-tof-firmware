@@ -58,7 +58,7 @@ begin
         data_o      <= x"FFFFFFFF";
         valid_o     <= '1';
 
-      elsif (sclk_rr = '1' and sclk_r = '0') then  -- FALLING edge of SCLK
+      elsif (sclk_rr = '0' and sclk_r = '1') then  -- RISING edge of SCLK
 
         data(bit_cnt) <= sdat_rr;
 

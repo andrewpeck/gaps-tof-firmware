@@ -42,6 +42,8 @@ module drs #(
 
     input        diagnostic_mode,
 
+    input        posneg_i,
+
     input        drs_ctl_spike_removal,           // set 1 for spike removal
     input        drs_ctl_roi_mode,                // set 1 for region of interest mode
     input        drs_ctl_dmode,                   // set 1 = continuous domino, 0=single shot
@@ -117,17 +119,23 @@ localparam ADR_STANDBY     = 4'b1111;
 // Input flops
 //----------------------------------------------------------------------------------------------------------------------
 
-reg [13:0] adc_data_iob;
+reg [13:0] adc_data_neg, adc_data_pos;
 reg [13:0] adc_data;
 
 // take data in on negedge of clock, assuming that adc and fpga clocks are synchronous
 always @(negedge clock) begin
-  adc_data_iob <= adc_data_i;
+  adc_data_neg <= adc_data_i;
+end
+always @(posedge clock) begin
+  adc_data_pos <= adc_data_i;
 end
 
 // transfer on flops from negedge to posedge before fifo
 always @(posedge clock) begin
-  adc_data     <= adc_data_iob;
+  if (posneg_i)
+    adc_data <= adc_data_pos;
+  else
+    adc_data <= adc_data_neg;
 end
 
 //----------------------------------------------------------------------------------------------------------------------
