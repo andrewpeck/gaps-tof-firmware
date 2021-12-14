@@ -131,7 +131,7 @@
             <node id="POSNEG" address="0xA" permission="rw"
                 description="1 to sample on positive edge, 0 on negative"
                 mask="0x1"
-                fw_default="0x1"
+                fw_default="0x0"
                 fw_signal="posneg"/>
         </node> <!--READOUT-->
 

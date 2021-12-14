@@ -96,7 +96,7 @@ package registers is
 
     constant REG_READOUT_POSNEG_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1a";
     constant REG_READOUT_POSNEG_BIT    : integer := 0;
-    constant REG_READOUT_POSNEG_DEFAULT : std_logic := '1';
+    constant REG_READOUT_POSNEG_DEFAULT : std_logic := '0';
 
     constant REG_FPGA_DNA_DNA_LSBS_ADDR    : std_logic_vector(9 downto 0) := "00" & x"20";
     constant REG_FPGA_DNA_DNA_LSBS_MSB    : integer := 31;
