@@ -112,6 +112,10 @@ Best practice is for released builds the entire repo should be cloned
 from scratch and built from the clean cloned repository to ensure that
 no files are missing, the build directory is clean, and so on.
 
+## Data Flow 
+
+![data-flow](./drs/data-flow.svg)
+
 ## Block Design Creation
 
 HOG wrappers provide facilities for creation of TCL files from Block
