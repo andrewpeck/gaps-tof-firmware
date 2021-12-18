@@ -14,8 +14,8 @@
 // TODO: tmr
 
 module drs #(
-  parameter TMR_INST     = 0,
-  parameter READ_WIDTH   = 14
+  parameter TMR_INST      = 0,
+  parameter READ_WIDTH    = 14
 ) (
     //------------------------------------------------------------------------------------------------------------------
     // system
@@ -43,6 +43,8 @@ module drs #(
     input        diagnostic_mode,
 
     input        posneg_i,
+    input        srout_posneg_i,
+    input [2:0]  srout_latency_i,
 
     input        drs_ctl_spike_removal,           // set 1 for spike removal
     input        drs_ctl_roi_mode,                // set 1 for region of interest mode
@@ -78,15 +80,15 @@ module drs #(
     // drs io
     //------------------------------------------------------------------------------------------------------------------
 
-    input             drs_srout_i,    // Multiplexed Shift Register Output
-    output reg [3:0]  drs_addr_o,     // Address Bit Inputs
-    output reg        drs_nreset_o,   // DRS nreset
-    output reg        drs_denable_o,  // Domino Enable Input. A low-to-high transition starts the Domino Wave. Set-ting this input low stops the Domino Wave.
-    output reg        drs_dwrite_o,   // Domino Write Input. Connects the Domino Wave Circuit to the Sampling Cells to enable sampling if high.
-    output reg        drs_rsrload_o,  // Read Shift Register Load Input
-    output reg        drs_srclk_en_o, // Multiplexed Shift Register Clock Input
-    output reg        drs_srin_o,     // Shared Shift Register Input
-    output reg        drs_on_o   ,    //
+    input             drs_srout_i,      // Multiplexed Shift Register Output
+    output reg [3:0]  drs_addr_o,       // Address Bit Inputs
+    output reg        drs_nreset_o,     // DRS nreset
+    output reg        drs_denable_o,    // Domino Enable Input. A low-to-high transition starts the Domino Wave. Set-ting this input low stops the Domino Wave.
+    output reg        drs_dwrite_o,     // Domino Write Input. Connects the Domino Wave Circuit to the Sampling Cells to enable sampling if high.
+    output reg        drs_rsrload_o,    // Read Shift Register Load Input
+    output reg        drs_srclk_en_o,   // Multiplexed Shift Register Clock Input
+    output reg        drs_srin_o,       // Shared Shift Register Input
+    output reg        drs_on_o   ,      //
     output reg [9:0]  drs_stop_cell_o ,
 
     //------------------------------------------------------------------------------------------------------------------
@@ -137,6 +139,17 @@ always @(posedge clock) begin
   else
     adc_data <= adc_data_neg;
 end
+
+reg drs_srout_pos, drs_srout_neg;
+
+always @(negedge clock) begin
+  drs_srout_neg <= drs_srout_i;
+end
+always @(posedge clock) begin
+  drs_srout_pos <= drs_srout_i;
+end
+
+wire drs_srout = srout_posneg_i ? drs_srout_pos : drs_srout_neg;
 
 //----------------------------------------------------------------------------------------------------------------------
 // Trigger
@@ -551,8 +564,9 @@ always @(posedge clock) begin
           drs_rd_tmp_count <= drs_rd_tmp_count + 1'b1;
 
           // clock in the first 10 bits to get the stop cell
-          if (drs_srclk_en_o==1 && drs_rd_tmp_count < 11) begin
-            drs_stop_cell[0]   <= drs_srout_i;
+          if (drs_srclk_en_o==1 &&
+              (drs_rd_tmp_count < (srout_latency_i+10))) begin
+            drs_stop_cell[0]   <= drs_srout;
             drs_stop_cell[9:1] <= drs_stop_cell[8:0];
           end
 
@@ -922,7 +936,7 @@ end
     .probe13 (drs_ctl_configure_drs),
     .probe14 (drs_ctl_chn_config [7:0]),
     .probe15 (drs_ctl_readout_mask[8:0]),
-    .probe16 (drs_srout_i),
+    .probe16 (drs_srout),
     .probe17 (drs_addr_o[3:0]),
     .probe18 (drs_denable_o),
     .probe19 (drs_dwrite_o),

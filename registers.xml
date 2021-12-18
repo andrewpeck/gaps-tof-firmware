@@ -133,6 +133,19 @@
                 mask="0x1"
                 fw_default="0x0"
                 fw_signal="posneg"/>
+
+            <node id="SROUT_POSNEG" address="0xA" permission="rw"
+                description="1 to sample on positive edge, 0 on negative"
+                mask="0x2"
+                fw_default="0x0"
+                fw_signal="srout_posneg"/>
+
+            <node id="SROUT_LATENCY" address="0xA" permission="rw"
+                description="Latency of the SROUT readout"
+                mask="0x70"
+                fw_default="0x1"
+                fw_signal="srout_latency"/>
+
         </node> <!--READOUT-->
 
 
