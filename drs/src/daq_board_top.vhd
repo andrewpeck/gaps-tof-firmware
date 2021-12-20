@@ -467,9 +467,9 @@ begin
       reset     => reset or drs_reset,
       trigger_i => trigger,
 
-      posneg_i      => posneg,
-      srout_posneg  => srout_posneg,
-      srout_latency => srout_latency,
+      posneg_i        => posneg,
+      srout_posneg_i  => srout_posneg,
+      srout_latency_i => srout_latency,
 
       --adc_data => adc_data,
       adc_data_i => adc_data_i,
