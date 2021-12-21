@@ -1,5 +1,5 @@
 # 33MHz inputs
-set_input_delay -clock [get_clocks drs_clk_clock_wizard] -min 1.000 [get_ports -filter { NAME =~  "*adc*" && DIRECTION == "IN" }]
+set_input_delay -clock [get_clocks drs_clk_clock_wizard] -min 3.000 [get_ports -filter { NAME =~  "*adc*" && DIRECTION == "IN" }]
 set_input_delay -clock [get_clocks drs_clk_clock_wizard] -max 5.000 [get_ports -filter { NAME =~  "*adc*" && DIRECTION == "IN" }]
 set_input_delay -clock [get_clocks drs_clk_clock_wizard] -min 1.000 [get_ports -filter { NAME =~  "*srout*" && DIRECTION == "IN" }]
 set_input_delay -clock [get_clocks drs_clk_clock_wizard] -max 5.000 [get_ports -filter { NAME =~  "*srout*" && DIRECTION == "IN" }]
@@ -9,31 +9,31 @@ set_input_delay -clock [get_clocks drs_clk_clock_wizard] -max 5.000 [get_ports -
 # 33MHz outputs
 
 set_output_delay -clock [get_clocks drs_clk_clock_wizard] -min 1.000 [get_ports {drs_addr_o[*]}]
-set_output_delay -clock [get_clocks drs_clk_clock_wizard] -max 10.00 [get_ports {drs_addr_o[*]}]
+set_output_delay -clock [get_clocks drs_clk_clock_wizard] -max 7.00 [get_ports {drs_addr_o[*]}]
 
 set_output_delay -clock [get_clocks drs_clk_clock_wizard] -min 1.000 [get_ports drs_denable_o]
-set_output_delay -clock [get_clocks drs_clk_clock_wizard] -max 10.00 [get_ports drs_denable_o]
+set_output_delay -clock [get_clocks drs_clk_clock_wizard] -max 7.00 [get_ports drs_denable_o]
 
 set_output_delay -clock [get_clocks drs_clk_clock_wizard] -min 1.000 [get_ports drs_rsrload_o]
-set_output_delay -clock [get_clocks drs_clk_clock_wizard] -max 10.00 [get_ports drs_rsrload_o]
+set_output_delay -clock [get_clocks drs_clk_clock_wizard] -max 7.00 [get_ports drs_rsrload_o]
 
 set_output_delay -clock [get_clocks drs_clk_clock_wizard] -min 1.000 [get_ports drs_srin_o]
-set_output_delay -clock [get_clocks drs_clk_clock_wizard] -max 10.00 [get_ports drs_srin_o]
+set_output_delay -clock [get_clocks drs_clk_clock_wizard] -max 7.00 [get_ports drs_srin_o]
 
 set_output_delay -clock [get_clocks drs_clk_clock_wizard] -min 1.000 [get_ports drs_dwrite_o]
-set_output_delay -clock [get_clocks drs_clk_clock_wizard] -max 10.00 [get_ports drs_dwrite_o]
+set_output_delay -clock [get_clocks drs_clk_clock_wizard] -max 7.00 [get_ports drs_dwrite_o]
 
 set_output_delay -clock [get_clocks drs_clk_clock_wizard] -min 1.000 [get_ports drs_srclk_o]
-set_output_delay -clock [get_clocks drs_clk_clock_wizard] -max 10.00 [get_ports drs_srclk_o]
+set_output_delay -clock [get_clocks drs_clk_clock_wizard] -max 7.00 [get_ports drs_srclk_o]
 
 set_input_delay -clock [get_clocks drs_clk_clock_wizard] -min 1.000 [get_ports drs_plllock_i]
-set_input_delay -clock [get_clocks drs_clk_clock_wizard] -max 10.00 [get_ports drs_plllock_i]
+set_input_delay -clock [get_clocks drs_clk_clock_wizard] -max 7.00 [get_ports drs_plllock_i]
 
 set_input_delay -clock [get_clocks drs_clk_clock_wizard] -min 1.000 [get_ports drs_dtap_i]
-set_input_delay -clock [get_clocks drs_clk_clock_wizard] -max 10.00 [get_ports drs_dtap_i]
+set_input_delay -clock [get_clocks drs_clk_clock_wizard] -max 7.00 [get_ports drs_dtap_i]
 
 set_output_delay -clock [get_clocks drs_clk_clock_wizard] -min 1.000 [get_ports drs_nreset_o]
-set_output_delay -clock [get_clocks drs_clk_clock_wizard] -max 10.00 [get_ports drs_nreset_o]
+set_output_delay -clock [get_clocks drs_clk_clock_wizard] -max 7.00 [get_ports drs_nreset_o]
 
 set_false_path -from [get_ports drs_dtap_i]
 set_false_path -from [get_ports drs_plllock_i]

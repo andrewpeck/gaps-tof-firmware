@@ -65,7 +65,7 @@
                 description="Latency from first sr clock to when ADC data should be valid"
                 mask="0x3f0"
                 fw_signal="adc_latency"
-                fw_default="0x0"/>
+                fw_default="0x9"/>
             <node id="SAMPLE_COUNT" address="0x0" permission="rw"
                 description="Number of samples to read out (0 to 1023)"
                 mask="0x3ff000"
@@ -117,10 +117,22 @@
                 fw_write_pulse_signal="dma_control_reset"/>
 
             <node id="WAIT_VDD_CLKS" address="0x8" permission="rw"
-                description="Number of ADC clocks to wait before reading out the drs, allowing vdd to stabilize"
+                description="Number of ADC clocks to wait before reading out the drs, allowing vdd to stabilize; default=0x14d=10us"
                 mask="0xffff"
-                fw_default="0x1000"
+                fw_default="0x14d"
                 fw_signal="wait_vdd_clocks"/>
+
+            <node id="DRS_DIAGNOSTIC_MODE" address="0x9" permission="rw"
+                description="1 will make the DRS read out the cell ID instead of ADC data"
+                mask="0x1"
+                fw_default="0x0"
+                fw_signal="drs_diagnostic_mode"/>
+
+            <node id="POSNEG" address="0xA" permission="rw"
+                description="1 to sample on positive edge, 0 on negative"
+                mask="0x1"
+                fw_default="0x0"
+                fw_signal="posneg"/>
         </node> <!--READOUT-->
 
 

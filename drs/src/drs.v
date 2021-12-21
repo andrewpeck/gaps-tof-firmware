@@ -40,6 +40,10 @@ module drs #(
     // drs control
     //------------------------------------------------------------------------------------------------------------------
 
+    input        diagnostic_mode,
+
+    input        posneg_i,
+
     input        drs_ctl_spike_removal,           // set 1 for spike removal
     input        drs_ctl_roi_mode,                // set 1 for region of interest mode
     input        drs_ctl_dmode,                   // set 1 = continuous domino, 0=single shot
@@ -115,17 +119,23 @@ localparam ADR_STANDBY     = 4'b1111;
 // Input flops
 //----------------------------------------------------------------------------------------------------------------------
 
-reg [13:0] adc_data_iob;
+reg [13:0] adc_data_neg, adc_data_pos;
 reg [13:0] adc_data;
 
 // take data in on negedge of clock, assuming that adc and fpga clocks are synchronous
 always @(negedge clock) begin
-  adc_data_iob <= adc_data_i;
+  adc_data_neg <= adc_data_i;
+end
+always @(posedge clock) begin
+  adc_data_pos <= adc_data_i;
 end
 
 // transfer on flops from negedge to posedge before fifo
 always @(posedge clock) begin
-  adc_data     <= adc_data_iob;
+  if (posneg_i)
+    adc_data <= adc_data_pos;
+  else
+    adc_data <= adc_data_neg;
 end
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -133,7 +143,6 @@ end
 //----------------------------------------------------------------------------------------------------------------------
 
 reg trigger, domino_ready;
-reg trigger_last;
 
 // always read the 9th channel if any other channel is enabled
 wire [8:0] drs_ctl_readout_mask = drs_ctl_readout_mask_i;
@@ -152,21 +161,10 @@ reg [3:0] drs_ctl_next_chn;
 
 reg [8:0] readout_mask_sr;
 
-integer i,j,k;
 always @(posedge clock) begin
-
-  for( i = 8; i >= 0; i=i-1)
-    if (readout_mask_sr[i]) 
-        drs_ctl_next_chn=i[3:0];
-
-  for( j = 8; j >= 0; j=j-1)
-    if (drs_ctl_readout_mask[j])
-        drs_ctl_first_chn=j[3:0];
-
-  for( k = 0; k <= 8; k=k+1)
-    if (drs_ctl_readout_mask[k])
-        drs_ctl_last_chn=k[3:0];
-
+   drs_ctl_next_chn  <= prienc9(readout_mask_sr);
+   drs_ctl_first_chn <= prienc9(drs_ctl_readout_mask);
+   drs_ctl_last_chn  <= prienc9_rev(drs_ctl_readout_mask);
 end
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -177,8 +175,6 @@ reg [7:0]  drs_sr_reg='hf8;
 
 // TODO: merge with the other counter
 reg [6:0] drs_start_timer = 0; // startup timer to make sure the domino is running before allowing triggers
-
-wire [21:0] crc;
 
 // reg [7:0]  drs_stat_stop_wsr=0;
 // reg        drs_stop_wsr=0;
@@ -577,7 +573,12 @@ always @(posedge clock) begin
           // ADC delivers data at its outputs with 7 clock cycles delay
           // with respect to its external clock pin
           if (drs_rd_tmp_count > {10'b0, drs_ctl_adc_latency}) begin
-            fifo_wdata[13:0]  <= adc_data[13:0];  // ADC data
+
+             if (diagnostic_mode)
+               fifo_wdata[13:0] <= {4'b0, drs_sample_count};
+             else
+               fifo_wdata[13:0]  <= adc_data[13:0];  // ADC data
+
             fifo_wen          <= 1'b1;
             drs_sample_count  <= drs_sample_count + 1'b1;
           end
@@ -943,6 +944,45 @@ end
   );
 `endif
 
+function [3:0] prienc9_rev;
+ input [8:0] select;
+ reg   [3:0] out;
+ begin
+   casex(select)
+     9'b1xxxxxxxx: out = 4'h8;
+     9'b01xxxxxxx: out = 4'h7;
+     9'b001xxxxxx: out = 4'h6;
+     9'b0001xxxxx: out = 4'h5;
+     9'b00001xxxx: out = 4'h4;
+     9'b000001xxx: out = 4'h3;
+     9'b0000001xx: out = 4'h2;
+     9'b00000001x: out = 4'h1;
+     9'b000000001: out = 4'h0;
+     default: out = 4'h0;
+   endcase
+   prienc9_rev = out ;
+ end
+endfunction
+
+function [3:0] prienc9;
+ input [8:0] select;
+ reg   [3:0] out;
+ begin
+   casex(select)
+     9'bxxxxxxxx1: out = 4'h0;
+     9'bxxxxxxx10: out = 4'h1;
+     9'bxxxxxx100: out = 4'h2;
+     9'bxxxxx1000: out = 4'h3;
+     9'bxxxx10000: out = 4'h4;
+     9'bxxx100000: out = 4'h5;
+     9'bxx1000000: out = 4'h6;
+     9'bx10000000: out = 4'h7;
+     9'b100000000: out = 4'h8;
+     default: out = 4'h0;
+   endcase
+   prienc9 = out ;
+ end
+endfunction
 
 //----------------------------------------------------------------------------------------------------------------------
 endmodule

@@ -1,4 +1,3 @@
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_misc.all;
@@ -22,7 +21,7 @@ architecture behavioral of spi_rx is
 
   signal bit_cnt : integer range 0 to 31 := 31;
 
-  constant timeout_cnt_max : integer                            := 500;
+  constant timeout_cnt_max : integer                            := 4000;
   signal timeout_cnt       : integer range 0 to timeout_cnt_max := 0;
 
   signal done : boolean := false;
@@ -59,7 +58,7 @@ begin
         data_o      <= x"FFFFFFFF";
         valid_o     <= '1';
 
-      elsif (sclk_rr = '1' and sclk_r = '0') then  -- FALLING edge of SCLK
+      elsif (sclk_rr = '0' and sclk_r = '1') then  -- RISING edge of SCLK
 
         data(bit_cnt) <= sdat_rr;
 
