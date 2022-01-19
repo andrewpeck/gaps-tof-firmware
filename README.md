@@ -146,7 +146,7 @@ some version-lock-in but efforts were made to minimize it.
 ## Dataformat
 
   | Field      | Len             | Description                                                                                                                                                                                   |
-  | :----      | :---------      | :-------------                                                                                                                                                                                |
+  |:-----------|:----------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
   | HEAD       | `[15:0]`        | 0xAAAA                                                                                                                                                                                        |
   | STATUS     | `[15:0]`        | `[0]` = sync\_err <br> `[1]` = drs was busy (lost trigger) <br> `[3:2]` = reserved <br> `[15:4]`= 12 bit temperature                                                                          |
   | LEN        | `[15:0]`        | length of packet in 2 byte words                                                                                                                                                              |
@@ -154,7 +154,7 @@ some version-lock-in but efforts were made to minimize it.
   | DNA        | `[63:0]`        | Zynq7000 Device DNA                                                                                                                                                                           |
   | FW\_HASH   | `[15:0]`        | First 16 bits of Git Hash                                                                                                                                                                     |
   | ID         | `[15:0]`        | `DATA[15:8]` = readout board ID <br> `DATA[7:0]` = reserved <br>                                                                                                                              |
-  | CH\_MASK   | `[15:0]`        | Channel Enable Mask '1'=ON <br> should be either upper 8 bits or lower 8 <br> depending on the chip id                                                                                        |
+  | CH\_MASK   | `[15:0]`        | Bits 8:0 Channel Enable Mask '1'=ON                                                                                                                                                           |
   | EVENT\_CNT | `[31:0]`        | Event ID Received From Trigger                                                                                                                                                                |
   | DTAP0      | `[15:0]`        | DTAP0 Frequency in 100Hz                                                                                                                                                                      |
   | DTAP1      | `[15:0]`        | DTAP1 Frequency in 100Hz                                                                                                                                                                      |
