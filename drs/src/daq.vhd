@@ -401,7 +401,7 @@ begin
             event_cnt_mux <= event_cnt;
           end if;
 
-          data <= mask (16 downto 9) & mask (7 downto 0);
+          data <= "0000000" & mask (8 downto 0);
           dav  <= true;
 
           channel_id <= get_first_channel(mask);
