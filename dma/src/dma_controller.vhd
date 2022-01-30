@@ -440,6 +440,11 @@ begin
         --     the dma controller will jump to the other memory region
 
         if (daq_busy_xfifo = '0' and mem_bytes_written > mem_buff_size) then
+            and
+            -- this is really ugly, it takes a couple clock cycles for the reset
+            -- to propagate so it uses this baked in delay of 2
+            buff_switch_request_r0 = '0' and
+            buff_switch_request = '0') then
 
           buff_switch_request_r0 <= '1';
 
