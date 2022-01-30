@@ -224,17 +224,15 @@ architecture Behavioral of dma_controller is
 
   --data port
   signal s2mm_tdata  : std_logic_vector(31 downto 0) := (others => '0');
-  signal s2mm_tkeep  : std_logic_vector(3 downto 0) := (others => '0');
-  signal s2mm_tlast  : std_logic := '0';
-  signal s2mm_tvalid : std_logic := '0';
-  signal s2mm_tready : std_logic := '0';
+  signal s2mm_tkeep  : std_logic_vector(3 downto 0)  := (others => '0');
+  signal s2mm_tlast  : std_logic                     := '0';
+  signal s2mm_tvalid : std_logic                     := '0';
+  signal s2mm_tready : std_logic                     := '0';
 
-  signal btt          : std_logic_vector(22 downto 0) := (others => '0');
-  signal saddr        : std_logic_vector(31 downto 0) := (others => '0');
-  signal saddress_mux : std_logic_vector(31 downto 0) := START_ADDRESS;
-  signal data_type    : std_logic                     := '0';
-
-
+  signal btt              : std_logic_vector(22 downto 0) := (others => '0');
+  signal saddr            : std_logic_vector(31 downto 0) := (others => '0');
+  signal next_buffer_addr : std_logic_vector(31 downto 0) := START_ADDRESS;
+  signal data_type        : std_logic                     := '0';
 
   signal delay_counter : integer range 0 to 21 := 0;
 
@@ -432,8 +430,7 @@ begin
 
       if (reset = '1') then
         reset_pointer_address <= '0';
-        saddress_mux          <= START_ADDRESS;
-
+        next_buffer_addr       <= START_ADDRESS;
       else
 
         -- switch memory region
@@ -447,10 +444,10 @@ begin
           reset_pointer_address <= '1';
 
           -- jump to opposite half of ring
-          if(saddress_mux = START_ADDRESS)then
-            saddress_mux <= TOP_HALF_ADDRESS;
+          if(next_buffer_addr = START_ADDRESS)then
+            next_buffer_addr <= TOP_HALF_ADDRESS;
           else
-            saddress_mux <= START_ADDRESS;
+            next_buffer_addr <= START_ADDRESS;
           end if;
 
         -- if a wipe of the memory is requested, we switch to the 0th address in
@@ -474,7 +471,7 @@ begin
   begin
     if(rising_edge(clk_axi)) then
       if (reset = '1') or reset_pointer_address_r2 = '1' then
-        saddr             <= saddress_mux;
+        saddr             <= next_buffer_addr;
         mem_bytes_written <= (others => '0');
       elsif (s2mm_addr_req_posted_reg = '1') then
         saddr             <= std_logic_vector(unsigned(saddr) + unsigned(btt));
