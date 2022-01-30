@@ -29,6 +29,17 @@ entity dma_controller is
     START_ADDRESS    : std_logic_vector(31 downto 0) := x"04100000";
     TOP_HALF_ADDRESS : std_logic_vector(31 downto 0) := x"08100000";
 
+    -- reserve the tail of the buffer to be allocated for overflow only,
+    -- i.e., if the buffer is 64 Mb, we want to trigger a switch to the
+    -- adjacent buffer at 64 Mb - max_packet_size so that the rest
+    -- of the data packet has a place to be written
+    --
+    -- If this mechanism didn't exist, then when we trigger the buffer
+    -- switch at 64 Mb, if the packet end doesn't exactly align to the buffer
+    -- end then the packet would get split across two different buffers
+
+    MAX_PACKET_SIZE : integer := 64000;  --
+
     HEAD : std_logic_vector(15 downto 0) := x"AAAA";
     TAIL : std_logic_vector(15 downto 0) := x"5555"
     );
@@ -259,9 +270,10 @@ architecture Behavioral of dma_controller is
   --------------------------------------------------------------------------------
 
   constant RAM_ADRB : integer := integer(ceil(log2(real(RAM_BUFF_SIZE))));
+  constant MEM_BUFF_SWITCH_TRIP : unsigned(RAM_ADRB - 1 downto 0)
+    := to_unsigned(RAM_BUFF_SIZE-MAX_PACKET_SIZE-1, RAM_ADRB); -- subtract 1 so that BUFF_SIZE of 2048 means 0-2047
 
   signal mem_bytes_written : unsigned(RAM_ADRB - 1 downto 0) := (others => '0');
-  signal mem_buff_size     : unsigned(RAM_ADRB - 1 downto 0) := to_unsigned(RAM_BUFF_SIZE, RAM_ADRB);
 
   --------------------------------------------------------------------------------
   -- DMA Clear Signals
@@ -439,7 +451,8 @@ begin
         --     (it always goes idle between packets)
         --     the dma controller will jump to the other memory region
 
-        if (daq_busy_xfifo = '0' and mem_bytes_written > mem_buff_size) then
+        if (daq_busy_xfifo = '0' and
+            mem_bytes_written > MEM_BUFF_SWITCH_TRIP
             and
             -- this is really ugly, it takes a couple clock cycles for the reset
             -- to propagate so it uses this baked in delay of 2
@@ -458,7 +471,7 @@ begin
         -- if a wipe of the memory is requested, we switch to the 0th address in
         -- the memory region
         elsif ((clear_pulse = '1' and s2mm_data_state = IDLE) or
-               (clear_mode = '1' and mem_bytes_written > mem_buff_size)) then
+               (clear_mode = '1' and mem_bytes_written > MEM_BUFF_SWITCH_TRIP)) then
           buff_switch_request_r0 <= '1';
 
         -- nothing requested, just keep going along
