@@ -102,7 +102,7 @@ entity dma_controller is
     -----------------------------------------------------------------------------
 
     packet_sent_o : out std_logic_vector(31 downto 0) := (others => '0');
-    reset_sys     : in  std_logic                     := '0'; -- active HIGH reset input
+    reset_sys     : in  std_logic                     := '0';  -- active HIGH reset input
     clear_ps_mem  : in  std_logic                     := '0'
 
     );
@@ -188,7 +188,7 @@ architecture Behavioral of dma_controller is
   type cmd_state is (IDLE, SET, DONE);
   type data_state is (IDLE, ASSERT_CMD, DELAY0, READ_FIFO, DONE, DELAY1, CLEAR_MEM, CONTINUE_CLEAR);
 
-  signal reset   : std_logic := '0';
+  signal reset : std_logic := '0';
 
   signal s2mm_cmd_state  : cmd_state;
   signal s2mm_data_state : data_state;
@@ -218,8 +218,8 @@ architecture Behavioral of dma_controller is
   --------------------------------------------------------------------------------
 
   --command port
-  signal s2mm_cmd_tvalid : std_logic := '0';
-  signal s2mm_cmd_tready : std_logic := '0';
+  signal s2mm_cmd_tvalid : std_logic                     := '0';
+  signal s2mm_cmd_tready : std_logic                     := '0';
   signal s2mm_cmd_tdata  : std_logic_vector(71 downto 0) := (others => '0');
 
   --data port
@@ -236,23 +236,22 @@ architecture Behavioral of dma_controller is
 
 
 
-  ---
   signal delay_counter : integer range 0 to 21 := 0;
 
   signal valid_fifo_data : std_logic_vector(31 downto 0) := (others => '0');
 
-  signal s2mm_allow_addr_req_reg  : std_logic := '0';
-  signal s2mm_addr_req_posted_reg : std_logic := '0';
-  signal s2mm_wr_xfer_cmplt_reg   : std_logic := '0';
-  signal s2mm_ld_nxt_len_reg      : std_logic := '0';
+  signal s2mm_allow_addr_req_reg  : std_logic                    := '0';
+  signal s2mm_addr_req_posted_reg : std_logic                    := '0';
+  signal s2mm_wr_xfer_cmplt_reg   : std_logic                    := '0';
+  signal s2mm_ld_nxt_len_reg      : std_logic                    := '0';
   signal s2mm_wr_len_reg          : std_logic_vector(7 downto 0) := (others => '0');
 
   --datamover status signals
-  signal m_axis_s2mm_sts_tvalid_reg : std_logic := '0';
+  signal m_axis_s2mm_sts_tvalid_reg : std_logic                    := '0';
   signal m_axis_s2mm_sts_tdata_reg  : std_logic_vector(7 downto 0) := (others => '0');
   signal m_axis_s2mm_sts_tkeep_reg  : std_logic_vector(0 downto 0) := (others => '0');
-  signal m_axis_s2mm_sts_tlast_Reg  : std_logic := '0';
-  signal s2mm_err_reg               : std_logic := '0';
+  signal m_axis_s2mm_sts_tlast_Reg  : std_logic                    := '0';
+  signal s2mm_err_reg               : std_logic                    := '0';
 
   signal reset_pointer_address    : std_logic := '0';
   signal reset_pointer_address_r2 : std_logic := '0';
@@ -289,7 +288,7 @@ architecture Behavioral of dma_controller is
 begin
 
   --active low reset for logic
-  reset   <= (rst_in or reset_sys);
+  reset <= (rst_in or reset_sys);
 
   -------------------------------------------------------------------------------
   -- Datamover Commmand Interface Signals
@@ -369,7 +368,7 @@ begin
   end process;
 
   -------------------------------------------------------------------------------
-  -- Clear Memory Block Procedure
+  -- Clear Memory Block Process
   -------------------------------------------------------------------------------
 
   process(clk_axi)
@@ -408,7 +407,7 @@ begin
       packet_sent_o <= packet_sent;
 
       if (data_xfifo_r(31 downto 16) = TAIL or
-          data_xfifo_r(15 downto 0)  = TAIL) then
+          data_xfifo_r(15 downto 0) = TAIL) then
         packet_is_tail <= '1';
       else
         packet_is_tail <= '0';
