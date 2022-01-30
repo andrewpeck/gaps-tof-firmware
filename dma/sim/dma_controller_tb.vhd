@@ -93,7 +93,7 @@ begin
 
       clk_in  => clk_logic,
       clk_axi => clk_axi,
-      rst_in  => rst_in,
+      reset   => rst_in,
 
       --------------------------------------------------------------
       -- RAM Occupancy signals
@@ -157,7 +157,6 @@ begin
       -----------------------------------------------------------------------------
 
       packet_sent_o => open,
-      reset_sys     => rst_in,
       clear_ps_mem  => rst_in
       );
 

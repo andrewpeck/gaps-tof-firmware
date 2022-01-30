@@ -47,7 +47,7 @@ entity dma_controller is
 
     clk_in  : in std_logic;             -- daq clock
     clk_axi : in std_logic;             -- axi clock
-    rst_in  : in std_logic;             -- active high reset, synchronous to the axi clock
+    reset   : in std_logic;             -- active high reset, synchronous to the axi clock
 
     --------------------------------------------------------------
     -- RAM Occupancy signals
@@ -113,7 +113,6 @@ entity dma_controller is
     -----------------------------------------------------------------------------
 
     packet_sent_o : out std_logic_vector(31 downto 0) := (others => '0');
-    reset_sys     : in  std_logic                     := '0';  -- active HIGH reset input
     clear_ps_mem  : in  std_logic                     := '0'
 
     );
@@ -198,8 +197,6 @@ architecture Behavioral of dma_controller is
 
   type cmd_state is (IDLE, SET, DONE);
   type data_state is (IDLE, ASSERT_CMD, DELAY0, READ_FIFO, DONE, DELAY1, CLEAR_MEM, CONTINUE_CLEAR);
-
-  signal reset : std_logic := '0';
 
   signal s2mm_cmd_state  : cmd_state;
   signal s2mm_data_state : data_state;
@@ -294,9 +291,6 @@ architecture Behavioral of dma_controller is
   signal dma_pointer : unsigned(RAM_ADRB-1 downto 0);  -- pointer to the location in memory being written
 
 begin
-
-  --active low reset for logic
-  reset <= (rst_in or reset_sys);
 
   -------------------------------------------------------------------------------
   -- Datamover Commmand Interface Signals

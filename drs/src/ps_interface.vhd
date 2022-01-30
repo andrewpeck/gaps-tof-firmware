@@ -415,12 +415,11 @@ begin
     port map (
 
       packet_sent_o => packet_counter_xdma,
-      reset_sys     => dma_control_reset_long,
+      reset         => dma_control_reset_long or dma_reset_synced,
       clear_ps_mem  => '0', -- TODO: create and connect to ipbus register
 
       clk_in     => fifo_clock_in,
       clk_axi    => dma_axi_aclk,
-      rst_in     => dma_reset_synced,
       fifo_in    => fifo_data_in,
       fifo_wr_en => fifo_data_wen,
       fifo_full  => open,                    -- TODO: connect to monitor
