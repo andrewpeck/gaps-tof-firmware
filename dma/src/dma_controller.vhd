@@ -412,7 +412,7 @@ begin
 
       if reset = '1' then
         packet_sent <= (others => '0');
-      elsif (fifo_rd_en = '1' and packet_is_tail = '1') then
+      elsif (fifo_rd_en = '1' and packet_is_tail = '1' and packet_sent /= x"FFFFFFFF") then
         packet_sent <= std_logic_vector(unsigned(packet_sent) + 1);
       else
         packet_sent <= packet_sent;
