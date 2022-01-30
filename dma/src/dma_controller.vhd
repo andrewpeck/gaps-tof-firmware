@@ -273,6 +273,8 @@ architecture Behavioral of dma_controller is
   constant MEM_BUFF_SWITCH_TRIP : unsigned(CNT_ADRB - 1 downto 0)
     := to_unsigned(RAM_BUFF_SIZE-MAX_PACKET_SIZE-1, CNT_ADRB); -- subtract 1 so that BUFF_SIZE of 2048 means 0-2047
 
+  signal base_addr    : std_logic_vector(31 downto 0) := START_ADDRESS;
+
   signal mem_bytes_written : unsigned(CNT_ADRB - 1 downto 0) := (others => '0');
 
   --------------------------------------------------------------------------------
@@ -498,18 +500,24 @@ begin
     end if;
   end process;
 
+  -------------------------------------------------------------------------------
+  -- Address Accumulator
+  -------------------------------------------------------------------------------
+
   address_handler : process(clk_axi)
   begin
     if(rising_edge(clk_axi)) then
+
+      mem_bytes_written <= resize(unsigned(saddr) - unsigned(base_addr),
+                                           mem_bytes_written'length);
+
       if (reset = '1') or buff_switch_request = '1' then
+        base_addr         <= next_buffer_addr;
         saddr             <= next_buffer_addr;
-        mem_bytes_written <= (others => '0');
       elsif (s2mm_addr_req_posted_reg = '1') then
         saddr             <= std_logic_vector(unsigned(saddr) + unsigned(btt));
-        mem_bytes_written <= mem_bytes_written + resize(unsigned(btt), mem_bytes_written'length);
       else
         saddr             <= saddr;
-        mem_bytes_written <= mem_bytes_written;
       end if;
     end if;
   end process;
