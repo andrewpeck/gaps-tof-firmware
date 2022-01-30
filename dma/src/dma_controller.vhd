@@ -288,6 +288,8 @@ architecture Behavioral of dma_controller is
   -- RAM Occupancy Signals
   --------------------------------------------------------------------------------
 
+  signal ram_in_a_buff : std_logic := '1';
+  signal ram_in_b_buff : std_logic := '0';
 
   signal ram_buff_a_occupancy : unsigned(CNT_ADRB-1 downto 0) := (others => '0');  -- occupancy indicator for each buffer
   signal ram_buff_b_occupancy : unsigned(CNT_ADRB-1 downto 0) := (others => '0');  -- occupancy indicator for each buffer
@@ -423,6 +425,22 @@ begin
         packet_sent <= packet_sent;
       end if;
 
+    end if;
+  end process;
+
+  --------------------------------------------------------------------------------
+  -- Buffer Switch Monitor
+  --------------------------------------------------------------------------------
+
+  ram_in_b_buff <= not ram_in_a_buff;
+  process (clk_axi) is
+  begin
+    if (rising_edge(clk_axi)) then
+      if (saddr < TOP_HALF_ADDRESS) then
+        ram_in_a_buff    <= '1';
+      else
+        ram_in_a_buff    <= '0';
+      end if;
     end if;
   end process;
 
