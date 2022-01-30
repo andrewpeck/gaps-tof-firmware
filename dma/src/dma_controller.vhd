@@ -269,13 +269,11 @@ architecture Behavioral of dma_controller is
   -- DMA Clear Signals
   --------------------------------------------------------------------------------
 
-  signal clear_mode      : std_logic := '0';
-  signal clear_ack       : std_logic := '0';
-  signal clear_valid     : std_logic := '0';
-  signal clear_r_edge_r1 : std_logic := '0';
-  signal clear_r_edge_r2 : std_logic := '0';
-  signal clear_pulse_r1  : std_logic := '0';
-  
+  signal clear_mode     : std_logic := '0';  -- flag while memory is being cleared
+  signal clear_valid    : std_logic := '0';  -- tvalid for clearing the memory
+  signal clear_ps_mem_r : std_logic := '0';  -- register to make a rising edge sensitive clear_pulse
+  signal clear_pulse    : std_logic := '0';  -- single clock wide pulse to clear the memory
+
   --------------------------------------------------------------------------------
   -- RAM Occupancy Signals
   --------------------------------------------------------------------------------
@@ -375,20 +373,19 @@ begin
   begin
     if(rising_edge(clk_axi)) then
       if (reset = '1') then
-        clear_r_edge_r1 <= '0';
-        clear_r_edge_r2 <= '0';
-        clear_pulse_r1  <= '0';
+        clear_ps_mem_r <= '0';
+        clear_pulse    <= '0';
       else
 
-        clear_r_edge_r1 <= clear_ps_mem;
-        clear_r_edge_r2 <= clear_r_edge_r1;
+        -- make a clear pulse that is rising edge sensitive only
+        clear_ps_mem_r <= clear_ps_mem;
 
-        if(clear_r_edge_r1 = '1' and clear_r_edge_r2 = '0') then
-          clear_pulse_r1 <= '1';
+        if(clear_ps_mem = '1' and clear_ps_mem_r = '0') then
+          clear_pulse <= '1';
         elsif(clear_mode = '1') then
-          clear_pulse_r1 <= '0';
+          clear_pulse <= '0';
         else
-          clear_pulse_r1 <= clear_pulse_r1;
+          clear_pulse <= clear_pulse;
         end if;
 
       end if;
@@ -458,7 +455,7 @@ begin
 
         -- if a wipe of the memory is requested, we switch to the 0th address in
         -- the memory region
-        elsif ((clear_pulse_r1 = '1' and s2mm_data_state = IDLE) or
+        elsif ((clear_pulse = '1' and s2mm_data_state = IDLE) or
                (clear_mode = '1' and mem_bytes_written > mem_buff_size)) then
           reset_pointer_address <= '1';
 
@@ -517,7 +514,7 @@ begin
                and unsigned(fifo_count) /= 0
                and s2mm_cmd_tready = '1') then
               s2mm_data_state <= ASSERT_CMD;
-            elsif(clear_pulse_r1 = '1' and s2mm_cmd_tready = '1') then
+            elsif(clear_pulse = '1' and s2mm_cmd_tready = '1') then
               s2mm_data_state <= ASSERT_CMD;
               clear_mode      <= '1';
             else
