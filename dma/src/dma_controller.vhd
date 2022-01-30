@@ -480,7 +480,7 @@ begin
         mem_bytes_written <= (others => '0');
       elsif (s2mm_addr_req_posted_reg = '1') then
         saddr             <= std_logic_vector(unsigned(saddr) + unsigned(btt));
-        mem_bytes_written <= mem_bytes_written + unsigned(btt);
+        mem_bytes_written <= mem_bytes_written + resize(unsigned(btt), mem_bytes_written'length);
       else
         saddr             <= saddr;
         mem_bytes_written <= mem_bytes_written;
