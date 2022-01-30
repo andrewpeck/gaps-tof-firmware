@@ -251,8 +251,8 @@ architecture Behavioral of dma_controller is
   signal m_axis_s2mm_sts_tlast_Reg  : std_logic                    := '0';
   signal s2mm_err_reg               : std_logic                    := '0';
 
-  signal reset_pointer_address    : std_logic := '0';
-  signal reset_pointer_address_r2 : std_logic := '0';
+  signal buff_switch_request_r0 : std_logic := '0';
+  signal buff_switch_request    : std_logic := '0';
 
   --------------------------------------------------------------------------------
   --Circular buffer wrap signals
@@ -429,7 +429,7 @@ begin
     if(rising_edge(clk_axi)) then
 
       if (reset = '1') then
-        reset_pointer_address <= '0';
+        buff_switch_request_r0 <= '0';
         next_buffer_addr       <= START_ADDRESS;
       else
 
@@ -441,7 +441,7 @@ begin
 
         if (daq_busy_xfifo = '0' and mem_bytes_written > mem_buff_size) then
 
-          reset_pointer_address <= '1';
+          buff_switch_request_r0 <= '1';
 
           -- jump to opposite half of ring
           if(next_buffer_addr = START_ADDRESS)then
@@ -454,14 +454,14 @@ begin
         -- the memory region
         elsif ((clear_pulse = '1' and s2mm_data_state = IDLE) or
                (clear_mode = '1' and mem_bytes_written > mem_buff_size)) then
-          reset_pointer_address <= '1';
+          buff_switch_request_r0 <= '1';
 
         -- nothing requested, just keep going along
         else
-          reset_pointer_address <= '0';
+          buff_switch_request_r0 <= '0';
         end if;
 
-        reset_pointer_address_r2 <= reset_pointer_address;
+        buff_switch_request <= buff_switch_request_r0;
 
       end if;
     end if;
@@ -470,7 +470,7 @@ begin
   address_handler : process(clk_axi)
   begin
     if(rising_edge(clk_axi)) then
-      if (reset = '1') or reset_pointer_address_r2 = '1' then
+      if (reset = '1') or buff_switch_request = '1' then
         saddr             <= next_buffer_addr;
         mem_bytes_written <= (others => '0');
       elsif (s2mm_addr_req_posted_reg = '1') then
@@ -606,7 +606,7 @@ begin
 
           when CONTINUE_CLEAR =>
 
-            if (reset_pointer_address_r2 = '1') then
+            if (buff_switch_request = '1') then
               s2mm_data_state <= IDLE;
               clear_mode      <= '0';
             elsif(clear_mode = '1')then
@@ -762,7 +762,7 @@ begin
 
   begin
 
-    fifo_debug_concat <= fifo_wr_en & fifo_rd_en & wfifo_empty & '0' & fifo_out_valid & reset_pointer_address;
+    fifo_debug_concat <= fifo_wr_en & fifo_rd_en & wfifo_empty & '0' & fifo_out_valid & buff_switch_request_r0;
 
     ila_s2mm_inst : ila_s2mm
       port map(
