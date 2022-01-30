@@ -19,9 +19,9 @@ entity dma_controller is
     FIFO_LATENCY : natural := 1;
 
     WORDS_TO_SEND : integer := 16;
-    
-    BUFF_FRAC_DIVISOR  : integer := 1040384;  --Corresponds to 1/64 of RAM_BUFF_SIZE
-    
+
+    BUFF_FRAC_DIVISOR : integer := 1040384;  --Corresponds to 1/64 of RAM_BUFF_SIZE
+
     -- NOTE: WORDS_TO_SEND MUST NOT EXCEED MaxBurst in DataMover core (u1: axis2aximm)!
 
     -- TODO: make START_ADDRESS, TOP_HALF_ADDRESS programmable from userspace
@@ -37,17 +37,17 @@ entity dma_controller is
     clk_in  : in std_logic;             -- daq clock
     clk_axi : in std_logic;             -- axi clock
     rst_in  : in std_logic;             -- active high reset, synchronous to the axi clock
-    
+
     --------------------------------------------------------------
     -- RAM Occupancy signals
     --------------------------------------------------------------
-    ram_a_occ_rst  : in std_logic;
-    ram_b_occ_rst  : in std_logic;
+    ram_a_occ_rst : in std_logic;
+    ram_b_occ_rst : in std_logic;
 
 
-    ram_buff_a_occupancy_o  : out std_logic_vector(31 downto 0) := (others => '0');
-    ram_buff_b_occupancy_o  : out std_logic_vector(31 downto 0) := (others => '0');
-    dma_pointer_o           : out std_logic_vector(31 downto 0) := (others => '0');
+    ram_buff_a_occupancy_o : out std_logic_vector(31 downto 0) := (others => '0');
+    ram_buff_b_occupancy_o : out std_logic_vector(31 downto 0) := (others => '0');
+    dma_pointer_o          : out std_logic_vector(31 downto 0) := (others => '0');
 
 
     --------------------------------------------------------------
@@ -185,15 +185,14 @@ architecture Behavioral of dma_controller is
       );
   end component;
 
-  type cmd_state  is (IDLE, SET, DONE);
-  type data_state is (IDLE, ASSERT_CMD, DELAY0, READ_FIFO, DONE, DELAY1,CLEAR_MEM,CONTINUE_CLEAR);
+  type cmd_state is (IDLE, SET, DONE);
+  type data_state is (IDLE, ASSERT_CMD, DELAY0, READ_FIFO, DONE, DELAY1, CLEAR_MEM, CONTINUE_CLEAR);
 
   signal reset   : std_logic := '0';
 
   signal s2mm_cmd_state  : cmd_state;
   signal s2mm_data_state : data_state;
 
-  signal data_counter   : std_logic_vector(9 downto 0);
   signal packet_sent    : std_logic_vector(31 downto 0) := (others => '0');
   signal packet_is_tail : std_logic                     := '0';
 
@@ -241,7 +240,7 @@ architecture Behavioral of dma_controller is
   signal init_cmd : std_logic;
 
   ---
-  signal delay_counter   : integer range 0 to 21 := 0;
+  signal delay_counter : integer range 0 to 21 := 0;
 
   signal valid_fifo_data : std_logic_vector(31 downto 0) := (others => '0');
 
@@ -285,11 +284,11 @@ architecture Behavioral of dma_controller is
   -- RAM Occupancy Signals
   --------------------------------------------------------------------------------
 
-  signal ram_buff_a_occupancy  : unsigned(RAM_ADRB-1 downto 0) := (others => '0');
-  signal ram_buff_b_occupancy  : unsigned(RAM_ADRB-1 downto 0) := (others => '0');
+  signal ram_buff_a_occupancy : unsigned(RAM_ADRB-1 downto 0) := (others => '0');  -- occupancy indicator for each buffer
+  signal ram_buff_b_occupancy : unsigned(RAM_ADRB-1 downto 0) := (others => '0');  -- occupancy indicator for each buffer
 
-  signal dma_pointer           : unsigned(RAM_ADRB-1 downto 0);
-  
+  signal dma_pointer : unsigned(RAM_ADRB-1 downto 0);  -- pointer to the location in memory being written
+
 begin
 
   --active low reset for logic
@@ -333,8 +332,9 @@ begin
 
   dma_pointer_o(RAM_ADRB-1 downto 0) <= std_logic_vector(dma_pointer);
 
-  assert BUFF_FRAC_DIVISOR rem (WORDS_TO_SEND * 4) = 0 report "BUFF_FRAC_DIVISOR must be divisible by WORDS_TO_SEND * 4" severity ERROR;
-  
+  assert BUFF_FRAC_DIVISOR rem (WORDS_TO_SEND * 4) = 0
+    report "BUFF_FRAC_DIVISOR must be divisible by WORDS_TO_SEND * 4" severity error;
+
   -------------------------------------------------------------------------------
   -- FIFO Generator
   -------------------------------------------------------------------------------
@@ -401,7 +401,6 @@ begin
     end if;
   end process;
 
-
   -------------------------------------------------------------------------------
   -- Post-AXI packet counter
   -------------------------------------------------------------------------------
@@ -413,7 +412,8 @@ begin
 
       packet_sent_o <= packet_sent;
 
-      if (data_xfifo_r(31 downto 16) = TAIL or data_xfifo_r(15 downto 0) = TAIL) then
+      if (data_xfifo_r(31 downto 16) = TAIL or
+          data_xfifo_r(15 downto 0)  = TAIL) then
         packet_is_tail <= '1';
       else
         packet_is_tail <= '0';
@@ -447,8 +447,9 @@ begin
 
         -- switch memory region
         --   - the dma is now writing into the "overflow region"
-        --   - as soon as the daq is idle (it always goes idle between packets)
-        --     it will jump to the other memory region
+        --   - as soon as the daq is idle, as indicated by daq_busy_xfifo
+        --     (it always goes idle between packets)
+        --     the dma controller will jump to the other memory region
 
         if (daq_busy_xfifo = '0' and mem_bytes_written > mem_buff_size) then
 
@@ -509,8 +510,7 @@ begin
         fifo_rd_en              <= '0';
         s2mm_tlast              <= '0';
         s2mm_tdata              <= (others => '0');
-
-        clear_mode <= '0';
+        clear_mode              <= '0';
       else
 
         case s2mm_data_state is
@@ -640,25 +640,29 @@ begin
       end if;
     end if;
   end process;
-  
+
   --------------------------------------------------------------------------------
   -- RAM Occupancy
+  --
   -- Running count of split buffer fullness in units of 64ths
   -- Also provides integer value of saddr pointer
+  --
+  -- (only used for readout, not important to the logic here)
   --------------------------------------------------------------------------------
+
   ram_occupancy : process(clk_axi)
-    begin
+  begin
     if(rising_edge(clk_axi)) then
       dma_pointer <= unsigned(saddr(RAM_ADRB-1 downto 0));
       if s2mm_addr_req_posted_reg = '1' then
-          if (mem_bytes_written mod BUFF_FRAC_DIVISOR) = 0 then
-            if (dma_pointer < unsigned(TOP_HALF_ADDRESS)) then
-                 ram_buff_a_occupancy <= ram_buff_a_occupancy + 1;
-            end if;
-            if (dma_pointer >= unsigned(TOP_HALF_ADDRESS)) then
-                 ram_buff_b_occupancy <= ram_buff_b_occupancy + 1;
-            end if;
+        if (mem_bytes_written mod BUFF_FRAC_DIVISOR) = 0 then
+          if (dma_pointer < unsigned(TOP_HALF_ADDRESS)) then
+            ram_buff_a_occupancy <= ram_buff_a_occupancy + 1;
           end if;
+          if (dma_pointer >= unsigned(TOP_HALF_ADDRESS)) then
+            ram_buff_b_occupancy <= ram_buff_b_occupancy + 1;
+          end if;
+        end if;
       end if;
       if ram_a_occ_rst = '1' then
         ram_buff_a_occupancy <= (others => '0');
