@@ -240,7 +240,6 @@ architecture Behavioral of dma_controller is
   --bytes to transfer
   constant BTT : std_logic_vector(22 downto 0) := std_logic_vector(to_unsigned(WORDS_TO_SEND * 4, 23));
   signal saddr            : std_logic_vector(31 downto 0) := (others => '0');
-  signal next_buffer_addr : std_logic_vector(31 downto 0) := START_ADDRESS;
   signal data_type        : std_logic                     := '0';
 
   signal delay_counter : integer range 0 to 21 := 0;
@@ -433,6 +432,7 @@ begin
   --------------------------------------------------------------------------------
 
   ram_in_b_buff <= not ram_in_a_buff;
+
   process (clk_axi) is
   begin
     if (rising_edge(clk_axi)) then
@@ -455,7 +455,6 @@ begin
 
       if (reset = '1') then
         buff_switch_request <= '0';
-        next_buffer_addr    <= START_ADDRESS;
       else
 
         -- switch memory region
@@ -469,13 +468,6 @@ begin
             buff_switch_request = '0') then
 
           buff_switch_request <= '1';
-
-          -- jump to opposite half of ring
-          if(next_buffer_addr = START_ADDRESS)then
-            next_buffer_addr <= TOP_HALF_ADDRESS;
-          else
-            next_buffer_addr <= START_ADDRESS;
-          end if;
 
         -- if a wipe of the memory is requested, we switch to the 0th address in
         -- the memory region
@@ -503,10 +495,20 @@ begin
       mem_bytes_written <= resize(unsigned(saddr) - unsigned(base_addr),
                                            mem_bytes_written'length);
 
-      if (reset = '1') or buff_switch_request = '1' then
-        base_addr            <= next_buffer_addr;
-        saddr                <= next_buffer_addr;
+      if (reset = '1') then
+        base_addr <= START_ADDRESS;
+        saddr     <= START_ADDRESS;
+      elsif buff_switch_request = '1' then
+
+        -- jump to opposite half of ring
+        if(base_addr = START_ADDRESS)then
+          saddr <= TOP_HALF_ADDRESS;
+        else
+          saddr <= START_ADDRESS;
+        end if;
+
         buff_switch_response <= '1';
+
       elsif (s2mm_addr_req_posted_reg = '1') then
         saddr                <= std_logic_vector(unsigned(saddr) + unsigned(BTT));
         buff_switch_response <= '0';
