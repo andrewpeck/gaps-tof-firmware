@@ -237,7 +237,8 @@ architecture Behavioral of dma_controller is
   signal s2mm_tvalid : std_logic                     := '0';
   signal s2mm_tready : std_logic                     := '0';
 
-  signal btt              : std_logic_vector(22 downto 0) := (others => '0');
+  --bytes to transfer
+  constant BTT : std_logic_vector(22 downto 0) := std_logic_vector(to_unsigned(WORDS_TO_SEND * 4, 23));
   signal saddr            : std_logic_vector(31 downto 0) := (others => '0');
   signal next_buffer_addr : std_logic_vector(31 downto 0) := START_ADDRESS;
   signal data_type        : std_logic                     := '0';
@@ -307,16 +308,13 @@ begin
   -- incr = 1, fixed = 0
   data_type <= '1';
 
-  --bytes to transfer
-  btt <= std_logic_vector(to_unsigned(WORDS_TO_SEND * 4, btt'length));
-
   --s2mm command signals
   s2mm_cmd_tdata(71 downto 68) <= (others => '0');
   s2mm_cmd_tdata(67 downto 64) <= (others => '0');
   s2mm_cmd_tdata(63 downto 32) <= saddr;      --start address
   s2mm_cmd_tdata(31 downto 24) <= (others => '0');
   s2mm_cmd_tdata(23)           <= data_type;  --data type
-  s2mm_cmd_tdata(22 downto 0)  <= btt;        -- bytes to transfer
+  s2mm_cmd_tdata(22 downto 0)  <= BTT;        -- bytes to transfer
 
   --s2mm command valid assertion
   s2mm_cmd_tvalid <= '1' when (s2mm_data_state = ASSERT_CMD) else '0';
@@ -510,7 +508,7 @@ begin
         saddr                <= next_buffer_addr;
         buff_switch_response <= '1';
       elsif (s2mm_addr_req_posted_reg = '1') then
-        saddr                <= std_logic_vector(unsigned(saddr) + unsigned(btt));
+        saddr                <= std_logic_vector(unsigned(saddr) + unsigned(BTT));
         buff_switch_response <= '0';
       else
         saddr                <= saddr;
