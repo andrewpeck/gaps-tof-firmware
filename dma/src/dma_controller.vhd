@@ -81,21 +81,21 @@ entity dma_controller is
     m_axi_s2mm_bvalid  : in  std_logic;
     m_axi_s2mm_bready  : out std_logic;
 
-    m_axi_mm2s_arid    : out std_logic_vector(3 downto 0);
-    m_axi_mm2s_araddr  : out std_logic_vector(31 downto 0);
-    m_axi_mm2s_arlen   : out std_logic_vector(7 downto 0);
-    m_axi_mm2s_arsize  : out std_logic_vector(2 downto 0);
-    m_axi_mm2s_arburst : out std_logic_vector(1 downto 0);
-    m_axi_mm2s_arprot  : out std_logic_vector(2 downto 0);
-    m_axi_mm2s_arcache : out std_logic_vector(3 downto 0);
-    m_axi_mm2s_aruser  : out std_logic_vector(3 downto 0);
-    m_axi_mm2s_arvalid : out std_logic;
+    m_axi_mm2s_arid    : out std_logic_vector(3 downto 0)  := (others => '0');  -- these aren't driven
+    m_axi_mm2s_araddr  : out std_logic_vector(31 downto 0) := (others => '0');  -- these aren't driven
+    m_axi_mm2s_arlen   : out std_logic_vector(7 downto 0)  := (others => '0');  -- these aren't driven
+    m_axi_mm2s_arsize  : out std_logic_vector(2 downto 0)  := (others => '0');  -- these aren't driven
+    m_axi_mm2s_arburst : out std_logic_vector(1 downto 0)  := (others => '0');  -- these aren't driven
+    m_axi_mm2s_arprot  : out std_logic_vector(2 downto 0)  := (others => '0');  -- these aren't driven
+    m_axi_mm2s_arcache : out std_logic_vector(3 downto 0)  := (others => '0');  -- these aren't driven
+    m_axi_mm2s_aruser  : out std_logic_vector(3 downto 0)  := (others => '0');  -- these aren't driven
+    m_axi_mm2s_arvalid : out std_logic                     := '0';
     m_axi_mm2s_arready : in  std_logic;
     m_axi_mm2s_rdata   : in  std_logic_vector(31 downto 0);
     m_axi_mm2s_rresp   : in  std_logic_vector(1 downto 0);
     m_axi_mm2s_rlast   : in  std_logic;
     m_axi_mm2s_rvalid  : in  std_logic;
-    m_axi_mm2s_rready  : out std_logic;
+    m_axi_mm2s_rready  : out std_logic                     := '0';
 
     -----------------------------------------------------------------------------
     -- DMA AXI4 Lite Registers
@@ -218,43 +218,40 @@ architecture Behavioral of dma_controller is
   --------------------------------------------------------------------------------
 
   --command port
-  signal s2mm_cmd_tvalid : std_logic;
-  signal s2mm_cmd_tready : std_logic;
-  signal s2mm_cmd_tdata  : std_logic_vector(71 downto 0);
+  signal s2mm_cmd_tvalid : std_logic := '0';
+  signal s2mm_cmd_tready : std_logic := '0';
+  signal s2mm_cmd_tdata  : std_logic_vector(71 downto 0) := (others => '0');
 
   --data port
-  signal s2mm_tdata     : std_logic_vector(31 downto 0);
-  signal s2mm_tkeep     : std_logic_vector(3 downto 0);
-  signal s2mm_tlast     : std_logic;
-  signal s2mm_tlast_r1  : std_logic;
-  signal s2mm_tlast_r2  : std_logic;
-  signal s2mm_tvalid    : std_logic;
-  signal s2mm_tvalid_r1 : std_logic;
-  signal s2mm_tready    : std_logic;
+  signal s2mm_tdata  : std_logic_vector(31 downto 0) := (others => '0');
+  signal s2mm_tkeep  : std_logic_vector(3 downto 0) := (others => '0');
+  signal s2mm_tlast  : std_logic := '0';
+  signal s2mm_tvalid : std_logic := '0';
+  signal s2mm_tready : std_logic := '0';
 
-  signal btt          : std_logic_vector(22 downto 0);
-  signal saddr        : std_logic_vector(31 downto 0);
+  signal btt          : std_logic_vector(22 downto 0) := (others => '0');
+  signal saddr        : std_logic_vector(31 downto 0) := (others => '0');
   signal saddress_mux : std_logic_vector(31 downto 0) := START_ADDRESS;
-  signal data_type    : std_logic;
+  signal data_type    : std_logic                     := '0';
 
-  signal init_cmd : std_logic;
+
 
   ---
   signal delay_counter : integer range 0 to 21 := 0;
 
   signal valid_fifo_data : std_logic_vector(31 downto 0) := (others => '0');
 
-  signal s2mm_allow_addr_req_reg  : std_logic;
-  signal s2mm_addr_req_posted_reg : std_logic;
-  signal s2mm_wr_xfer_cmplt_reg   : std_logic;
-  signal s2mm_ld_nxt_len_reg      : std_logic;
+  signal s2mm_allow_addr_req_reg  : std_logic := '0';
+  signal s2mm_addr_req_posted_reg : std_logic := '0';
+  signal s2mm_wr_xfer_cmplt_reg   : std_logic := '0';
+  signal s2mm_ld_nxt_len_reg      : std_logic := '0';
   signal s2mm_wr_len_reg          : std_logic_vector(7 downto 0) := (others => '0');
 
   --datamover status signals
-  signal m_axis_s2mm_sts_tvalid_reg : std_logic;
-  signal m_axis_s2mm_sts_tdata_reg  : std_logic_vector(7 downto 0);
-  signal m_axis_s2mm_sts_tkeep_reg  : std_logic_vector(0 downto 0);
-  signal m_axis_s2mm_sts_tlast_Reg  : std_logic;
+  signal m_axis_s2mm_sts_tvalid_reg : std_logic := '0';
+  signal m_axis_s2mm_sts_tdata_reg  : std_logic_vector(7 downto 0) := (others => '0');
+  signal m_axis_s2mm_sts_tkeep_reg  : std_logic_vector(0 downto 0) := (others => '0');
+  signal m_axis_s2mm_sts_tlast_Reg  : std_logic := '0';
   signal s2mm_err_reg               : std_logic := '0';
 
   signal reset_pointer_address    : std_logic := '0';
