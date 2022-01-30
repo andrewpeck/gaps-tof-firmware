@@ -259,8 +259,8 @@ architecture Behavioral of dma_controller is
   signal m_axis_s2mm_sts_tlast_Reg  : std_logic                    := '0';
   signal s2mm_err_reg               : std_logic                    := '0';
 
-  signal buff_switch_request_r0 : std_logic := '0';
   signal buff_switch_request    : std_logic := '0';
+  signal buff_switch_response   : std_logic := '0';
 
   --------------------------------------------------------------------------------
   --Circular buffer wrap signals
@@ -456,8 +456,8 @@ begin
     if(rising_edge(clk_axi)) then
 
       if (reset = '1') then
-        buff_switch_request_r0 <= '0';
-        next_buffer_addr       <= START_ADDRESS;
+        buff_switch_request <= '0';
+        next_buffer_addr    <= START_ADDRESS;
       else
 
         -- switch memory region
@@ -467,14 +467,10 @@ begin
         --     the dma controller will jump to the other memory region
 
         if (daq_busy_xfifo = '0' and
-            mem_bytes_written > MEM_BUFF_SWITCH_TRIP
-            and
-            -- this is really ugly, it takes a couple clock cycles for the reset
-            -- to propagate so it uses this baked in delay of 2
-            buff_switch_request_r0 = '0' and
+            mem_bytes_written > MEM_BUFF_SWITCH_TRIP and
             buff_switch_request = '0') then
 
-          buff_switch_request_r0 <= '1';
+          buff_switch_request <= '1';
 
           -- jump to opposite half of ring
           if(next_buffer_addr = START_ADDRESS)then
@@ -487,14 +483,12 @@ begin
         -- the memory region
         elsif ((clear_pulse = '1' and s2mm_data_state = IDLE) or
                (clear_mode = '1' and mem_bytes_written > MEM_BUFF_SWITCH_TRIP)) then
-          buff_switch_request_r0 <= '1';
+          buff_switch_request <= '1';
 
         -- nothing requested, just keep going along
-        else
-          buff_switch_request_r0 <= '0';
+        elsif (buff_switch_response = '1') then
+          buff_switch_request <= '0';
         end if;
-
-        buff_switch_request <= buff_switch_request_r0;
 
       end if;
     end if;
@@ -512,12 +506,15 @@ begin
                                            mem_bytes_written'length);
 
       if (reset = '1') or buff_switch_request = '1' then
-        base_addr         <= next_buffer_addr;
-        saddr             <= next_buffer_addr;
+        base_addr            <= next_buffer_addr;
+        saddr                <= next_buffer_addr;
+        buff_switch_response <= '1';
       elsif (s2mm_addr_req_posted_reg = '1') then
-        saddr             <= std_logic_vector(unsigned(saddr) + unsigned(btt));
+        saddr                <= std_logic_vector(unsigned(saddr) + unsigned(btt));
+        buff_switch_response <= '0';
       else
-        saddr             <= saddr;
+        saddr                <= saddr;
+        buff_switch_response <= '0';
       end if;
     end if;
   end process;
