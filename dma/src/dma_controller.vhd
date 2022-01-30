@@ -18,8 +18,6 @@ entity dma_controller is
 
     FIFO_LATENCY : natural := 1;
 
-    RESET_ACTIVE : std_logic := '0';    -- set to 1 for active high, 0 for active low
-
     WORDS_TO_SEND : integer := 16;
     
     BUFF_FRAC_DIVISOR  : integer := 1040384;  --Corresponds to 1/64 of RAM_BUFF_SIZE
@@ -104,7 +102,7 @@ entity dma_controller is
     -----------------------------------------------------------------------------
 
     packet_sent_o : out std_logic_vector(31 downto 0) := (others => '0');
-    reset_sys     : in  std_logic                     := '0';
+    reset_sys     : in  std_logic                     := '0'; -- active HIGH reset input
     clear_ps_mem  : in  std_logic                     := '0'
 
     );
@@ -190,7 +188,7 @@ architecture Behavioral of dma_controller is
   type cmd_state  is (IDLE, SET, DONE);
   type data_state is (IDLE, ASSERT_CMD, DELAY0, READ_FIFO, DONE, DELAY1,CLEAR_MEM,CONTINUE_CLEAR);
 
-  signal aresetn : std_logic := '1';
+  signal reset   : std_logic := '0';
 
   signal s2mm_cmd_state  : cmd_state;
   signal s2mm_data_state : data_state;
@@ -295,7 +293,7 @@ architecture Behavioral of dma_controller is
 begin
 
   --active low reset for logic
-  aresetn <= not (rst_in or reset_sys);
+  reset   <= (rst_in or reset_sys);
 
   -------------------------------------------------------------------------------
   -- Datamover Commmand Interface Signals
@@ -343,7 +341,7 @@ begin
 
   u0 : fifo_generator_0
     port map(
-      rst           => not aresetn,
+      rst           => reset,
       wr_clk        => clk_in,
       rd_clk        => clk_axi,
       din           => daq_busy_in & fifo_in,
@@ -382,7 +380,7 @@ begin
   begin
     if(rising_edge(clk_axi)) then
 
-      if aresetn = RESET_ACTIVE then
+      if (reset = '1') then
         clear_r_edge_r1 <= '0';
         clear_r_edge_r2 <= '0';
         clear_pulse_r1  <= '0';
@@ -421,7 +419,7 @@ begin
         packet_is_tail <= '0';
       end if;
 
-      if RST_IN = RESET_ACTIVE or reset_sys = '1' then
+      if reset = '1' then
         packet_sent <= (others => '0');
       elsif (fifo_rd_en = '1' and packet_is_tail = '1') then
         packet_sent <= std_logic_vector(unsigned(packet_sent) + 1);
@@ -441,7 +439,7 @@ begin
   begin
     if(rising_edge(clk_axi)) then
 
-      if aresetn = RESET_ACTIVE then
+      if (reset = '1') then
         reset_pointer_address <= '0';
         saddress_mux          <= START_ADDRESS;
 
@@ -483,7 +481,7 @@ begin
   address_handler : process(clk_axi)
   begin
     if(rising_edge(clk_axi)) then
-      if aresetn = RESET_ACTIVE or reset_pointer_address_r2 = '1' then
+      if (reset = '1') or reset_pointer_address_r2 = '1' then
         saddr             <= saddress_mux;
         mem_bytes_written <= (others => '0');
       elsif (s2mm_addr_req_posted_reg = '1') then
@@ -504,7 +502,7 @@ begin
   begin
     if(rising_edge(clk_axi)) then
 
-      if aresetn = RESET_ACTIVE then
+      if (reset = '1') then
         s2mm_allow_addr_req_reg <= '0';
         s2mm_data_state         <= IDLE;
         delay_counter           <= 0;
@@ -670,7 +668,6 @@ begin
       end if;
     end if;
   end process;
-  
 
   -------------------------------------------------------------------------------
   -- Data Mover IP
@@ -679,7 +676,7 @@ begin
   u1 : axis2aximm
     port map (
       m_axi_s2mm_aclk    => clk_axi,
-      m_axi_s2mm_aresetn => aresetn,
+      m_axi_s2mm_aresetn => not reset,  -- active low
       s2mm_halt          => '0',
       s2mm_dbg_sel       => x"0",
 
@@ -695,7 +692,7 @@ begin
       s_axis_s2mm_tready     => s2mm_tready,
 
       m_axis_s2mm_cmdsts_awclk   => clk_axi,
-      m_axis_s2mm_cmdsts_aresetn => aresetn,
+      m_axis_s2mm_cmdsts_aresetn => not reset,  -- active low
 
       m_axis_s2mm_sts_tvalid => m_axis_s2mm_sts_tvalid_reg,
       m_axis_s2mm_sts_tready => '1',
