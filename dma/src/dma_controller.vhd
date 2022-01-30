@@ -52,9 +52,9 @@ entity dma_controller is
     --------------------------------------------------------------
     -- RAM Occupancy signals
     --------------------------------------------------------------
+
     ram_a_occ_rst : in std_logic;
     ram_b_occ_rst : in std_logic;
-
 
     ram_buff_a_occupancy_o : out std_logic_vector(31 downto 0) := (others => '0');
     ram_buff_b_occupancy_o : out std_logic_vector(31 downto 0) := (others => '0');
@@ -266,11 +266,14 @@ architecture Behavioral of dma_controller is
   --Circular buffer wrap signals
   --------------------------------------------------------------------------------
 
-  constant RAM_ADRB : integer := integer(ceil(log2(real(RAM_BUFF_SIZE))));
-  constant MEM_BUFF_SWITCH_TRIP : unsigned(RAM_ADRB - 1 downto 0)
-    := to_unsigned(RAM_BUFF_SIZE-MAX_PACKET_SIZE-1, RAM_ADRB); -- subtract 1 so that BUFF_SIZE of 2048 means 0-2047
+  constant CNT_ADRB : integer := integer(ceil(log2(real(RAM_BUFF_SIZE))));
+  constant PTR_ADRB : integer := integer(ceil(log2(real(
+    to_integer(unsigned(TOP_HALF_ADDRESS))+RAM_BUFF_SIZE))));
 
-  signal mem_bytes_written : unsigned(RAM_ADRB - 1 downto 0) := (others => '0');
+  constant MEM_BUFF_SWITCH_TRIP : unsigned(CNT_ADRB - 1 downto 0)
+    := to_unsigned(RAM_BUFF_SIZE-MAX_PACKET_SIZE-1, CNT_ADRB); -- subtract 1 so that BUFF_SIZE of 2048 means 0-2047
+
+  signal mem_bytes_written : unsigned(CNT_ADRB - 1 downto 0) := (others => '0');
 
   --------------------------------------------------------------------------------
   -- DMA Clear Signals
@@ -285,10 +288,11 @@ architecture Behavioral of dma_controller is
   -- RAM Occupancy Signals
   --------------------------------------------------------------------------------
 
-  signal ram_buff_a_occupancy : unsigned(RAM_ADRB-1 downto 0) := (others => '0');  -- occupancy indicator for each buffer
-  signal ram_buff_b_occupancy : unsigned(RAM_ADRB-1 downto 0) := (others => '0');  -- occupancy indicator for each buffer
 
-  signal dma_pointer : unsigned(RAM_ADRB-1 downto 0);  -- pointer to the location in memory being written
+  signal ram_buff_a_occupancy : unsigned(CNT_ADRB-1 downto 0) := (others => '0');  -- occupancy indicator for each buffer
+  signal ram_buff_b_occupancy : unsigned(CNT_ADRB-1 downto 0) := (others => '0');  -- occupancy indicator for each buffer
+
+  signal dma_pointer : unsigned(PTR_ADRB-1 downto 0);  -- pointer to the location in memory being written
 
 begin
 
@@ -320,15 +324,12 @@ begin
   process (clk_axi) is
   begin
     if (rising_edge(clk_axi)) then
-      ram_buff_a_occupancy_o <= (others => '0');
-      ram_buff_b_occupancy_o <= (others => '0');
-
-      ram_buff_a_occupancy_o(RAM_ADRB-1 downto 0) <= std_logic_vector(ram_buff_a_occupancy);
-      ram_buff_b_occupancy_o(RAM_ADRB-1 downto 0) <= std_logic_vector(ram_buff_b_occupancy);
+      ram_buff_a_occupancy_o <= std_logic_vector(resize(ram_buff_a_occupancy,ram_buff_a_occupancy_o'length));
+      ram_buff_b_occupancy_o <= std_logic_vector(resize(ram_buff_b_occupancy,ram_buff_b_occupancy_o'length));
     end if;
   end process;
 
-  dma_pointer_o(RAM_ADRB-1 downto 0) <= std_logic_vector(dma_pointer);
+  dma_pointer_o <= std_logic_vector(resize(dma_pointer, dma_pointer_o'length));
 
   assert BUFF_FRAC_DIVISOR rem (WORDS_TO_SEND * 4) = 0
     report "BUFF_FRAC_DIVISOR must be divisible by WORDS_TO_SEND * 4" severity error;
@@ -653,7 +654,9 @@ begin
   ram_occupancy : process(clk_axi)
   begin
     if(rising_edge(clk_axi)) then
-      dma_pointer <= unsigned(saddr(RAM_ADRB-1 downto 0));
+
+      dma_pointer <= unsigned(saddr(dma_pointer'range));
+
       if s2mm_addr_req_posted_reg = '1' then
         if (mem_bytes_written mod BUFF_FRAC_DIVISOR) = 0 then
           if (dma_pointer < unsigned(TOP_HALF_ADDRESS)) then
@@ -801,8 +804,8 @@ begin
         probe19 => m_axis_s2mm_sts_tkeep_reg(0),
         probe20 => m_axis_s2mm_sts_tlast_Reg,
         probe21 => fifo_in,
-        probe22(RAM_ADRB-1 downto 0) => mem_bytes_written,
-        probe22(31 downto RAM_ADRB ) => (others => '0'),
+        probe22(CNT_ADRB-1 downto 0) => mem_bytes_written,
+        probe22(31 downto CNT_ADRB)  => (others => '0'),
         probe23 => daq_busy_xfifo,
         probe24 => fifo_out,
         probe25 => (others => '0'),
