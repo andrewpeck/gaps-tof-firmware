@@ -204,7 +204,7 @@ architecture Behavioral of dma_controller is
   signal fifo_count               : std_logic_vector(8 downto 0);
   signal fifo_rd_en               : std_logic;
   signal fifo_out_valid           : std_logic;
-  signal wfifo_full               : std_logic;
+  signal fifo_out_valid_r         : std_logic;
   signal wfifo_empty              : std_logic;
   signal wfifo_prog_full          : std_logic;
   signal wfifo_prog_empty         : std_logic;
@@ -312,9 +312,9 @@ begin
   --s2mm command valid assertion
   s2mm_cmd_tvalid <= '1' when (s2mm_data_state = ASSERT_CMD) else '0';
 
-  s2mm_tvalid <= s2mm_tvalid_r1 or clear_valid;
+  s2mm_tvalid <= fifo_out_valid_r or clear_valid;
   s2mm_tkeep  <= x"F";
-  
+
   -- RAM occupancy connections
   process (clk_axi) is
   begin
@@ -347,7 +347,7 @@ begin
       rd_data_count => fifo_count,
       dout          => fifo_out,
       valid         => fifo_out_valid,
-      full          => wfifo_full,
+      full          => fifo_full,
       empty         => wfifo_empty,
       prog_full     => wfifo_prog_full,
       prog_empty    => wfifo_prog_empty,
@@ -368,7 +368,6 @@ begin
     end if;
   end process;
 
-
   -------------------------------------------------------------------------------
   -- Clear Memory Block Procedure
   -------------------------------------------------------------------------------
@@ -376,7 +375,6 @@ begin
   process(clk_axi)
   begin
     if(rising_edge(clk_axi)) then
-
       if (reset = '1') then
         clear_r_edge_r1 <= '0';
         clear_r_edge_r2 <= '0';
@@ -550,15 +548,15 @@ begin
           when READ_FIFO =>
 
             -- Reorder words, otherwise will be swapped by fifo
-            s2mm_tdata     <= data_xfifo;
-            s2mm_tvalid_r1 <= fifo_out_valid;
+            s2mm_tdata       <= data_xfifo;
+            fifo_out_valid_r <= fifo_out_valid;
 
             if(unsigned(valid_fifo_data) >= WORDS_TO_SEND) then
-              valid_fifo_data <= (others => '0');
-              s2mm_tlast      <= '0';
-              fifo_rd_en      <= '0';
-              s2mm_tvalid_r1  <= '0';
-              s2mm_data_state <= DONE;
+              valid_fifo_data  <= (others => '0');
+              s2mm_tlast       <= '0';
+              fifo_rd_en       <= '0';
+              fifo_out_valid_r <= '0';
+              s2mm_data_state  <= DONE;
 
               --XXX: Potential to break things if fifo core is modified (certain
               --     options/checkboxes enabled). Hard coded/hand tuned latency
