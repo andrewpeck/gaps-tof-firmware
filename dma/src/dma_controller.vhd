@@ -798,7 +798,7 @@ begin
 
   begin
 
-    fifo_debug_concat <= fifo_wr_en & fifo_rd_en & wfifo_empty & '0' & fifo_out_valid & buff_switch_request_r0;
+    fifo_debug_concat <= fifo_wr_en & fifo_rd_en & wfifo_empty & '0' & fifo_out_valid & buff_switch_request;
 
     ila_s2mm_inst : ila_s2mm
       port map(
