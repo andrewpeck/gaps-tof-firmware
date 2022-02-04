@@ -30,7 +30,7 @@ entity dma_controller is
 
     -- TODO: make BOT_HALF_ADDRESS, TOP_HALF_ADDRESS programmable from userspace
     RAM_BUFF_SIZE    : integer                       := 66584576;
-    BOT_HALF_ADDRESS    : std_logic_vector(31 downto 0) := x"04100000";
+    BOT_HALF_ADDRESS : std_logic_vector(31 downto 0) := x"04100000";
     TOP_HALF_ADDRESS : std_logic_vector(31 downto 0) := x"08100000";
 
     -- reserve the tail of the buffer to be allocated for overflow only,
@@ -281,13 +281,10 @@ architecture Behavioral of dma_controller is
   constant PTR_ADRB : integer := integer(ceil(log2(real(
     to_integer(unsigned(TOP_HALF_ADDRESS))+RAM_BUFF_SIZE))));
 
-  constant MEM_BUFF_SWITCH_TRIP : unsigned(CNT_ADRB - 1 downto 0)
-    := to_unsigned(RAM_BUFF_SIZE-MAX_PACKET_SIZE-1, CNT_ADRB);  -- subtract 1 so that BUFF_SIZE of 2048 means 0-2047
-
   signal base_addr : std_logic_vector(31 downto 0) := BOT_HALF_ADDRESS;
 
-  signal mem_bytes_written : unsigned(CNT_ADRB - 1 downto 0) := (others => '0');
-  signal buffer_remaining  : unsigned(CNT_ADRB - 1 downto 0) := (others => '0');
+  signal mem_bytes_written : integer range 0 to RAM_BUFF_SIZE-1 := 0;
+  signal buffer_remaining  : integer range 0 to RAM_BUFF_SIZE-1 := 0;
   signal tripped           : std_logic                       := '0';
   signal guardrail_err     : std_logic                       := '0';
 
@@ -523,8 +520,12 @@ begin
   begin
     if(rising_edge(clk_axi)) then
 
-      mem_bytes_written <= resize(unsigned(saddr) - unsigned(base_addr),
-                                           mem_bytes_written'length);
+      if (buff_switch_request = '1' or buff_switch_response = '1') then
+        -- hold low while a switch is happening
+        mem_bytes_written <= 0;
+      else
+        mem_bytes_written <= to_integer(unsigned(saddr) - unsigned(base_addr));
+      end if;
 
       if (reset = '1') then
 
