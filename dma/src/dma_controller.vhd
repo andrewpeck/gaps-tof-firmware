@@ -3,6 +3,10 @@
 -- GAPS DRS4 Readout Firmware
 -- I. Garcia, A. Peck, S. Quinn
 ----------------------------------------------------------------------------------
+--
+-- https://www.xilinx.com/support/documentation/ip_documentation/axi_datamover/v5_1/pg022_axi_datamover.pdf
+--
+----------------------------------------------------------------------------------
 
 ------------------------------------------------------------
 -- DMA Controller 
@@ -230,24 +234,31 @@ architecture Behavioral of dma_controller is
   signal s2mm_cmd_tready : std_logic                     := '0';
   signal s2mm_cmd_tdata  : std_logic_vector(71 downto 0) := (others => '0');
 
-  --data port
+  -- axi stream data port
   signal s2mm_tdata  : std_logic_vector(31 downto 0) := (others => '0');
-  signal s2mm_tkeep  : std_logic_vector(3 downto 0)  := (others => '0');
   signal s2mm_tlast  : std_logic                     := '0';
   signal s2mm_tvalid : std_logic                     := '0';
   signal s2mm_tready : std_logic                     := '0';
 
   --bytes to transfer
-  constant BTT : std_logic_vector(22 downto 0) := std_logic_vector(to_unsigned(WORDS_TO_SEND * 4, 23));
-  signal saddr            : std_logic_vector(31 downto 0) := (others => '0');
-  signal data_type        : std_logic                     := '0';
+  constant BTT        : std_logic_vector(22 downto 0) := std_logic_vector(to_unsigned(WORDS_TO_SEND * 4, 23));
+  constant DATA_TYPE  : std_logic                     := '1';  -- incr = 1, fixed = 0
+  constant S2MM_TKEEP : std_logic_vector(3 downto 0)  := x"F"; -- keep all 4 bytes in the word
+
+  signal saddr : std_logic_vector(31 downto 0) := (others => '0');
 
   signal delay_counter : integer range 0 to 21 := 0;
 
-  signal valid_fifo_data : std_logic_vector(31 downto 0) := (others => '0');
+  signal words_sent_cnt : integer range 0 to WORDS_TO_SEND;
 
+  -- Used to control the MM2S in posting an address on the AXI4 Read address
+  -- channel. A 1 allows posting and a 0 inhibits posting.
   signal s2mm_allow_addr_req_reg  : std_logic                    := '0';
+
+  -- This output signal is asserted to 1 for one m_axi_mm2s_aclk period for each
+  -- new address posted to the AXI4 Read Address Channel.
   signal s2mm_addr_req_posted_reg : std_logic                    := '0';
+
   signal s2mm_wr_xfer_cmplt_reg   : std_logic                    := '0';
   signal s2mm_ld_nxt_len_reg      : std_logic                    := '0';
   signal s2mm_wr_len_reg          : std_logic_vector(7 downto 0) := (others => '0');
@@ -259,8 +270,8 @@ architecture Behavioral of dma_controller is
   signal m_axis_s2mm_sts_tlast_Reg  : std_logic                    := '0';
   signal s2mm_err_reg               : std_logic                    := '0';
 
-  signal buff_switch_request    : std_logic := '0';
-  signal buff_switch_response   : std_logic := '0';
+  signal buff_switch_request  : std_logic := '0';
+  signal buff_switch_response : std_logic := '0';
 
   --------------------------------------------------------------------------------
   --Circular buffer wrap signals
@@ -271,9 +282,9 @@ architecture Behavioral of dma_controller is
     to_integer(unsigned(TOP_HALF_ADDRESS))+RAM_BUFF_SIZE))));
 
   constant MEM_BUFF_SWITCH_TRIP : unsigned(CNT_ADRB - 1 downto 0)
-    := to_unsigned(RAM_BUFF_SIZE-MAX_PACKET_SIZE-1, CNT_ADRB); -- subtract 1 so that BUFF_SIZE of 2048 means 0-2047
+    := to_unsigned(RAM_BUFF_SIZE-MAX_PACKET_SIZE-1, CNT_ADRB);  -- subtract 1 so that BUFF_SIZE of 2048 means 0-2047
 
-  signal base_addr    : std_logic_vector(31 downto 0) := START_ADDRESS;
+  signal base_addr : std_logic_vector(31 downto 0) := START_ADDRESS;
 
   signal mem_bytes_written : unsigned(CNT_ADRB - 1 downto 0) := (others => '0');
 
@@ -300,40 +311,41 @@ architecture Behavioral of dma_controller is
 
 begin
 
-  -------------------------------------------------------------------------------
-  -- Datamover Commmand Interface Signals
-  -------------------------------------------------------------------------------
+  assert BUFF_FRAC_DIVISOR rem (WORDS_TO_SEND * 4) = 0
+    report "BUFF_FRAC_DIVISOR must be divisible by WORDS_TO_SEND * 4" severity error;
 
-  -- incr = 1, fixed = 0
-  data_type <= '1';
-
-  --s2mm command signals
-  s2mm_cmd_tdata(71 downto 68) <= (others => '0');
-  s2mm_cmd_tdata(67 downto 64) <= (others => '0');
-  s2mm_cmd_tdata(63 downto 32) <= saddr;      --start address
-  s2mm_cmd_tdata(31 downto 24) <= (others => '0');
-  s2mm_cmd_tdata(23)           <= data_type;  --data type
-  s2mm_cmd_tdata(22 downto 0)  <= BTT;        -- bytes to transfer
-
-  --s2mm command valid assertion
-  s2mm_cmd_tvalid <= '1' when (s2mm_data_state = ASSERT_CMD) else '0';
-
-  s2mm_tvalid <= fifo_out_valid_r or clear_valid;
-  s2mm_tkeep  <= x"F";
+  --------------------------------------------------------------------------------
+  -- Copy signals for outputs
+  --------------------------------------------------------------------------------
 
   -- RAM occupancy connections
   process (clk_axi) is
   begin
     if (rising_edge(clk_axi)) then
-      ram_buff_a_occupancy_o <= std_logic_vector(resize(ram_buff_a_occupancy,ram_buff_a_occupancy_o'length));
-      ram_buff_b_occupancy_o <= std_logic_vector(resize(ram_buff_b_occupancy,ram_buff_b_occupancy_o'length));
+      ram_buff_a_occupancy_o <= std_logic_vector(resize(ram_buff_a_occupancy, ram_buff_a_occupancy_o'length));
+      ram_buff_b_occupancy_o <= std_logic_vector(resize(ram_buff_b_occupancy, ram_buff_b_occupancy_o'length));
     end if;
   end process;
 
   dma_pointer_o <= std_logic_vector(resize(dma_pointer, dma_pointer_o'length));
 
-  assert BUFF_FRAC_DIVISOR rem (WORDS_TO_SEND * 4) = 0
-    report "BUFF_FRAC_DIVISOR must be divisible by WORDS_TO_SEND * 4" severity error;
+  -------------------------------------------------------------------------------
+  -- Datamover Commmand Interface Signals
+  -------------------------------------------------------------------------------
+
+  --s2mm command signals
+  s2mm_cmd_tdata(71 downto 68) <= (others => '0');  --
+  s2mm_cmd_tdata(67 downto 64) <= (others => '0');  --
+  s2mm_cmd_tdata(63 downto 32) <= saddr;            -- start address
+  s2mm_cmd_tdata(31 downto 24) <= (others => '0');  --
+  s2mm_cmd_tdata(23)           <= DATA_TYPE;        -- data type
+  s2mm_cmd_tdata(22 downto 0)  <= BTT;              -- bytes to transfer
+
+  --s2mm command valid assertion
+  s2mm_cmd_tvalid <= '1' when (s2mm_data_state = ASSERT_CMD) else '0';
+
+  -- data is valid when either the output fifo data is valid, or the memory is being cleared
+  s2mm_tvalid <= fifo_out_valid_r or clear_valid;
 
   -------------------------------------------------------------------------------
   -- FIFO Generator
@@ -358,7 +370,9 @@ begin
       rd_rst_busy   => rd_rst_busy
       );
 
+  -- mark the daq as busy if either 16 bit word is busy
   daq_busy_xfifo <= fifo_out(16) and fifo_out(33);
+  -- concatenate together the two 16 bit words into one 32 bit word
   data_xfifo     <= fifo_out(15 downto 0) & fifo_out(32 downto 17);
 
   -- add an additional ff stage for timing.. can only use it in some places
@@ -373,6 +387,10 @@ begin
 
   -------------------------------------------------------------------------------
   -- Clear Memory Block Process
+  --
+  -- if asserted, the dma block will loop through its memory and clear everything
+  -- back to zero
+  --
   -------------------------------------------------------------------------------
 
   process(clk_axi)
@@ -429,6 +447,8 @@ begin
 
   --------------------------------------------------------------------------------
   -- Buffer Switch Monitor
+  --
+  -- Provides a set of signals indicating which buffer the logic is in
   --------------------------------------------------------------------------------
 
   ram_in_b_buff <= not ram_in_a_buff;
@@ -445,7 +465,7 @@ begin
   end process;
 
   -------------------------------------------------------------------------------
-  -- DMA Write Address Control
+  -- DMA Buffer Switching
   -------------------------------------------------------------------------------
 
   -- Restart address when x address is reached.
@@ -541,8 +561,11 @@ begin
 
           when IDLE =>
 
+            -- Used to control the MM2S in posting an address on the AXI4 Read address
+            -- channel. A 1 allows posting and a 0 inhibits posting.
             s2mm_allow_addr_req_reg <= '1';
 
+            -- make sure we have enough words in the FIFO for a burst transfer
             if((unsigned(fifo_count) mod WORDS_TO_SEND) = 0
                and unsigned(fifo_count) /= 0
                and s2mm_cmd_tready = '1') then
@@ -558,14 +581,18 @@ begin
 
           when ASSERT_CMD =>
 
+            -- this state asserts s2mm_cmd_tvalid
             s2mm_data_state <= DELAY0;
 
-          when DELAY0 =>
+          when DELAY0 => -- what does this state do??
+
+            -- there is some latency from s_axis_mm2s_cmd_tvalid to m_axi_mm2s_arvalid (8 clocks)?
+            -- I guess this just sits and waits a while
 
             if delay_counter > 20 then
               s2mm_allow_addr_req_reg <= '0';
               delay_counter           <= 0;
-              if(clear_mode = '0') then
+              if (clear_mode = '0') then
                 s2mm_data_state <= READ_FIFO;
               else
                 s2mm_data_state <= CLEAR_MEM;
@@ -576,12 +603,13 @@ begin
 
           when READ_FIFO =>
 
-            -- Reorder words, otherwise will be swapped by fifo
+            -- copy signals
             s2mm_tdata       <= data_xfifo;
             fifo_out_valid_r <= fifo_out_valid;
 
-            if(unsigned(valid_fifo_data) >= WORDS_TO_SEND) then
-              valid_fifo_data  <= (others => '0');
+            -- sent all WORDS_TO_SEND words, go to DONE state
+            if(words_sent_cnt >= WORDS_TO_SEND) then
+              words_sent_cnt   <= 0;
               s2mm_tlast       <= '0';
               fifo_rd_en       <= '0';
               fifo_out_valid_r <= '0';
@@ -606,17 +634,24 @@ begin
               ----   Should make the FIFO latency a parameter, and just have
               ----   this subtraction happen automatically.
 
-            elsif(unsigned(valid_fifo_data) >= WORDS_TO_SEND - 1) then
-              valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
+            -- assert tlast one clock before the last word
+            elsif(words_sent_cnt >= WORDS_TO_SEND - 1) then
+              words_sent_cnt <= words_sent_cnt + 1;
               fifo_rd_en      <= '0';
               s2mm_tlast      <= '1';
-            elsif(unsigned(valid_fifo_data) >= WORDS_TO_SEND - FIFO_LATENCY - 1) then
+
+            -- stop reading the FIFO 2 1+FIFO_LATENCY before the last word
+            elsif(words_sent_cnt >= WORDS_TO_SEND - FIFO_LATENCY - 1) then
               fifo_rd_en      <= '0';
-              valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
+              words_sent_cnt <= words_sent_cnt + 1;
+
+            --
             elsif(fifo_out_valid = '1') then
-              valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
+              words_sent_cnt <= words_sent_cnt + 1;
+
+            --
             else
-              valid_fifo_data <= valid_fifo_data;
+              words_sent_cnt <= words_sent_cnt;
               fifo_rd_en      <= '1';
             end if;
 
@@ -626,18 +661,18 @@ begin
 
           when CLEAR_MEM =>
 
-            if(unsigned(valid_fifo_data) >= WORDS_TO_SEND) then
-              valid_fifo_data <= (others => '0');
+            if (words_sent_cnt >= WORDS_TO_SEND) then
+              words_sent_cnt  <= 0;
               s2mm_tlast      <= '0';
               clear_valid     <= '0';
               s2mm_data_state <= CONTINUE_CLEAR;
-            elsif(unsigned(valid_fifo_data) >= WORDS_TO_SEND - 1) then
-              valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
-              s2mm_tlast      <= '1';
+            elsif (words_sent_cnt >= WORDS_TO_SEND - 1) then
+              words_sent_cnt <= words_sent_cnt + 1;
+              s2mm_tlast     <= '1';
             else
-              valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
-              s2mm_tdata      <= x"00000000";
-              clear_valid     <= '1';
+              words_sent_cnt <= words_sent_cnt + 1;
+              s2mm_tdata     <= x"00000000";
+              clear_valid    <= '1';
             end if;
 
           when CONTINUE_CLEAR =>
@@ -716,7 +751,7 @@ begin
       s_axis_s2mm_cmd_tdata  => s2mm_cmd_tdata,
       --s2mm data
       s_axis_s2mm_tdata      => s2mm_tdata,
-      s_axis_s2mm_tkeep      => s2mm_tkeep,
+      s_axis_s2mm_tkeep      => S2MM_TKEEP,
       s_axis_s2mm_tlast      => s2mm_tlast,
       s_axis_s2mm_tvalid     => s2mm_tvalid,
       s_axis_s2mm_tready     => s2mm_tready,
