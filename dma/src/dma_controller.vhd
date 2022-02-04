@@ -26,8 +26,6 @@ entity dma_controller is
 
     WORDS_TO_SEND : integer := 16;
 
-    BUFF_FRAC_DIVISOR : integer := 1040384;  --Corresponds to 1/64 of RAM_BUFF_SIZE
-
     -- NOTE: WORDS_TO_SEND MUST NOT EXCEED MaxBurst in DataMover core (u1: axis2aximm)!
 
     -- TODO: make BOT_HALF_ADDRESS, TOP_HALF_ADDRESS programmable from userspace
@@ -306,9 +304,6 @@ architecture Behavioral of dma_controller is
   signal toggle_buffer : std_logic := '0';
 
 begin
-
-  assert BUFF_FRAC_DIVISOR rem (WORDS_TO_SEND * 4) = 0
-    report "BUFF_FRAC_DIVISOR must be divisible by WORDS_TO_SEND * 4" severity error;
 
   --------------------------------------------------------------------------------
   -- Copy signals for outputs

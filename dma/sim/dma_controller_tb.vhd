@@ -29,6 +29,8 @@ architecture Behavioral of dma_controller_tb is
   signal fifo_wr_en   : std_logic                     := '0';
   signal daq_busy_in  : std_logic                     := '0';
 
+  signal ram_toggle_request : std_logic := '0';
+
   signal clk_logic   : std_logic := '0';
   signal clk_axi     : std_logic := '0';
   signal rst_in      : std_logic := '1';
@@ -80,6 +82,17 @@ begin
     wait for logic_per*1600;
   end process;
 
+  process
+  begin
+    wait for 50 us;
+
+    wait until rising_edge(clk_axi);
+    ram_toggle_request <= '1';
+    wait until rising_edge(clk_axi);
+    ram_toggle_request <= '0';
+
+  end process;
+
   --reduced ram_buff_size to demonstrate address functionality of address split feature.
 
   inst_dma : entity work.dma_controller
@@ -98,6 +111,9 @@ begin
       --------------------------------------------------------------
       -- RAM Occupancy signals
       --------------------------------------------------------------
+
+      ram_toggle_request_i => ram_toggle_request,
+
       ram_a_occ_rst => '0',
       ram_b_occ_rst => '0',
 
