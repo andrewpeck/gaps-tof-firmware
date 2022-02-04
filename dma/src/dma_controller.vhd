@@ -62,14 +62,16 @@ entity dma_controller is
     ram_a_occ_rst : in std_logic;
     ram_b_occ_rst : in std_logic;
 
+    ram_toggle_request_i : in std_logic := '0';
+
     ram_buff_a_occupancy_o : out std_logic_vector(31 downto 0) := (others => '0');
     ram_buff_b_occupancy_o : out std_logic_vector(31 downto 0) := (others => '0');
     dma_pointer_o          : out std_logic_vector(31 downto 0) := (others => '0');
 
-
     --------------------------------------------------------------
     -- DAQ Signal(s)
     --------------------------------------------------------------
+
     fifo_in     : in  std_logic_vector(15 downto 0);
     fifo_wr_en  : in  std_logic;
     fifo_full   : out std_logic;
@@ -301,6 +303,8 @@ architecture Behavioral of dma_controller is
   signal clear_ps_mem_r : std_logic := '0';  -- register to make a rising edge sensitive clear_pulse
   signal clear_pulse    : std_logic := '0';  -- single clock wide pulse to clear the memory
 
+  signal toggle_buffer : std_logic := '0';
+
 begin
 
   assert BUFF_FRAC_DIVISOR rem (WORDS_TO_SEND * 4) = 0
@@ -460,7 +464,14 @@ begin
 
       if (reset = '1') then
         buff_switch_request <= '0';
+        toggle_buffer         <= '0';
       else
+
+        -- we have a request to toggle the ram buffer...
+        -- save the request until it can be attended to at a ram boundary
+        if (ram_toggle_request_i = '1') then
+          toggle_buffer <= '1';
+        end if;
 
         -- switch memory region
         --   - the dma is now writing into the "overflow region"
@@ -468,8 +479,9 @@ begin
         --     (it always goes idle between packets)
         --     the dma controller will jump to the other memory region
 
-        if (daq_busy_xfifo = '0' and tripped = '1' and buff_switch_request = '0') then
+        if (daq_busy_xfifo = '0' and (tripped = '1' or toggle_buffer='1') and buff_switch_request = '0') then
 
+          toggle_buffer       <= '0';
           buff_switch_request <= '1';
 
         -- if a wipe of the memory is requested, we switch to the 0th address in
