@@ -22,6 +22,8 @@ entity dma_controller is
 
     FIFO_LATENCY : natural := 1;
 
+    OCCUPANCY_IS_OFFSET : boolean := false;
+
     WORDS_TO_SEND : integer := 16;
 
     BUFF_FRAC_DIVISOR : integer := 1040384;  --Corresponds to 1/64 of RAM_BUFF_SIZE
@@ -285,8 +287,10 @@ architecture Behavioral of dma_controller is
 
   signal mem_bytes_written : integer range 0 to RAM_BUFF_SIZE-1 := 0;
   signal buffer_remaining  : integer range 0 to RAM_BUFF_SIZE-1 := 0;
-  signal tripped           : std_logic                       := '0';
-  signal guardrail_err     : std_logic                       := '0';
+  signal tripped           : std_logic                          := '0';
+  signal guardrail_err     : std_logic                          := '0';
+  signal ram_in_a_buff     : std_logic                          := '1';
+  signal ram_in_b_buff     : std_logic                          := '0';
 
   --------------------------------------------------------------------------------
   -- DMA Clear Signals
@@ -297,18 +301,6 @@ architecture Behavioral of dma_controller is
   signal clear_ps_mem_r : std_logic := '0';  -- register to make a rising edge sensitive clear_pulse
   signal clear_pulse    : std_logic := '0';  -- single clock wide pulse to clear the memory
 
-  --------------------------------------------------------------------------------
-  -- RAM Occupancy Signals
-  --------------------------------------------------------------------------------
-
-  signal ram_in_a_buff : std_logic := '1';
-  signal ram_in_b_buff : std_logic := '0';
-
-  signal ram_buff_a_occupancy : unsigned(CNT_ADRB-1 downto 0) := (others => '0');  -- occupancy indicator for each buffer
-  signal ram_buff_b_occupancy : unsigned(CNT_ADRB-1 downto 0) := (others => '0');  -- occupancy indicator for each buffer
-
-  signal dma_pointer : unsigned(PTR_ADRB-1 downto 0);  -- pointer to the location in memory being written
-
 begin
 
   assert BUFF_FRAC_DIVISOR rem (WORDS_TO_SEND * 4) = 0
@@ -317,22 +309,6 @@ begin
   --------------------------------------------------------------------------------
   -- Copy signals for outputs
   --------------------------------------------------------------------------------
-
-  -- RAM occupancy connections
-  process (clk_axi) is
-  begin
-    if (rising_edge(clk_axi)) then
-      if (guardrail_err='1') then
-        ram_buff_a_occupancy_o <= x"FFFFFFFF";
-        ram_buff_b_occupancy_o <= x"FFFFFFFF";
-      else
-        ram_buff_a_occupancy_o <= std_logic_vector(resize(ram_buff_a_occupancy, ram_buff_a_occupancy_o'length));
-        ram_buff_b_occupancy_o <= std_logic_vector(resize(ram_buff_b_occupancy, ram_buff_b_occupancy_o'length));
-      end if;
-    end if;
-  end process;
-
-  dma_pointer_o <= std_logic_vector(resize(dma_pointer, dma_pointer_o'length));
 
   -------------------------------------------------------------------------------
   -- Datamover Commmand Interface Signals
@@ -732,25 +708,41 @@ begin
   begin
     if(rising_edge(clk_axi)) then
 
-      dma_pointer <= unsigned(saddr(dma_pointer'range));
+      dma_pointer_o <= std_logic_vector(saddr);
 
-      if s2mm_addr_req_posted_reg = '1' then
-        if (mem_bytes_written mod BUFF_FRAC_DIVISOR) = 0 then
-          if (dma_pointer < unsigned(TOP_HALF_ADDRESS)) then
-            ram_buff_a_occupancy <= ram_buff_a_occupancy + 1;
+      if (guardrail_err = '1') then
+        ram_buff_a_occupancy_o <= x"FFFFFFFF";
+        ram_buff_b_occupancy_o <= x"FFFFFFFF";
+      elsif (s2mm_addr_req_posted_reg = '1') then
+
+        if (OCCUPANCY_IS_OFFSET) then
+
+          if (ram_in_a_buff = '1') then
+            ram_buff_a_occupancy_o <= std_logic_vector(unsigned(saddr)-unsigned(base_addr) + unsigned(BTT));
           end if;
-          if (dma_pointer >= unsigned(TOP_HALF_ADDRESS)) then
-            ram_buff_b_occupancy <= ram_buff_b_occupancy + 1;
+
+          if (ram_in_b_buff = '1') then
+            ram_buff_b_occupancy_o <= std_logic_vector(unsigned(saddr)-unsigned(base_addr) + unsigned(BTT));
+          end if;
+
+        else
+          if (ram_in_a_buff = '1') then
+            ram_buff_a_occupancy_o <= std_logic_vector(unsigned(saddr) + unsigned(BTT));
+          end if;
+
+          if (ram_in_b_buff = '1') then
+            ram_buff_b_occupancy_o <= std_logic_vector(unsigned(saddr) + unsigned(BTT));
           end if;
         end if;
+
       end if;
 
       if ram_a_occ_rst = '1' then
-        ram_buff_a_occupancy <= (others => '0');
+        ram_buff_a_occupancy_o <= (others => '0');
       end if;
 
       if ram_b_occ_rst = '1' then
-        ram_buff_b_occupancy <= (others => '0');
+        ram_buff_b_occupancy_o <= (others => '0');
       end if;
 
     end if;
