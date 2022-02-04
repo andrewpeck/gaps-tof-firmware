@@ -289,6 +289,7 @@ architecture Behavioral of dma_controller is
   signal mem_bytes_written : unsigned(CNT_ADRB - 1 downto 0) := (others => '0');
   signal buffer_remaining  : unsigned(CNT_ADRB - 1 downto 0) := (others => '0');
   signal tripped           : std_logic                       := '0';
+  signal guardrail_err     : std_logic                       := '0';
 
   --------------------------------------------------------------------------------
   -- DMA Clear Signals
@@ -324,8 +325,13 @@ begin
   process (clk_axi) is
   begin
     if (rising_edge(clk_axi)) then
-      ram_buff_a_occupancy_o <= std_logic_vector(resize(ram_buff_a_occupancy, ram_buff_a_occupancy_o'length));
-      ram_buff_b_occupancy_o <= std_logic_vector(resize(ram_buff_b_occupancy, ram_buff_b_occupancy_o'length));
+      if (guardrail_err='1') then
+        ram_buff_a_occupancy_o <= x"FFFFFFFF";
+        ram_buff_b_occupancy_o <= x"FFFFFFFF";
+      else
+        ram_buff_a_occupancy_o <= std_logic_vector(resize(ram_buff_a_occupancy, ram_buff_a_occupancy_o'length));
+        ram_buff_b_occupancy_o <= std_logic_vector(resize(ram_buff_b_occupancy, ram_buff_b_occupancy_o'length));
+      end if;
     end if;
   end process;
 
@@ -523,6 +529,12 @@ begin
       if (reset = '1') then
 
         saddr     <= BOT_HALF_ADDRESS;
+      elsif (unsigned(saddr) > unsigned(TOP_HALF_ADDRESS) + to_unsigned(RAM_BUFF_SIZE,32) or
+             saddr < BOT_HALF_ADDRESS) then
+
+        saddr     <= BOT_HALF_ADDRESS;
+        guardrail_err <= '1';
+
       elsif buff_switch_request = '1' then
 
 
@@ -731,12 +743,15 @@ begin
           end if;
         end if;
       end if;
+
       if ram_a_occ_rst = '1' then
         ram_buff_a_occupancy <= (others => '0');
       end if;
+
       if ram_b_occ_rst = '1' then
         ram_buff_b_occupancy <= (others => '0');
       end if;
+
     end if;
   end process;
 
