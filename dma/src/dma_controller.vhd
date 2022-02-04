@@ -28,9 +28,9 @@ entity dma_controller is
 
     -- NOTE: WORDS_TO_SEND MUST NOT EXCEED MaxBurst in DataMover core (u1: axis2aximm)!
 
-    -- TODO: make START_ADDRESS, TOP_HALF_ADDRESS programmable from userspace
+    -- TODO: make BOT_HALF_ADDRESS, TOP_HALF_ADDRESS programmable from userspace
     RAM_BUFF_SIZE    : integer                       := 66584576;
-    START_ADDRESS    : std_logic_vector(31 downto 0) := x"04100000";
+    BOT_HALF_ADDRESS    : std_logic_vector(31 downto 0) := x"04100000";
     TOP_HALF_ADDRESS : std_logic_vector(31 downto 0) := x"08100000";
 
     -- reserve the tail of the buffer to be allocated for overflow only,
@@ -284,9 +284,11 @@ architecture Behavioral of dma_controller is
   constant MEM_BUFF_SWITCH_TRIP : unsigned(CNT_ADRB - 1 downto 0)
     := to_unsigned(RAM_BUFF_SIZE-MAX_PACKET_SIZE-1, CNT_ADRB);  -- subtract 1 so that BUFF_SIZE of 2048 means 0-2047
 
-  signal base_addr : std_logic_vector(31 downto 0) := START_ADDRESS;
+  signal base_addr : std_logic_vector(31 downto 0) := BOT_HALF_ADDRESS;
 
   signal mem_bytes_written : unsigned(CNT_ADRB - 1 downto 0) := (others => '0');
+  signal buffer_remaining  : unsigned(CNT_ADRB - 1 downto 0) := (others => '0');
+  signal tripped           : std_logic                       := '0';
 
   --------------------------------------------------------------------------------
   -- DMA Clear Signals
@@ -457,9 +459,11 @@ begin
   begin
     if (rising_edge(clk_axi)) then
       if (saddr < TOP_HALF_ADDRESS) then
-        ram_in_a_buff    <= '1';
+        ram_in_a_buff <= '1';
+        base_addr     <= BOT_HALF_ADDRESS;
       else
-        ram_in_a_buff    <= '0';
+        ram_in_a_buff <= '0';
+        base_addr     <= TOP_HALF_ADDRESS;
       end if;
     end if;
   end process;
@@ -468,7 +472,9 @@ begin
   -- DMA Buffer Switching
   -------------------------------------------------------------------------------
 
-  -- Restart address when x address is reached.
+  buffer_remaining <= RAM_BUFF_SIZE - mem_bytes_written;
+  tripped          <= '1' when (buffer_remaining < MAX_PACKET_SIZE) else '0';
+
   address_pointer : process(clk_axi)
   begin
     if(rising_edge(clk_axi)) then
@@ -483,16 +489,15 @@ begin
         --     (it always goes idle between packets)
         --     the dma controller will jump to the other memory region
 
-        if (daq_busy_xfifo = '0' and
-            mem_bytes_written > MEM_BUFF_SWITCH_TRIP and
-            buff_switch_request = '0') then
+        if (daq_busy_xfifo = '0' and tripped = '1' and buff_switch_request = '0') then
 
           buff_switch_request <= '1';
 
         -- if a wipe of the memory is requested, we switch to the 0th address in
         -- the memory region
         elsif ((clear_pulse = '1' and s2mm_data_state = IDLE) or
-               (clear_mode = '1' and mem_bytes_written > MEM_BUFF_SWITCH_TRIP)) then
+               (clear_mode = '1' and tripped = '1')) then
+
           buff_switch_request <= '1';
 
         -- nothing requested, just keep going along
@@ -516,15 +521,16 @@ begin
                                            mem_bytes_written'length);
 
       if (reset = '1') then
-        base_addr <= START_ADDRESS;
-        saddr     <= START_ADDRESS;
+
+        saddr     <= BOT_HALF_ADDRESS;
       elsif buff_switch_request = '1' then
 
+
         -- jump to opposite half of ring
-        if(base_addr = START_ADDRESS)then
+        if (ram_in_a_buff = '1')then
           saddr <= TOP_HALF_ADDRESS;
         else
-          saddr <= START_ADDRESS;
+          saddr <= BOT_HALF_ADDRESS;
         end if;
 
         buff_switch_response <= '1';
