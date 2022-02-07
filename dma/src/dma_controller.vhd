@@ -844,7 +844,7 @@ begin
         probe19 : in std_logic;
         probe20 : in std_logic;
         probe21 : in std_logic_vector(15 downto 0);
-        probe22 : in unsigned(31 downto 0);
+        probe22 : in std_logic_vector(31 downto 0);
         probe23 : in std_logic;
         probe24 : in std_logic_vector(33 downto 0);
         probe25 : in std_logic_vector(7 downto 0);
