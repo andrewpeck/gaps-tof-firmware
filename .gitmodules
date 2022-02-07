@@ -1,6 +1,6 @@
 [submodule "Hog"]
 	path = Hog
-	url = https://gitlab.cern.ch/hog/Hog.git
+	url = https://gitlab.com/hog-cern/hog
 [submodule "plnx/enclustra"]
 	path = plnx/enclustra
 	url = https://github.com/enclustra/Mars_ZX2_EB1_Reference_Design
