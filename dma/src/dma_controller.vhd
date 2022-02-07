@@ -883,7 +883,7 @@ begin
         probe19 => m_axis_s2mm_sts_tkeep_reg(0),
         probe20 => m_axis_s2mm_sts_tlast_Reg,
         probe21 => fifo_in,
-        probe22 => std_logic_vector(to_unsigned(mem_bytes_written,32))
+        probe22 => std_logic_vector(to_unsigned(mem_bytes_written,32)),
         probe23 => daq_busy_xfifo,
         probe24 => fifo_out,
         probe25 => (others => '0'),
