@@ -99,8 +99,7 @@ begin
     generic map(
       RAM_BUFF_SIZE        => 8192,
       WORDS_TO_SEND        => 16,
-      MAX_PACKET_SIZE      => 2048,
-      BUFF_FRAC_DIVISOR    => 64
+      MAX_PACKET_SIZE      => 2048
       )
     port map(
 
