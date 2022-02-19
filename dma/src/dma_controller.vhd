@@ -269,6 +269,7 @@ architecture Behavioral of dma_controller is
   signal m_axis_s2mm_sts_tvalid_reg : std_logic                    := '0';
   signal m_axis_s2mm_sts_tdata_reg  : std_logic_vector(7 downto 0) := (others => '0');
   signal m_axis_s2mm_sts_tkeep_reg  : std_logic_vector(0 downto 0) := (others => '0');
+  signal m_axis_s2mm_sts_tlast_Reg  : std_logic                    := '0';
   signal s2mm_err_reg               : std_logic                    := '0';
 
   signal buff_switch_request  : std_logic := '0';
@@ -880,7 +881,7 @@ begin
         probe17 => m_axis_s2mm_sts_tvalid_reg,
         probe18 => m_axis_s2mm_sts_tdata_reg,
         probe19 => m_axis_s2mm_sts_tkeep_reg(0),
-        probe20 => '0',
+        probe20 => m_axis_s2mm_sts_tlast_Reg,
         probe21 => fifo_in,
         probe22 => std_logic_vector(to_unsigned(mem_bytes_written,32)),
         probe23 => daq_busy_xfifo,
