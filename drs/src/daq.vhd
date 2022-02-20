@@ -258,7 +258,7 @@ begin
       crc    => channel_crc
       );
 
-  busy_o <= '0' when state = IDLE_state else '1';
+  busy_o <= '0' when state = IDLE_state or state=WAIT_state else '1';
   done_o <= '1' when state = TAIL_state else '0';
 
   --------------------------------------------------------------------------------
@@ -585,7 +585,7 @@ begin
           -- between packets, add this here to make sure there is always some small period between
           -- one packet and the next
 
-          if (state_word_cnt = 7) then
+          if (state_word_cnt = g_PACKET_PAD-1) then
             state          <= IDLE_state;
             state_word_cnt <= 0;
           else
@@ -593,7 +593,7 @@ begin
           end if;
 
           data <= x"0000";
-          dav  <= false;
+          dav  <= true;
 
         when others =>
 

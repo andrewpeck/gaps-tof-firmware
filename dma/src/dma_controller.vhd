@@ -376,7 +376,8 @@ begin
       );
 
   -- mark the daq as busy if either 16 bit word is busy
-  daq_busy_xfifo <= fifo_out(16) and fifo_out(33);
+  -- or if there is data in the fifo
+  daq_busy_xfifo <= (not fifo_empty) or fifo_out(16) or fifo_out(33);
   -- concatenate together the two 16 bit words into one 32 bit word
   data_xfifo     <= fifo_out(15 downto 0) & fifo_out(32 downto 17);
 
