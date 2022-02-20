@@ -281,6 +281,11 @@
                 mask="0xffffffff"
                 fw_signal="trigger_rate"/>
 
+            <node id="LOST_TRIGGER_RATE" address="0x7" permission="r"
+                description="Rate of lost triggers in Hz"
+                mask="0xffffffff"
+                fw_signal="lost_trigger_rate"/>
+
         </node> <!--COUNTERS-->
 
         <node id="HOG" address="0x60" description = "HOG Parameters">
