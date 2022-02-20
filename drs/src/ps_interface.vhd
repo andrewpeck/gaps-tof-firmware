@@ -445,7 +445,7 @@ begin
   dma_controller_inst : entity dma.dma_controller
     generic map (
       WORDS_TO_SEND => 16,
-      c_DEBUG       => true,
+      c_DEBUG       => false,
       HEAD          => x"aaaa",
       TAIL          => x"5555"
       )

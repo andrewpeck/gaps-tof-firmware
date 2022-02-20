@@ -18,7 +18,7 @@ use ieee.math_real.all;
 
 entity dma_controller is
   generic (
-    C_DEBUG : boolean := true;
+    C_DEBUG : boolean := false;
 
     FIFO_LATENCY : natural := 1;
 
@@ -885,7 +885,11 @@ begin
         );
     end component;
 
+    signal dma_state : std_logic_vector (3 downto 0) := (others => '0');
+
   begin
+
+    dma_state <= std_logic_vector(to_unsigned(data_state'POS(s2mm_data_state) , 4));
 
     ila_s2mm_inst : ila_s2mm
       port map(
@@ -911,7 +915,7 @@ begin
         probe18 => m_axis_s2mm_sts_tdata_reg,
         probe19 => m_axis_s2mm_sts_tkeep_reg(0),
         probe20 => m_axis_s2mm_sts_tlast_reg,
-        probe21(3 downto 0) => std_logic_vector(to_unsigned(data_state'POS(s2mm_data_state) , 4)),
+        probe21(3 downto 0) => dma_state,
         probe21(12 downto 4) => fifo_count,
         probe21(15 downto 13) => (others => '0'),
         probe22 => std_logic_vector(to_unsigned(mem_bytes_written,32)),
