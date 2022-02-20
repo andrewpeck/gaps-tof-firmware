@@ -1,3 +1,9 @@
+----------------------------------------------------------------------------------
+-- DRS DAQ Board Top
+-- GAPS DRS4 Readout Firmware
+-- I. Garcia, A. Peck, S. Quinn
+----------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_misc.all;
@@ -89,9 +95,6 @@ architecture Behavioral of top_readout_board is
   signal locked : std_logic;
 
   signal reset : std_logic;
-
-  -- DMA 
-  signal dma_reset : std_logic := '0';
 
   -- RAM Buffer occupancy
   signal ram_buff_a_occupancy : std_logic_vector(31 downto 0) := (others => '0');
@@ -554,8 +557,8 @@ begin
       dtap1_i     => (others => '0'),
 
       drs_busy_i  => '0', -- FIXME
-      drs_data_i  => daq_data(13 downto 0),
-      drs_valid_i => daq_valid,
+      drs_data_i  => drs_data,
+      drs_valid_i => drs_data_valid,
       drs_rden_o  => drs_rden,
 
       data_o      => fifo_data_out,
@@ -680,7 +683,7 @@ begin
       ipb_mosi_arr => ipb_mosi_arr,
 
       -- DMA
-      dma_reset_i => dma_reset,
+      dma_reset_i => reset,
       daq_busy_in => daq_busy,
 
       -- RAM occupancy monitoring
