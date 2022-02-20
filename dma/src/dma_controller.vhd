@@ -51,7 +51,7 @@ entity dma_controller is
 
     clk_in  : in std_logic;             -- daq clock
     clk_axi : in std_logic;             -- axi clock
-    reset   : in std_logic;             -- active high reset, synchronous to the axi clock
+    reset_i : in std_logic;             -- active high reset, synchronous to the axi clock
 
     --------------------------------------------------------------
     -- RAM Occupancy signals
@@ -302,12 +302,32 @@ architecture Behavioral of dma_controller is
   signal clear_pulse    : std_logic := '0';  -- single clock wide pulse to clear the memory
 
   signal toggle_buffer : std_logic := '0';
+  signal reset : std_logic := '1';
+  signal reset_cnt : integer range 0 to 7 := 7;
 
 begin
 
   --------------------------------------------------------------------------------
-  -- Copy signals for outputs
+  -- Make sure the reset is always at least 7 clocks wide
   --------------------------------------------------------------------------------
+
+  process (clk_axi) is
+  begin
+    if (rising_edge(clk_axi)) then
+      if (reset_i='1') then
+        reset_cnt <= 7;
+      elsif (reset_cnt > 0) then
+        reset_cnt <= reset_cnt - 1;
+      end if;
+
+      if (reset_cnt /= 0) then
+        reset <= '1';
+      else
+        reset <= '0';
+      end if;
+
+    end if;
+  end process;
 
   -------------------------------------------------------------------------------
   -- Datamover Commmand Interface Signals
