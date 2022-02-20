@@ -689,6 +689,7 @@ begin
       -- RAM occupancy monitoring
       ram_a_occ_rst_i        => ram_a_occ_rst,
       ram_b_occ_rst_i        => ram_b_occ_rst,
+      ram_toggle_request_i   => ram_toggle_request,
       ram_buff_a_occupancy_o => ram_buff_a_occupancy,
       ram_buff_b_occupancy_o => ram_buff_b_occupancy,
       dma_pointer_o          => dma_pointer
