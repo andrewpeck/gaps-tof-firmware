@@ -765,11 +765,19 @@ begin
       end if;
 
       if ram_a_occ_rst = '1' then
-        ram_buff_a_occupancy_o <= (others => '0');
+        if (OCCUPANCY_IS_OFFSET) then
+          ram_buff_a_occupancy_o <= (others => '0');
+        else
+          ram_buff_b_occupancy_o <= BOT_HALF_ADDRESS;
+        end if;
       end if;
 
       if ram_b_occ_rst = '1' then
-        ram_buff_b_occupancy_o <= (others => '0');
+        if (OCCUPANCY_IS_OFFSET) then
+          ram_buff_b_occupancy_o <= (others => '0');
+        else
+          ram_buff_b_occupancy_o <= TOP_HALF_ADDRESS;
+        end if;
       end if;
 
     end if;
