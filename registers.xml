@@ -275,6 +275,12 @@
                 mask="0xffffffff"
                 fw_cnt_en_signal="trigger"
                 fw_signal="event_counter"/>
+
+            <node id="TRIGGER_RATE" address="0x6" permission="r"
+                description="Rate of triggers in Hz"
+                mask="0xffffffff"
+                fw_signal="trigger_rate"/>
+
         </node> <!--COUNTERS-->
 
         <node id="HOG" address="0x60" description = "HOG Parameters">

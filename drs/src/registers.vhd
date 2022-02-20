@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_DRS_NUM_REGS : integer := 51;
+    constant REG_DRS_NUM_REGS : integer := 52;
     constant REG_DRS_ADDRESS_MSB : integer := 9;
     constant REG_DRS_ADDRESS_LSB : integer := 0;
     constant REG_CHIP_DMODE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
@@ -191,6 +191,10 @@ package registers is
     constant REG_COUNTERS_CNT_EVENT_ADDR    : std_logic_vector(9 downto 0) := "00" & x"55";
     constant REG_COUNTERS_CNT_EVENT_MSB    : integer := 31;
     constant REG_COUNTERS_CNT_EVENT_LSB     : integer := 0;
+
+    constant REG_COUNTERS_TRIGGER_RATE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"56";
+    constant REG_COUNTERS_TRIGGER_RATE_MSB    : integer := 31;
+    constant REG_COUNTERS_TRIGGER_RATE_LSB     : integer := 0;
 
     constant REG_HOG_GLOBAL_DATE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"60";
     constant REG_HOG_GLOBAL_DATE_MSB    : integer := 31;
