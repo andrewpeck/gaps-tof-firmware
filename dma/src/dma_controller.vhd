@@ -292,6 +292,9 @@ architecture Behavioral of dma_controller is
   signal ram_in_b_buff : std_logic := '0';
   signal toggle_buffer : std_logic := '0';
 
+  signal current_buffer_reg  : std_logic := '0';
+  signal buff_switched_pulse : std_logic := '0';  -- goes high for 1 clock after the buffer switches
+
   --------------------------------------------------------------------------------
   -- DMA Clear Signals
   --------------------------------------------------------------------------------
@@ -455,9 +458,14 @@ begin
 
   ram_in_b_buff <= not ram_in_a_buff;
 
+
   process (clk_axi) is
   begin
     if (rising_edge(clk_axi)) then
+
+      current_buffer_reg  <= ram_in_a_buff;
+      buff_switched_pulse <= ram_in_a_buff xor current_buffer_reg;
+
       if (saddr < TOP_HALF_ADDRESS) then
         ram_in_a_buff <= '1';
         base_addr     <= BOT_HALF_ADDRESS;
@@ -769,15 +777,17 @@ begin
 
       end if;
 
-      if ram_a_occ_rst = '1' then
+      if (ram_in_a_buff = '1' and buff_switched_pulse='1')
+        or reset='1' or ram_a_occ_rst = '1' then
         if (OCCUPANCY_IS_OFFSET) then
           ram_buff_a_occupancy_o <= (others => '0');
         else
-          ram_buff_b_occupancy_o <= BOT_HALF_ADDRESS;
+          ram_buff_a_occupancy_o <= BOT_HALF_ADDRESS;
         end if;
       end if;
 
-      if ram_b_occ_rst = '1' then
+      if (ram_in_b_buff = '1' and buff_switched_pulse='1')
+        or reset='1' or ram_b_occ_rst = '1' then
         if (OCCUPANCY_IS_OFFSET) then
           ram_buff_b_occupancy_o <= (others => '0');
         else
