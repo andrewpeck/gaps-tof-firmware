@@ -217,9 +217,9 @@ architecture Behavioral of dma_controller is
   signal fifo_rd_en               : std_logic;
   signal fifo_out_valid           : std_logic;
   signal fifo_out_valid_r         : std_logic;
-  signal wfifo_empty              : std_logic;
-  signal wfifo_prog_full          : std_logic;
-  signal wfifo_prog_empty         : std_logic;
+  signal fifo_empty               : std_logic;
+  signal fifo_prog_full           : std_logic;
+  signal fifo_prog_empty          : std_logic;
   signal wr_rst_busy              : std_logic;
   signal rd_rst_busy              : std_logic;
   signal daq_busy_xfifo           : std_logic := '0';
@@ -301,8 +301,9 @@ architecture Behavioral of dma_controller is
   signal clear_ps_mem_r : std_logic := '0';  -- register to make a rising edge sensitive clear_pulse
   signal clear_pulse    : std_logic := '0';  -- single clock wide pulse to clear the memory
 
-  signal reset : std_logic := '1';
-  signal reset_cnt : integer range 0 to 63 := 63;
+  signal fifo_reset : std_logic             := '1';
+  signal reset      : std_logic             := '1';
+  signal reset_cnt  : integer range 0 to 63 := 63;
 
 begin
 
@@ -320,10 +321,12 @@ begin
       end if;
 
       if (reset_cnt /= 0) then
-        reset <= '1';
+        fifo_reset <= '1';
       else
-        reset <= '0';
+        fifo_reset <= '0';
       end if;
+
+      reset <= fifo_reset or wr_rst_busy or rd_rst_busy;
 
     end if;
   end process;
@@ -352,7 +355,7 @@ begin
 
   u0 : fifo_generator_0
     port map(
-      rst           => reset,
+      rst           => fifo_reset,
       wr_clk        => clk_in,
       rd_clk        => clk_axi,
       din           => daq_busy_in & fifo_in,
@@ -362,9 +365,9 @@ begin
       dout          => fifo_out,
       valid         => fifo_out_valid,
       full          => fifo_full,
-      empty         => wfifo_empty,
-      prog_full     => wfifo_prog_full,
-      prog_empty    => wfifo_prog_empty,
+      empty         => fifo_empty,
+      prog_full     => fifo_prog_full,
+      prog_empty    => fifo_prog_empty,
       wr_rst_busy   => wr_rst_busy,
       rd_rst_busy   => rd_rst_busy
       );
@@ -924,7 +927,7 @@ begin
         probe25(6) => daq_busy_xfifo,
         probe25(7) => toggle_buffer,
         probe26(0) => fifo_out_valid,
-        probe26(1) => wfifo_empty,
+        probe26(1) => fifo_empty,
         probe26(2) => fifo_rd_en,
         probe26(3) => clear_pulse,
         probe26(4) => clear_ps_mem,
