@@ -62,9 +62,9 @@ entity dma_controller is
 
     ram_toggle_request_i : in std_logic := '0';
 
-    ram_buff_a_occupancy_o : out std_logic_vector(31 downto 0) := (others => '0');
-    ram_buff_b_occupancy_o : out std_logic_vector(31 downto 0) := (others => '0');
-    dma_pointer_o          : out std_logic_vector(31 downto 0) := (others => '0');
+    ram_buff_a_occupancy_o : out std_logic_vector(31 downto 0) := BOT_HALF_ADDRESS;
+    ram_buff_b_occupancy_o : out std_logic_vector(31 downto 0) := TOP_HALF_ADDRESS;
+    dma_pointer_o          : out std_logic_vector(31 downto 0) := BOT_HALF_ADDRESS;
 
     --------------------------------------------------------------
     -- DAQ Signal(s)
@@ -201,11 +201,9 @@ architecture Behavioral of dma_controller is
       );
   end component;
 
-  type cmd_state is (IDLE, SET, DONE);
   type data_state is (IDLE, ASSERT_CMD, DELAY0, READ_FIFO, DONE, DELAY1, CLEAR_MEM, CONTINUE_CLEAR);
 
-  signal s2mm_cmd_state  : cmd_state;
-  signal s2mm_data_state : data_state;
+  signal s2mm_data_state : data_state := IDLE;
 
   signal packet_sent    : std_logic_vector(31 downto 0) := (others => '0');
   signal packet_is_tail : std_logic                     := '0';
@@ -247,7 +245,7 @@ architecture Behavioral of dma_controller is
   constant DATA_TYPE  : std_logic                     := '1';  -- incr = 1, fixed = 0
   constant S2MM_TKEEP : std_logic_vector(3 downto 0)  := x"F"; -- keep all 4 bytes in the word
 
-  signal saddr : std_logic_vector(31 downto 0) := (others => '0');
+  signal saddr : std_logic_vector(31 downto 0) := BOT_HALF_ADDRESS;
 
   signal delay_counter : integer range 0 to 21 := 0;
 
@@ -276,7 +274,7 @@ architecture Behavioral of dma_controller is
   signal buff_switch_response : std_logic := '0';
 
   --------------------------------------------------------------------------------
-  --Circular buffer wrap signals
+  -- Circular buffer wrap signals
   --------------------------------------------------------------------------------
 
   constant CNT_ADRB : integer := integer(ceil(log2(real(RAM_BUFF_SIZE))));
@@ -287,10 +285,12 @@ architecture Behavioral of dma_controller is
 
   signal mem_bytes_written : integer range 0 to RAM_BUFF_SIZE-1 := 0;
   signal buffer_remaining  : integer range 0 to RAM_BUFF_SIZE-1 := 0;
-  signal tripped           : std_logic                          := '0';
-  signal guardrail_err     : std_logic                          := '0';
-  signal ram_in_a_buff     : std_logic                          := '1';
-  signal ram_in_b_buff     : std_logic                          := '0';
+
+  signal tripped       : std_logic := '0';
+  signal guardrail_err : std_logic := '0';
+  signal ram_in_a_buff : std_logic := '1';
+  signal ram_in_b_buff : std_logic := '0';
+  signal toggle_buffer : std_logic := '0';
 
   --------------------------------------------------------------------------------
   -- DMA Clear Signals
@@ -301,7 +301,6 @@ architecture Behavioral of dma_controller is
   signal clear_ps_mem_r : std_logic := '0';  -- register to make a rising edge sensitive clear_pulse
   signal clear_pulse    : std_logic := '0';  -- single clock wide pulse to clear the memory
 
-  signal toggle_buffer : std_logic := '0';
   signal reset : std_logic := '1';
   signal reset_cnt : integer range 0 to 7 := 7;
 
@@ -479,7 +478,7 @@ begin
 
       if (reset = '1') then
         buff_switch_request <= '0';
-        toggle_buffer         <= '0';
+        toggle_buffer       <= '0';
       else
 
         -- we have a request to toggle the ram buffer...
@@ -633,7 +632,7 @@ begin
             fifo_out_valid_r <= fifo_out_valid;
 
             -- sent all WORDS_TO_SEND words, go to DONE state
-            if(words_sent_cnt >= WORDS_TO_SEND) then
+            if (words_sent_cnt >= WORDS_TO_SEND) then
               words_sent_cnt   <= 0;
               s2mm_tlast       <= '0';
               fifo_rd_en       <= '0';
@@ -705,7 +704,7 @@ begin
             if (buff_switch_request = '1') then
               s2mm_data_state <= IDLE;
               clear_mode      <= '0';
-            elsif(clear_mode = '1')then
+            elsif (clear_mode = '1') then
               s2mm_allow_addr_req_reg <= '1';
               s2mm_data_state         <= ASSERT_CMD;
             else
