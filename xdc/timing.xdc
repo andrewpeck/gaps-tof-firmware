@@ -47,3 +47,6 @@ set_max_delay -datapath_only -from [get_ports ext_trigger_i_p] -to [get_ports dr
 set_false_path \
     -from [get_pins {daq_inst/*/C}] \
     -to [get_pins {ps_interface_inst/dma_controller_inst/debug.ila_s2mm_inst/U0/*/D}]
+
+set_max_delay \
+    -to   [get_pins {ps_interface_inst/dma_controller_inst/synchronizer_inst/sync_gen.gen_ff[0].s_resync_reg[1]/D}] 8.0

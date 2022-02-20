@@ -221,6 +221,7 @@ architecture Behavioral of dma_controller is
   signal fifo_prog_full           : std_logic;
   signal fifo_prog_empty          : std_logic;
   signal wr_rst_busy              : std_logic;
+  signal wr_rst_busy_sync         : std_logic;
   signal rd_rst_busy              : std_logic;
   signal daq_busy_xfifo           : std_logic := '0';
   signal data_xfifo, data_xfifo_r : std_logic_vector(31 downto 0);
@@ -308,11 +309,30 @@ architecture Behavioral of dma_controller is
   signal reset      : std_logic             := '1';
   signal reset_cnt  : integer range 0 to 63 := 63;
 
+  component synchronizer is
+    generic (
+      N_STAGES : integer);
+    port (
+      async_i : in  std_logic;
+      clk_i   : in  std_logic;
+      sync_o  : out std_logic);
+  end component synchronizer;
+
 begin
 
   --------------------------------------------------------------------------------
   -- Make sure the reset is always at least 7 clocks wide
   --------------------------------------------------------------------------------
+
+  synchronizer_inst : synchronizer
+    generic map (
+      N_STAGES => 2
+      )
+    port map (
+      async_i => wr_rst_busy,
+      clk_i   => clk_axi,
+      sync_o  => wr_rst_busy_sync
+      );
 
   process (clk_axi) is
   begin
@@ -329,7 +349,7 @@ begin
         fifo_reset <= '0';
       end if;
 
-      reset <= fifo_reset or wr_rst_busy or rd_rst_busy;
+      reset <= fifo_reset or wr_rst_busy_sync or rd_rst_busy;
 
     end if;
   end process;
