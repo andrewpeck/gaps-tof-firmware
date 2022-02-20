@@ -302,7 +302,7 @@ architecture Behavioral of dma_controller is
   signal clear_pulse    : std_logic := '0';  -- single clock wide pulse to clear the memory
 
   signal reset : std_logic := '1';
-  signal reset_cnt : integer range 0 to 7 := 7;
+  signal reset_cnt : integer range 0 to 63 := 63;
 
 begin
 
@@ -314,7 +314,7 @@ begin
   begin
     if (rising_edge(clk_axi)) then
       if (reset_i='1') then
-        reset_cnt <= 7;
+        reset_cnt <= 63;
       elsif (reset_cnt > 0) then
         reset_cnt <= reset_cnt - 1;
       end if;
