@@ -532,8 +532,11 @@ begin
 
       if (reset = '1') then
 
-        saddr     <= BOT_HALF_ADDRESS;
-      elsif (unsigned(saddr) > unsigned(TOP_HALF_ADDRESS) + to_unsigned(RAM_BUFF_SIZE,32) or
+        saddr         <= BOT_HALF_ADDRESS;
+        guardrail_err <= '0';
+      -- sanity check to see if the saddr has gone below the minimum address,
+      -- or above the maximum address
+      elsif (unsigned(saddr) > (unsigned(TOP_HALF_ADDRESS) + to_unsigned(RAM_BUFF_SIZE,32)) or
              saddr < BOT_HALF_ADDRESS) then
 
         saddr     <= BOT_HALF_ADDRESS;
