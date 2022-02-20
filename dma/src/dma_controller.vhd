@@ -523,7 +523,7 @@ begin
   begin
     if(rising_edge(clk_axi)) then
 
-      if (buff_switch_request = '1' or buff_switch_response = '1') then
+      if (reset = '1' or buff_switch_request = '1' or buff_switch_response = '1') then
         -- hold low while a switch is happening
         mem_bytes_written <= 0;
       else
