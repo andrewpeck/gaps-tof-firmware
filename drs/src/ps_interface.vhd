@@ -57,6 +57,7 @@ entity ps_interface is
 
     packet_counter    : out std_logic_vector(31 downto 0);
     dma_control_reset : in  std_logic;
+    dma_clear         : in  std_logic;
 
     ipb_reset    : out std_logic;
     ipb_clk      : out std_logic;
@@ -91,6 +92,7 @@ architecture Behavioral of ps_interface is
   signal dma_reset                : std_logic;
   signal dma_reset_synced         : std_logic;
   signal dma_control_reset_synced : std_logic;
+  signal dma_clear_synced         : std_logic := '0';
 
   signal ipb_reset_async      : std_logic := '0';
   signal ipb_axi_aresetn_sync : std_logic := '0';
@@ -315,6 +317,20 @@ begin
       dest_pulse => dma_control_reset_synced
       );
 
+  xpm_dma_clear_sync : xpm_cdc_pulse
+    generic map (
+      DEST_SYNC_FF => 2, -- range: 2-10
+      RST_USED     => 0  -- integer; 0=no reset, 1=implement reset
+      )
+    port map (
+      src_rst    => '0',
+      dest_rst   => '0',
+      src_clk    => clk33,
+      dest_clk   => dma_axi_aclk,
+      src_pulse  => dma_clear,
+      dest_pulse => dma_clear_synced
+      );
+
   xpm_cdc_gray_inst : xpm_cdc_gray
     generic map (
       DEST_SYNC_FF          => 2,          -- DECIMAL; range: 2-10
@@ -437,7 +453,7 @@ begin
 
       packet_sent_o => packet_counter_xdma,
       reset_i       => dma_control_reset_synced or dma_reset_synced,
-      clear_ps_mem  => '0', -- TODO: create and connect to ipbus register
+      clear_ps_mem  => dma_clear_synced,
 
       clk_in      => fifo_clock_in,
       clk_axi     => dma_axi_aclk,

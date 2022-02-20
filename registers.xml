@@ -133,6 +133,11 @@
                 mask="0x1"
                 fw_default="0x0"
                 fw_signal="posneg"/>
+
+            <node id="DMA_CLEAR" address="0xB" permission="w"
+                description="Write 1 to clear the DMA memory (write zeroes)"
+                mask="0x1"
+                fw_write_pulse_signal="dma_clear"/>
         </node> <!--READOUT-->
 
 
