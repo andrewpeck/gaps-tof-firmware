@@ -882,18 +882,14 @@ begin
         );
     end component;
 
-    signal fifo_debug_concat : std_logic_vector(5 downto 0);
-
   begin
-
-    fifo_debug_concat <= fifo_wr_en & fifo_rd_en & wfifo_empty & '0' & fifo_out_valid & buff_switch_request;
 
     ila_s2mm_inst : ila_s2mm
       port map(
         clk     => clk_axi,
         probe0  => s2mm_cmd_tvalid,
         probe1  => s2mm_cmd_tready,
-        probe2  => s2mm_cmd_tdata,
+        probe2  => (others => '0'), --s2mm_cmd_tdata,
         probe3  => s2mm_tdata,
         probe4  => s2mm_tkeep,
         probe5  => s2mm_tlast,
@@ -901,7 +897,7 @@ begin
         probe7  => s2mm_tready,
         probe8  => saddr,
         probe9  => fifo_rd_en,
-        probe10 => data_xfifo,
+        probe10 => data_xfifo_r,
         probe11 => s2mm_allow_addr_req_reg,
         probe12 => s2mm_addr_req_posted_reg,
         probe13 => s2mm_wr_xfer_cmplt_reg,
@@ -912,12 +908,27 @@ begin
         probe18 => m_axis_s2mm_sts_tdata_reg,
         probe19 => m_axis_s2mm_sts_tkeep_reg(0),
         probe20 => m_axis_s2mm_sts_tlast_reg,
-        probe21 => fifo_in,
+        probe21(3 downto 0) => std_logic_vector(to_unsigned(data_state'POS(s2mm_data_state) , 4)),
+        probe21(12 downto 4) => fifo_count,
+        probe21(15 downto 13) => (others => '0'),
         probe22 => std_logic_vector(to_unsigned(mem_bytes_written,32)),
-        probe23 => daq_busy_xfifo,
-        probe24 => fifo_out,
-        probe25 => (others => '0'),
-        probe26 => fifo_debug_concat
+        probe23 => ram_toggle_request_i,
+        probe24(15 downto 0) => fifo_in,
+        probe24(33 downto 16) => (others => '0'),
+        probe25(0) => ram_in_a_buff,
+        probe25(1) => ram_in_b_buff,
+        probe25(2) => tripped,
+        probe25(3) => guardrail_err,
+        probe25(4) => buff_switch_request,
+        probe25(5) => buff_switch_response,
+        probe25(6) => daq_busy_xfifo,
+        probe25(7) => toggle_buffer,
+        probe26(0) => fifo_out_valid,
+        probe26(1) => wfifo_empty,
+        probe26(2) => fifo_rd_en,
+        probe26(3) => clear_pulse,
+        probe26(4) => clear_ps_mem,
+        probe26(5) => fifo_wr_en
         );
   end generate;
 
