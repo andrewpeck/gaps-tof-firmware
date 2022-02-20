@@ -2,7 +2,7 @@
 // synthesis translate_off
 `define SIMULATION
 // synthesis translate_on
-`define DEBUG
+// `define DEBUG
 // Enable DRS ILAs for now..
 
 // TODO: implement ROI trigger delay
