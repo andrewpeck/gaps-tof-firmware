@@ -12,7 +12,7 @@ ip/readout_board/xadc_wiz/xadc_wiz.xci
 # Common
 common/src/counter_snap.vhd
 common/src/fifo_async.vhd
-#common/src/fifo_sync.vhd
+common/src/fifo_sync.vhd
 common/src/ipbus_slave.vhd
 common/src/ipbus_slave_tmr.vhd
 common/src/synchonizer.vhd

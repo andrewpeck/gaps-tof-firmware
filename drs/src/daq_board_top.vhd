@@ -510,9 +510,9 @@ begin
 
   daq_fifo_inst : entity work.fifo_sync
     generic map (
-      DEPTH    => 1024,
-      WR_WIDTH => 14,
-      RD_WIDTH => 14,
+      DEPTH     => 1024,
+      WR_WIDTH  => 14,
+      RD_WIDTH  => 14,
       read_mode => "fwft"
       )
     port map (
