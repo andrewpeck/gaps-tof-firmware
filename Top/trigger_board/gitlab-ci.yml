@@ -4,9 +4,11 @@ GEN:trigger_board:
       extends: .vars
       PROJECT_NAME: trigger_board
       INTERMEDIATE_BUILD: "1"
+      HOG_ONLY_SYNTH    : "1"
 
 GEN:trigger_board_master:
     extends: .generate_project
     variables:
       extends: .vars
       PROJECT_NAME: trigger_board
+      HOG_ONLY_SYNTH    : "1"
