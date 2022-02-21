@@ -142,6 +142,54 @@
       <node id="HOG_SHA"     mask="0xFFFFFFFF" permission="r" address="0x6" description="HOG SHA"            fw_signal="HOG_SHA"/>
       <node id="HOG_VER"     mask="0xFFFFFFFF" permission="r" address="0x7" description="HOG Version"        fw_signal="HOG_VER"/>
     </node> <!--HOG-->
+  </node> <!--MT-->
 
+  <node id="I2C"
+        address="0x1000"
+        description=""
+        fw_is_module="true"
+        fw_is_module_external="true"
+        fw_reg_addr_msb="3"
+        fw_reg_addr_lsb="0">
+
+    <!-- https://opencores.org/websvn/filedetails?repname=i2c&path=%2Fi2c%2Ftrunk%2Fdoc%2Fi2c_specs.pdf -->
+    <node id="PRER_LO"
+          address="0x0"
+          permission="rw"
+          mask="0x000000ff"
+          description="Clock pre-scale lo byte"/>
+    <node id="PRER_HI"
+          address="0x1"
+          permission="rw"
+          mask="0x000000ff"
+          description="Clock pre-scale hi byte"/>
+    <node id="CONTROL"
+          address="0x2"
+          permission="rw"
+          mask="0x000000ff"
+          description="Control Register"/>
+    <node id="TRANSMIT"
+          address="0x3"
+          permission="rw"
+          mask="0x000000ff"
+          description="Transmit Register"/>
+    <node id="RECEIVE"
+          address="0x4"
+          permission="r"
+          mask="0x000000ff"
+          description="Receive Register"/>
+    <node id="COMMAND"
+          address="0x5"
+          permission="rw"
+          mask="0x000000ff"
+          description="Command Register"/>
+    <node id="STATUS"
+          address="0x6"
+          permission="r"
+          mask="0x000000ff"
+          description="Status Register"/>
   </node>
+
+
+
 </node>

@@ -874,8 +874,6 @@ def writePackageFile (modules, filename):
         imodule=0
         f.write('%stype t_ipb_slv is record\n'             % (padding))
         for module in modules:
-            if module.isExternal:
-                continue
             f.write('%s    %15s   : integer;\n'            % (padding, module.getVhdlName()))
             imodule = imodule + 1
         f.write('%send record;\n'                          % (padding))
@@ -884,8 +882,6 @@ def writePackageFile (modules, filename):
         f.write('%s-- IPbus slave index definition\n'      % (padding))
         f.write('%sconstant IPB_SLAVE : t_ipb_slv := (\n'  % (padding))
         for module in modules:
-            if module.isExternal:
-                continue
             if (imodule != 0):
                 f.write(',\n')
             f.write('%s    %15s  => %d'                 % (padding, module.getVhdlName(), imodule))
@@ -908,8 +904,6 @@ def writePackageFile (modules, filename):
             else:
                 start = "elsif"
 
-            if module.isExternal:
-                continue
             f.write('%s%s(std_match(addr(15 downto 0), std_logic_vector(to_unsigned(IPB_SLAVE.%15s,     %d))  & "------------")) then sel := IPB_SLAVE.%s;\n' % (padding, start, module.getVhdlName(), modulebits, module.getVhdlName()))
 
             imodule = imodule + 1

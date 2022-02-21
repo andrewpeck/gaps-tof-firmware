@@ -15,6 +15,8 @@ verilog-ethernet/rtl/oddr.v
 verilog-ethernet/rtl/iddr.v
 verilog-ethernet/rtl/lfsr.v
 
+ipbus-firmware/components/opencores_i2c/firmware/hdl/i2c_master_top.vhd
+
 trigger/src/sys/eth_infra.vhd
 
 ipbus-firmware/components/ipbus_core/firmware/hdl/ipbus_arb.vhd

@@ -4,9 +4,13 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_misc.all;
 use ieee.numeric_std.all;
 
+library unisim;
+use unisim.vcomponents.all;
+
 entity clocking is
   port(
-    clock_i   : in  std_logic;
+    clk_p     : in  std_logic;
+    clk_n     : in  std_logic;
     clk100    : out std_logic;
     clk200    : out std_logic;
     clk125    : out std_logic;
@@ -32,7 +36,16 @@ architecture structural of clocking is
       );
   end component;
 
+  signal clk_i : std_logic := '0';
+
 begin
+
+  osc_ibuf : IBUFDS
+    port map(
+      i  => clk_p,
+      ib => clk_n,
+      o  => clk_i
+      );
 
   clocking : mt_clk_wiz
     port map (
@@ -45,7 +58,7 @@ begin
       reset     => '0',
       locked    => locked,
       -- Clock in ports
-      clk_in1   => clock_i
+      clk_in1   => clk_i
       );
 
 end structural;
