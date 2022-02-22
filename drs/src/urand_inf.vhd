@@ -26,12 +26,12 @@ architecture arch of urand_inf is
   constant k1 : std_logic_vector(31 downto 0) := X"0019660d";
   constant k2 : std_logic_vector(31 downto 0) := X"3c6ef35f";
 
-  signal tu : std_logic_vector(31 downto 0);
-  signal p : std_logic_vector(63 downto 0);
-  signal seed  : std_logic_vector(31 downto 0);
-  signal mmux  : std_logic_vector(31 downto 0);
+  signal tu   : std_logic_vector(31 downto 0);
+  signal p    : std_logic_vector(63 downto 0);
+  signal seed : std_logic_vector(31 downto 0);
+  signal mmux : std_logic_vector(31 downto 0);
 
-  signal r_seed   : std_logic;
+  signal r_seed : std_logic;
 
   signal reseed : std_logic;
 
@@ -44,7 +44,7 @@ begin  -- arch
       reseed <= '1';
     elsif clk'event and clk = '1' then  -- rising clock edge
       r_seed <= reseed;
-      p <= mmux * k1 + k2;
+      p      <= mmux * k1 + k2;
       tu     <= p(31 downto 0);
       if reseed = '1' then
         reseed <= '0';

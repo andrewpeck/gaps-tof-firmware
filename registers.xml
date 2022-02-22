@@ -300,7 +300,7 @@
         </node> <!--COUNTERS-->
 
         <node id="TRIG_GEN_RATE" address="0x59" permission="rw"
-              description="Rate of generated triggers in Hz"
+              description="Rate of generated triggers f_trig =(2^32-1) * clk_period * rate"
               mask="0xffffffff"
               fw_default="0x0"
               fw_signal="trig_gen_rate"/>

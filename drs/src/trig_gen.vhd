@@ -3,6 +3,8 @@
 -- rate is (2^32-1)/ts   where ts is average trigger spacing in BX
 --    so 1MHz = (2^32-1)/40 or x"0666_6666"
 --
+-- frequency = (2^32-1) * clk_period * rate
+--
 -- uses one DSP to create a random generator per the numerical recipes:
 --     U = 1664525L*U(0) + 1013904223L;    (modulo 2**32)
 --
