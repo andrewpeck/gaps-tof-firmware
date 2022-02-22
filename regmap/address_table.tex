@@ -235,6 +235,25 @@
     CNT\_EVENT & \texttt{0x55} & \texttt{[31:0]} & r & \texttt{} & Number of triggers received \\\hline
     TRIGGER\_RATE & \texttt{0x56} & \texttt{[31:0]} & r & \texttt{} & Rate of triggers in Hz \\\hline
     LOST\_TRIGGER\_RATE & \texttt{0x57} & \texttt{[31:0]} & r & \texttt{} & Rate of lost triggers in Hz \\\hline
+    CNT\_RESET & \texttt{0x58} & \texttt{[0:0]} & w & Pulse & Reset the counters \\\hline
+    \end{tabularx}
+    \vspace{5mm}
+
+
+    \noindent
+    \subsection*{\textcolor{parentcolor}{\textbf{DRS}}}
+
+    \vspace{4mm}
+    \noindent
+    Implements various control and monitoring functions of the DRS Logic
+    \noindent
+
+    \keepXColumns
+    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
+    \hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
+    \nopagebreak
+    TRIG\_GEN\_RATE & \texttt{0x59} & \texttt{[31:0]} & rw & \texttt{0x0} & Rate of generated triggers in Hz \\\hline
     \end{tabularx}
     \vspace{5mm}
 

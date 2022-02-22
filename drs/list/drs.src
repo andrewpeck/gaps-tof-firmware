@@ -32,6 +32,9 @@ drs/src/dtap.vhd
 drs/src/adc.vhd
 drs/src/spi_rx.vhd
 drs/src/rate_counter.vhd
+drs/src/rate_counter.vhd
+drs/src/trig_gen.vhd
+drs/src/urand_inf.vhd
 
 drs/src/drs.v
 drs/src/crc32.vhd
