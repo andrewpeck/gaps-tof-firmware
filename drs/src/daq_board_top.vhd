@@ -476,7 +476,6 @@ begin
       clock     => clock,
       reset     => reset or drs_reset,
       trigger_i => trigger,
-      raw_trigger_i => ext_trigger_i,
       posneg_i  => posneg,
 
       --adc_data => adc_data,
