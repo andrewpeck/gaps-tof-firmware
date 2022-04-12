@@ -50,3 +50,9 @@ set_false_path \
 
 set_max_delay \
     -to   [get_pins {ps_interface_inst/dma_controller_inst/synchronizer_inst/sync_gen.gen_ff[0].s_resync_reg[1]/D}] 8.0
+
+# keep the time between these registers very small to minimize the area where
+# CDC issues will occur
+set_max_delay 2.0 \
+    -from [get_pins {drs_inst/adc_data_*_reg*/C}] \
+    -to   [get_pins {drs_inst/adc_data_reg*/D}]

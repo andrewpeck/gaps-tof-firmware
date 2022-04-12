@@ -23,6 +23,7 @@ module drs #(
 
     // ~ 33MHz ADC clock
     input clock,
+    input adc_clock,
 
     // module reset
     input reset,
@@ -123,10 +124,10 @@ reg [13:0] adc_data_neg, adc_data_pos;
 reg [13:0] adc_data;
 
 // take data in on negedge of clock, assuming that adc and fpga clocks are synchronous
-always @(negedge clock) begin
+always @(negedge adc_clock) begin
   adc_data_neg <= adc_data_i;
 end
-always @(posedge clock) begin
+always @(posedge adc_clock) begin
   adc_data_pos <= adc_data_i;
 end
 

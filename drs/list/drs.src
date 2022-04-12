@@ -13,6 +13,7 @@ ip/ila_drs/ila_drs.xci
 ip/xadc_wiz/xadc_wiz.xci
 
 # DRS4 Controller
+drs/src/phase_shifter.vhd
 drs/src/fifo_async.vhd
 drs/src/fifo_sync.vhd
 drs/src/axi_ipbus_bridge.vhd

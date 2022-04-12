@@ -211,6 +211,28 @@
                   fw_default="0x00"
                   fw_signal="board_id"/>
 
+            <node id="PHASE_SHIFT_EN" address="0xB" permission="w"
+                  description="1 to initiate a phase shift"
+                  mask="0x1"
+                  fw_write_pulse_signal="shifter_en"/>
+
+            <node id="PHASE_SHIFT_CNT" address="0xC" permission="rw"
+                  description="Shift the phase by this number of 1/56th VCO clocks"
+                  mask="0xfff"
+                  fw_default="0x00"
+                  fw_signal="shifts_to_do"/>
+
+            <node id="PHASE_SHIFT_INCDEC" address="0xD" permission="rw"
+                  description="1 to increment, 0 to decrement"
+                  mask="0x1"
+                  fw_default="0x1"
+                  fw_signal="psincdec"/>
+
+            <node id="PHASE_SHIFT_DONE" address="0xD" permission="r"
+                  description="1 phase shifting done"
+                  mask="0x2"
+                  fw_signal="shifter_done"/>
+
         </node> <!--FPGA-->
 
 
