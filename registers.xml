@@ -222,16 +222,34 @@
                   fw_default="0x00"
                   fw_signal="shifts_to_do"/>
 
-            <node id="PHASE_SHIFT_INCDEC" address="0xD" permission="rw"
+            <node id="PHASE_SHIFT_INCDEC" address="0xC" permission="rw"
                   description="1 to increment, 0 to decrement"
-                  mask="0x1"
+                  mask="0x1000"
                   fw_default="0x1"
                   fw_signal="psincdec"/>
 
-            <node id="PHASE_SHIFT_DONE" address="0xD" permission="r"
+            <node id="PHASE_SHIFT_DONE" address="0xC" permission="r"
                   description="1 phase shifting done"
-                  mask="0x2"
+                  mask="0x2000"
                   fw_signal="shifter_done"/>
+
+            <node id="SAMPLING_SPIKE_THRESHOLD" address="0xC" permission="rw"
+                  description="Number of ADC counts to detect a sampling spike"
+                  mask="0x3FFF0000"
+                  fw_default="0x80"
+                  fw_signal="sampling_spike_threshold"/>
+
+            <node id="CNT_SAMPLING_SPIKE" address="0xD" permission="r"
+                  description="Counter of sampling spikes since last reset"
+                  mask="0xFFFF"
+                  fw_cnt_reset_signal="reset or cnt_sampling_spike_reset"
+                  fw_cnt_en_signal="sampling_spike"
+                  fw_signal="cnt_sampling_spike"/>
+
+            <node id="SAMPLING_SPIKE_CNT_RESET" address="0xE" permission="w"
+                  description="1 to reset spike counter"
+                  mask="0x1"
+                  fw_write_pulse_signal="cnt_sampling_spike_reset"/>
 
         </node> <!--FPGA-->
 

@@ -91,6 +91,14 @@ module drs #(
     output reg [9:0]  drs_stop_cell_o ,
 
     //------------------------------------------------------------------------------------------------------------------
+    // sampling spike detection
+    //------------------------------------------------------------------------------------------------------------------
+
+    input [READ_WIDTH-1:0]  sampling_spike_threshold,
+    output reg              sampling_spike,
+
+
+    //------------------------------------------------------------------------------------------------------------------
     // output fifo
     //------------------------------------------------------------------------------------------------------------------
 
@@ -171,6 +179,8 @@ end
 //----------------------------------------------------------------------------------------------------------------------
 // Other signals
 //----------------------------------------------------------------------------------------------------------------------
+
+reg [READ_WIDTH-1:0] fifo_wdata_last; // copy the fifo data for spike detection
 
 reg [7:0]  drs_sr_reg='hf8;
 
@@ -281,6 +291,7 @@ always @(posedge clock) begin
   fifo_wen          <= 0;
   domino_ready      <= 1;
   readout_complete  <= 0;
+  sampling_spike    <= 0;
 
   // Memorize a write access to the bit in the control register that requests a reinitialisation of
   // the DRS readout state machine (drs_ctl_reinit goes high for only one cycle, therefore this
@@ -575,6 +586,12 @@ always @(posedge clock) begin
           // with respect to its external clock pin
           if (drs_rd_tmp_count > {10'b0, drs_ctl_adc_latency}) begin
 
+             fifo_wdata_last <= fifo_wdata;
+
+             if (drs_sample_count > 1 && (fifo_wdata - fifo_wdata_last > sampling_spike_threshold)) begin
+                sampling_spike <= 1;
+             end
+
              if (diagnostic_mode)
                fifo_wdata[13:0] <= {4'b0, drs_sample_count};
              else
@@ -582,6 +599,7 @@ always @(posedge clock) begin
 
             fifo_wen          <= 1'b1;
             drs_sample_count  <= drs_sample_count + 1'b1;
+
           end
 
           // pick a random clock to update the sr and lookup the next channel
@@ -673,10 +691,12 @@ always @(posedge clock) begin
 
           drs_rd_tmp_count <= drs_rd_tmp_count + 1'b1;
           drs_addr_o       <= ADR_READ_SR;
+
           if (drs_rd_tmp_count < 1024)
             drs_srclk_en_o   <= 1;
           else
             drs_srclk_en_o   <= 0;
+
           fifo_wen         <= 0;
           drs_srin_o       <= 0;      // Shared Shift Register Input
 
