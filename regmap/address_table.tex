@@ -174,8 +174,11 @@
     BOARD\_ID & \texttt{0x2a} & \texttt{[7:0]} & rw & \texttt{0x0} & Board ID Number \\\hline
     PHASE\_SHIFT\_EN & \texttt{0x2b} & \texttt{[0:0]} & w & Pulse & 1 to initiate a phase shift \\\hline
     PHASE\_SHIFT\_CNT & \texttt{0x2c} & \texttt{[11:0]} & rw & \texttt{0x0} & Shift the phase by this number of 1/56th VCO clocks \\\hline
-    PHASE\_SHIFT\_INCDEC & \texttt{0x2d} & \texttt{[0:0]} & rw & \texttt{0x1} & 1 to increment, 0 to decrement \\\hline
-    PHASE\_SHIFT\_DONE & \texttt{0x2d} & \texttt{[1:1]} & r & \texttt{} & 1 phase shifting done \\\hline
+    PHASE\_SHIFT\_INCDEC & \texttt{0x2c} & \texttt{[12:12]} & rw & \texttt{0x1} & 1 to increment, 0 to decrement \\\hline
+    PHASE\_SHIFT\_DONE & \texttt{0x2c} & \texttt{[13:13]} & r & \texttt{} & 1 phase shifting done \\\hline
+    SAMPLING\_SPIKE\_THRESHOLD & \texttt{0x2c} & \texttt{[29:16]} & rw & \texttt{0x80} & Number of ADC counts to detect a sampling spike \\\hline
+    CNT\_SAMPLING\_SPIKE & \texttt{0x2d} & \texttt{[15:0]} & r & \texttt{} & Counter of sampling spikes since last reset \\\hline
+    SAMPLING\_SPIKE\_CNT\_RESET & \texttt{0x2e} & \texttt{[0:0]} & w & Pulse & 1 to reset spike counter \\\hline
     \end{tabularx}
     \vspace{5mm}
 

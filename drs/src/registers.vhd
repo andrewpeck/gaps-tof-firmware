@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_DRS_NUM_REGS : integer := 58;
+    constant REG_DRS_NUM_REGS : integer := 59;
     constant REG_DRS_ADDRESS_MSB : integer := 9;
     constant REG_DRS_ADDRESS_LSB : integer := 0;
     constant REG_CHIP_DMODE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
@@ -162,12 +162,24 @@ package registers is
     constant REG_FPGA_PHASE_SHIFT_CNT_LSB     : integer := 0;
     constant REG_FPGA_PHASE_SHIFT_CNT_DEFAULT : std_logic_vector(11 downto 0) := x"000";
 
-    constant REG_FPGA_PHASE_SHIFT_INCDEC_ADDR    : std_logic_vector(9 downto 0) := "00" & x"2d";
-    constant REG_FPGA_PHASE_SHIFT_INCDEC_BIT    : integer := 0;
+    constant REG_FPGA_PHASE_SHIFT_INCDEC_ADDR    : std_logic_vector(9 downto 0) := "00" & x"2c";
+    constant REG_FPGA_PHASE_SHIFT_INCDEC_BIT    : integer := 12;
     constant REG_FPGA_PHASE_SHIFT_INCDEC_DEFAULT : std_logic := '1';
 
-    constant REG_FPGA_PHASE_SHIFT_DONE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"2d";
-    constant REG_FPGA_PHASE_SHIFT_DONE_BIT    : integer := 1;
+    constant REG_FPGA_PHASE_SHIFT_DONE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"2c";
+    constant REG_FPGA_PHASE_SHIFT_DONE_BIT    : integer := 13;
+
+    constant REG_FPGA_SAMPLING_SPIKE_THRESHOLD_ADDR    : std_logic_vector(9 downto 0) := "00" & x"2c";
+    constant REG_FPGA_SAMPLING_SPIKE_THRESHOLD_MSB    : integer := 29;
+    constant REG_FPGA_SAMPLING_SPIKE_THRESHOLD_LSB     : integer := 16;
+    constant REG_FPGA_SAMPLING_SPIKE_THRESHOLD_DEFAULT : std_logic_vector(29 downto 16) := "00" & x"080";
+
+    constant REG_FPGA_CNT_SAMPLING_SPIKE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"2d";
+    constant REG_FPGA_CNT_SAMPLING_SPIKE_MSB    : integer := 15;
+    constant REG_FPGA_CNT_SAMPLING_SPIKE_LSB     : integer := 0;
+
+    constant REG_FPGA_SAMPLING_SPIKE_CNT_RESET_ADDR    : std_logic_vector(9 downto 0) := "00" & x"2e";
+    constant REG_FPGA_SAMPLING_SPIKE_CNT_RESET_BIT    : integer := 0;
 
     constant REG_DAQ_INJECT_DEBUG_PACKET_ADDR    : std_logic_vector(9 downto 0) := "00" & x"30";
     constant REG_DAQ_INJECT_DEBUG_PACKET_BIT    : integer := 0;
