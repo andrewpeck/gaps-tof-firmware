@@ -172,6 +172,10 @@
     \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
     \nopagebreak
     BOARD\_ID & \texttt{0x2a} & \texttt{[7:0]} & rw & \texttt{0x0} & Board ID Number \\\hline
+    PHASE\_SHIFT\_EN & \texttt{0x2b} & \texttt{[0:0]} & w & Pulse & 1 to initiate a phase shift \\\hline
+    PHASE\_SHIFT\_CNT & \texttt{0x2c} & \texttt{[11:0]} & rw & \texttt{0x0} & Shift the phase by this number of 1/56th VCO clocks \\\hline
+    PHASE\_SHIFT\_INCDEC & \texttt{0x2d} & \texttt{[0:0]} & rw & \texttt{0x1} & 1 to increment, 0 to decrement \\\hline
+    PHASE\_SHIFT\_DONE & \texttt{0x2d} & \texttt{[1:1]} & r & \texttt{} & 1 phase shifting done \\\hline
     \end{tabularx}
     \vspace{5mm}
 
