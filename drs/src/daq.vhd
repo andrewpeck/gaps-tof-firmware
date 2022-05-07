@@ -593,7 +593,9 @@ begin
           end if;
 
           data <= x"0000";
-          dav  <= true;
+          dav  <= true; -- we write one PAD worth of information
+                        -- (one DMA transfer's worth) with the busy bit deasserted so that
+                        -- the fifo can switch
 
         when others =>
 
