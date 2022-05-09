@@ -118,6 +118,10 @@ foreach line $nets {
                 set pin $row$num
             }
 
+            puts "$conn $pin"
+            if {[string equal $conn "P1"] && [lsearch "M1 M2 M3 M4" $pin] >= 0} {
+                continue
+            }
             set iob [get_fpga_pin_from_header_pin $conn $pin]
 
             if {[lsearch $excluded_pins $iob] < 0} {
