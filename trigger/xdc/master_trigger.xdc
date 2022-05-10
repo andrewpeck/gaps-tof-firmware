@@ -27,7 +27,7 @@ set_property -dict {IOSTANDARD LVCMOS33} \
 set_property IOSTANDARD LVDS [get_ports lt_data_i*]
 set_property IOSTANDARD LVCMOS33 [get_ports rb_data_o*]
 
-set_property IOSTANDARD LVCMOS15 [get_ports lvs_sync_dsi]
+set_property IOSTANDARD LVCMOS15 [get_ports lvs_sync[*]]
 set_property IOSTANDARD LVCMOS15 [get_ports lvs_sync_ccb]
 set_property IOSTANDARD LVCMOS15 [get_ports dsi_on]
 set_property IOSTANDARD LVCMOS15 [get_ports clk_src_sel]
