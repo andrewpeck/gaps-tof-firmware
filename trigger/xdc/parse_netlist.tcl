@@ -18,17 +18,17 @@ proc translate_name {name} {
         set name "lvs_sync_ccb"
     }
 
-    # rb_d_X_Y_Z --> rb_d_<Q>
+    # rb_d_X_Y_Z --> rb_d_[Q]
     if {[string range $name 0 4] eq "rb_d_"} {
         set args [split $name "_"]
         set dsi  [lindex $args 2]
         set rb   [lindex $args 4]
         set pair [lindex $args 3]
         set pin [expr $dsi * 10 + $rb * 2 + $pair - 1]
-        set name rb_data_o<$pin>
+        set name rb_data_o\[$pin\]
     }
 
-    # lt_data_X_Y_Z --> lt_data_i<Q>
+    # lt_data_X_Y_Z --> lt_data_i[Q]
     if {[string range $name 0 7] eq "lt_data_"} {
         set args [split $name "_"]
         set dsi  [lindex $args 2]
@@ -36,26 +36,29 @@ proc translate_name {name} {
         set pair [lindex $args 3]
         set pol  [lindex $args 5]
         set pin [expr $dsi * 15 + $lt * 3 + $pair - 1]
-        set name lt_data_i_$pol<$pin>
+        set name lt_data_i_$pol\[$pin\]
     }
 
-    # name_X_p --> name_x_p<X>
+    # name_X_p --> name_x_p[X]
     if {[regexp -all {([A-z,_]+)_([0-9])(_[pn])?} $name reg head tail pol]} {
         # puts $head
         # puts $tail
         set args [split $name "_"]
         set pair  [lindex $args 2]
-        if {[lsearch "fb_clk" $head] > 0} {
+
+        # fb clk is index from 1 in the schematic, convert to zero
+        if {[lsearch [list "fb_clk" "dsi_on" "lvs_sync"] $head] >= 0} {
             set pair [expr $pair - 1]
         }
-        set name $head$pol<$pair>
+
+        set name $head$pol\[$pair\]
     }
 
-    # gbe_rxdX  rgmii_rxd<X>
+    # gbe_rxdX  rgmii_rxd[X]
     if {[regexp -all {gbe_([tr])xd([0-9])} $name sig txrx number]} {
         puts $txrx
         puts $number
-        set name "rgmii_${txrx}xd<$number>"
+        set name "rgmii_${txrx}xd\[$number\]"
     }
 
     set name [string map {"gbe_rxd_clk" "rgmii_rx_clk"} $name]
@@ -64,7 +67,7 @@ proc translate_name {name} {
     set name [string map {"gbe_crs" "NC"} $name]
     set name [string map {"gbe_rx_er" "NC"} $name]
     set name [string map {"gbe_tx_er" "NC"} $name]
-    set name [string map {"gbe_rx_dv" "rgmii_rx_ctl"} $name]
+    set name [string map {"gbe_rxd_dv" "rgmii_rx_ctl"} $name]
     set name [string map {"gbe_tx_en" "rgmii_tx_ctl"} $name]
     set name [string map {"gbe_clk125_ndo" "rgmii_clk125"} $name]
 

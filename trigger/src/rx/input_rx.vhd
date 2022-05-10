@@ -19,7 +19,8 @@ entity input_rx is
 
     clocks_i : in std_logic_vector (NUM_CLOCKS-1 downto 0);
 
-    data_i : in std_logic_vector (NUM_LT_INPUTS-1 downto 0);
+    data_i_p : in std_logic_vector (NUM_LT_INPUTS-1 downto 0);
+    data_i_n : in std_logic_vector (NUM_LT_INPUTS-1 downto 0);
 
     pulse_stretch_i : in std_logic_vector (3 downto 0);
 
@@ -52,7 +53,7 @@ begin
     -- input delays + ffs for single LT board
     lt_rx_1 : entity work.lt_rx
       generic map (
-        DIFFERENTIAL_DATA  => false,
+        DIFFERENTIAL_DATA  => true,
         DIFFERENTIAL_CLOCK => false,
         NUM_LT_CHANNELS    => NUM_LT_MT_LINKS
         )
@@ -64,8 +65,8 @@ begin
         coarse_delays => coarse_delays_i(I),
         posnegs       => posnegs_i(I),
 
-        data_i_p => data_i((I+1)*NUM_LT_MT_LINKS-1 downto I*NUM_LT_MT_LINKS),
-        data_i_n => (others => '0'),
+        data_i_p => data_i_p((I+1)*NUM_LT_MT_LINKS-1 downto I*NUM_LT_MT_LINKS),
+        data_i_n => data_i_n((I+1)*NUM_LT_MT_LINKS-1 downto I*NUM_LT_MT_LINKS),
         data_o   => data_rx
         );
 

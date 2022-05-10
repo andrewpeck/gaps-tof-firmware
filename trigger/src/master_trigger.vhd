@@ -64,8 +64,8 @@ entity gaps_mt is
 
     rst_button_i : in std_logic; -- built-in callisto reset button
 
-    sda : inout std_logic;
-    scl : inout std_logic;
+    -- sda : inout std_logic;
+    -- scl : inout std_logic;
 
     -- RGMII interface
 
@@ -84,14 +84,15 @@ entity gaps_mt is
     rgmii_tx_ctl : out std_logic;
 
     --
-    lt_data_i : in  std_logic_vector (NUM_LT_INPUTS-1 downto 0);
-    rb_data_o : out std_logic_vector (NUM_RB_OUTPUTS-1 downto 0);
+    lt_data_i_p : in  std_logic_vector (NUM_LT_INPUTS-1 downto 0);
+    lt_data_i_n : in  std_logic_vector (NUM_LT_INPUTS-1 downto 0);
+    rb_data_o   : out std_logic_vector (NUM_RB_OUTPUTS-1 downto 0);
 
     -- Control
     fb_clk_p : in  std_logic_vector (NUM_DSI-1 downto 0);
     fb_clk_n : in  std_logic_vector (NUM_DSI-1 downto 0);
 
-    lvs_sync_dsi : out std_logic_vector (NUM_DSI-1 downto 0);
+    lvs_sync     : out std_logic_vector (NUM_DSI-1 downto 0);
     lvs_sync_ccb : out std_logic;
     dsi_on       : out std_logic_vector (NUM_DSI-1 downto 0);
     clk_src_sel  : out std_logic;
@@ -145,15 +146,15 @@ architecture structural of gaps_mt is
   -- I2C
   --------------------------------------------------------------------------------
 
-  signal i2c_reset  : std_logic;
+  -- signal i2c_reset  : std_logic;
 
-  signal sda_pad_i  : std_logic;
-  signal sda_pad_o  : std_logic;
-  signal sda_padoen : std_logic;
+  -- signal sda_pad_i  : std_logic;
+  -- signal sda_pad_o  : std_logic;
+  -- signal sda_padoen : std_logic;
 
-  signal scl_pad_i  : std_logic;
-  signal scl_pad_o  : std_logic;
-  signal scl_padoen : std_logic;
+  -- signal scl_pad_i  : std_logic;
+  -- signal scl_pad_o  : std_logic;
+  -- signal scl_padoen : std_logic;
 
   --------------------------------------------------------------------------------
   -- IPbus / wishbone
@@ -243,7 +244,7 @@ architecture structural of gaps_mt is
 
 begin
 
-  i2c_reset <= not locked;
+  -- i2c_reset <= not locked;
   ipb_reset <= not locked;
   ipb_clk   <= clock;
   clock <= clk100;
@@ -341,7 +342,8 @@ begin
 
       -- clock and data from lt boards
       clocks_i => (others => clk100),
-      data_i   => lt_data_i,
+      data_i_p => lt_data_i_p,
+      data_i_n => lt_data_i_n,
 
       -- -- idelay settings (in units of 80ps)
       -- clk_delays_i => clk_delays,
@@ -444,49 +446,49 @@ begin
   -- I2C master
   --------------------------------------------------------------------------------
 
-  i2c_master_top_inst  : entity work.i2c_master_top
-    generic map (
-      ARST_LVL => 1
-      )
-    port map (
-      wb_clk_i     => ipb_clk,          -- master clock input
-      wb_rst_i     => ipb_reset,        -- synchronous active high reset
-      arst_i       => i2c_reset,        -- asynchronous reset
+  -- i2c_master_top_inst  : entity work.i2c_master_top
+  --   generic map (
+  --     ARST_LVL => 1
+  --     )
+  --   port map (
+  --     wb_clk_i     => ipb_clk,          -- master clock input
+  --     wb_rst_i     => ipb_reset,        -- synchronous active high reset
+  --     arst_i       => i2c_reset,        -- asynchronous reset
 
-      wb_adr_i => ipb_mosi_arr(1).ipb_addr(2 downto 0),   -- lower address bits
-      wb_dat_i => ipb_mosi_arr(1).ipb_wdata(7 downto 0),  -- Databus input
-      wb_we_i  => ipb_mosi_arr(1).ipb_write,              -- Write enable input
-      wb_stb_i => ipb_mosi_arr(1).ipb_strobe,             -- Strobe signals / core select signal
-      wb_cyc_i => '1',                                    -- Valid bus cycle input
-      wb_dat_o => ipb_miso_arr(1).ipb_rdata(7 downto 0),  -- Databus output
-      wb_ack_o => ipb_miso_arr(1).ipb_ack,                -- Bus cycle acknowledge output
+  --     wb_adr_i => ipb_mosi_arr(1).ipb_addr(2 downto 0),   -- lower address bits
+  --     wb_dat_i => ipb_mosi_arr(1).ipb_wdata(7 downto 0),  -- Databus input
+  --     wb_we_i  => ipb_mosi_arr(1).ipb_write,              -- Write enable input
+  --     wb_stb_i => ipb_mosi_arr(1).ipb_strobe,             -- Strobe signals / core select signal
+  --     wb_cyc_i => '1',                                    -- Valid bus cycle input
+  --     wb_dat_o => ipb_miso_arr(1).ipb_rdata(7 downto 0),  -- Databus output
+  --     wb_ack_o => ipb_miso_arr(1).ipb_ack,                -- Bus cycle acknowledge output
 
-      wb_inta_o    => open,             -- interrupt request output signal
+  --     wb_inta_o    => open,             -- interrupt request output signal
 
-      scl_pad_i    => scl_pad_i,        -- i2c clock line input
-      scl_pad_o    => scl_pad_o,        -- i2c clock line output
-      scl_padoen_o => scl_padoen,     -- i2c clock line output enable, active low
+  --     scl_pad_i    => scl_pad_i,        -- i2c clock line input
+  --     scl_pad_o    => scl_pad_o,        -- i2c clock line output
+  --     scl_padoen_o => scl_padoen,     -- i2c clock line output enable, active low
 
-      sda_pad_i    => sda_pad_i,        -- i2c data line input
-      sda_pad_o    => sda_pad_o,        -- i2c data line output
-      sda_padoen_o => sda_padoen      -- i2c data line output enable, active low
-      );
+  --     sda_pad_i    => sda_pad_i,        -- i2c data line input
+  --     sda_pad_o    => sda_pad_o,        -- i2c data line output
+  --     sda_padoen_o => sda_padoen      -- i2c data line output enable, active low
+  --     );
 
-  IOBUF_SCL_inst : IOBUF
-    port map (
-      O  => scl_pad_i,                  -- 1-bit output: Buffer output
-      I  => scl_pad_o,                  -- 1-bit input: Buffer input
-      IO => scl,                        -- 1-bit inout: Buffer inout (connect directly to top-level port)
-      T  => scl_padoen                  -- 1-bit input: 3-state enable input
-      );
+  -- IOBUF_SCL_inst : IOBUF
+  --   port map (
+  --     O  => scl_pad_i,                  -- 1-bit output: Buffer output
+  --     I  => scl_pad_o,                  -- 1-bit input: Buffer input
+  --     IO => scl,                        -- 1-bit inout: Buffer inout (connect directly to top-level port)
+  --     T  => scl_padoen                  -- 1-bit input: 3-state enable input
+  --     );
 
-  IOBUF_SDA_inst : IOBUF
-    port map (
-      O  => sda_pad_i,                  -- 1-bit output: Buffer output
-      I  => sda_pad_o,                  -- 1-bit input: Buffer input
-      IO => sda,                        -- 1-bit inout: Buffer inout (connect directly to top-level port)
-      T  => sda_padoen                  -- 1-bit input: 3-state enable input
-      );
+  -- IOBUF_SDA_inst : IOBUF
+  --   port map (
+  --     O  => sda_pad_i,                  -- 1-bit output: Buffer output
+  --     I  => sda_pad_o,                  -- 1-bit input: Buffer input
+  --     IO => sda,                        -- 1-bit inout: Buffer inout (connect directly to top-level port)
+  --     T  => sda_padoen                  -- 1-bit input: 3-state enable input
+  --     );
 
   --------------------------------------------------------------------------------
   -- Signal Sump
