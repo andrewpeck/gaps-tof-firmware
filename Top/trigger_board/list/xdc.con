@@ -1,2 +1,2 @@
-trigger/xdc/master_trigger.xdc
+trigger/xdc/master_trigger.tcl
 trigger/xdc/generated_pinout.xdc
