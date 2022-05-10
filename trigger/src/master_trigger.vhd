@@ -42,8 +42,6 @@ entity gaps_mt is
     MAC_ADDR : std_logic_vector (47 downto 0) := x"00_08_20_83_53_00";
     IP_ADDR  : ip_addr_t                      := (192, 168, 0, 10);
 
-    NUM_DSI  : natural := 5;
-
     -- these generics get set by hog at synthesis
     GLOBAL_DATE : std_logic_vector (31 downto 0) := x"00000000";
     GLOBAL_TIME : std_logic_vector (31 downto 0) := x"00000000";
@@ -103,8 +101,9 @@ entity gaps_mt is
     hk_dout : out std_logic;
     hk_din  : in  std_logic;
 
-    ext_io : out std_logic_vector (13 downto 0);
+    ext_io  : out std_logic_vector (13 downto 0);
     ext_out : out std_logic_vector (3 downto 0);
+    ext_in  : in  std_logic_vector (3 downto 0);
 
     sump_o    : out std_logic
 

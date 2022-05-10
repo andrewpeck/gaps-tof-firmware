@@ -133,6 +133,11 @@
                 mask="0x1"
                 fw_default="0x0"
                 fw_signal="posneg"/>
+
+            <node id="DMA_CLEAR" address="0xB" permission="w"
+                description="Write 1 to clear the DMA memory (write zeroes)"
+                mask="0x1"
+                fw_write_pulse_signal="dma_clear"/>
         </node> <!--READOUT-->
 
 
@@ -239,18 +244,21 @@
             <node id="CNT_SEM_CORRECTION" address="0x0" permission="r"
                 description="Number of Single Event Errors corrected by the scrubber"
                 mask="0xffff"
+                fw_cnt_reset_signal="reset or cnt_reset"
                 fw_cnt_en_signal="sem_correction"
                 fw_signal="cnt_sem_corrected"/>
 
             <node id="CNT_SEM_UNCORRECTABLE" address="0x1" permission="r"
                 description="Number of Critical Single Event Errors (uncorrectable by scrubber)"
                 mask="0xf0000"
+                fw_cnt_reset_signal="reset or cnt_reset"
                 fw_cnt_en_signal="sem_uncorrectable_error"
                 fw_signal="cnt_sem_uncorrectable"/>
 
             <node id="CNT_READOUTS_COMPLETED" address="0x2" permission="r"
                 description="Number of readouts completed since reset"
                 mask="0xffffffff"
+                fw_cnt_reset_signal="reset or cnt_reset"
                 fw_cnt_en_signal="readout_complete"
                 fw_signal="cnt_readouts"/>
 
@@ -262,6 +270,7 @@
             <node id="CNT_LOST_EVENT" address="0x4" permission="r"
                 description="Number of trigger lost due to deadtime"
                 mask="0xffff0000"
+                fw_cnt_reset_signal="reset or cnt_reset"
                 fw_cnt_en_signal="trigger and drs_busy"
                 fw_signal="cnt_lost_events"/>
 
@@ -269,8 +278,32 @@
                 description="Number of triggers received"
                 mask="0xffffffff"
                 fw_cnt_en_signal="trigger"
+                fw_cnt_reset_signal="reset or cnt_reset"
                 fw_signal="event_counter"/>
+
+            <node id="TRIGGER_RATE" address="0x6" permission="r"
+                description="Rate of triggers in Hz"
+                mask="0xffffffff"
+                fw_signal="trigger_rate"/>
+
+            <node id="LOST_TRIGGER_RATE" address="0x7" permission="r"
+                description="Rate of lost triggers in Hz"
+                mask="0xffffffff"
+                fw_signal="lost_trigger_rate"/>
+
+
+            <node id="CNT_RESET" address="0x8" permission="w"
+                description="Reset the counters"
+                mask="0x1"
+                fw_write_pulse_signal="cnt_reset"/>
+
         </node> <!--COUNTERS-->
+
+        <node id="TRIG_GEN_RATE" address="0x59" permission="rw"
+              description="Rate of generated triggers f_trig =(2^32-1) * clk_period * rate"
+              mask="0xffffffff"
+              fw_default="0x0"
+              fw_signal="trig_gen_rate"/>
 
         <node id="HOG" address="0x60" description = "HOG Parameters">
             <node id="GLOBAL_DATE" mask="0xFFFFFFFF" permission="r" address="0x0" description="HOG Global Date"    fw_signal="GLOBAL_DATE"/>
@@ -291,11 +324,12 @@
             <node id="EMPTY" permission="r" address="0x2" mask="0x00000002" description="Spy Buffer Empty" fw_signal="spy_empty"/>
         </node>
         <node id="DMA" address="0x100" description = "DMA and ram buffer occupancy">
-            <node id="RAM_A_OCC_RST" permission="w" address="0x0" mask="0x00000001" description="Sets RAM buffer a counter to 0" fw_write_pulse_signal="ram_a_occ_rst"/>
-            <node id="RAM_B_OCC_RST" permission="w" address="0x1" mask="0x00000001" description="Sets RAM buffer b counter to 0" fw_write_pulse_signal="ram_b_occ_rst"/>
-            <node id="RAM_A_OCCUPANCY"  permission="r" address="0x2" mask="0xFFFFFFFF" description="RAM buffer a occupancy"  fw_signal="ram_buff_a_occupancy"/>
-            <node id="RAM_B_OCCUPANCY"  permission="r" address="0x3" mask="0xFFFFFFFF" description="RAM buffer b occupancy"  fw_signal="ram_buff_b_occupancy"/>
-            <node id="DMA_POINTER"  permission="r" address="0x4" mask="0xFFFFFFFF" description="DMA controller pointer"  fw_signal="dma_pointer"/>
+            <node id="RAM_A_OCC_RST"   permission="w" address="0x0" mask="0x00000001" description="Sets RAM buffer a counter to 0" fw_write_pulse_signal="ram_a_occ_rst"/>
+            <node id="RAM_B_OCC_RST"   permission="w" address="0x1" mask="0x00000001" description="Sets RAM buffer b counter to 0" fw_write_pulse_signal="ram_b_occ_rst"/>
+            <node id="RAM_A_OCCUPANCY" permission="r" address="0x2" mask="0xFFFFFFFF" description="RAM buffer a occupancy"  fw_signal="ram_buff_a_occupancy"/>
+            <node id="RAM_B_OCCUPANCY" permission="r" address="0x3" mask="0xFFFFFFFF" description="RAM buffer b occupancy"  fw_signal="ram_buff_b_occupancy"/>
+            <node id="DMA_POINTER"     permission="r" address="0x4" mask="0xFFFFFFFF" description="DMA controller pointer"  fw_signal="dma_pointer"/>
+            <node id="TOGGLE_RAM"      permission="w" address="0x5"  description="Write 1 to switch the dma buffer to the other half" mask="0x1" fw_write_pulse_signal="ram_toggle_request" />
         </node>
         <node id="GFP" address="0x200" description = "GFP Registers">
             <node id="EVENTID_SPI_EN"  fw_default="0x0" permission="rw" address="0x0" mask="0x1" description="1 to enable GFP Event ID from SPI"  fw_signal="gfp_use_eventid"/>

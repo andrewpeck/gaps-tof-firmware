@@ -18,24 +18,26 @@ proc translate_name {name} {
         set name "lvs_sync_ccb"
     }
 
-    # rb_d_X_Y_Z --> rb_d_[Q]
+    # rb_d_{DSI 1..5}_{PAIR 0..1}_{RB 1..5} --> rb_d_[Q]
     if {[string range $name 0 4] eq "rb_d_"} {
         set args [split $name "_"]
-        set dsi  [lindex $args 2]
-        set rb   [lindex $args 4]
+        set dsi  [expr [lindex $args 2] - 1]
         set pair [lindex $args 3]
-        set pin [expr $dsi * 10 + $rb * 2 + $pair - 1]
+        set rb   [expr [lindex $args 4] - 1]
+        set pin [expr $dsi * 10 + $rb * 2 + $pair]
         set name rb_data_o\[$pin\]
+        puts $name
     }
 
     # lt_data_X_Y_Z --> lt_data_i[Q]
     if {[string range $name 0 7] eq "lt_data_"} {
         set args [split $name "_"]
         set dsi  [lindex $args 2]
-        set lt   [lindex $args 4]
+        set lt   [expr [lindex $args 4] - 1]
         set pair [lindex $args 3]
         set pol  [lindex $args 5]
-        set pin [expr $dsi * 15 + $lt * 3 + $pair - 1]
+        set pin [expr $dsi * 15 + $lt * 3 + $pair]
+        puts "DSI = $dsi lt = $lt pair=$pair"
         set name lt_data_i_$pol\[$pin\]
     }
 
@@ -121,7 +123,6 @@ foreach line $nets {
                 set pin $row$num
             }
 
-            puts "$conn $pin"
             if {[string equal $conn "P1"] && [lsearch "M1 M2 M3 M4" $pin] >= 0} {
                 continue
             }

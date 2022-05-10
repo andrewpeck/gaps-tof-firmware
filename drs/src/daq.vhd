@@ -66,7 +66,7 @@ architecture behavioral of daq is
                    DNA_state, HASH_state, ID_state, CHMASK_state, WAIT_EVENT_CNT_state,
                    EVENT_CNT_state, DTAP0_state, DTAP1_state, TIMESTAMP_state, CALC_CH_CRC_state,
                    CH_CRC_state, CH_HEADER_state, PAYLOAD_state, STOP_CELL_state, CALC_CRC32_state,
-                   CRC32_state, TAIL_state, PAD_state);
+                   CRC32_state, TAIL_state, PAD_state, WAIT_state);
 
   signal state : state_t := IDLE_state;
 
@@ -258,7 +258,7 @@ begin
       crc    => channel_crc
       );
 
-  busy_o <= '0' when state = IDLE_state else '1';
+  busy_o <= '0' when state = IDLE_state or state=WAIT_state else '1';
   done_o <= '1' when state = TAIL_state else '0';
 
   --------------------------------------------------------------------------------
@@ -570,6 +570,22 @@ begin
         when PAD_state =>
 
           if (state_word_cnt = packet_padding - 1) then
+            state          <= WAIT_state;
+            state_word_cnt <= 0;
+          else
+            state_word_cnt <= state_word_cnt + 1;
+          end if;
+
+          data <= x"0000";
+          dav  <= true;
+
+        when WAIT_state =>
+
+          -- the dma block is fragile and I think it mayb have some dependency on a few idle cycles
+          -- between packets, add this here to make sure there is always some small period between
+          -- one packet and the next
+
+          if (state_word_cnt = g_PACKET_PAD-1) then
             state          <= IDLE_state;
             state_word_cnt <= 0;
           else
