@@ -7,14 +7,20 @@ library unisim;
 use unisim.vcomponents.all;
 
 entity clocking is
+  generic (
+    NUM_DSI : natural := 5
+    );
   port(
     clk_p : in std_logic;
     clk_n : in std_logic;
 
-    fb_clk_p : in std_logic_vector(4 downto 0);
-    fb_clk_n : in std_logic_vector(4 downto 0);
+    fb_clk_p : in std_logic_vector(NUM_DSI-1 downto 0);
+    fb_clk_n : in std_logic_vector(NUM_DSI-1 downto 0);
 
     fb_active_or : out std_logic := '0';
+
+    lvs_sync : out std_logic_vector(NUM_DSI-1 downto 0);
+    ccb_sync : out std_logic;
 
     clk100    : out std_logic;
     clk200    : out std_logic;
@@ -47,6 +53,10 @@ architecture structural of clocking is
   signal fb_active        : std_logic_vector (fb_clk_p'range) := (others => '0');
 
 begin
+
+  -- FIXME: replace with multi-phase at the right frequency (1MHz?)
+  lvs_sync <= (others => clk100);
+  ccb_sync <= clk100;
 
   osc_ibuf : IBUFDS
     port map(

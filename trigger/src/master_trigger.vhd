@@ -322,12 +322,18 @@ begin
   --------------------------------------------------------------------------------
 
   clocking : entity work.clocking
+    generic map (
+      NUM_DSI => NUM_DSI
+      )
     port map (
       clk_p     => clk_p,
       clk_n     => clk_n,
 
       fb_clk_p => fb_clk_p,
       fb_clk_n => fb_clk_n,
+
+      lvs_sync => lvs_sync,
+      ccb_sync => ccb_sync,
 
       fb_active_or => fb_active,
 
