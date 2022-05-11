@@ -132,3 +132,6 @@ if {$err > 0} {
 
 #set_property IOSTANDARD LVCMOS33 [get_ports -of_objects [get_iobanks 34]];
 #set_property IOSTANDARD LVCMOS33 [get_ports -of_objects [get_iobanks 33]];
+
+# these are not on dedicated routes
+set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets clocking/fb_clk_i_*]
