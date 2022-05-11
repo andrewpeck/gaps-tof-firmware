@@ -117,6 +117,8 @@ architecture structural of gaps_mt is
 
   signal clk100,  clk200,  clk125,  clk125_90 : std_logic;
 
+  signal fb_active : std_logic := '0';
+
   signal event_cnt     : std_logic_vector (EVENTCNTB-1 downto 0);
   signal rst_event_cnt : std_logic := '0';
 
@@ -246,7 +248,7 @@ begin
   -- i2c_reset <= not locked;
   ipb_reset <= not locked;
   ipb_clk   <= clock;
-  clock <= clk100;
+  clock     <= clk100;
 
   delayctrl_inst : IDELAYCTRL
     port map (
@@ -318,6 +320,12 @@ begin
     port map (
       clk_p     => clk_p,
       clk_n     => clk_n,
+
+      fb_clk_p => fb_clk_p,
+      fb_clk_n => fb_clk_n,
+
+      fb_active_or => fb_active,
+
       clk100    => clk100,               -- system clock
       clk200    => clk200,               -- 200mhz for iodelay
       clk125    => clk125,
@@ -493,7 +501,7 @@ begin
   -- Signal Sump
   --------------------------------------------------------------------------------
 
-  sump_o <= global_trigger;
+  sump_o <= global_trigger xor fb_active;
 
   ----------------------------------------------------------------------------------
   --
