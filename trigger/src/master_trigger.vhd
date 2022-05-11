@@ -54,7 +54,7 @@ entity gaps_mt is
     );
   port(
 
-    --
+    -- CCB clock
     clk_p : in std_logic;
     clk_n : in std_logic;
 
@@ -81,22 +81,27 @@ entity gaps_mt is
     rgmii_txd    : out std_logic_vector(3 downto 0);
     rgmii_tx_ctl : out std_logic;
 
-    --
+    -- Local Trigger Data (LVDS)
     lt_data_i_p : in  std_logic_vector (NUM_LT_INPUTS-1 downto 0);
     lt_data_i_n : in  std_logic_vector (NUM_LT_INPUTS-1 downto 0);
+
+    -- Readout Board Data LVCMOS
     rb_data_o   : out std_logic_vector (NUM_RB_OUTPUTS-1 downto 0);
 
-    -- Control
+    -- Feedback Clocks from DSIs
     fb_clk_p : in  std_logic_vector (NUM_DSI-1 downto 0);
     fb_clk_n : in  std_logic_vector (NUM_DSI-1 downto 0);
 
+    -- DC/DC Syncs
     lvs_sync     : out std_logic_vector (NUM_DSI-1 downto 0);
     lvs_sync_ccb : out std_logic;
+
+    -- DSI Control
     dsi_on       : out std_logic_vector (NUM_DSI-1 downto 0);
     clk_src_sel  : out std_logic;
 
     -- housekeeping adcs
-    hk_cs_n  : out std_logic_vector(1 downto 0);
+    hk_cs_n : out std_logic_vector(1 downto 0);
     hk_clk  : out std_logic;
     hk_dout : out std_logic;
     hk_din  : in  std_logic;
@@ -105,7 +110,7 @@ entity gaps_mt is
     ext_out : out std_logic_vector (3 downto 0);
     ext_in  : in  std_logic_vector (3 downto 0);
 
-    sump_o    : out std_logic
+    sump_o : out std_logic
 
     );
 end gaps_mt;
