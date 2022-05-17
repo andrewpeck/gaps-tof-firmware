@@ -11,3 +11,4 @@ ip/*/*
 !ip/*/*.xci
 bd/*
 !bd/*.bd
+bin/
