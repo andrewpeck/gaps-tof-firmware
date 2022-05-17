@@ -12,3 +12,6 @@ ip/*/*
 bd/*
 !bd/*.bd
 bin/
+usage_statistics_webtalk.*
+.Xil
+.write_bitstream.error.rst
