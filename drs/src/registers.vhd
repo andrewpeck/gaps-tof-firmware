@@ -283,4 +283,21 @@ package registers is
     constant REG_GFP_EVENTID_RX_LSB     : integer := 0;
 
 
+    --============================================================================
+    --       >>> PL Module <<<    base address: 0x00001000
+    --
+    -- PL side features
+    --============================================================================
+
+    constant REG_PL_NUM_REGS : integer := 2;
+    constant REG_PL_ADDRESS_MSB : integer := 9;
+    constant REG_PL_ADDRESS_LSB : integer := 0;
+    constant REG_PL_PL_MMCM_LOCKED_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
+    constant REG_PL_PL_MMCM_LOCKED_BIT    : integer := 0;
+
+    constant REG_PL_IPB_CLK_RATE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"01";
+    constant REG_PL_IPB_CLK_RATE_MSB    : integer := 31;
+    constant REG_PL_IPB_CLK_RATE_LSB     : integer := 0;
+
+
 end registers;

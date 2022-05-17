@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 package ipbus_pkg is
 
     constant IPB_MASTERS : integer := 1;
-    constant IPB_SLAVES : integer := 1;
+    constant IPB_SLAVES : integer := 2;
     constant C_NUM_IPB_SLAVES : integer := IPB_SLAVES;
 
     constant IPB_ADDR_SIZE : integer := 30;
@@ -31,10 +31,12 @@ package ipbus_pkg is
     -- START: IPBUS_SLAVES :: DO NOT EDIT
     type t_ipb_slv is record
                     DRS   : integer;
+                     PL   : integer;
     end record;
     -- IPbus slave index definition
     constant IPB_SLAVE : t_ipb_slv := (
-                    DRS  => 0    );
+                    DRS  => 0,
+                     PL  => 1    );
     -- END: IPBUS_SLAVES :: DO NOT EDIT
 
     constant IPB_REQ_BITS        : integer := 49;
@@ -80,6 +82,7 @@ package body ipbus_pkg is
 
         -- START: IPBUS_ADDR_SEL :: DO NOT EDIT
         if   (std_match(addr(15 downto 0), std_logic_vector(to_unsigned(IPB_SLAVE.            DRS,     4))  & "------------")) then sel := IPB_SLAVE.DRS;
+        elsif(std_match(addr(15 downto 0), std_logic_vector(to_unsigned(IPB_SLAVE.             PL,     4))  & "------------")) then sel := IPB_SLAVE.PL;
         -- END: IPBUS_ADDR_SEL :: DO NOT EDIT
         else sel := 99;
         end if;
@@ -90,11 +93,11 @@ package body ipbus_pkg is
         --
         -- should update this in the generator
 
-        if   (std_match(addr(15 downto 0), std_logic_vector(to_unsigned(IPB_SLAVE.            DRS,     4))  & "------------")) then
-          sel := IPB_SLAVE.DRS;
-        else
-          sel := 99;
-        end if;
+        -- if   (std_match(addr(15 downto 0), std_logic_vector(to_unsigned(IPB_SLAVE.            DRS,     4))  & "------------")) then
+        --   sel := IPB_SLAVE.DRS;
+        -- else
+        --   sel := 99;
+        -- end if;
 
 
         return sel;
