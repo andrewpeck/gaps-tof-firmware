@@ -50,3 +50,15 @@ set_false_path \
 
 set_max_delay \
     -to   [get_pins {ps_interface_inst/dma_controller_inst/synchronizer_inst/sync_gen.gen_ff[0].s_resync_reg[1]/D}] 8.0
+
+# Maximum delay for Clock Frequency Monitor
+
+set_max_delay -datapath_only \
+    -from [get_pins ps_interface_inst/frequency_counter_ipb_clk/pulse_reg*/C] 5.0
+
+set_max_delay -datapath_only \
+    -from [get_pins ps_interface_inst/frequency_counter_ipb_clk/pulse_synced_reg*/C] 5.0
+
+set_max_delay -datapath_only \
+    -from [get_pins {ps_interface_inst/frequency_counter_ipb_clk/count_reg[*]/C}] \
+    -to   [get_pins {ps_interface_inst/frequency_counter_ipb_clk/rate_reg[*]/D}] 5.0
