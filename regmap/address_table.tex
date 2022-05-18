@@ -348,17 +348,17 @@
 
 
     \pagebreak
-    \section{Module: PL \hfill \texttt{0x1000}}
+    \section{Module: PS \hfill \texttt{0x1000}}
 
-    PL side features\\
+    Processing System Registers, runs on the PS clock (independent from the DRS clock)\\
 
     \renewcommand{\arraystretch}{1.3}
     \noindent
-    \subsection*{\textcolor{parentcolor}{\textbf{PL}}}
+    \subsection*{\textcolor{parentcolor}{\textbf{PS}}}
 
     \vspace{4mm}
     \noindent
-    PL side features
+    Processing System Registers, runs on the PS clock (independent from the DRS clock)
     \noindent
 
     \keepXColumns
@@ -368,6 +368,32 @@
     \nopagebreak
     PL\_MMCM\_LOCKED & \texttt{0x1000} & \texttt{[0:0]} & r & \texttt{} & PL MMCM is locked \\\hline
     IPB\_CLK\_RATE & \texttt{0x1001} & \texttt{[31:0]} & r & \texttt{} & Rate of IPB Clk in Hz \\\hline
+    CNT\_DMA\_READOUTS\_COMPLETED & \texttt{0x1010} & \texttt{[31:0]} & r & \texttt{} & Number of readouts completed since reset \\\hline
+    \end{tabularx}
+    \vspace{5mm}
+
+
+    \noindent
+    \subsection*{\textcolor{parentcolor}{\textbf{PS.DMA}}}
+
+    \vspace{4mm}
+    \noindent
+    DMA and ram buffer occupancy
+    \noindent
+
+    \keepXColumns
+    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
+    \hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
+    \nopagebreak
+    RAM\_A\_OCC\_RST & \texttt{0x1100} & \texttt{[0:0]} & w & Pulse & Sets RAM buffer a counter to 0 \\\hline
+    RAM\_B\_OCC\_RST & \texttt{0x1101} & \texttt{[0:0]} & w & Pulse & Sets RAM buffer b counter to 0 \\\hline
+    RAM\_A\_OCCUPANCY & \texttt{0x1102} & \texttt{[31:0]} & r & \texttt{} & RAM buffer a occupancy \\\hline
+    RAM\_B\_OCCUPANCY & \texttt{0x1103} & \texttt{[31:0]} & r & \texttt{} & RAM buffer b occupancy \\\hline
+    DMA\_POINTER & \texttt{0x1104} & \texttt{[31:0]} & r & \texttt{} & DMA controller pointer \\\hline
+    TOGGLE\_RAM & \texttt{0x1105} & \texttt{[0:0]} & w & Pulse & Write 1 to switch the dma buffer to the other half \\\hline
+    DMA\_CLEAR & \texttt{0x1106} & \texttt{[0:0]} & w & Pulse & Write 1 to clear the DMA memory (write zeroes) \\\hline
+    DMA\_RESET & \texttt{0x1107} & \texttt{[0:0]} & w & Pulse & Write 1 to completely reset the DMA state machine logic \\\hline
     \end{tabularx}
     \vspace{5mm}
 

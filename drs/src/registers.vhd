@@ -284,20 +284,52 @@ package registers is
 
 
     --============================================================================
-    --       >>> PL Module <<<    base address: 0x00001000
+    --       >>> PS Module <<<    base address: 0x00001000
     --
-    -- PL side features
+    -- Processing System Registers, runs on the PS clock (independent from the DRS
+    -- clock)
     --============================================================================
 
-    constant REG_PL_NUM_REGS : integer := 2;
-    constant REG_PL_ADDRESS_MSB : integer := 9;
-    constant REG_PL_ADDRESS_LSB : integer := 0;
-    constant REG_PL_PL_MMCM_LOCKED_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
-    constant REG_PL_PL_MMCM_LOCKED_BIT    : integer := 0;
+    constant REG_PS_NUM_REGS : integer := 11;
+    constant REG_PS_ADDRESS_MSB : integer := 9;
+    constant REG_PS_ADDRESS_LSB : integer := 0;
+    constant REG_PS_PL_MMCM_LOCKED_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
+    constant REG_PS_PL_MMCM_LOCKED_BIT    : integer := 0;
 
-    constant REG_PL_IPB_CLK_RATE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"01";
-    constant REG_PL_IPB_CLK_RATE_MSB    : integer := 31;
-    constant REG_PL_IPB_CLK_RATE_LSB     : integer := 0;
+    constant REG_PS_IPB_CLK_RATE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"01";
+    constant REG_PS_IPB_CLK_RATE_MSB    : integer := 31;
+    constant REG_PS_IPB_CLK_RATE_LSB     : integer := 0;
+
+    constant REG_PS_CNT_DMA_READOUTS_COMPLETED_ADDR    : std_logic_vector(9 downto 0) := "00" & x"10";
+    constant REG_PS_CNT_DMA_READOUTS_COMPLETED_MSB    : integer := 31;
+    constant REG_PS_CNT_DMA_READOUTS_COMPLETED_LSB     : integer := 0;
+
+    constant REG_PS_DMA_RAM_A_OCC_RST_ADDR    : std_logic_vector(9 downto 0) := "01" & x"00";
+    constant REG_PS_DMA_RAM_A_OCC_RST_BIT    : integer := 0;
+
+    constant REG_PS_DMA_RAM_B_OCC_RST_ADDR    : std_logic_vector(9 downto 0) := "01" & x"01";
+    constant REG_PS_DMA_RAM_B_OCC_RST_BIT    : integer := 0;
+
+    constant REG_PS_DMA_RAM_A_OCCUPANCY_ADDR    : std_logic_vector(9 downto 0) := "01" & x"02";
+    constant REG_PS_DMA_RAM_A_OCCUPANCY_MSB    : integer := 31;
+    constant REG_PS_DMA_RAM_A_OCCUPANCY_LSB     : integer := 0;
+
+    constant REG_PS_DMA_RAM_B_OCCUPANCY_ADDR    : std_logic_vector(9 downto 0) := "01" & x"03";
+    constant REG_PS_DMA_RAM_B_OCCUPANCY_MSB    : integer := 31;
+    constant REG_PS_DMA_RAM_B_OCCUPANCY_LSB     : integer := 0;
+
+    constant REG_PS_DMA_DMA_POINTER_ADDR    : std_logic_vector(9 downto 0) := "01" & x"04";
+    constant REG_PS_DMA_DMA_POINTER_MSB    : integer := 31;
+    constant REG_PS_DMA_DMA_POINTER_LSB     : integer := 0;
+
+    constant REG_PS_DMA_TOGGLE_RAM_ADDR    : std_logic_vector(9 downto 0) := "01" & x"05";
+    constant REG_PS_DMA_TOGGLE_RAM_BIT    : integer := 0;
+
+    constant REG_PS_DMA_DMA_CLEAR_ADDR    : std_logic_vector(9 downto 0) := "01" & x"06";
+    constant REG_PS_DMA_DMA_CLEAR_BIT    : integer := 0;
+
+    constant REG_PS_DMA_DMA_RESET_ADDR    : std_logic_vector(9 downto 0) := "01" & x"07";
+    constant REG_PS_DMA_DMA_RESET_BIT    : integer := 0;
 
 
 end registers;

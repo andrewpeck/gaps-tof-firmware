@@ -722,9 +722,9 @@ begin
       fifo_clock_in => clock,           -- TODO: separate daq clock
       fifo_data_wen => fifo_data_wen,
 
-      packet_counter    => dma_packet_counter,
-      dma_control_reset => dma_control_reset,
-      dma_clear         => dma_clear,
+      packet_counter      => dma_packet_counter,  -- DEPRECATED
+      dma_control_reset_i => dma_control_reset,   -- DEPRECATED
+      dma_clear_i         => dma_clear,           -- DEPRECATED
 
       clk33          => clock,
       pl_mmcm_locked => locked,
@@ -739,12 +739,12 @@ begin
       daq_busy_in => daq_busy,
 
       -- RAM occupancy monitoring
-      ram_a_occ_rst_i        => ram_a_occ_rst,
-      ram_b_occ_rst_i        => ram_b_occ_rst,
-      ram_toggle_request_i   => ram_toggle_request,
-      ram_buff_a_occupancy_o => ram_buff_a_occupancy,
-      ram_buff_b_occupancy_o => ram_buff_b_occupancy,
-      dma_pointer_o          => dma_pointer
+      ram_a_occ_rst_i        => ram_a_occ_rst,         -- DEPRECATED
+      ram_b_occ_rst_i        => ram_b_occ_rst,         -- DEPRECATED
+      ram_toggle_request_i   => ram_toggle_request,    -- DEPRECATED
+      ram_buff_a_occupancy_o => ram_buff_a_occupancy,  -- DEPRECATED
+      ram_buff_b_occupancy_o => ram_buff_b_occupancy,  -- DEPRECATED
+      dma_pointer_o          => dma_pointer            -- DEPRECATED
 
       );
 
