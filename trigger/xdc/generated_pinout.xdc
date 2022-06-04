@@ -254,12 +254,12 @@ set_property PACKAGE_PIN  M17 [get_ports          rgmii_int_n]; # P1 E23
 set_property PACKAGE_PIN  L17 [get_ports            rgmii_mdc]; # P1 D24
 set_property PACKAGE_PIN  J19 [get_ports           rgmii_mdio]; # P1 E22
 set_property PACKAGE_PIN  K18 [get_ports        rgmii_reset_n]; # P1 E24
-set_property PACKAGE_PIN  J20 [get_ports         rgmii_rx_clk]; # P1 C23
+set_property PACKAGE_PIN  F17 [get_ports         rgmii_rx_clk]; # P1 D18
 set_property PACKAGE_PIN  L19 [get_ports         rgmii_rx_ctl]; # P1 E21
 set_property PACKAGE_PIN  F20 [get_ports         rgmii_rxd[0]]; # P1 E20
 set_property PACKAGE_PIN  E20 [get_ports         rgmii_rxd[1]]; # P1 F19
 set_property PACKAGE_PIN  E17 [get_ports         rgmii_rxd[2]]; # P1 E18
-set_property PACKAGE_PIN  F17 [get_ports         rgmii_rxd[3]]; # P1 D18
+set_property PACKAGE_PIN  J20 [get_ports         rgmii_rxd[3]]; # P1 C23
 set_property PACKAGE_PIN  J15 [get_ports         rgmii_tx_clk]; # P1 D16
 set_property PACKAGE_PIN  J16 [get_ports         rgmii_tx_ctl]; # P1 E16
 set_property PACKAGE_PIN  D20 [get_ports         rgmii_txd[0]]; # P1 C21
