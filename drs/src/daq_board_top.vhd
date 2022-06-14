@@ -843,6 +843,7 @@ begin
     regs_addresses(52)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"05";
     regs_addresses(53)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "10" & x"00";
     regs_addresses(54)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "10" & x"01";
+    regs_addresses(55)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "10" & x"02";
 
     -- Connect read signals
     regs_read_arr(0)(REG_CHIP_DMODE_BIT) <= dmode;
@@ -900,8 +901,8 @@ begin
     regs_read_arr(50)(REG_DMA_RAM_B_OCCUPANCY_MSB downto REG_DMA_RAM_B_OCCUPANCY_LSB) <= ram_buff_b_occupancy;
     regs_read_arr(51)(REG_DMA_DMA_POINTER_MSB downto REG_DMA_DMA_POINTER_LSB) <= dma_pointer;
     regs_read_arr(53)(REG_GFP_EVENTID_SPI_EN_BIT) <= gfp_use_eventid;
-    regs_read_arr(54)(REG_GFP_EVENTID_TIMEOUT_CNT_MSB downto REG_GFP_EVENTID_TIMEOUT_CNT_LSB) <= gfp_eventid_timeout_cnt;
     regs_read_arr(54)(REG_GFP_EVENTID_RX_MSB downto REG_GFP_EVENTID_RX_LSB) <= gfp_eventid_rx;
+    regs_read_arr(55)(REG_GFP_EVENTID_TIMEOUT_CNT_MSB downto REG_GFP_EVENTID_TIMEOUT_CNT_LSB) <= gfp_eventid_timeout_cnt;
 
     -- Connect write signals
     dmode <= regs_write_arr(0)(REG_CHIP_DMODE_BIT);
@@ -1022,6 +1023,7 @@ begin
         snap_i    => '1',
         count_o   => gfp_eventid_timeout_cnt
     );
+
 
     -- Connect rate instances
 
