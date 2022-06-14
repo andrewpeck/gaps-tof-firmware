@@ -222,6 +222,7 @@ architecture Behavioral of top_readout_board is
     signal cnt_readouts : std_logic_vector (31 downto 0) := (others => '0');
     signal cnt_lost_events : std_logic_vector (15 downto 0) := (others => '0');
     signal event_counter : std_logic_vector (31 downto 0) := (others => '0');
+    signal gfp_eventid_timeout_cnt : std_logic_vector (15 downto 0) := (others => '0');
   ------ Register signals end ----------------------------------------------
 
   signal gfp_use_eventid      : std_logic;
@@ -230,6 +231,7 @@ architecture Behavioral of top_readout_board is
   signal gfp_eventid          : std_logic_vector (31 downto 0);
   signal gfp_eventid_valid    : std_logic;
   signal gfp_eventid_read     : std_logic;
+  signal gfp_eventid_timeout  : std_logic;
 
   --IPbus
   signal ipb_reset    : std_logic;
@@ -360,11 +362,11 @@ begin
 
       if (gfp_eventid_read = '1') then
         gfp_eventid_valid <= '0';
-        gfp_eventid <= x"FFFFFFFE";
+        gfp_eventid <= x"FFFFFFFD";
       -- don't overwrite existing triggers until they are already read
       elsif (gfp_eventid_valid = '0' and gfp_eventid_rx_valid = '1') then
         gfp_eventid_valid <= '1';
-        gfp_eventid <= gfp_eventid_rx;
+        gfp_eventid       <= gfp_eventid_rx;
       end if;
 
     end if;
@@ -551,10 +553,11 @@ begin
       stop_cell_i           => drs_stop_cell,
       event_cnt_i           => event_counter,
 
-      gfp_use_eventid_i   => gfp_use_eventid,
-      gfp_eventid_i       => gfp_eventid,
-      gfp_eventid_valid_i => gfp_eventid_valid,
-      gfp_eventid_read_o  => gfp_eventid_read,
+      gfp_use_eventid_i     => gfp_use_eventid,
+      gfp_eventid_i         => gfp_eventid,
+      gfp_eventid_valid_i   => gfp_eventid_valid,
+      gfp_eventid_read_o    => gfp_eventid_read,
+      gfp_eventid_timeout_o => gfp_eventid_timeout,
 
       mask_i      => readout_mask,
       board_id    => board_id,
@@ -897,6 +900,7 @@ begin
     regs_read_arr(50)(REG_DMA_RAM_B_OCCUPANCY_MSB downto REG_DMA_RAM_B_OCCUPANCY_LSB) <= ram_buff_b_occupancy;
     regs_read_arr(51)(REG_DMA_DMA_POINTER_MSB downto REG_DMA_DMA_POINTER_LSB) <= dma_pointer;
     regs_read_arr(53)(REG_GFP_EVENTID_SPI_EN_BIT) <= gfp_use_eventid;
+    regs_read_arr(54)(REG_GFP_EVENTID_TIMEOUT_CNT_MSB downto REG_GFP_EVENTID_TIMEOUT_CNT_LSB) <= gfp_eventid_timeout_cnt;
     regs_read_arr(54)(REG_GFP_EVENTID_RX_MSB downto REG_GFP_EVENTID_RX_LSB) <= gfp_eventid_rx;
 
     -- Connect write signals
@@ -1006,6 +1010,18 @@ begin
         count_o   => event_counter
     );
 
+
+    COUNTER_GFP_EVENTID_TIMEOUT_CNT : entity work.counter_snap
+    generic map (
+        g_COUNTER_WIDTH  => 16
+    )
+    port map (
+        ref_clk_i => clock,
+        reset_i   => reset or cnt_reset,
+        en_i      => gfp_eventid_timeout,
+        snap_i    => '1',
+        count_o   => gfp_eventid_timeout_cnt
+    );
 
     -- Connect rate instances
 

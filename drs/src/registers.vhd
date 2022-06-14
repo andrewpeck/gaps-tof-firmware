@@ -278,6 +278,10 @@ package registers is
     constant REG_GFP_EVENTID_SPI_EN_BIT    : integer := 0;
     constant REG_GFP_EVENTID_SPI_EN_DEFAULT : std_logic := '0';
 
+    constant REG_GFP_EVENTID_TIMEOUT_CNT_ADDR    : std_logic_vector(9 downto 0) := "10" & x"01";
+    constant REG_GFP_EVENTID_TIMEOUT_CNT_MSB    : integer := 15;
+    constant REG_GFP_EVENTID_TIMEOUT_CNT_LSB     : integer := 0;
+
     constant REG_GFP_EVENTID_RX_ADDR    : std_logic_vector(9 downto 0) := "10" & x"01";
     constant REG_GFP_EVENTID_RX_MSB    : integer := 31;
     constant REG_GFP_EVENTID_RX_LSB     : integer := 0;
