@@ -1,4 +1,3 @@
-set DESIGN    "[file rootname [file tail [info script]]]"
 set PATH_REPO "[file normalize [file dirname [info script]]]/../../"
 
 update_ip_catalog
