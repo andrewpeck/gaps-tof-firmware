@@ -92,12 +92,6 @@ init:
 reg:
 	cd regmap && make
 
-tcl_to_bd:
-	$(TIMECMD) Hog/CreateProject.sh tcl_to_bd $(COLORIZE)
-
-bd_to_tcl:
-	$(TIMECMD) Hog/CreateProject.sh bd_to_tcl $(COLORIZE)
-
 fpgaman_bin:
 	cd util; python3 create_fpga_manager_bin.py
 
