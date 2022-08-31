@@ -6,7 +6,7 @@ set_property top top_readout_board [current_fileset]
 
 update_compile_order -fileset sources_1
 
-set BD_FILE $PATH_REPO/Top/bd/gaps_ps_interface/gaps_ps_interface.bd
+set BD_FILE $PATH_REPO/bd/gaps_ps_interface/gaps_ps_interface.bd
 add_files -norecurse $BD_FILE
 open_bd_design [get_files $BD_FILE]
 upgrade_bd_cells [get_bd_cells {*}]
@@ -22,7 +22,7 @@ if {50 < $sdio_freq} {
 }
 
 make_wrapper -files [get_files $BD_FILE] -top
-add_files -norecurse $PATH_REPO/Top/bd/gaps_ps_interface/hdl/gaps_ps_interface_wrapper.vhd
+add_files -norecurse $PATH_REPO/bd/gaps_ps_interface/hdl/gaps_ps_interface_wrapper.vhd
 
 update_compile_order -fileset sources_1
 
