@@ -1,5 +1,13 @@
 set PATH_REPO [file normalize "[file normalize [file dirname [info script]]]/../../"]
 
+if {[get_property PART [current_project]] == "xc7z010clg400-1"} {
+    source $PATH_REPO/bd/readout-board-bd.tcl
+}
+
+if {[get_property PART [current_project]] == "xc7z020clg484-2"} {
+    source $PATH_REPO/bd/readout-board-zx3-bd.tcl
+}
+
 update_ip_catalog
 
 set_property top top_readout_board [current_fileset]

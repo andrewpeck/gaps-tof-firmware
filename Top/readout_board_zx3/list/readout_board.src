@@ -1,5 +1,2 @@
 drs/list/drs.src lib=drs
 dma/list/dma.src lib=dma
-
-# Block Design
-bd/readout-board-zx3-bd.tcl source
