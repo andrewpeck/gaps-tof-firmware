@@ -334,6 +334,11 @@
         <node id="GFP" address="0x200" description = "GFP Registers">
             <node id="EVENTID_SPI_EN"  fw_default="0x0" permission="rw" address="0x0" mask="0x1" description="1 to enable GFP Event ID from SPI"  fw_signal="gfp_use_eventid"/>
             <node id="EVENTID_RX"  permission="r" address="0x1" mask="0xFFFFFFFF" description="Event ID from GFP SPI Interface"  fw_signal="gfp_eventid_rx"/>
+            <node id="EVENTID_TIMEOUT_CNT"  permission="r" address="0x2" mask="0xffff"
+                  description="Timed out triggers waiting for event id"
+                  fw_cnt_reset_signal="reset or cnt_reset"
+                  fw_cnt_en_signal="gfp_eventid_timeout"
+                  fw_signal="gfp_eventid_timeout_cnt"/>
         </node>
     </node>
 </node>
