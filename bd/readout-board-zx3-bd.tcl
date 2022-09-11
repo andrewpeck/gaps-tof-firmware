@@ -1102,6 +1102,7 @@ proc create_root_design { parentCell } {
   assign_bd_address -offset 0x80000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system/Data] [get_bd_addr_segs IPB_AXI/Reg] -force
   assign_bd_address -offset 0x00000000 -range 0x20000000 -target_address_space [get_bd_addr_spaces DMA_HP_AXI] [get_bd_addr_segs processing_system/S_AXI_HP0/HP0_DDR_LOWOCM] -force
 
+  set_property range 1G [get_bd_addr_segs {DMA_HP_AXI/SEG_processing_system_HP0_DDR_LOWOCM}]
 
   # Restore current instance
   current_bd_instance $oldCurInst
