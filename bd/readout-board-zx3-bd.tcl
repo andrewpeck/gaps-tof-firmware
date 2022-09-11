@@ -1,5 +1,6 @@
-# https://github.com/enclustra/Mars_ZX3_EB1_Reference_Design/blob/master/reference_design/scripts/Mars_ZX3_EB1_bd.tcl
-
+# Reference Design: https://github.com/enclustra/Mars_ZX3_EB1_Reference_Design/blob/master/reference_design/scripts/Mars_ZX3_EB1_bd.tcl
+# User schematics: https://download.enclustra.com/public_files/SoC_Modules/Mars_ZX3/Mars_ZX3-R7-0_User_Schematics_V2.pdf
+#
 ################################################################
 # This is a generated script based on design: gaps_ps_interface
 #
