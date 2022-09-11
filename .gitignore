@@ -11,3 +11,6 @@ ip/*/*
 !ip/*/*.xci
 bd/*
 !bd/*.bd
+bin/
+usage_statistics_webtalk.*
+*.str
