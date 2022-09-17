@@ -287,6 +287,7 @@ proc create_root_design { parentCell } {
 
   # Create instance: processing_system, and set properties
   set processing_system [ create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7 processing_system ]
+
   set_property -dict [ list \
    CONFIG.PCW_ACT_APU_PERIPHERAL_FREQMHZ {666.666687} \
    CONFIG.PCW_ACT_CAN0_PERIPHERAL_FREQMHZ {23.8095} \
@@ -499,7 +500,7 @@ proc create_root_design { parentCell } {
    CONFIG.PCW_I2C0_GRP_INT_ENABLE {1} \
    CONFIG.PCW_I2C0_GRP_INT_IO {EMIO} \
    CONFIG.PCW_I2C0_HIGHADDR {0xE0004FFF} \
-   CONFIG.PCW_I2C0_I2C0_IO {MIO 14 .. 15} \
+   CONFIG.PCW_I2C0_I2C0_IO {EMIO} \
    CONFIG.PCW_I2C0_PERIPHERAL_ENABLE {1} \
    CONFIG.PCW_I2C0_RESET_ENABLE {0} \
    CONFIG.PCW_I2C1_BASEADDR {0xE0005000} \
@@ -1080,6 +1081,9 @@ proc create_root_design { parentCell } {
    CONFIG.PCW_WDT_PERIPHERAL_FREQMHZ {133.333333} \
    CONFIG.PCW_WDT_WDT_IO {EMIO} \
  ] $processing_system
+
+  # connect the emio i2c pins
+  make_bd_intf_pins_external  [get_bd_intf_pins processing_system/IIC_0]
 
   # Create interface connections
   connect_bd_intf_net -intf_net DMA_HP_AXI_1 [get_bd_intf_ports DMA_HP_AXI] [get_bd_intf_pins dma_hp_interconnect/S00_AXI]

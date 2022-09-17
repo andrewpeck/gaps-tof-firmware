@@ -8,6 +8,8 @@ set_property BITSTREAM.CONFIG.OVERTEMPPOWERDOWN ENABLE [current_design]
 #set_property IOB TRUE [all_inputs]
 #set_property IOB TRUE [all_outputs]
 
+set_property IOSTANDARD LVCMOS25 [get_ports {emio_*}]
+
 set_property IOSTANDARD LVCMOS25 [get_ports {drs_*}]
 
 set_property IOSTANDARD LVCMOS25 [get_ports {adc_data_i[*]}]

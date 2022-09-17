@@ -1,5 +1,3 @@
-# -*- mode: TCL;-*-
-
 # IP Cores
 #
 # MUST remove unused IP in Vivado 2020.1 due to a bug; it crashes when trying to

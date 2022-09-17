@@ -82,7 +82,9 @@ entity top_readout_board is
     ddr_dm            : inout std_logic_vector (3 downto 0);
     ddr_dq            : inout std_logic_vector (31 downto 0);
     ddr_dqs_n         : inout std_logic_vector (3 downto 0);
-    ddr_dqs_p         : inout std_logic_vector (3 downto 0)
+    ddr_dqs_p         : inout std_logic_vector (3 downto 0);
+    emio_scl          : inout std_logic;
+    emio_sda          : inout std_logic
 
     -- gpio_p : inout std_logic_vector (9 downto 0);
     -- gpio_n : inout std_logic_vector (9 downto 0)
@@ -720,6 +722,9 @@ begin
       ddr_dq      => ddr_dq,
       ddr_dqs_n   => ddr_dqs_n,
       ddr_dqs_p   => ddr_dqs_p,
+
+      emio_scl    => emio_scl,
+      emio_sda    => emio_sda,
 
       fifo_data_in  => fifo_data_out,
       fifo_clock_in => clock,           -- TODO: separate daq clock
