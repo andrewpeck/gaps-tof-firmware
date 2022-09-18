@@ -1,3 +1,19 @@
+----------------------------------------------------------------------------------
+-- GAPS Time of Flight
+-- A. Peck
+-- Trigger Rx
+----------------------------------------------------------------------------------
+-- Deserializes a trigger link from the master trigger in the RB
+--
+-- Inputs:
+--  * Serialized trigger data stream (manchester coded)
+--
+-- Outputs:
+--   * A fast "pretrigger" based on the first 2 bits
+--   * Event Count and Channel Mask once the full trigger packet is received
+--
+----------------------------------------------------------------------------------
+
 -- TODO: add optional 8b10b? manchester?
 
 library ieee;

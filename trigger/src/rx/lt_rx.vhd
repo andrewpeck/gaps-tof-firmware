@@ -1,3 +1,10 @@
+----------------------------------------------------------------------------------
+-- GAPS Time of Flight
+-- A. Peck
+-- Local Trigger Receiver
+----------------------------------------------------------------------------------
+-- This module receives data from a single local trigger board
+----------------------------------------------------------------------------------
 library unisim;
 use unisim.vcomponents.all;
 
