@@ -1,4 +1,5 @@
 trigger/src/master_trigger.vhd top=gaps_mt
+util/prbs_any.vhd
 #ipbus-firmware/components/ipbus_core/firmware/hdl/ipbus_package.vhd
 trigger/src/*.vhd
 trigger/src/*/*.vhd

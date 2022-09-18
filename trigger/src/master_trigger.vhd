@@ -7,8 +7,12 @@
 --          -- add inferred SRL16s (prior to the deserializer)
 --
 -- TODO: Connect idelays to wishbone
+--
 -- TODO: add prbs tx/rx
+--
 -- TODO: channel masking (for e.g. hot channels)
+--
+-- TODO: LT format has changed from hit to 3 level thing, need to receive accordingly
 --
 -- FIXME: counters will multi-count pulse-extended hits
 --
@@ -33,6 +37,9 @@ use work.ipbus.all;
 library unisim;
 use unisim.vcomponents.all;
 
+library unisim;
+use unisim.vcomponents.all;
+
 -- LT Schematics: https://drive.google.com/drive/folders/19IckvaclJu1OXXpRnZHItwr0qBm4Qy50
 
 entity gaps_mt is
@@ -41,6 +48,8 @@ entity gaps_mt is
 
     MAC_ADDR : std_logic_vector (47 downto 0) := x"00_08_20_83_53_00";
     IP_ADDR  : ip_addr_t                      := (192, 168, 0, 10);
+
+    LOOPBACK_MODE : boolean := true;
 
     -- these generics get set by hog at synthesis
     GLOBAL_DATE : std_logic_vector (31 downto 0) := x"00000000";
@@ -98,7 +107,7 @@ entity gaps_mt is
 
     -- DSI Control
     dsi_on       : out std_logic_vector (NUM_DSI-1 downto 0);
-    clk_src_sel  : out std_logic;
+    clk_src_sel  : out std_logic; -- 1 == ext clock
 
     -- housekeeping adcs
     hk_cs_n : out std_logic_vector(1 downto 0);
@@ -250,6 +259,9 @@ architecture structural of gaps_mt is
 
 begin
 
+  dsi_on <= (others => '1');
+  clk_src_sel <= '0';
+
   -- i2c_reset <= not locked;
   ipb_reset <= not locked;
   ipb_clk   <= clock;
@@ -352,34 +364,36 @@ begin
   --
   --------------------------------------------------------------------------------
 
-  input_rx : entity work.input_rx
-    port map (
-      -- system clock
-      clk      => clock,  -- logic clock
-      clk200   => clk200,  -- for idelay
+  noloop_r : if (not LOOPBACK_MODE) generate
+    input_rx : entity work.input_rx
+      port map (
+        -- system clock
+        clk    => clock,                  -- logic clock
+        clk200 => clk200,                 -- for idelay
 
-      -- clock and data from lt boards
-      clocks_i => (others => clk100),
-      data_i_p => lt_data_i_p,
-      data_i_n => lt_data_i_n,
+        -- clock and data from lt boards
+        clocks_i => (others => clk100),
+        data_i_p => lt_data_i_p,
+        data_i_n => lt_data_i_n,
 
-      -- -- idelay settings (in units of 80ps)
-      -- clk_delays_i => clk_delays,
+        -- -- idelay settings (in units of 80ps)
+        -- clk_delays_i => clk_delays,
 
-      -- sr delay settings (in units of 1 clock cycle)
-      fine_delays_i   => fine_delays,
-      coarse_delays_i => coarse_delays,
-      posnegs_i       => posnegs,
+        -- sr delay settings (in units of 1 clock cycle)
+        fine_delays_i   => fine_delays,
+        coarse_delays_i => coarse_delays,
+        posnegs_i       => posnegs,
 
-      -- parameter to optionally stretch pulses
-      pulse_stretch_i => pulse_stretch,
+        -- parameter to optionally stretch pulses
+        pulse_stretch_i => pulse_stretch,
 
-      -- hit outputs
-      hits_o => hits
-      );
+        -- hit outputs
+        hits_o => hits
+        );
 
-  rb_hits <= reshape(hits_masked);
-  hit_mask_flat <= reshape(hit_mask);
+    rb_hits <= reshape(hits_masked);
+    hit_mask_flat <= reshape(hit_mask);
+  end generate;
 
   --------------------------------------------------------------------------------
   -- core trigger logic:
@@ -442,22 +456,24 @@ begin
   --
   --------------------------------------------------------------------------------
 
-  trg_tx_gen : for I in 0 to NUM_RBS-1 generate
-  begin
-    trg_tx_inst : entity work.trg_tx
-      generic map (
-        EVENTCNTB => EVENTCNTB,
-        MASKCNTB  => NUM_RB_CHANNELS
-        )
-      port map (
-        clock       => clock,
-        reset       => not locked,
-        serial_o    => rb_data_o(I),
-        trg_i       => rb_triggers(I),
-        resync_i    => '0',
-        event_cnt_i => event_cnt,
-        ch_mask_i   => rb_hits(I)
-        );
+  noloop_t : if (not LOOPBACK_MODE) generate
+    trg_tx_gen : for I in 0 to NUM_RBS-1 generate
+    begin
+      trg_tx_inst : entity work.trg_tx
+        generic map (
+          EVENTCNTB => EVENTCNTB,
+          MASKCNTB  => NUM_RB_CHANNELS
+          )
+        port map (
+          clock       => clock,
+          reset       => not locked,
+          serial_o    => rb_data_o(I),
+          trg_i       => rb_triggers(I),
+          resync_i    => '0',
+          event_cnt_i => event_cnt,
+          ch_mask_i   => rb_hits(I)
+          );
+    end generate;
   end generate;
 
   --------------------------------------------------------------------------------
@@ -513,6 +529,231 @@ begin
   --------------------------------------------------------------------------------
 
   sump_o <= global_trigger xor fb_active;
+
+  --------------------------------------------------------------------------------
+  -- Loopback Mode
+  --------------------------------------------------------------------------------
+
+  loopback_gen : if (LOOPBACK_MODE) generate
+    constant CNT_WIDTH : integer := 10;
+
+    type cnt_array_t is array (integer range <>)
+      of std_logic_vector(CNT_WIDTH-1 downto 0);
+    signal err_cnts : cnt_array_t (lt_data_i_p'range);
+
+    signal frame_cnt : std_logic_vector(31 downto 0);
+
+    signal prbs_reset  : std_logic := '0';
+    signal data_gen    : std_logic := '0';
+    signal prbs_err    : std_logic_vector(lt_data_i_p'range);
+    signal posneg_prbs : std_logic_vector(lt_data_i_p'range);
+  begin
+
+    --------------------------------------------------------------------------------
+    -- PRBS-7 Data Generation
+    -- Latency Pulse Data Generation
+    --------------------------------------------------------------------------------
+
+    prbs_any_gen : entity work.prbs_any
+      generic map (
+        chk_mode    => false,
+        inv_pattern => false,
+        poly_lenght => 7,
+        poly_tap    => 6,
+        nbits       => 1
+        )
+      port map (
+        rst         => not locked,
+        clk         => clock,
+        data_in(0)  => '0',
+        en          => '1',
+        data_out(0) => data_gen
+        );
+
+    rb_data_o <= (others => data_gen);
+
+    input_gen : for I in lt_data_i_p'range generate
+      signal data_pos   : std_logic := '0';
+      signal data_neg   : std_logic := '0';
+      signal data_neg_r : std_logic := '0';
+      signal data       : std_logic := '0';
+      signal lt_data_i  : std_logic := '0';
+    begin
+
+      ibufds_inst : ibufds
+        generic map (
+          diff_term    => true,  -- differential termination
+          ibuf_low_pwr => true,  -- low power (true) vs. performance (false) setting for referenced i/o standards
+          iostandard   => "default"
+          )
+        port map (
+          o  => lt_data_i,      -- buffer output
+          i  => lt_data_i_p(I), -- diff_p buffer input (connect directly to top-level port)
+          ib => lt_data_i_n(I)  -- diff_n buffer input (connect directly to top-level port)
+          );
+
+      -- posedge
+      process (clock) is
+      begin
+        if (rising_edge(clock)) then
+          data_pos <= lt_data_i;
+          data_neg <= data_neg_r;
+
+          if (posneg_prbs(I)='1') then
+            data <= data_pos;
+          else
+            data <= data_neg;
+          end if;
+
+        end if;
+      end process;
+
+      -- negedge
+      process (clock) is
+      begin
+        if (falling_edge(clock)) then
+          data_neg_r <= lt_data_i;
+        end if;
+      end process;
+
+      --------------------------------------------------------------------------------
+      -- PRBS-7 Checking
+      --------------------------------------------------------------------------------
+
+      prbs_any_check : entity work.prbs_any
+        generic map (
+          chk_mode    => true,
+          inv_pattern => false,
+          poly_lenght => 7,
+          poly_tap    => 6,
+          nbits       => 1
+          )
+        port map (
+          rst         => not locked,
+          clk         => clock,
+          data_in(0)  => data,
+          en          => '1',
+          data_out(0) => prbs_err(I)
+          );
+
+      --------------------------------------------------------------------------------
+      -- counters
+      --------------------------------------------------------------------------------
+
+      err_counter : entity work.counter_snap
+        generic map (
+          g_COUNTER_WIDTH  => CNT_WIDTH,
+          g_ALLOW_ROLLOVER => false,
+          g_INCREMENT_STEP => 1
+          )
+        port map (
+          ref_clk_i => clock,
+          reset_i   => not locked or prbs_reset,
+          en_i      => prbs_err(I),
+          snap_i    => '1',
+          count_o   => err_cnts(I)
+          );
+
+    end generate;
+
+    frame_counter : entity work.counter_snap
+      generic map (
+        g_COUNTER_WIDTH  => frame_cnt'length,
+        g_ALLOW_ROLLOVER => false,
+        g_INCREMENT_STEP => 1
+        )
+      port map (
+        ref_clk_i => clock,
+        reset_i   => prbs_reset,
+        en_i      => '1',
+        snap_i    => '1',
+        count_o   => frame_cnt
+        );
+
+    vio_prbs_inst : vio_prbs
+      port map (
+        clk        => clock,
+        probe_in0  => frame_cnt,
+        probe_in1  => err_cnts(0),
+        probe_in2  => err_cnts(1),
+        probe_in3  => err_cnts(2),
+        probe_in4  => err_cnts(3),
+        probe_in5  => err_cnts(4),
+        probe_in6  => err_cnts(5),
+        probe_in7  => err_cnts(6),
+        probe_in8  => err_cnts(7),
+        probe_in9  => err_cnts(8),
+        probe_in10  => err_cnts(9),
+        probe_in11  => err_cnts(10),
+        probe_in12  => err_cnts(11),
+        probe_in13  => err_cnts(12),
+        probe_in14  => err_cnts(13),
+        probe_in15  => err_cnts(14),
+        probe_in16  => err_cnts(15),
+        probe_in17  => err_cnts(16),
+        probe_in18  => err_cnts(17),
+        probe_in19  => err_cnts(18),
+        probe_in20  => err_cnts(19),
+        probe_in21  => err_cnts(20),
+        probe_in22  => err_cnts(21),
+        probe_in23  => err_cnts(22),
+        probe_in24  => err_cnts(23),
+        probe_in25  => err_cnts(24),
+        probe_in26  => err_cnts(25),
+        probe_in27  => err_cnts(26),
+        probe_in28  => err_cnts(27),
+        probe_in29  => err_cnts(28),
+        probe_in30  => err_cnts(29),
+        probe_in31  => err_cnts(30),
+        probe_in32  => err_cnts(31),
+        probe_in33  => err_cnts(32),
+        probe_in34  => err_cnts(33),
+        probe_in35  => err_cnts(34),
+        probe_in36  => err_cnts(35),
+        probe_in37  => err_cnts(36),
+        probe_in38  => err_cnts(37),
+        probe_in39  => err_cnts(38),
+        probe_in40  => err_cnts(39),
+        probe_in41  => err_cnts(40),
+        probe_in42  => err_cnts(41),
+        probe_in43  => err_cnts(42),
+        probe_in44  => err_cnts(43),
+        probe_in45  => err_cnts(44),
+        probe_in46  => err_cnts(45),
+        probe_in47  => err_cnts(46),
+        probe_in48  => err_cnts(47),
+        probe_in49  => err_cnts(48),
+        probe_in50  => err_cnts(49),
+        probe_in51  => err_cnts(50),
+        probe_in52  => err_cnts(51),
+        probe_in53  => err_cnts(52),
+        probe_in54  => err_cnts(53),
+        probe_in55  => err_cnts(54),
+        probe_in56  => err_cnts(55),
+        probe_in57  => err_cnts(56),
+        probe_in58  => err_cnts(57),
+        probe_in59  => err_cnts(58),
+        probe_in60  => err_cnts(59),
+        probe_in61  => err_cnts(60),
+        probe_in62  => err_cnts(61),
+        probe_in63  => err_cnts(62),
+        probe_in64  => err_cnts(63),
+        probe_in65  => err_cnts(64),
+        probe_in66  => err_cnts(65),
+        probe_in67  => err_cnts(66),
+        probe_in68  => err_cnts(67),
+        probe_in69  => err_cnts(68),
+        probe_in70  => err_cnts(69),
+        probe_in71  => err_cnts(70),
+        probe_in72  => err_cnts(71),
+        probe_in73  => err_cnts(72),
+        probe_in74  => err_cnts(73),
+        probe_in75  => err_cnts(74),
+        probe_out0(0) => prbs_reset,
+        probe_out1    => posneg_prbs
+        );
+
+  end generate;
 
   ----------------------------------------------------------------------------------
   --
