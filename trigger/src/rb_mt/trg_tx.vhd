@@ -12,9 +12,10 @@ use ieee.numeric_std.all;
 
 entity trg_tx is
   generic(
-    EN_MASK   : natural range 0 to 1 := 1; -- 1 to send a channel mask; 0 for only eventcnt
-    EVENTCNTB : natural              := 32;
-    MASKCNTB  : natural              := 16
+    EN_MASK    : natural range 0 to 1 := 1; -- 1 to send a channel mask; 0 for only eventcnt
+    EVENTCNTB  : natural              := 32;
+    MASKCNTB   : natural              := 16;
+    MANCHESTER : boolean              := true
     );
   port(
 
@@ -42,6 +43,8 @@ architecture rtl of trg_tx is
 
   signal packet_buf : std_logic_vector (LENGTH-1 downto 0) := (others => '0');
 
+  signal serial_data : std_logic := '0';
+
 begin
 
   assert EN_MASK = 0 or EN_MASK = 1 report "EN_MASK must be 0 or 1" severity error;
@@ -51,13 +54,13 @@ begin
 
     if (rising_edge(clock)) then
 
-      serial_o <= '0';
+      serial_data <= '0';
       case state is
 
         when IDLE_state =>
 
           if (trg_i = '1') then
-            serial_o <= '1';
+            serial_data <= '1';
             state    <= TRG_state;
             if (EN_MASK = 1) then
               packet_buf <= ch_mask_i & event_cnt_i;
@@ -65,16 +68,16 @@ begin
               packet_buf <= event_cnt_i;
             end if;
           elsif (resync_i = '1') then
-            serial_o <= '1';
+            serial_data <= '1';
             state    <= SYNC_state;
           end if;
 
         when SYNC_state =>
-          serial_o <= '0';
+          serial_data <= '0';
           state    <= IDLE_state;
 
         when TRG_state =>
-          serial_o <= '1';
+          serial_data <= '1';
           state    <= DATA_state;
 
         when DATA_state =>
@@ -86,16 +89,29 @@ begin
             state_bit_cnt <= state_bit_cnt + 1;
           end if;
 
-          serial_o <= packet_buf(LENGTH-1-state_bit_cnt);
+          serial_data <= packet_buf(LENGTH-1-state_bit_cnt);
 
       end case;
 
       if (reset = '1') then
         state    <= IDLE_state;
-        serial_o <= '0';
+        serial_data <= '0';
       end if;
 
     end if;
   end process;
+
+  gen_manchester : if (MANCHESTER) generate
+    process (clock) is
+    begin
+      if (rising_edge(clock)) then
+        serial_o <= serial_data xor clock;
+      end if;
+    end process;
+  end generate;
+
+  gen_nomanchester : if (not MANCHESTER) generate
+    serial_o <= serial_data;
+  end generate;
 
 end rtl;
