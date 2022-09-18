@@ -1,4 +1,30 @@
-
+----------------------------------------------------------------------------------
+-- GAPS Time of Flight
+-- A. Peck
+-- MT Trigger RX
+----------------------------------------------------------------------------------
+--
+-- Takes in data from the LT boards and deserializes it
+--
+-- Applies pulse stretching to the inputs to accomodate time resolution slop
+--    0-15 clock cycles long
+--
+-- Applies fine delays and coarse delays to the inputs to align hits as best as
+-- we can:
+--
+--   Fine delay: delay the input signal in units of ~78 ps using the IO delays,
+--                0-31 delay settings
+--
+--   Coarse delay:  delay the input signal in units of integer clock cycles
+--                0-15 clock cycles long (1 SRL16)
+--
+-- Applies a posneg parameter which chooses deserialization on the positive or
+-- negative edge of the clock (shouldn't matter since the inputs are async)
+--
+-- Outputs a collection of low threshold, medium threshold, and high threshold
+-- hits
+--
+----------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_misc.all;
