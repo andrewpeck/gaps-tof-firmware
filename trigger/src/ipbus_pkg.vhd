@@ -31,12 +31,12 @@ package ipbus is
   -- START: IPBUS_SLAVES :: DO NOT EDIT
     type t_ipb_slv is record
                      MT   : integer;
-                    I2C   : integer;
+                    SPI   : integer;
     end record;
     -- IPbus slave index definition
     constant IPB_SLAVE : t_ipb_slv := (
                      MT  => 0,
-                    I2C  => 1    );
+                    SPI  => 1    );
   -- END: IPBUS_SLAVES :: DO NOT EDIT
 
   constant IPB_REQ_BITS : integer := 49;
@@ -85,7 +85,7 @@ package body ipbus is
 
     -- START: IPBUS_ADDR_SEL :: DO NOT EDIT
         if   (std_match(addr(15 downto 0), std_logic_vector(to_unsigned(IPB_SLAVE.             MT,     4))  & "------------")) then sel := IPB_SLAVE.MT;
-        elsif(std_match(addr(15 downto 0), std_logic_vector(to_unsigned(IPB_SLAVE.            I2C,     4))  & "------------")) then sel := IPB_SLAVE.I2C;
+        elsif(std_match(addr(15 downto 0), std_logic_vector(to_unsigned(IPB_SLAVE.            SPI,     4))  & "------------")) then sel := IPB_SLAVE.SPI;
     -- END: IPBUS_ADDR_SEL :: DO NOT EDIT
     else sel                                                                                                     := 99;
     end if;

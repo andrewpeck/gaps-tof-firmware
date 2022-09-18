@@ -16,7 +16,10 @@ verilog-ethernet/rtl/oddr.v
 verilog-ethernet/rtl/iddr.v
 verilog-ethernet/rtl/lfsr.v
 
-ipbus-firmware/components/opencores_i2c/firmware/hdl/i2c_master_top.vhd
+# ipbus-firmware/components/opencores_i2c/firmware/hdl/i2c_master_top.vhd
+
+# SPI Slave
+ipbus-firmware/components/opencores_spi/firmware/hdl/*
 
 trigger/src/sys/eth_infra.vhd
 

@@ -37,9 +37,6 @@ use work.ipbus.all;
 library unisim;
 use unisim.vcomponents.all;
 
-library unisim;
-use unisim.vcomponents.all;
-
 -- LT Schematics: https://drive.google.com/drive/folders/19IckvaclJu1OXXpRnZHItwr0qBm4Qy50
 
 entity gaps_mt is
@@ -156,20 +153,6 @@ architecture structural of gaps_mt is
   signal global_trigger : std_logic;                              -- single bit == the baloon triggered somewhere
   signal rb_triggers    : std_logic_vector (NUM_RBS-1 downto 0);  -- 1 bit trigger for each baloon
   signal triggers       : channel_array_t;                        -- 320 bits of trigger, one for each paddle
-
-  --------------------------------------------------------------------------------
-  -- I2C
-  --------------------------------------------------------------------------------
-
-  -- signal i2c_reset  : std_logic;
-
-  -- signal sda_pad_i  : std_logic;
-  -- signal sda_pad_o  : std_logic;
-  -- signal sda_padoen : std_logic;
-
-  -- signal scl_pad_i  : std_logic;
-  -- signal scl_pad_o  : std_logic;
-  -- signal scl_padoen : std_logic;
 
   --------------------------------------------------------------------------------
   -- IPbus / wishbone
@@ -477,52 +460,23 @@ begin
   end generate;
 
   --------------------------------------------------------------------------------
-  -- I2C master
+  -- SPI master
   --------------------------------------------------------------------------------
 
-  -- i2c_master_top_inst  : entity work.i2c_master_top
-  --   generic map (
-  --     ARST_LVL => 1
-  --     )
-  --   port map (
-  --     wb_clk_i     => ipb_clk,          -- master clock input
-  --     wb_rst_i     => ipb_reset,        -- synchronous active high reset
-  --     arst_i       => i2c_reset,        -- asynchronous reset
-
-  --     wb_adr_i => ipb_mosi_arr(1).ipb_addr(2 downto 0),   -- lower address bits
-  --     wb_dat_i => ipb_mosi_arr(1).ipb_wdata(7 downto 0),  -- Databus input
-  --     wb_we_i  => ipb_mosi_arr(1).ipb_write,              -- Write enable input
-  --     wb_stb_i => ipb_mosi_arr(1).ipb_strobe,             -- Strobe signals / core select signal
-  --     wb_cyc_i => '1',                                    -- Valid bus cycle input
-  --     wb_dat_o => ipb_miso_arr(1).ipb_rdata(7 downto 0),  -- Databus output
-  --     wb_ack_o => ipb_miso_arr(1).ipb_ack,                -- Bus cycle acknowledge output
-
-  --     wb_inta_o    => open,             -- interrupt request output signal
-
-  --     scl_pad_i    => scl_pad_i,        -- i2c clock line input
-  --     scl_pad_o    => scl_pad_o,        -- i2c clock line output
-  --     scl_padoen_o => scl_padoen,     -- i2c clock line output enable, active low
-
-  --     sda_pad_i    => sda_pad_i,        -- i2c data line input
-  --     sda_pad_o    => sda_pad_o,        -- i2c data line output
-  --     sda_padoen_o => sda_padoen      -- i2c data line output enable, active low
-  --     );
-
-  -- IOBUF_SCL_inst : IOBUF
-  --   port map (
-  --     O  => scl_pad_i,                  -- 1-bit output: Buffer output
-  --     I  => scl_pad_o,                  -- 1-bit input: Buffer input
-  --     IO => scl,                        -- 1-bit inout: Buffer inout (connect directly to top-level port)
-  --     T  => scl_padoen                  -- 1-bit input: 3-state enable input
-  --     );
-
-  -- IOBUF_SDA_inst : IOBUF
-  --   port map (
-  --     O  => sda_pad_i,                  -- 1-bit output: Buffer output
-  --     I  => sda_pad_o,                  -- 1-bit input: Buffer input
-  --     IO => sda,                        -- 1-bit inout: Buffer inout (connect directly to top-level port)
-  --     T  => sda_padoen                  -- 1-bit input: 3-state enable input
-  --     );
+  ipbus_spi_inst : entity work.ipbus_spi
+    generic map (
+      N_SS => hk_cs_n'length
+      )
+    port map (
+      clk     => clock,
+      rst     => not locked,
+      ipb_in  => ipb_mosi_arr(1),
+      ipb_out => ipb_miso_arr(1),
+      ss      => hk_cs_n,
+      mosi    => hk_dout,
+      miso    => hk_din,
+      sclk    => hk_clk
+      );
 
   --------------------------------------------------------------------------------
   -- Signal Sump
