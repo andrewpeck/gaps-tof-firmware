@@ -52,11 +52,33 @@ architecture structural of clocking is
   signal fb_clk, fb_clk_i : std_logic_vector (fb_clk_p'range) := (others => '0');
   signal fb_active        : std_logic_vector (fb_clk_p'range) := (others => '0');
 
+  constant DIV : integer := 100;
+  signal clk_cnt : integer := 0;
+  signal div_clk : std_logic := '0';
+
 begin
 
-  -- FIXME: replace with multi-phase at the right frequency (1MHz?)
-  lvs_sync <= (others => clk100);
-  ccb_sync <= clk100;
+  process (clk100) is
+  begin
+    if (rising_edge(clk100)) then
+
+      if (clk_cnt = DIV-1) then
+        clk_cnt <= 0;
+      else
+        clk_cnt <= clk_cnt + 1;
+      end if;
+
+      if (clk_cnt < DIV/2) then
+        div_clk <= '0';
+      else
+        div_clk <= '1';
+      end if;
+
+    end if;
+  end process;
+
+  lvs_sync <= (others => div_clk);
+  ccb_sync <= div_clk;
 
   osc_ibuf : IBUFDS
     port map(
