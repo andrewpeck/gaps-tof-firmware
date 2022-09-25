@@ -502,7 +502,7 @@ begin
     signal posneg_prbs : std_logic_vector(lt_data_i_p'range);
 
     signal data_i_vec : std_logic_vector(lt_data_i_p'range);
-    signal data_o_vec : std_logic_vector(lt_data_i_p'range);
+    signal data_o_vec : std_logic_vector(rb_data_o'range);
 
     signal dsi_on_vio : std_logic_vector (dsi_on'range);
 
