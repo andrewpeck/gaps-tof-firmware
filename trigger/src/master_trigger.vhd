@@ -101,7 +101,7 @@ entity gaps_mt is
     lvs_sync_ccb : out std_logic;
 
     -- DSI Control
-    dsi_on       : out std_logic_vector (NUM_DSI-1 downto 0);
+    dsi_on       : out std_logic_vector (NUM_DSI-1 downto 0) := (others => '1');
     clk_src_sel  : out std_logic; -- 1 == ext clock
 
     -- housekeeping adcs
@@ -240,7 +240,6 @@ architecture structural of gaps_mt is
 
 begin
 
-  dsi_on <= (others => '1');
   clk_src_sel <= '0';
 
   -- i2c_reset <= not locked;
@@ -505,7 +504,11 @@ begin
     signal data_i_vec : std_logic_vector(lt_data_i_p'range);
     signal data_o_vec : std_logic_vector(lt_data_i_p'range);
 
+    signal dsi_on_vio : std_logic_vector (dsi_on'range);
+
   begin
+
+    dsi_on <= dsi_on_vio;
 
     --------------------------------------------------------------------------------
     -- PRBS-7 Data Generation
@@ -722,7 +725,8 @@ begin
         probe_out0(0) => prbs_reset,
         probe_out1    => posneg_prbs,
         probe_out2    => data_o_vec,
-        probe_out3    => data_o_src
+        probe_out3(0) => data_o_src,
+        probe_out4    => dsi_on_vio
         );
 
   end generate;
