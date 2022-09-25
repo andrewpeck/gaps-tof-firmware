@@ -722,11 +722,13 @@ begin
         probe_in74    => err_cnts(73),
         probe_in75    => err_cnts(74),
         probe_in76    => data_i_vec,
+        probe_in77    => ext_in,
         probe_out0(0) => prbs_reset,
         probe_out1    => posneg_prbs,
         probe_out2    => data_o_vec,
         probe_out3(0) => data_o_src,
-        probe_out4    => dsi_on_vio
+        probe_out4    => dsi_on_vio,
+        probe_out5    => ext_out
         );
 
   end generate;
