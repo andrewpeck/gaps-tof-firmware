@@ -99,7 +99,7 @@ package components is
       probe_in76 : IN  STD_LOGIC_VECTOR(74 DOWNTO 0);
       probe_out0 : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
       probe_out1 : OUT STD_LOGIC_VECTOR(74 DOWNTO 0);
-      probe_out2 : OUT STD_LOGIC_VECTOR(74 DOWNTO 0);
+      probe_out2 : OUT STD_LOGIC_VECTOR(49 DOWNTO 0);
       probe_out3 : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
       probe_out4 : OUT STD_LOGIC_VECTOR(4 DOWNTO 0)
       );
