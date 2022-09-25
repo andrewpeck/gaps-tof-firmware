@@ -96,8 +96,12 @@ package components is
       probe_in73 : IN  STD_LOGIC_VECTOR(9 DOWNTO 0);
       probe_in74 : IN  STD_LOGIC_VECTOR(9 DOWNTO 0);
       probe_in75 : IN  STD_LOGIC_VECTOR(9 DOWNTO 0);
+      probe_in76 : IN  STD_LOGIC_VECTOR(74 DOWNTO 0);
       probe_out0 : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
-      probe_out1 : OUT STD_LOGIC_VECTOR(74 DOWNTO 0));
+      probe_out1 : OUT STD_LOGIC_VECTOR(74 DOWNTO 0);
+      probe_out2 : OUT STD_LOGIC_VECTOR(74 DOWNTO 0);
+      probe_out3 : OUT STD_LOGIC_VECTOR(0 DOWNTO 0)
+      );
   end component vio_prbs;
 
 end package components;
