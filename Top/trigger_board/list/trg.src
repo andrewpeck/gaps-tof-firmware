@@ -30,17 +30,7 @@ ipbus-firmware/components/ipbus_core/firmware/hdl/transactor.vhd
 ipbus-firmware/components/ipbus_core/firmware/hdl/transactor_cfg.vhd
 ipbus-firmware/components/ipbus_core/firmware/hdl/transactor_if.vhd
 ipbus-firmware/components/ipbus_core/firmware/hdl/transactor_sm.vhd
-ipbus-firmware/components/ipbus_pcie/firmware/hdl/pcie_int_gen_msix.vhd
-ipbus-firmware/components/ipbus_pcie/firmware/hdl/pcie_xdma_axi_us_if.vhd
 ipbus-firmware/components/ipbus_slaves/firmware/hdl/ipbus_reg_types.vhd
-ipbus-firmware/components/ipbus_transport_axi/firmware/hdl/ipbus_axi_decl.vhd
-ipbus-firmware/components/ipbus_transport_axi/firmware/hdl/ipbus_transport_axi_if.vhd
-ipbus-firmware/components/ipbus_transport_axi/firmware/hdl/ipbus_transport_multibuffer_cdc.vhd
-ipbus-firmware/components/ipbus_transport_axi/firmware/hdl/ipbus_transport_multibuffer_if.vhd
-ipbus-firmware/components/ipbus_transport_axi/firmware/hdl/ipbus_transport_multibuffer_rx_dpram.vhd
-ipbus-firmware/components/ipbus_transport_axi/firmware/hdl/ipbus_transport_multibuffer_tx_dpram.vhd
-ipbus-firmware/components/ipbus_transport_axi/firmware/hdl/ipbus_transport_ram_if.vhd
-ipbus-firmware/components/ipbus_util/firmware/hdl/ipbus_clock_div.vhd
 ipbus-firmware/components/ipbus_util/firmware/hdl/ipbus_decode_ipbus_example.vhd
 
 ipbus-firmware/components/ipbus_util/firmware/hdl/masters/ipbus_ctrl.vhd
