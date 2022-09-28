@@ -494,7 +494,7 @@ begin
 
     type inactivity_cnt_array_t is array (integer range <>)
       of integer range 0 to 63;
-    signal inactivity_cnts : activity_cnt_array_t (lt_data_i_p'range);
+    signal inactivity_cnts : inactivity_cnt_array_t (lt_data_i_p'range);
 
     signal inactive : std_logic_vector(lt_data_i_p'range);
 
