@@ -35,6 +35,9 @@ package types_pkg is
   function majority (a : std_logic; b : std_logic; c : std_logic)
     return std_logic;
 
+  function repeat(B : std_logic; N : integer)
+    return std_logic_vector;
+
   --============--
   --== Common ==--
   --============--
@@ -93,12 +96,6 @@ package body types_pkg is
 
   end function;
 
-  function to_int (sl : std_logic)
-    return integer is
-  begin
-    return (to_integer(unsigned'('0' & sl)));
-  end function;
-
   function count_ones(slv : std_logic_vector) return natural is
     variable n_ones : natural := 0;
   begin
@@ -140,6 +137,25 @@ package body types_pkg is
   begin
     tmp := (a and b) or (b and c) or (a and c);
     return tmp;
+  end function;
+
+  -- function to replicate a std_logic bit some number of times
+-- equivalent to verilog's built in {n{x}} operator
+  function repeat(B : std_logic; N : integer)
+    return std_logic_vector
+  is
+    variable result : std_logic_vector(1 to N);
+  begin
+    for i in 1 to N loop
+      result(i) := B;
+    end loop;
+    return result;
+  end;
+
+  function to_int (sl : std_logic)
+    return integer is
+  begin
+    return (to_integer(unsigned'('0' & sl)));
   end function;
 
 end package body;
