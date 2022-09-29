@@ -17,6 +17,7 @@ package components is
       clk_in1  : in  std_logic
       );
   end component;
+
   component vio_prbs is
     port (
       clk        : IN  STD_LOGIC;
@@ -103,8 +104,21 @@ package components is
       probe_out2 : OUT STD_LOGIC_VECTOR(49 DOWNTO 0);
       probe_out3 : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
       probe_out4 : OUT STD_LOGIC_VECTOR(4 DOWNTO 0);
-      probe_out5 : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)
+      probe_out5 : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+      probe_out6 : OUT STD_LOGIC_VECTOR(2 DOWNTO 0)
       );
   end component vio_prbs;
+
+  component ila_prbs is
+  port (
+      clk    : in std_logic;
+      probe0 : in std_logic_vector(0 downto 0);
+      probe1 : in std_logic_vector(0 downto 0);
+      probe2 : in std_logic_vector(74 downto 0);
+      probe3 : in std_logic_vector(7 downto 0);
+      probe4 : in std_logic_vector(7 downto 0);
+      probe5 : in std_logic_vector(0 downto 0)
+      );
+  end component ila_prbs;
 
 end package components;

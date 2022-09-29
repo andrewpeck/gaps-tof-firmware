@@ -5,6 +5,7 @@ set_property -dict [list \
                         CONFIG.C_PROBE_OUT3_WIDTH {1} \
                         CONFIG.C_PROBE_OUT4_WIDTH {5} \
                         CONFIG.C_PROBE_OUT5_WIDTH {4} \
+                        CONFIG.C_PROBE_OUT6_WIDTH {3} \
                         CONFIG.C_PROBE_IN0_WIDTH {32} \
                         CONFIG.C_PROBE_IN1_WIDTH {10} \
                         CONFIG.C_PROBE_IN2_WIDTH {10} \
@@ -83,6 +84,6 @@ set_property -dict [list \
                         CONFIG.C_PROBE_IN75_WIDTH {10} \
                         CONFIG.C_PROBE_IN76_WIDTH {75} \
                         CONFIG.C_PROBE_IN77_WIDTH {4} \
-                        CONFIG.C_NUM_PROBE_OUT {6} \
+                        CONFIG.C_NUM_PROBE_OUT {7} \
                         CONFIG.C_NUM_PROBE_IN {78}] \
     [get_ips vio_prbs]

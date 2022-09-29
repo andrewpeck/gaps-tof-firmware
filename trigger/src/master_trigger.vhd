@@ -490,7 +490,8 @@ begin
 
     type cnt_array_t is array (integer range <>)
       of std_logic_vector(CNT_WIDTH-1 downto 0);
-    signal err_cnts : cnt_array_t (lt_data_i_p'range);
+    signal err_cnts        : cnt_array_t (lt_data_i_p'range);
+    signal err_cnts_masked : cnt_array_t (lt_data_i_p'range);
 
     type inactivity_cnt_array_t is array (integer range <>)
       of integer range 0 to 63;
@@ -512,7 +513,57 @@ begin
 
     signal dsi_on_vio : std_logic_vector (dsi_on'range);
 
+    signal prbs_clk_gate : std_logic := '1';
+
+    constant DIV_MAX : natural                       := 128;
+    signal div_vio   : std_logic_vector (2 downto 0) := (others => '0');
+    signal div       : natural range 0 to DIV_MAX    := 0;
+    signal clk_cnt   : natural range 0 to DIV_MAX    := 0;
+    signal div_pulse   : std_logic                     := '0';
+
   begin
+
+    -- for full speed, this should be a constant 1
+    -- 
+    -- for 1/2 speed, it should pulse for 1 clock cycle at the rising edge, 1
+    -- clock cycle at the falling edge of the 50MHz divided (non-bufg) clock
+    --
+    -- 1/4, 1/8, 1/16 .... 1/128
+    --
+    -- etc
+ 
+    prbs_clk_gate <= div_pulse;
+
+    div <= 2**to_int(div_vio);
+
+    process (clock) is
+    begin
+      if (rising_edge(clock)) then
+
+        if (div=1) then
+          div_pulse <= '1';
+        elsif (div=2) then
+          div_pulse <= not div_pulse;
+        else
+          if (clk_cnt = div-1) then
+            clk_cnt <= 0;
+          else
+            clk_cnt <= clk_cnt + 1;
+          end if;
+
+          if (clk_cnt = 0 or clk_cnt = div/2) then
+            div_pulse <= '1';
+          else
+            div_pulse <= '0';
+          end if;
+        end if;
+
+      end if;
+    end process;
+
+    --------------------------------------------------------------------------------
+    -- Control DSI through VIO when in loopback mode
+    --------------------------------------------------------------------------------
 
     dsi_on <= dsi_on_vio;
 
@@ -532,8 +583,8 @@ begin
       port map (
         rst         => not locked,
         clk         => clock,
-        data_in(0)  => '0',
-        en          => '1',
+        data_in(0)  => '1',
+        en          => prbs_clk_gate,
         data_out(0) => data_gen
         );
 
@@ -572,17 +623,19 @@ begin
       process (clock) is
       begin
         if (rising_edge(clock)) then
-          data_pos <= lt_data_i;
-          data_neg <= data_neg_r;
+          if (prbs_clk_gate = '1') then
+            data_pos <= lt_data_i;
+            data_neg <= data_neg_r;
 
-          if (posneg_prbs(I)='1') then
-            data <= data_pos;
-          else
-            data <= data_neg;
+            if (posneg_prbs(I) = '1') then
+              data <= data_pos;
+            else
+              data <= data_neg;
+            end if;
+
+            data_i_vec(I) <= data;
+
           end if;
-
-          data_i_vec(I) <= data;
-
         end if;
       end process;
 
@@ -590,8 +643,10 @@ begin
       process (clock) is
       begin
         if (falling_edge(clock)) then
-          data_neg_r <= lt_data_i;
-        end if;
+          if (prbs_clk_gate = '1') then
+            data_neg_r <= lt_data_i;
+          end if; 
+        end if; 
       end process;
 
       --------------------------------------------------------------------------------
@@ -610,7 +665,7 @@ begin
           rst         => not locked,
           clk         => clock,
           data_in(0)  => data,
-          en          => '1',
+          en          => prbs_clk_gate,
           data_out(0) => prbs_err(I)
           );
 
@@ -627,7 +682,7 @@ begin
         port map (
           ref_clk_i => clock,
           reset_i   => not locked or prbs_reset,
-          en_i      => prbs_err(I),
+          en_i      => prbs_clk_gate and prbs_err(I),
           snap_i    => '1',
           count_o   => err_cnts(I)
           );
@@ -635,13 +690,15 @@ begin
       process (clock) is
       begin
         if (rising_edge(clock)) then
-          if (data /= data_i_vec(I)) then
-            inactivity_cnts(I) <= 0;
-            inactive(I)        <= '0';
-          elsif (inactivity_cnts(I) = 63) then
-            inactive(I) <= '1';
-          elsif (inactivity_cnts(I) < 63) then
-            inactivity_cnts(I) <= inactivity_cnts(I) + 1;
+          if (prbs_clk_gate = '1') then
+            if (data /= data_i_vec(I)) then
+              inactivity_cnts(I) <= 0;
+              inactive(I)        <= '0';
+            elsif (inactivity_cnts(I) = 63) then
+              inactive(I) <= '1';
+            elsif (inactivity_cnts(I) < 63) then
+              inactivity_cnts(I) <= inactivity_cnts(I) + 1;
+            end if;
           end if;
         end if;
       end process;
@@ -658,90 +715,106 @@ begin
       port map (
         ref_clk_i => clock,
         reset_i   => prbs_reset,
-        en_i      => '1',
+        en_i      => prbs_clk_gate,
         snap_i    => '1',
         count_o   => frame_cnt
         );
+
+    ila_prbs_inst : ila_prbs
+      port map (
+        clk        => clock,
+        probe0(0)  => prbs_clk_gate,
+        probe1(0)  => data_gen,
+        probe2     => data_i_vec,
+        probe3     => std_logic_vector(to_unsigned(clk_cnt,8)),
+        probe4     => std_logic_vector(to_unsigned(div,8)),
+        probe5(0)  => lvs_sync_ccb
+        );
+
+    mask_cnts_loop : for I in err_cnts'range generate
+    begin
+      err_cnts_masked(I) <= repeat(inactive(I), err_cnts(I)'length) or err_cnts(I);
+    end generate;
 
     vio_prbs_inst : vio_prbs
       port map (
         clk           => clock,
         probe_in0     => frame_cnt,
-        probe_in1     => repeat(inactive(0), err_cnts(0)'length) or err_cnts(0),
-        probe_in2     => repeat(inactive(1), err_cnts(1)'length) or err_cnts(1),
-        probe_in3     => repeat(inactive(2), err_cnts(2)'length) or err_cnts(2),
-        probe_in4     => repeat(inactive(3), err_cnts(3)'length) or err_cnts(3),
-        probe_in5     => repeat(inactive(4), err_cnts(4)'length) or err_cnts(4),
-        probe_in6     => repeat(inactive(5), err_cnts(5)'length) or err_cnts(5),
-        probe_in7     => repeat(inactive(6), err_cnts(6)'length) or err_cnts(6),
-        probe_in8     => repeat(inactive(7), err_cnts(7)'length) or err_cnts(7),
-        probe_in9     => repeat(inactive(8), err_cnts(8)'length) or err_cnts(8),
-        probe_in10    => repeat(inactive(9), err_cnts(9)'length) or err_cnts(9),
-        probe_in11    => repeat(inactive(10), err_cnts(10)'length) or err_cnts(10),
-        probe_in12    => repeat(inactive(11), err_cnts(11)'length) or err_cnts(11),
-        probe_in13    => repeat(inactive(12), err_cnts(12)'length) or err_cnts(12),
-        probe_in14    => repeat(inactive(13), err_cnts(13)'length) or err_cnts(13),
-        probe_in15    => repeat(inactive(14), err_cnts(14)'length) or err_cnts(14),
-        probe_in16    => repeat(inactive(15), err_cnts(15)'length) or err_cnts(15),
-        probe_in17    => repeat(inactive(16), err_cnts(16)'length) or err_cnts(16),
-        probe_in18    => repeat(inactive(17), err_cnts(17)'length) or err_cnts(17),
-        probe_in19    => repeat(inactive(18), err_cnts(18)'length) or err_cnts(18),
-        probe_in20    => repeat(inactive(19), err_cnts(19)'length) or err_cnts(19),
-        probe_in21    => repeat(inactive(20), err_cnts(20)'length) or err_cnts(20),
-        probe_in22    => repeat(inactive(21), err_cnts(21)'length) or err_cnts(21),
-        probe_in23    => repeat(inactive(22), err_cnts(22)'length) or err_cnts(22),
-        probe_in24    => repeat(inactive(23), err_cnts(23)'length) or err_cnts(23),
-        probe_in25    => repeat(inactive(24), err_cnts(24)'length) or err_cnts(24),
-        probe_in26    => repeat(inactive(25), err_cnts(25)'length) or err_cnts(25),
-        probe_in27    => repeat(inactive(26), err_cnts(26)'length) or err_cnts(26),
-        probe_in28    => repeat(inactive(27), err_cnts(27)'length) or err_cnts(27),
-        probe_in29    => repeat(inactive(28), err_cnts(28)'length) or err_cnts(28),
-        probe_in30    => repeat(inactive(29), err_cnts(29)'length) or err_cnts(29),
-        probe_in31    => repeat(inactive(30), err_cnts(30)'length) or err_cnts(30),
-        probe_in32    => repeat(inactive(31), err_cnts(31)'length) or err_cnts(31),
-        probe_in33    => repeat(inactive(32), err_cnts(32)'length) or err_cnts(32),
-        probe_in34    => repeat(inactive(33), err_cnts(33)'length) or err_cnts(33),
-        probe_in35    => repeat(inactive(34), err_cnts(34)'length) or err_cnts(34),
-        probe_in36    => repeat(inactive(35), err_cnts(35)'length) or err_cnts(35),
-        probe_in37    => repeat(inactive(36), err_cnts(36)'length) or err_cnts(36),
-        probe_in38    => repeat(inactive(37), err_cnts(37)'length) or err_cnts(37),
-        probe_in39    => repeat(inactive(38), err_cnts(38)'length) or err_cnts(38),
-        probe_in40    => repeat(inactive(39), err_cnts(39)'length) or err_cnts(39),
-        probe_in41    => repeat(inactive(40), err_cnts(40)'length) or err_cnts(40),
-        probe_in42    => repeat(inactive(41), err_cnts(41)'length) or err_cnts(41),
-        probe_in43    => repeat(inactive(42), err_cnts(42)'length) or err_cnts(42),
-        probe_in44    => repeat(inactive(43), err_cnts(43)'length) or err_cnts(43),
-        probe_in45    => repeat(inactive(44), err_cnts(44)'length) or err_cnts(44),
-        probe_in46    => repeat(inactive(45), err_cnts(45)'length) or err_cnts(45),
-        probe_in47    => repeat(inactive(46), err_cnts(46)'length) or err_cnts(46),
-        probe_in48    => repeat(inactive(47), err_cnts(47)'length) or err_cnts(47),
-        probe_in49    => repeat(inactive(48), err_cnts(48)'length) or err_cnts(48),
-        probe_in50    => repeat(inactive(49), err_cnts(49)'length) or err_cnts(49),
-        probe_in51    => repeat(inactive(50), err_cnts(50)'length) or err_cnts(50),
-        probe_in52    => repeat(inactive(51), err_cnts(51)'length) or err_cnts(51),
-        probe_in53    => repeat(inactive(52), err_cnts(52)'length) or err_cnts(52),
-        probe_in54    => repeat(inactive(53), err_cnts(53)'length) or err_cnts(53),
-        probe_in55    => repeat(inactive(54), err_cnts(54)'length) or err_cnts(54),
-        probe_in56    => repeat(inactive(55), err_cnts(55)'length) or err_cnts(55),
-        probe_in57    => repeat(inactive(56), err_cnts(56)'length) or err_cnts(56),
-        probe_in58    => repeat(inactive(57), err_cnts(57)'length) or err_cnts(57),
-        probe_in59    => repeat(inactive(58), err_cnts(58)'length) or err_cnts(58),
-        probe_in60    => repeat(inactive(59), err_cnts(59)'length) or err_cnts(59),
-        probe_in61    => repeat(inactive(60), err_cnts(60)'length) or err_cnts(60),
-        probe_in62    => repeat(inactive(61), err_cnts(61)'length) or err_cnts(61),
-        probe_in63    => repeat(inactive(62), err_cnts(62)'length) or err_cnts(62),
-        probe_in64    => repeat(inactive(63), err_cnts(63)'length) or err_cnts(63),
-        probe_in65    => repeat(inactive(64), err_cnts(64)'length) or err_cnts(64),
-        probe_in66    => repeat(inactive(65), err_cnts(65)'length) or err_cnts(65),
-        probe_in67    => repeat(inactive(66), err_cnts(66)'length) or err_cnts(66),
-        probe_in68    => repeat(inactive(67), err_cnts(67)'length) or err_cnts(67),
-        probe_in69    => repeat(inactive(68), err_cnts(68)'length) or err_cnts(68),
-        probe_in70    => repeat(inactive(69), err_cnts(69)'length) or err_cnts(69),
-        probe_in71    => repeat(inactive(70), err_cnts(70)'length) or err_cnts(70),
-        probe_in72    => repeat(inactive(71), err_cnts(71)'length) or err_cnts(71),
-        probe_in73    => repeat(inactive(72), err_cnts(72)'length) or err_cnts(72),
-        probe_in74    => repeat(inactive(73), err_cnts(73)'length) or err_cnts(73),
-        probe_in75    => repeat(inactive(74), err_cnts(74)'length) or err_cnts(74),
+        probe_in1     => err_cnts_masked(0),
+        probe_in2     => err_cnts_masked(1),
+        probe_in3     => err_cnts_masked(2),
+        probe_in4     => err_cnts_masked(3),
+        probe_in5     => err_cnts_masked(4),
+        probe_in6     => err_cnts_masked(5),
+        probe_in7     => err_cnts_masked(6),
+        probe_in8     => err_cnts_masked(7),
+        probe_in9     => err_cnts_masked(8),
+        probe_in10    => err_cnts_masked(9),
+        probe_in11    => err_cnts_masked(10),
+        probe_in12    => err_cnts_masked(11),
+        probe_in13    => err_cnts_masked(12),
+        probe_in14    => err_cnts_masked(13),
+        probe_in15    => err_cnts_masked(14),
+        probe_in16    => err_cnts_masked(15),
+        probe_in17    => err_cnts_masked(16),
+        probe_in18    => err_cnts_masked(17),
+        probe_in19    => err_cnts_masked(18),
+        probe_in20    => err_cnts_masked(19),
+        probe_in21    => err_cnts_masked(20),
+        probe_in22    => err_cnts_masked(21),
+        probe_in23    => err_cnts_masked(22),
+        probe_in24    => err_cnts_masked(23),
+        probe_in25    => err_cnts_masked(24),
+        probe_in26    => err_cnts_masked(25),
+        probe_in27    => err_cnts_masked(26),
+        probe_in28    => err_cnts_masked(27),
+        probe_in29    => err_cnts_masked(28),
+        probe_in30    => err_cnts_masked(29),
+        probe_in31    => err_cnts_masked(30),
+        probe_in32    => err_cnts_masked(31),
+        probe_in33    => err_cnts_masked(32),
+        probe_in34    => err_cnts_masked(33),
+        probe_in35    => err_cnts_masked(34),
+        probe_in36    => err_cnts_masked(35),
+        probe_in37    => err_cnts_masked(36),
+        probe_in38    => err_cnts_masked(37),
+        probe_in39    => err_cnts_masked(38),
+        probe_in40    => err_cnts_masked(39),
+        probe_in41    => err_cnts_masked(40),
+        probe_in42    => err_cnts_masked(41),
+        probe_in43    => err_cnts_masked(42),
+        probe_in44    => err_cnts_masked(43),
+        probe_in45    => err_cnts_masked(44),
+        probe_in46    => err_cnts_masked(45),
+        probe_in47    => err_cnts_masked(46),
+        probe_in48    => err_cnts_masked(47),
+        probe_in49    => err_cnts_masked(48),
+        probe_in50    => err_cnts_masked(49),
+        probe_in51    => err_cnts_masked(50),
+        probe_in52    => err_cnts_masked(51),
+        probe_in53    => err_cnts_masked(52),
+        probe_in54    => err_cnts_masked(53),
+        probe_in55    => err_cnts_masked(54),
+        probe_in56    => err_cnts_masked(55),
+        probe_in57    => err_cnts_masked(56),
+        probe_in58    => err_cnts_masked(57),
+        probe_in59    => err_cnts_masked(58),
+        probe_in60    => err_cnts_masked(59),
+        probe_in61    => err_cnts_masked(60),
+        probe_in62    => err_cnts_masked(61),
+        probe_in63    => err_cnts_masked(62),
+        probe_in64    => err_cnts_masked(63),
+        probe_in65    => err_cnts_masked(64),
+        probe_in66    => err_cnts_masked(65),
+        probe_in67    => err_cnts_masked(66),
+        probe_in68    => err_cnts_masked(67),
+        probe_in69    => err_cnts_masked(68),
+        probe_in70    => err_cnts_masked(69),
+        probe_in71    => err_cnts_masked(70),
+        probe_in72    => err_cnts_masked(71),
+        probe_in73    => err_cnts_masked(72),
+        probe_in74    => err_cnts_masked(73),
+        probe_in75    => err_cnts_masked(74),
         probe_in76    => data_i_vec,
         probe_in77    => ext_in,
         probe_out0(0) => prbs_reset,
@@ -749,7 +822,8 @@ begin
         probe_out2    => data_o_vec,
         probe_out3(0) => data_o_src,
         probe_out4    => dsi_on_vio,
-        probe_out5    => ext_out
+        probe_out5    => ext_out,
+        probe_out6    => div_vio
         );
 
   end generate;
