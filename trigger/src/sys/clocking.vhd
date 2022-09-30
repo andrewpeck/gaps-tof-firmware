@@ -52,9 +52,9 @@ architecture structural of clocking is
   signal fb_clk, fb_clk_i : std_logic_vector (fb_clk_p'range) := (others => '0');
   signal fb_active        : std_logic_vector (fb_clk_p'range) := (others => '0');
 
-  constant DIV : integer := 100;
-  signal clk_cnt : integer := 0;
-  signal div_clk : std_logic := '0';
+  constant DIV   : natural                  := 100;
+  signal clk_cnt : natural range 0 to DIV-1 := 0;
+  signal div_clk : std_logic                := '0';
 
 begin
 
