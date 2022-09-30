@@ -66,15 +66,12 @@ entity gaps_mt is
 
     rst_button_i : in std_logic; -- built-in callisto reset button
 
-    -- sda : inout std_logic;
-    -- scl : inout std_logic;
-
     -- RGMII interface
 
     rgmii_mdio    : inout std_logic;
     rgmii_mdc     : inout std_logic;
-    rgmii_int_n   : in    std_logic;
-    rgmii_reset_n : out   std_logic;
+    rgmii_int_n   : in    std_logic := '1';
+    rgmii_reset_n : out   std_logic := '1';
 
     rgmii_clk125 : in std_logic;
 
@@ -243,9 +240,10 @@ begin
   clk_src_sel <= '0';
 
   -- i2c_reset <= not locked;
-  ipb_reset <= not locked;
-  ipb_clk   <= clock;
-  clock     <= clk100;
+  ipb_reset     <= not locked;
+  ipb_clk       <= clock;
+  clock         <= clk100;
+  rgmii_reset_n <= locked;
 
   delayctrl_inst : IDELAYCTRL
     port map (
