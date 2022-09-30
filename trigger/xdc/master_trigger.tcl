@@ -31,6 +31,9 @@ set_property -dict {IOSTANDARD LVCMOS25} \
 # set_property IOSTANDARD LVDS_25 [get_ports lt_data_i*]
 # set_property IOSTANDARD LVCMOS25 [get_ports rb_data_o*]
 
+set_property SLEW SLOW [get_ports rb_data_o*]
+set_property DRIVE 2 [get_ports rb_data_o*]
+
 set_property IOSTANDARD LVCMOS15 [get_ports lvs_sync[*]]
 set_property IOSTANDARD LVCMOS15 [get_ports lvs_sync_ccb]
 set_property IOSTANDARD LVCMOS15 [get_ports dsi_on]
