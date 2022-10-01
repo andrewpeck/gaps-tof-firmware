@@ -1,5 +1,7 @@
 create_clock -period 50.0 -name clock_i_20 [get_ports clk_p]
 
+create_clock -period 8.0 -name rgmii_rx_clk [get_ports rgmii_rx_clk]
+
 set_property CFGBVS VCCO [current_design]
 set_property CONFIG_VOLTAGE 3.3 [current_design]
 
