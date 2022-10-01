@@ -35,7 +35,7 @@ use work.ipbus.all;
 library unisim;
 use unisim.vcomponents.all;
 
--- LT Schematics: https://drive.google.com/drive/folders/19IckvaclJu1OXXpRnZHItwr0qBm4Qy50
+-- CCB Schematics: http://ohm.bu.edu/~apeck/20220516_gaps_mt_data_package/20220516_GAPS_CCBv1/GAPS_CCBv1_docs/CCB_Schematics.pdf
 
 entity gaps_mt is
   generic (
