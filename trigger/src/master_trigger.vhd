@@ -581,7 +581,7 @@ begin
       port map (
         rst         => not locked,
         clk         => clock,
-        data_in(0)  => '1',
+        data_in(0)  => '0',
         en          => prbs_clk_gate,
         data_out(0) => data_gen
         );
