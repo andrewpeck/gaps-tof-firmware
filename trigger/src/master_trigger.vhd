@@ -118,7 +118,16 @@ end gaps_mt;
 
 architecture structural of gaps_mt is
 
+  signal rgmii_rxd_dly     : std_logic_vector(3 downto 0);
+  signal rgmii_rx_ctl_dly  : std_logic := '0';
+  signal rgmii_rx_clk_dly  : std_logic := '0';
+
+
+  constant RGMII_RXD_DELAY : integer   := 0;
+  constant RGMII_RXC_DELAY : integer   := 0;
+
   signal locked : std_logic;
+
   signal clock : std_logic;
 
   signal clk100,  clk200,  clk125,  clk125_90 : std_logic;
@@ -252,6 +261,38 @@ begin
       RST    => not locked
       );
 
+  eth_idelay_gen : for I in 0 to 3 generate
+  begin
+    idelay_inst : entity work.idelay
+      generic map (PATTERN => "DATA")
+      port map (
+        clock => clk200,
+        taps  => std_logic_vector(to_unsigned(RGMII_RXD_DELAY, 5)),
+        din   => rgmii_rxd(I),
+        dout  => rgmii_rxd_dly(I)
+        );
+
+
+  end generate;
+
+  idelay_rx_ctl : entity work.idelay
+    generic map (PATTERN => "DATA")
+    port map (
+      clock => clk200,
+      taps  => std_logic_vector(to_unsigned(RGMII_RXD_DELAY, 5)),
+      din   => rgmii_rx_ctl,
+      dout  => rgmii_rx_ctl_dly
+      );
+
+  idelay_rx_clk : entity work.idelay
+    generic map (PATTERN => "CLOCK")
+    port map (
+      clock => clk200,
+      taps  => std_logic_vector(to_unsigned(RGMII_RXC_DELAY, 5)),
+      din   => rgmii_rx_clk,
+      dout  => rgmii_rx_clk_dly
+      );
+
   eth_infra_inst : entity work.eth_infra
     port map (
       clock        => clock,
@@ -259,9 +300,9 @@ begin
       gtx_clk      => clk125,
       gtx_clk90    => clk125_90,
       gtx_rst      => not locked,
-      rgmii_rx_clk => rgmii_rx_clk,
-      rgmii_rxd    => rgmii_rxd,
-      rgmii_rx_ctl => rgmii_rx_ctl,
+      rgmii_rx_clk => rgmii_rx_clk_dly,
+      rgmii_rxd    => rgmii_rxd_dly,
+      rgmii_rx_ctl => rgmii_rx_ctl_dly,
       rgmii_tx_clk => rgmii_tx_clk,
       rgmii_txd    => rgmii_txd,
       rgmii_tx_ctl => rgmii_tx_ctl,
