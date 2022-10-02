@@ -37,6 +37,43 @@ set_property IOSTANDARD LVDS_25 [get_ports clk_*]
 set_property -dict {IOSTANDARD LVCMOS25} \
     [get_ports *rgmii*];
 
+################################################################################
+# RGMII Constraints
+# https://support.xilinx.com/s/question/0D52E00006hpKWvSAM/timing-constraints-for-rgmii?language=en_US
+################################################################################
+
+# receiver
+
+set rgmiirx_rxc_period      8.000;
+set rgmiirx_dv_bre          1.200;
+set rgmiirx_dv_are          1.200;
+set rgmiirx_dv_bfe          1.200;
+set rgmiirx_dv_afe          1.200;
+set input_ports             [list rgmii_rx_ctl {rgmii_rxd[0]} {rgmii_rxd[1]} {rgmii_rxd[2]} {rgmii_rxd[3]}];
+
+set_input_delay -clock [get_clocks rgmii_rx_clk] -max [expr $rgmiirx_rxc_period/2 - $rgmiirx_dv_bfe] [get_ports $input_ports] -add_delay;
+set_input_delay -clock [get_clocks rgmii_rx_clk] -min $rgmiirx_dv_are [get_ports $input_ports] -add_delay;
+set_input_delay -clock [get_clocks rgmii_rx_clk] -max [expr $rgmiirx_rxc_period/2 - $rgmiirx_dv_bre] [get_ports $input_ports] -clock_fall -add_delay;
+set_input_delay -clock [get_clocks rgmii_rx_clk] -min $rgmiirx_dv_afe [get_ports $input_ports] -clock_fall -add_delay;
+
+# transmitter
+create_generated_clock -name rgmii_tx_clk -multiply_by 1 -source [get_pins clocking/clocking/inst/mmcm_adv_inst/CLKOUT2] [get_ports rgmii_tx_clk]
+
+set fwclk        rgmii_tx_clk;     # forwarded clock name (generated using create_generated_clock at output clock port)
+set tsu_r        1.000;            # destination device setup time requirement for rising edge
+set thd_r        0.800;            # destination device hold time requirement for rising edge
+set tsu_f        1.000;            # destination device setup time requirement for falling edge
+set thd_f        0.800;            # destination device hold time requirement for falling edge
+set trce_dly_max 0.000;            # maximum board trace delay
+set trce_dly_min 0.000;            # minimum board trace delay
+set output_ports [list rgmii_tx_ctl {rgmii_txd[0]} {rgmii_txd[1]} {rgmii_txd[2]} {rgmii_txd[3]}];   # list of output ports
+
+# Output Delay Constraints
+set_output_delay -clock $fwclk -max [expr $trce_dly_max + $tsu_r] [get_ports $output_ports];
+set_output_delay -clock $fwclk -min [expr $trce_dly_min - $thd_r] [get_ports $output_ports];
+set_output_delay -clock $fwclk -max [expr $trce_dly_max + $tsu_f] [get_ports $output_ports] -clock_fall -add_delay;
+set_output_delay -clock $fwclk -min [expr $trce_dly_min - $thd_f] [get_ports $output_ports] -clock_fall -add_delay;
+
 # these are assigned by the loop below, since different banks operate at
 # different voltage standards
 #
