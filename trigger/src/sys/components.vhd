@@ -105,7 +105,8 @@ package components is
       probe_out3 : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
       probe_out4 : OUT STD_LOGIC_VECTOR(4 DOWNTO 0);
       probe_out5 : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
-      probe_out6 : OUT STD_LOGIC_VECTOR(2 DOWNTO 0)
+      probe_out6 : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+      probe_out7 : OUT STD_LOGIC_VECTOR(0 DOWNTO 0)
       );
   end component vio_prbs;
 

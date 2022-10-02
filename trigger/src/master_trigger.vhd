@@ -519,6 +519,10 @@ begin
     signal clk_cnt   : natural range 0 to DIV_MAX    := 0;
     signal div_pulse   : std_logic                     := '0';
 
+    signal prbs_err_inj_vio : std_logic := '0';
+    signal prbs_err_inj_ff  : std_logic := '0';
+    signal prbs_err_inj     : std_logic := '0';
+
   begin
 
     -- for full speed, this should be a constant 1
@@ -581,7 +585,7 @@ begin
       port map (
         rst         => not locked,
         clk         => clock,
-        data_in(0)  => '0',
+        data_in(0)  => prbs_err_inj,
         en          => prbs_clk_gate,
         data_out(0) => data_gen
         );
@@ -596,6 +600,23 @@ begin
         end if;
       end if;
     end process;
+
+    process (clock) is
+    begin
+      if (rising_edge(clock)) then
+        if (prbs_clk_gate = '1') then
+
+          prbs_err_inj_ff <= prbs_err_inj_vio;
+
+          if (prbs_err_inj_vio = '1') and (prbs_err_inj_ff = '0') then
+            prbs_err_inj <= '1';
+          else
+            prbs_err_inj <= '0';
+          end if;
+        end if;
+      end if;
+    end process;
+
 
     input_gen : for I in lt_data_i_p'range generate
       signal data_pos   : std_logic := '0';
@@ -821,7 +842,8 @@ begin
         probe_out3(0) => data_o_src,
         probe_out4    => dsi_on_vio,
         probe_out5    => ext_out,
-        probe_out6    => div_vio
+        probe_out6    => div_vio,
+        probe_out7(0) => prbs_err_inj_vio
         );
 
   end generate;
