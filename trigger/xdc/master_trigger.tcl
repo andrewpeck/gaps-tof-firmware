@@ -2,6 +2,14 @@ create_clock -period 50.0 -name clock_i_20 [get_ports clk_p]
 
 create_clock -period 8.0 -name rgmii_rx_clk [get_ports rgmii_rx_clk]
 
+set_max_delay  -datapath_only 5.0 \
+    -from [get_clocks rgmii_rx_clk] \
+    -to [get_clocks -of_objects [get_pins clocking/clocking/inst/mmcm_adv_inst/CLKOUT2]]
+
+set_max_delay  -datapath_only 5.0 \
+    -to [get_clocks rgmii_rx_clk] \
+    -from [get_clocks -of_objects [get_pins clocking/clocking/inst/mmcm_adv_inst/CLKOUT2]]
+
 set_property CFGBVS VCCO [current_design]
 set_property CONFIG_VOLTAGE 3.3 [current_design]
 
