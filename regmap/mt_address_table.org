@@ -17,6 +17,8 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+-------+-------+---------+------+-----+----------------------------|
 | Node       |  Adr  | Adr8  | Bits    | Perm | Def | Description                |
 |------------+-------+-------+---------+------+-----+----------------------------|
+|LOOPBACK | ~0x0~ | ~0x0~ | ~[31:0]~ | rw | ~0x0~ | Loopback register | 
+|------------+---+---+---------+-----+-----+----------------------------|
 |PULSE_STRETCH | ~0xf~ | ~0x3c~ | ~[3:0]~ | rw | ~0x0~ | Integer clock cycles to stretch hits by | 
 |------------+---+---+---------+-----+-----+----------------------------|
 

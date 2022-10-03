@@ -13,6 +13,14 @@
         fw_reg_addr_msb="9"
         fw_reg_addr_lsb="0">
 
+    <node id="LOOPBACK"
+          address="0x0"
+          permission="rw"
+          mask="0xffffffff"
+          description="Loopback register"
+          fw_default="0x0"
+          fw_signal="loopback"/>
+
     <node id="PULSE_STRETCH"
           address="0xf"
           permission="rw"
