@@ -164,6 +164,8 @@ architecture structural of gaps_mt is
   -- IPbus / wishbone
   --------------------------------------------------------------------------------
 
+  signal loopback : std_logic_vector (31 downto 0) := (others => '0');
+
   signal ipb_reset : std_logic;
   signal ipb_clk   : std_logic;
 
