@@ -183,7 +183,7 @@ begin
       mac_tx_valid => tx_axis_tvalid,
       mac_tx_last  => tx_axis_tlast,
       mac_tx_error => open,
-      mac_tx_ready => '1',
+      mac_tx_ready => tx_axis_tready,
       ipb_out      => ipb_out,
       ipb_in       => ipb_in,
       mac_addr     => mac_addr,
