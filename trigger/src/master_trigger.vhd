@@ -126,7 +126,9 @@ architecture structural of gaps_mt is
   constant RGMII_RXD_DELAY : integer   := 0;
   constant RGMII_RXC_DELAY : integer   := 0;
 
-  signal locked : std_logic;
+  signal reset    : std_logic;
+  signal reset_ff : std_logic_vector (1 downto 0);
+  signal locked   : std_logic;
 
   signal clock : std_logic;
 
@@ -246,19 +248,28 @@ architecture structural of gaps_mt is
 
 begin
 
+  process (clock) is
+  begin
+    if (rising_edge(clock)) then
+      reset_ff(0) <= not locked;
+      reset_ff(1) <= reset_ff(0);
+    end if;
+  end process;
+
+  reset <= not locked or reset_ff(1) or reset_ff(0);
+
   clk_src_sel <= '0';
 
-  -- i2c_reset <= not locked;
-  ipb_reset     <= not locked;
+  -- i2c_reset <= reset;
+  ipb_reset     <= reset;
   ipb_clk       <= clock;
   clock         <= clk100;
-  rgmii_reset_n <= locked;
 
   delayctrl_inst : IDELAYCTRL
     port map (
       RDY    => open,
       REFCLK => clk200,
-      RST    => not locked
+      RST    => reset
       );
 
   eth_idelay_gen : for I in 0 to 3 generate
@@ -271,7 +282,6 @@ begin
         din   => rgmii_rxd(I),
         dout  => rgmii_rxd_dly(I)
         );
-
 
   end generate;
 
@@ -296,10 +306,10 @@ begin
   eth_infra_inst : entity work.eth_infra
     port map (
       clock        => clock,
-      reset        => not locked,
+      reset        => reset,
       gtx_clk      => clk125,
       gtx_clk90    => clk125_90,
-      gtx_rst      => not locked,
+      gtx_rst      => reset,
       rgmii_rx_clk => rgmii_rx_clk_dly,
       rgmii_rxd    => rgmii_rxd_dly,
       rgmii_rx_ctl => rgmii_rx_ctl_dly,
@@ -320,7 +330,7 @@ begin
     generic map (N_BUS => 1)
     port map (
       clk          => clock,
-      rst          => not locked,
+      rst          => reset,
       ipb_m_out    => ipb_masters_w_arr,
       ipb_m_in     => ipb_masters_r_arr,
       ipb_req(0)   => ipb_masters_w_arr(0).ipb_strobe,
@@ -461,7 +471,7 @@ begin
   event_counter : entity work.event_counter
     port map (
       clk              => clock,
-      rst_i            => (not locked) or rst_event_cnt,
+      rst_i            => (reset) or rst_event_cnt,
       global_trigger_i => global_trigger,
     --trigger_i        => triggers,
       event_count_o    => event_cnt
@@ -485,7 +495,7 @@ begin
           )
         port map (
           clock       => clock,
-          reset       => not locked,
+          reset       => reset,
           serial_o    => rb_data_o(I),
           trg_i       => rb_triggers(I),
           resync_i    => '0',
@@ -505,7 +515,7 @@ begin
       )
     port map (
       clk     => clock,
-      rst     => not locked,
+      rst     => reset,
       ipb_in  => ipb_mosi_arr(1),
       ipb_out => ipb_miso_arr(1),
       ss      => hk_cs_n,
@@ -624,7 +634,7 @@ begin
         nbits       => 1
         )
       port map (
-        rst         => not locked,
+        rst         => reset,
         clk         => clock,
         data_in(0)  => prbs_err_inj,
         en          => prbs_clk_gate,
@@ -722,7 +732,7 @@ begin
           nbits       => 1
           )
         port map (
-          rst         => not locked,
+          rst         => reset,
           clk         => clock,
           data_in(0)  => data,
           en          => prbs_clk_gate,
@@ -741,7 +751,7 @@ begin
           )
         port map (
           ref_clk_i => clock,
-          reset_i   => not locked or prbs_reset,
+          reset_i   => reset or prbs_reset,
           en_i      => prbs_clk_gate and prbs_err(I),
           snap_i    => '1',
           count_o   => err_cnts(I)
