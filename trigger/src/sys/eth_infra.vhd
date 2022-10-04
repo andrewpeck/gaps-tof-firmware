@@ -38,34 +38,41 @@ end eth_infra;
 
 architecture rtl of eth_infra is
 
-  component eth_mac_1g_rgmii
+  component eth_mac_1g_rgmii_fifo
     generic (
       -- target ("SIM", "GENERIC", "XILINX", "ALTERA")
-      TARGET            : string  := "XILINX";
+      TARGET            : string;
       -- IODDR style ("IODDR"; "IODDR2")
       -- Use IODDR for Virtex-4; Virtex-5; Virtex-6; 7 Series; Ultrascale
       -- Use IODDR2 for Spartan-6
-      IODDR_STYLE       : string  := "IODDR2";
+      IODDR_STYLE       : string;
       -- Clock input style ("BUFG"; "BUFR"; "BUFIO"; "BUFIO2")
       -- Use BUFR for Virtex-6; 7-series
       -- Use BUFG for Virtex-5; Spartan-6; Ultrascale
-      CLOCK_INPUT_STYLE : string  := "BUFG";
+      -- anything else just passes the rx clock through,
+      -- for pre-buffered clocks
+      CLOCK_INPUT_STYLE : string;
       -- Use 90 degree clock for RGMII transmit ("TRUE"; "FALSE")
-      USE_CLK90         : string  := "TRUE";
-      ENABLE_PADDING    : integer := 1;
-      MIN_FRAME_LENGTH  : integer := 64
+      USE_CLK90         : string;
+      ENABLE_PADDING    : integer;
+      MIN_FRAME_LENGTH  : integer
       );
     port (
       gtx_clk   : in  std_logic;
       gtx_clk90 : in  std_logic;
       gtx_rst   : in  std_logic;
-      rx_clk    : out std_logic;
-      rx_rst    : out std_logic;
-      tx_clk    : out std_logic;
-      tx_rst    : out std_logic;
+
+      logic_clk :  in  std_logic;
+      logic_rst :  in  std_logic;
+
+      -- rx_clk    : out std_logic;
+      -- rx_rst    : out std_logic;
+      -- tx_clk    : out std_logic;
+      -- tx_rst    : out std_logic;
 
       -- AXI input
       tx_axis_tdata  : in  std_logic_vector(7 downto 0);
+      tx_axis_tkeep  : in  std_logic;
       tx_axis_tvalid : in  std_logic;
       tx_axis_tready : out std_logic;
       tx_axis_tlast  : in  std_logic;
@@ -73,7 +80,9 @@ architecture rtl of eth_infra is
 
       -- AXI output
       rx_axis_tdata  : out std_logic_vector(7 downto 0);
+      rx_axis_tkeep  : out std_logic;
       rx_axis_tvalid : out std_logic;
+      rx_axis_tready : in  std_logic;
       rx_axis_tlast  : out std_logic;
       rx_axis_tuser  : out std_logic;
 
@@ -112,15 +121,15 @@ architecture rtl of eth_infra is
   signal rx_axis_tlast  : std_logic;
   signal rx_axis_tuser  : std_logic;
 
-  signal tx_error_underflow : std_logic;
-  signal rx_error_bad_frame : std_logic;
-  signal rx_error_bad_fcs   : std_logic;
+  signal tx_error_underflow : std_logic := '0';
+  signal rx_error_bad_frame : std_logic := '0';
+  signal rx_error_bad_fcs   : std_logic := '0';
   signal speed              : std_logic_vector(1 downto 0);
   signal ifg_delay          : std_logic_vector (7 downto 0);
 
 begin
 
-  eth_mac_1g_rgmii_inst : eth_mac_1g_rgmii
+  eth_mac_1g_rgmii_inst : eth_mac_1g_rgmii_fifo
     generic map (
       TARGET            => "XILINX",
       IODDR_STYLE       => "IODDR",
@@ -135,22 +144,28 @@ begin
       gtx_clk90 => gtx_clk90,
       gtx_rst   => gtx_rst,
 
-      rx_clk => rx_clk,
-      rx_rst => rx_rst,
+      logic_clk => gtx_clk,
+      logic_rst => gtx_rst,
 
-      tx_clk => tx_clk,
-      tx_rst => tx_rst,
+      -- rx_clk => rx_clk,
+      -- rx_rst => rx_rst,
+      -- tx_clk => tx_clk,
+      -- tx_rst => tx_rst,
 
+      -- tx_axis_tkeep  => (others => '0'),
       tx_axis_tdata  => tx_axis_tdata,
       tx_axis_tvalid => tx_axis_tvalid,
       tx_axis_tready => tx_axis_tready,
       tx_axis_tlast  => tx_axis_tlast,
       tx_axis_tuser  => tx_axis_tuser,
+      tx_axis_tkeep  => '0',
 
       rx_axis_tdata  => rx_axis_tdata,
       rx_axis_tvalid => rx_axis_tvalid,
       rx_axis_tlast  => rx_axis_tlast,
       rx_axis_tuser  => rx_axis_tuser,
+      rx_axis_tready => '1',
+      rx_axis_tkeep  => open,
 
       rgmii_rx_clk => rgmii_rx_clk,
       rgmii_rxd    => rgmii_rxd,
@@ -171,18 +186,18 @@ begin
   ipbus_inst : entity work.ipbus_ctrl
     port map(
       mac_clk    => gtx_clk,
-      rst_macclk => reset,
+      rst_macclk => gtx_rst,
       ipb_clk    => clock,
       rst_ipb    => reset,
 
       mac_rx_data  => rx_axis_tdata,
       mac_rx_valid => rx_axis_tvalid,
       mac_rx_last  => rx_axis_tlast,
-      mac_rx_error => '0',
+      mac_rx_error => rx_error_bad_frame or rx_error_bad_fcs,
       mac_tx_data  => tx_axis_tdata,
       mac_tx_valid => tx_axis_tvalid,
       mac_tx_last  => tx_axis_tlast,
-      mac_tx_error => open,
+      mac_tx_error => tx_error_underflow,
       mac_tx_ready => tx_axis_tready,
       ipb_out      => ipb_out,
       ipb_in       => ipb_in,

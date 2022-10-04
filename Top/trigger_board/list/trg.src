@@ -7,10 +7,14 @@ common/src/*.vhd
 ip/master_trigger/*/*.xci
 
 verilog-ethernet/rtl/eth_mac_1g_rgmii.v
+verilog-ethernet/rtl/eth_mac_1g_rgmii_fifo.v
 verilog-ethernet/rtl/eth_mac_1g.v
 verilog-ethernet/rtl/rgmii_phy_if.v
 verilog-ethernet/rtl/axis_gmii_rx.v
 verilog-ethernet/rtl/axis_gmii_tx.v
+verilog-ethernet/lib/axis/rtl/axis_async_fifo_adapter.v
+verilog-ethernet/lib/axis/rtl/axis_async_fifo.v
+verilog-ethernet/lib/axis/rtl/axis_adapter.v
 verilog-ethernet/rtl/ssio_ddr_in.v
 verilog-ethernet/rtl/oddr.v
 verilog-ethernet/rtl/iddr.v
