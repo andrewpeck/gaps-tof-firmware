@@ -311,7 +311,7 @@ begin
       reset        => reset,
       gtx_clk      => clk125,
       gtx_clk90    => clk125_90,
-      gtx_rst      => reset,
+
       rgmii_rx_clk => rgmii_rx_clk_dly,
       rgmii_rxd    => rgmii_rxd_dly,
       rgmii_rx_ctl => rgmii_rx_ctl_dly,

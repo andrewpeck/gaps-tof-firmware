@@ -16,7 +16,6 @@ entity eth_infra is
 
     gtx_clk   : in std_logic;           -- 125MHz
     gtx_clk90 : in std_logic;
-    gtx_rst   : in std_logic;
 
     -- RGMII interface
     rgmii_rx_clk : in  std_logic;
@@ -127,8 +126,16 @@ architecture rtl of eth_infra is
   signal speed              : std_logic_vector(1 downto 0);
   signal ifg_delay          : std_logic_vector (7 downto 0);
 
+  signal gtx_rst   : std_logic := '1';
+
 begin
 
+  process (gtx_clk) is
+  begin
+    if (rising_edge(gtx_clk)) then
+      gtx_rst   <= reset;
+    end if;
+  end process;
   eth_mac_1g_rgmii_inst : eth_mac_1g_rgmii_fifo
     generic map (
       TARGET            => "XILINX",
