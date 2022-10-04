@@ -140,7 +140,7 @@ begin
     generic map (
       TARGET            => "XILINX",
       IODDR_STYLE       => "IODDR",
-      CLOCK_INPUT_STYLE => "BUFG",
+      CLOCK_INPUT_STYLE => "BUFR",
       USE_CLK90         => "TRUE",
       ENABLE_PADDING    => 1,
       MIN_FRAME_LENGTH  => 64
