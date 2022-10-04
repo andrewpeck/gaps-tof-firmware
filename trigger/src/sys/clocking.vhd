@@ -47,7 +47,7 @@ architecture structural of clocking is
       );
   end component;
 
-  signal clk_i : std_logic := '0';
+  signal clk_i, clk_i_bufg : std_logic := '0';
 
   signal fb_clk, fb_clk_i : std_logic_vector (fb_clk_p'range) := (others => '0');
   signal fb_active        : std_logic_vector (fb_clk_p'range) := (others => '0');
@@ -87,6 +87,12 @@ begin
       o  => clk_i
       );
 
+   BUFG_inst : BUFG
+   port map (
+      O => clk_i_bufg, -- 1-bit output: Clock output.
+      I => clk_i  -- 1-bit input: Clock input.
+   );
+
   clocking : mt_clk_wiz
     port map (
       -- Clock out ports
@@ -98,7 +104,7 @@ begin
       reset     => '0',
       locked    => locked,
       -- Clock in ports
-      clk_in1   => clk_i
+      clk_in1   => clk_i_bufg
       );
 
   fb_clk_gen : for I in fb_clk_p'range generate
