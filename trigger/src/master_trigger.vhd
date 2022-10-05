@@ -385,13 +385,8 @@ begin
       clk_p     => clk_p,
       clk_n     => clk_n,
 
-      fb_clk_p => fb_clk_p,
-      fb_clk_n => fb_clk_n,
-
       lvs_sync => lvs_sync,
       ccb_sync => lvs_sync_ccb,
-
-      fb_active_or => fb_active,
 
       clk100    => clk100,               -- system clock
       clk200    => clk200,               -- 200mhz for iodelay
