@@ -510,7 +510,10 @@ begin
   --------------------------------------------------------------------------------
   -- SPI master
   --------------------------------------------------------------------------------
-
+  --
+  -- MCP3208-BI/SL
+  -- https://ww1.microchip.com/downloads/en/DeviceDoc/21298e.pdf
+  -- https://opencores.org/websvn/filedetails?repname=spi&path=%2Fspi%2Ftrunk%2Fdoc%2Fspi.pdf
   ipbus_spi_inst : entity work.ipbus_spi
     generic map (
       N_SS => hk_cs_n'length
