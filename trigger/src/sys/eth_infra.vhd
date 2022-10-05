@@ -126,14 +126,18 @@ architecture rtl of eth_infra is
   signal speed              : std_logic_vector(1 downto 0);
   signal ifg_delay          : std_logic_vector (7 downto 0);
 
-  signal gtx_rst   : std_logic := '1';
+  signal gtx_rst_r0, gtx_rst_r1, gtx_rst_r2 : std_logic := '1';
+  signal gtx_rst                            : std_logic := '1';
 
 begin
 
   process (gtx_clk) is
   begin
     if (rising_edge(gtx_clk)) then
-      gtx_rst   <= reset;
+      gtx_rst_r0 <= reset;
+      gtx_rst_r1 <= gtx_rst_r0;
+      gtx_rst_r2 <= gtx_rst_r1;
+      gtx_rst    <= gtx_rst_r2;
     end if;
   end process;
   eth_mac_1g_rgmii_inst : eth_mac_1g_rgmii_fifo
