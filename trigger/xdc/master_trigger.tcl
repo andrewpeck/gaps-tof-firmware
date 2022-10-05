@@ -56,6 +56,18 @@ set_max_delay -datapath_only 5.0 \
     -from [get_clocks rgmii_rx_clk] \
     -to [get_clocks -of_objects [get_pins clocking/clocking/inst/mmcm_adv_inst/CLKOUT0]]
 
+set_max_delay -datapath_only 5.0 \
+    -from [get_clocks -of_objects [get_pins clocking/clocking/inst/mmcm_adv_inst/CLKOUT0]] \
+    -to [get_clocks rgmii_rx_clk]
+
+set_max_delay -datapath_only 5.0 \
+    -from [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/rx_fifo/fifo_inst/s_rst_sync1_reg_reg/C] \
+    -to [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/m_rst_sync2_reg_reg/D]
+
+set_max_delay -datapath_only 5.0 \
+    -from [get_pins {reset_ff_reg[0]/C}] \
+    -to [get_pins eth_infra_inst/gtx_rst_r0_reg/D]
+
 ################################################################################
 #
 ################################################################################
