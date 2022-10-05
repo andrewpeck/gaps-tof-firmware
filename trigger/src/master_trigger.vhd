@@ -104,8 +104,8 @@ entity gaps_mt is
     -- housekeeping adcs
     hk_cs_n : out std_logic_vector(1 downto 0);
     hk_clk  : out std_logic;
-    hk_dout : out std_logic;
-    hk_din  : in  std_logic;
+    hk_dout : in  std_logic; -- master in, slave out
+    hk_din  : out std_logic; -- master out, slave in
 
     ext_io  : out std_logic_vector (13 downto 0);
     ext_out : out std_logic_vector (3 downto 0);
@@ -572,10 +572,28 @@ begin
       ipb_in  => ipb_mosi_arr(1),
       ipb_out => ipb_miso_arr(1),
       ss      => hk_cs_n,
-      mosi    => hk_dout,
-      miso    => hk_din,
+      mosi    => hk_din,
+      miso    => hk_dout,
       sclk    => hk_clk
       );
+
+  -- spi_master_1: entity work.spi_master
+  --   generic map (
+  --     data_length => data_length)
+  --   port map (
+  --     clk     => clk,
+  --     reset_n => reset_n,
+  --     enable  => enable,
+  --     cpol    => cpol,
+  --     cpha    => cpha,
+  --     miso    => miso,
+  --     sclk    => sclk,
+  --     ss_n    => ss_n,
+  --     mosi    => mosi,
+  --     busy    => busy,
+  --     tx      => tx,
+  --     rx      => rx
+  --     );
 
   --------------------------------------------------------------------------------
   -- Signal Sump

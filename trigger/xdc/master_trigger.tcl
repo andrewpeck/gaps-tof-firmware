@@ -176,7 +176,7 @@ set_property SLEW SLOW [get_ports hk_cs_n]
 set_property SLEW SLOW [get_ports hk_dout]
 
 set_property DRIVE 4 [get_ports hk_clk]
-set_property DRIVE 4 [get_ports hk_dout]
+set_property DRIVE 4 [get_ports hk_din]
 set_property DRIVE 4 [get_ports hk_cs_n]
 
 set_property SLEW SLOW [get_ports rb_data_o*]
