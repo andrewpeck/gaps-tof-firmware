@@ -1,3 +1,5 @@
+create_clock -period 10.0 -name sys_clk [get_ports sys_clk_i]
+
 create_clock -period 50.0 -name clock_i_20 [get_ports clk_p]
 
 create_clock -period 8.0 -name rgmii_rx_clk [get_ports rgmii_rx_clk]

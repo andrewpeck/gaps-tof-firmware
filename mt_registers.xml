@@ -21,6 +21,24 @@
           fw_default="0x0"
           fw_signal="loopback"/>
 
+    <node id="CLOCK_RATE"
+          address="0x1"
+          permission="r"
+          mask="0xffffffff"
+          description="System clock frequency"
+          fw_signal="clock_rate"/>
+
+    <node id="FB_CLOCK_RATE_${FB_IDX}"
+          generate="true"
+          generate_size="5"
+          generate_address_step="1"
+          generate_idx_var="FB_IDX"
+          address="0x2"
+          permission="r"
+          mask="0xffffffff"
+          description="Feedback clock frequency"
+          fw_signal="fb_clock_rates(${FB_ODX})"/>
+
     <node id="PULSE_STRETCH"
           address="0xf"
           permission="rw"

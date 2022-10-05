@@ -14,11 +14,6 @@ entity clocking is
     clk_p : in std_logic;
     clk_n : in std_logic;
 
-    fb_clk_p : in std_logic_vector(NUM_DSI-1 downto 0);
-    fb_clk_n : in std_logic_vector(NUM_DSI-1 downto 0);
-
-    fb_active_or : out std_logic := '0';
-
     lvs_sync : out std_logic_vector(NUM_DSI-1 downto 0);
     ccb_sync : out std_logic;
 
@@ -48,9 +43,6 @@ architecture structural of clocking is
   end component;
 
   signal clk_i, clk_i_bufg : std_logic := '0';
-
-  signal fb_clk, fb_clk_i : std_logic_vector (fb_clk_p'range) := (others => '0');
-  signal fb_active        : std_logic_vector (fb_clk_p'range) := (others => '0');
 
   constant DIV   : natural                  := 100;
   signal clk_cnt : natural range 0 to DIV-1 := 0;
@@ -106,32 +98,5 @@ begin
       -- Clock in ports
       clk_in1   => clk_i_bufg
       );
-
-  fb_clk_gen : for I in fb_clk_p'range generate
-  begin
-    fb_clk_ibuf : IBUFDS
-      port map(
-        i  => fb_clk_p(I),
-        ib => fb_clk_n(I),
-        o  => fb_clk_i(I)
-        );
-
-    fb_clk_bufg : BUFG
-      port map(
-        i => fb_clk_i(I),
-        o => fb_clk(I)
-        );
-
-    -- TODO: replace with frequency mons
-    process (fb_clk(I)) is
-    begin
-      if (rising_edge(fb_clk(I))) then
-        fb_active(I) <= not fb_active(I);
-      end if;
-    end process;
-
-  end generate;
-
-  fb_active_or <= xor_reduce (fb_active);
 
 end structural;
