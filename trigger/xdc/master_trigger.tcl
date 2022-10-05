@@ -187,3 +187,9 @@ if {$err > 0} {
 
 # these are not on dedicated routes
 set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets clocking/fb_clk_i_*]
+
+create_clock -period 50.000 -name {fb_clk_p[0]} -waveform {0.000 25.000} [get_ports {fb_clk_p[0]}]
+create_clock -period 50.000 -name {fb_clk_p[1]} -waveform {0.000 25.000} [get_ports {fb_clk_p[1]}]
+create_clock -period 50.000 -name {fb_clk_p[2]} -waveform {0.000 25.000} [get_ports {fb_clk_p[2]}]
+create_clock -period 50.000 -name {fb_clk_p[3]} -waveform {0.000 25.000} [get_ports {fb_clk_p[3]}]
+create_clock -period 50.000 -name {fb_clk_p[4]} -waveform {0.000 25.000} [get_ports {fb_clk_p[4]}]
