@@ -64,11 +64,6 @@ architecture rtl of eth_infra is
       logic_clk :  in  std_logic;
       logic_rst :  in  std_logic;
 
-      -- rx_clk    : out std_logic;
-      -- rx_rst    : out std_logic;
-      -- tx_clk    : out std_logic;
-      -- tx_rst    : out std_logic;
-
       -- AXI input
       tx_axis_tdata  : in  std_logic_vector(7 downto 0);
       tx_axis_tkeep  : in  std_logic;
@@ -129,6 +124,12 @@ architecture rtl of eth_infra is
   signal gtx_rst_r0, gtx_rst_r1, gtx_rst_r2 : std_logic := '1';
   signal gtx_rst                            : std_logic := '1';
 
+  attribute shreg_extract : string;
+  attribute shreg_extract of gtx_rst_r0 : signal is "false";
+  attribute shreg_extract of gtx_rst_r1 : signal is "false";
+  attribute shreg_extract of gtx_rst_r2 : signal is "false";
+  attribute shreg_extract of gtx_rst    : signal is "false";
+
 begin
 
   process (gtx_clk) is
@@ -155,13 +156,8 @@ begin
       gtx_clk90 => gtx_clk90,
       gtx_rst   => gtx_rst,
 
-      logic_clk => gtx_clk,
-      logic_rst => gtx_rst,
-
-      -- rx_clk => rx_clk,
-      -- rx_rst => rx_rst,
-      -- tx_clk => tx_clk,
-      -- tx_rst => tx_rst,
+      logic_clk => clock,
+      logic_rst => reset,
 
       -- tx_axis_tkeep  => (others => '0'),
       tx_axis_tdata  => tx_axis_tdata,
@@ -196,8 +192,8 @@ begin
 
   ipbus_inst : entity work.ipbus_ctrl
     port map(
-      mac_clk    => gtx_clk,
-      rst_macclk => gtx_rst,
+      mac_clk    => clock,
+      rst_macclk => reset,
       ipb_clk    => clock,
       rst_ipb    => reset,
 
