@@ -800,7 +800,11 @@ begin
         probe2     => data_i_vec,
         probe3     => std_logic_vector(to_unsigned(clk_cnt,8)),
         probe4     => std_logic_vector(to_unsigned(div,8)),
-        probe5(0)  => lvs_sync_ccb
+        probe5(0)  => lvs_sync_ccb,
+        probe6(0)  => hk_clk,
+        probe7(0)  => hk_dout,
+        probe8(0)  => hk_din,
+        probe9     => hk_cs_n
         );
 
     mask_cnts_loop : for I in err_cnts'range generate
