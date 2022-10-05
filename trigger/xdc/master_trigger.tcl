@@ -80,6 +80,14 @@ set_output_delay -clock $fwclk -min [expr $trce_dly_min - $thd_f] [get_ports $ou
 # set_property IOSTANDARD LVDS_25 [get_ports lt_data_i*]
 # set_property IOSTANDARD LVCMOS25 [get_ports rb_data_o*]
 
+set_property SLEW SLOW [get_ports hk_clk]
+set_property SLEW SLOW [get_ports hk_cs_n]
+set_property SLEW SLOW [get_ports hk_dout]
+
+set_property DRIVE 4 [get_ports hk_clk]
+set_property DRIVE 4 [get_ports hk_dout]
+set_property DRIVE 4 [get_ports hk_cs_n]
+
 set_property SLEW SLOW [get_ports rb_data_o*]
 set_property DRIVE 4 [get_ports rb_data_o*]
 
