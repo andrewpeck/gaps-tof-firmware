@@ -34,8 +34,26 @@ set_property IOSTANDARD LVDS_25 [get_ports clk_*]
 # set_property IOSTANDARD          [get_ports sda]
 # set_property IOSTANDARD          [get_ports scl]
 
-set_property -dict {IOSTANDARD LVCMOS25} \
-    [get_ports *rgmii*];
+# mode
+set_property PULLDOWN true [get_ports rgmii_rxd[0]]
+set_property PULLDOWN true [get_ports rgmii_rxd[1]]
+set_property PULLUP true [get_ports rgmii_rxd[2]]
+set_property PULLUP true [get_ports rgmii_rxd[3]]
+
+# clk125 en
+set_property PULLUP true [get_ports rgmii_rx_ctl]
+
+# reset
+set_property PULLDOWN true [get_ports rgmii_reset_n]
+
+# led mode
+set_property PULLDOWN true [get_ports rgmii_clk125]
+
+set_property IOSTANDARD LVCMOS25 [get_ports *rgmii*];
+
+set_property SLEW FAST [get_ports rgmii_tx*]
+set_property DRIVE 16 [get_ports rgmii_tx*]
+
 
 ################################################################################
 # RGMII Constraints
@@ -44,6 +62,8 @@ set_property -dict {IOSTANDARD LVCMOS25} \
 
 # receiver
 
+set rx_clk [get_clocks rgmii_rx_clk]
+
 set rgmiirx_rxc_period      8.000;
 set rgmiirx_dv_bre          1.200;
 set rgmiirx_dv_are          1.200;
@@ -51,13 +71,35 @@ set rgmiirx_dv_bfe          1.200;
 set rgmiirx_dv_afe          1.200;
 set input_ports             [list rgmii_rx_ctl {rgmii_rxd[0]} {rgmii_rxd[1]} {rgmii_rxd[2]} {rgmii_rxd[3]}];
 
-set_input_delay -clock [get_clocks rgmii_rx_clk] -max [expr $rgmiirx_rxc_period/2 - $rgmiirx_dv_bfe] [get_ports $input_ports] -add_delay;
-set_input_delay -clock [get_clocks rgmii_rx_clk] -min $rgmiirx_dv_are [get_ports $input_ports] -add_delay;
-set_input_delay -clock [get_clocks rgmii_rx_clk] -max [expr $rgmiirx_rxc_period/2 - $rgmiirx_dv_bre] [get_ports $input_ports] -clock_fall -add_delay;
-set_input_delay -clock [get_clocks rgmii_rx_clk] -min $rgmiirx_dv_afe [get_ports $input_ports] -clock_fall -add_delay;
+set_input_delay -clock $rx_clk -max [expr $rgmiirx_rxc_period/2 - $rgmiirx_dv_bfe] [get_ports $input_ports] -add_delay;
+set_input_delay -clock $rx_clk -min $rgmiirx_dv_are [get_ports $input_ports] -add_delay;
+set_input_delay -clock $rx_clk -max [expr $rgmiirx_rxc_period/2 - $rgmiirx_dv_bre] [get_ports $input_ports] -clock_fall -add_delay;
+set_input_delay -clock $rx_clk -min $rgmiirx_dv_afe [get_ports $input_ports] -clock_fall -add_delay;
+
+#  Double Data Rate Source Synchronous Outputs
+#
+#  Source synchronous output interfaces can be constrained either by the max data skew
+#  relative to the generated clock or by the destination device setup/hold requirements.
+#
+#  Setup/Hold Case:
+#  Setup and hold requirements for the destination device and board trace delays are known.
+#
+# forwarded                        _________________________________
+# clock                 __________|                                 |______________
+#                                 |                                 |
+#                           tsu_r |  thd_r                    tsu_f | thd_f
+#                         <------>|<------->                <------>|<----->
+#                         ________|_________                ________|_______
+# data @ destination   XXX__________________XXXXXXXXXXXXXXXX________________XXXXX
+#
+# Example of creating generated clock at clock output port
+# create_generated_clock -name <gen_clock_name> -multiply_by 1 -source [get_pins <source_pin>] [get_ports <output_clock_port>]
+# gen_clock_name is the name of forwarded clock here. It should be used below for defining "fwclk".
+
 
 # transmitter
-create_generated_clock -name rgmii_tx_clk -multiply_by 1 -source [get_pins clocking/clocking/inst/mmcm_adv_inst/CLKOUT2] [get_ports rgmii_tx_clk]
+create_generated_clock -name rgmii_tx_clk -multiply_by 1 \
+    -source [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/rgmii_phy_if_inst/clk_oddr_inst/oddr[0].oddr_inst/C] [get_ports rgmii_tx_clk]
 
 set fwclk        rgmii_tx_clk;     # forwarded clock name (generated using create_generated_clock at output clock port)
 set tsu_r        1.000;            # destination device setup time requirement for rising edge
