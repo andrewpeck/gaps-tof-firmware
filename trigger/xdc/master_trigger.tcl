@@ -1,28 +1,64 @@
+################################################################################
+# Config
+################################################################################
+
+set_property CFGBVS VCCO [current_design]
+set_property CONFIG_VOLTAGE 3.3 [current_design]
+
+################################################################################
+# Input Clocks
+################################################################################
+
 create_clock -period 10.0 -name sys_clk [get_ports sys_clk_i]
 
 create_clock -period 50.0 -name clock_i_20 [get_ports clk_p]
 
 create_clock -period 8.0 -name rgmii_rx_clk [get_ports rgmii_rx_clk]
 
-set_max_delay  -datapath_only 5.0 \
+create_clock -period 50.000 -name {fb_clk_p[0]} -waveform {0.000 25.000} [get_ports {fb_clk_p[0]}]
+create_clock -period 50.000 -name {fb_clk_p[1]} -waveform {0.000 25.000} [get_ports {fb_clk_p[1]}]
+create_clock -period 50.000 -name {fb_clk_p[2]} -waveform {0.000 25.000} [get_ports {fb_clk_p[2]}]
+create_clock -period 50.000 -name {fb_clk_p[3]} -waveform {0.000 25.000} [get_ports {fb_clk_p[3]}]
+create_clock -period 50.000 -name {fb_clk_p[4]} -waveform {0.000 25.000} [get_ports {fb_clk_p[4]}]
+
+# these are not on dedicated routes
+set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets fb_clk_i_*]
+
+################################################################################
+# CDC exemptions
+################################################################################
+
+set_max_delay -datapath_only 5.0 \
+    -from [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/rx_fifo/fifo_inst/s_rst_sync1_reg_reg/C] \
+    -to [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/rx_fifo/fifo_inst/s_rst_sync2_reg_reg/D]
+
+set_max_delay -datapath_only 5.0 \
+    -from [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/s_rst_sync1_reg_reg/C] \
+    -to [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/s_rst_sync2_reg_reg/D]
+
+set_max_delay -datapath_only 5.0 \
+    -from [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/rx_fifo/fifo_inst/s_rst_sync1_reg_reg/C] \
+    -to [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/rx_fifo/fifo_inst/s_rst_sync2_reg_reg/D]
+
+set_max_delay -datapath_only 5.0 \
+    -from [get_pins {eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/rd_ptr_gray_reg_reg[*]/C}] \
+    -to [get_pins {eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/rd_ptr_gray_sync1_reg_reg[*]/D}]
+
+set_max_delay -datapath_only 5.0 \
+    -from [get_pins {eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/wr_ptr_sync_gray_reg_reg[*]/C}] \
+    -to [get_pins {eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/wr_ptr_gray_sync1_reg_reg[*]/D}]
+
+set_max_delay -datapath_only 5.0 \
+  -from [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/wr_ptr_update_reg_reg/C] \
+  -to [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/wr_ptr_update_sync1_reg_reg/D]
+
+set_max_delay -datapath_only 5.0 \
     -from [get_clocks rgmii_rx_clk] \
-    -to [get_clocks -of_objects [get_pins clocking/clocking/inst/mmcm_adv_inst/CLKOUT2]]
+    -to [get_clocks -of_objects [get_pins clocking/clocking/inst/mmcm_adv_inst/CLKOUT0]]
 
-set_max_delay  -datapath_only 5.0 \
-    -to [get_clocks rgmii_rx_clk] \
-    -from [get_clocks -of_objects [get_pins clocking/clocking/inst/mmcm_adv_inst/CLKOUT2]]
-
-set_property CFGBVS VCCO [current_design]
-set_property CONFIG_VOLTAGE 3.3 [current_design]
-
-
-set_max_delay -datapath_only \
-    -from [get_clocks -of_objects [get_pins clocking/clocking/inst/mmcm_adv_inst/CLKOUT0]] \
-    -to [get_clocks -of_objects [get_pins clocking/clocking/inst/mmcm_adv_inst/CLKOUT2]] 4.0
-
-set_max_delay -datapath_only \
-    -to [get_clocks -of_objects [get_pins clocking/clocking/inst/mmcm_adv_inst/CLKOUT0]] \
-    -from [get_clocks -of_objects [get_pins clocking/clocking/inst/mmcm_adv_inst/CLKOUT2]] 4.0
+################################################################################
+#
+################################################################################
 
 set_property -dict { PACKAGE_PIN "K21" IOSTANDARD LVCMOS33} [get_ports {rst_button_i}]; # IO_0_14 Sch = RSTPIN
 set_property -dict { PACKAGE_PIN "F22" IOSTANDARD LVCMOS33} [get_ports {sys_clk_i}]; # IO_L12P_T1_MRCC_14 Sch = CLK1
@@ -32,9 +68,6 @@ set_property IOSTANDARD LVCMOS15 [get_ports sump_o]
 
 set_property IOSTANDARD LVDS_25 [get_ports fb_clk_*]
 set_property IOSTANDARD LVDS_25 [get_ports clk_*]
-
-# set_property IOSTANDARD          [get_ports sda]
-# set_property IOSTANDARD          [get_ports scl]
 
 # mode
 set_property PULLDOWN true [get_ports rgmii_rxd[0]]
@@ -56,6 +89,8 @@ set_property IOSTANDARD LVCMOS25 [get_ports *rgmii*];
 set_property SLEW FAST [get_ports rgmii_tx*]
 set_property DRIVE 16 [get_ports rgmii_tx*]
 
+set_property PULLUP true [get_ports rgmii_mdc]
+set_property PULLUP true [get_ports rgmii_mdio]
 
 ################################################################################
 # RGMII Constraints
@@ -236,12 +271,3 @@ if {$err > 0} {
 
 #set_property IOSTANDARD LVCMOS33 [get_ports -of_objects [get_iobanks 34]];
 #set_property IOSTANDARD LVCMOS33 [get_ports -of_objects [get_iobanks 33]];
-
-# these are not on dedicated routes
-set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets fb_clk_i_*]
-
-create_clock -period 50.000 -name {fb_clk_p[0]} -waveform {0.000 25.000} [get_ports {fb_clk_p[0]}]
-create_clock -period 50.000 -name {fb_clk_p[1]} -waveform {0.000 25.000} [get_ports {fb_clk_p[1]}]
-create_clock -period 50.000 -name {fb_clk_p[2]} -waveform {0.000 25.000} [get_ports {fb_clk_p[2]}]
-create_clock -period 50.000 -name {fb_clk_p[3]} -waveform {0.000 25.000} [get_ports {fb_clk_p[3]}]
-create_clock -period 50.000 -name {fb_clk_p[4]} -waveform {0.000 25.000} [get_ports {fb_clk_p[4]}]
