@@ -160,9 +160,7 @@ architecture structural of gaps_mt is
   signal triggers       : channel_array_t;                        -- 320 bits of trigger, one for each paddle
 
   signal fb_clk, fb_clk_i : std_logic_vector (fb_clk_p'range) := (others => '0');
-  signal fb_active        : std_logic_vector (fb_clk_p'range) := (others => '0');
   signal fb_clock_rates   : t_std32_array(fb_clk_p'range);
-  signal fb_active_or     : std_logic := '0';
 
   signal clock_rate : std_logic_vector (31 downto 0) := (others => '0');
 
@@ -410,22 +408,7 @@ begin
         o => fb_clk(I)
         );
 
-    -- TODO: replace with frequency mons
-    process (fb_clk(I)) is
-    begin
-      if (rising_edge(fb_clk(I))) then
-        fb_active(I) <= not fb_active(I);
-      end if;
-    end process;
-
   end generate;
-
-  process (clock) is
-  begin
-    if (rising_edge(clock)) then
-      fb_active_or <= xor_reduce (fb_active);
-    end if;
-  end process;
 
   fb_clk_mon : for I in fb_clk'range generate
   begin
@@ -598,7 +581,7 @@ begin
   -- Signal Sump
   --------------------------------------------------------------------------------
 
-  sump_o <= global_trigger xor fb_active_or;
+  sump_o <= global_trigger;
 
   --------------------------------------------------------------------------------
   -- Loopback Mode
