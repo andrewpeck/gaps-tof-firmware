@@ -1153,11 +1153,11 @@ begin
   -- Connect read signals
   regs_read_arr(0)(REG_MT_LOOPBACK_MSB downto REG_MT_LOOPBACK_LSB) <= loopback;
   regs_read_arr(1)(REG_MT_CLOCK_RATE_MSB downto REG_MT_CLOCK_RATE_LSB) <= clock_rate;
-  regs_read_arr(2)(REG_MT_FB_CLOCK_RATE_0_MSB downto REG_MT_FB_CLOCK_RATE_0_LSB) <= fb_clock_rates(${FB_ODX});
-  regs_read_arr(3)(REG_MT_FB_CLOCK_RATE_1_MSB downto REG_MT_FB_CLOCK_RATE_1_LSB) <= fb_clock_rates(${FB_ODX});
-  regs_read_arr(4)(REG_MT_FB_CLOCK_RATE_2_MSB downto REG_MT_FB_CLOCK_RATE_2_LSB) <= fb_clock_rates(${FB_ODX});
-  regs_read_arr(5)(REG_MT_FB_CLOCK_RATE_3_MSB downto REG_MT_FB_CLOCK_RATE_3_LSB) <= fb_clock_rates(${FB_ODX});
-  regs_read_arr(6)(REG_MT_FB_CLOCK_RATE_4_MSB downto REG_MT_FB_CLOCK_RATE_4_LSB) <= fb_clock_rates(${FB_ODX});
+  regs_read_arr(2)(REG_MT_FB_CLOCK_RATE_0_MSB downto REG_MT_FB_CLOCK_RATE_0_LSB) <= fb_clock_rates(0);
+  regs_read_arr(3)(REG_MT_FB_CLOCK_RATE_1_MSB downto REG_MT_FB_CLOCK_RATE_1_LSB) <= fb_clock_rates(1);
+  regs_read_arr(4)(REG_MT_FB_CLOCK_RATE_2_MSB downto REG_MT_FB_CLOCK_RATE_2_LSB) <= fb_clock_rates(2);
+  regs_read_arr(5)(REG_MT_FB_CLOCK_RATE_3_MSB downto REG_MT_FB_CLOCK_RATE_3_LSB) <= fb_clock_rates(3);
+  regs_read_arr(6)(REG_MT_FB_CLOCK_RATE_4_MSB downto REG_MT_FB_CLOCK_RATE_4_LSB) <= fb_clock_rates(4);
   regs_read_arr(7)(REG_MT_PULSE_STRETCH_MSB downto REG_MT_PULSE_STRETCH_LSB) <= pulse_stretch;
   regs_read_arr(8)(REG_MT_HIT_COUNTERS_RB0_MSB downto REG_MT_HIT_COUNTERS_RB0_LSB) <= hit_count_0;
   regs_read_arr(9)(REG_MT_HIT_COUNTERS_RB1_MSB downto REG_MT_HIT_COUNTERS_RB1_LSB) <= hit_count_1;

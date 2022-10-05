@@ -37,7 +37,8 @@
           permission="r"
           mask="0xffffffff"
           description="Feedback clock frequency"
-          fw_signal="fb_clock_rates(${FB_ODX})"/>
+          fw_signal="fb_clock_rates(${FB_IDX})">
+    </node>
 
     <node id="PULSE_STRETCH"
           address="0xf"
