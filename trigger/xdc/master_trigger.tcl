@@ -238,7 +238,7 @@ if {$err > 0} {
 #set_property IOSTANDARD LVCMOS33 [get_ports -of_objects [get_iobanks 33]];
 
 # these are not on dedicated routes
-set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets clocking/fb_clk_i_*]
+set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets fb_clk_i_*]
 
 create_clock -period 50.000 -name {fb_clk_p[0]} -waveform {0.000 25.000} [get_ports {fb_clk_p[0]}]
 create_clock -period 50.000 -name {fb_clk_p[1]} -waveform {0.000 25.000} [get_ports {fb_clk_p[1]}]
