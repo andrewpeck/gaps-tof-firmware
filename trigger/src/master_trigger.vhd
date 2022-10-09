@@ -107,7 +107,7 @@ entity gaps_mt is
     hk_dout : in  std_logic; -- master in, slave out
     hk_din  : out std_logic; -- master out, slave in
 
-    ext_io  : out std_logic_vector (13 downto 0);
+    ext_io  : inout std_logic_vector (13 downto 0);
     ext_out : out std_logic_vector (3 downto 0);
     ext_in  : in  std_logic_vector (3 downto 0);
 
@@ -252,6 +252,11 @@ architecture structural of gaps_mt is
   signal hit_count_38 : std_logic_vector (15 downto 0) := (others => '0');
   signal hit_count_39 : std_logic_vector (15 downto 0) := (others => '0');
   ------ Register signals end ----------------------------------------------
+
+  signal hk_ext_cs_n : std_logic_vector(1 downto 0);
+  signal hk_ext_clk  : std_logic;
+  signal hk_ext_miso : std_logic; -- master in, slave out
+  signal hk_ext_mosi  :std_logic; -- master out, slave in
 
 begin
 
@@ -564,18 +569,24 @@ begin
   -- https://opencores.org/websvn/filedetails?repname=spi&path=%2Fspi%2Ftrunk%2Fdoc%2Fspi.pdf
   ipbus_spi_inst : entity work.ipbus_spi
     generic map (
-      N_SS => hk_cs_n'length
+      N_SS => hk_ext_cs_n'length
       )
     port map (
       clk     => clock,
       rst     => reset,
       ipb_in  => ipb_mosi_arr(1),
       ipb_out => ipb_miso_arr(1),
-      ss      => hk_cs_n,
-      mosi    => hk_din,
-      miso    => hk_dout,
-      sclk    => hk_clk
+      ss      => hk_ext_cs_n,
+      mosi    => hk_ext_mosi,
+      miso    => hk_ext_miso,
+      sclk    => hk_ext_clk
       );
+
+  ext_io(7) <= hk_ext_mosi;
+  hk_ext_miso <= ext_io(6);
+  ext_io(5) <= hk_ext_clk;
+  ext_io(8) <= hk_ext_cs_n(0);
+  ext_io(9) <= hk_ext_cs_n(1);
 
   -- spi_master_1: entity work.spi_master
   --   generic map (
@@ -870,15 +881,28 @@ begin
         probe3     => std_logic_vector(to_unsigned(clk_cnt,8)),
         probe4     => std_logic_vector(to_unsigned(div,8)),
         probe5(0)  => lvs_sync_ccb,
-        probe6(0)  => hk_clk,
-        probe7(0)  => hk_dout,
-        probe8(0)  => hk_din,
-        probe9     => hk_cs_n
+        probe6(0)  => hk_ext_clk,
+        probe7(0)  => hk_ext_mosi,
+        probe8(0)  => hk_ext_miso,
+        probe9     => hk_ext_cs_n
         );
 
     mask_cnts_loop : for I in err_cnts'range generate
     begin
       err_cnts_masked(I) <= repeat(inactive(I), err_cnts(I)'length) or err_cnts(I);
+
+      -- process (clock) is
+      -- begin
+      --   if (rising_edge(clock)) then
+      --     if (ila_ch_sel = I) then
+      --       err_cnts_sel(I) <= err_cnts_masked(I);
+      --     else
+      --       err_cnts_sel(I) <= (others => '0');
+      --     end if;
+      --   end if;
+
+      -- end process;
+
     end generate;
 
     vio_prbs_inst : vio_prbs
