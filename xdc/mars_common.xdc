@@ -14,7 +14,9 @@ set_property IOSTANDARD LVCMOS25 [get_ports {drs_*}]
 
 set_property IOSTANDARD LVCMOS25 [get_ports {adc_data_i[*]}]
 
-set_property IOSTANDARD LVDS_25 [get_ports ext_trigger_i_*]
+set_property IOSTANDARD LVDS_25 [get_ports trigger_i_*]
+
+set_property IOSTANDARD LVCMOS25 [get_ports ext_trigger_i*]
 
 # set_property IOSTANDARD LVDS_25 [get_ports {gpio_p[*]}]
 # set_property IOSTANDARD LVDS_25 [get_ports {gpio_n[*]}]

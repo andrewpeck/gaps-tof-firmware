@@ -54,8 +54,12 @@ entity top_readout_board is
     drs_plllock_i : in  std_logic;                      --
     drs_dtap_i    : in  std_logic;                      --
 
-    ext_trigger_i_p : in std_logic;     -- trigger_i from rj45
-    ext_trigger_i_n : in std_logic;     -- trigger_i from rj45
+    ext_trigger_sma_p : in std_logic;     -- trigger_i from rj45
+
+    trigger_i_p : in std_logic;     -- trigger_i from rj45
+    trigger_i_n : in std_logic;     -- trigger_i from rj45
+
+    ext_trigger_i : in std_logic;
 
     -- GFP io
     gfp_sclk : in std_logic;
@@ -117,8 +121,8 @@ architecture Behavioral of top_readout_board is
   -- Trigger Signals
   signal trigger               : std_logic := '0';
   signal posneg                : std_logic := '0';
-  signal ext_trigger_i         : std_logic := '0';
   signal ext_trigger_active_hi : std_logic := '0';
+  signal trigger_i             : std_logic := '0';
   signal ext_trigger_en        : std_logic := '0';
   signal force_trig            : std_logic := '0';
 
@@ -381,9 +385,9 @@ begin
       IBUF_LOW_PWR => true              -- Low power="TRUE", Highest performance="FALSE"
       )
     port map (
-      O  => ext_trigger_i,              -- Buffer output
-      I  => ext_trigger_i_p,            -- Diff_p buffer input (connect directly to top-level port)
-      IB => ext_trigger_i_n             -- Diff_n buffer input (connect directly to top-level port)
+      O  => trigger_i,              -- Buffer output
+      I  => trigger_i_p,            -- Diff_p buffer input (connect directly to top-level port)
+      IB => trigger_i_n             -- Diff_n buffer input (connect directly to top-level port)
       );
 
   drs_dwrite_o <= drs_dwrite_sync and drs_dwrite_async;
