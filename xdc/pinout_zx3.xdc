@@ -34,8 +34,8 @@ set_property PACKAGE_PIN L18 [get_ports            clock_i_p]; # IO_B34_L12_MRCC
 set_property PACKAGE_PIN L19 [get_ports            clock_i_n]; # IO_B34_L12_MRCC_L19_N
 set_property PACKAGE_PIN A18 [get_ports             gfp_sdat]; # IO_B35_L10_AD11_A18_P
 set_property PACKAGE_PIN A19 [get_ports             gfp_sclk]; # IO_B35_L10_AD11_A19_N
-set_property PACKAGE_PIN A16 [get_ports          trigger_i_p]; # IO_B35_L9_AD3_A16_P
-set_property PACKAGE_PIN A17 [get_ports          trigger_i_n]; # IO_B35_L9_AD3_A17_N
+set_property PACKAGE_PIN A16 [get_ports       mt_trigger_i_p]; # IO_B35_L9_AD3_A16_P
+set_property PACKAGE_PIN A17 [get_ports       mt_trigger_i_n]; # IO_B35_L9_AD3_A17_N
 set_property PACKAGE_PIN H15 [get_ports             emio_sda];
 set_property PACKAGE_PIN R15 [get_ports             emio_scl];
 set_property PACKAGE_PIN R19 [get_ports        ext_trigger_i];

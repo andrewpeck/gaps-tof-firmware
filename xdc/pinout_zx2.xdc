@@ -2,8 +2,8 @@
 # Pinouts
 ################################################################################
 
-set_property PACKAGE_PIN E17 [get_ports {ext_trigger_i_p}]; # IO_B35_L3_AD1_E17_P
-set_property PACKAGE_PIN D18 [get_ports {ext_trigger_i_n}]; # IO_B35_L3_AD1_D18_N
+set_property PACKAGE_PIN E17 [get_ports {mt_trigger_i_p}]; # IO_B35_L3_AD1_E17_P
+set_property PACKAGE_PIN D18 [get_ports {mt_trigger_i_n}]; # IO_B35_L3_AD1_D18_N
 
 # set_property PACKAGE_PIN D19 [get_ports {gpio_p[0]}]; # IO_B35_L4_D19_P
 # set_property PACKAGE_PIN D20 [get_ports {gpio_n[0]}]; # IO_B35_L4_D20_N
@@ -67,3 +67,6 @@ set_property PACKAGE_PIN R17 [get_ports {adc_data_i[13]}]; # IO_B34_L19_R17_N
 # GFP Trigger
 set_property PACKAGE_PIN G17 [get_ports gfp_sdat];# IO_B35_L16_G17_P
 set_property PACKAGE_PIN G18 [get_ports gfp_sclk];# IO_B35_L16_G18_N
+
+# ext trigger on GPIO
+set_property PACKAGE_PIN D19 [get_ports ext_trigger_i]; # IO_B35_L4_D19_P

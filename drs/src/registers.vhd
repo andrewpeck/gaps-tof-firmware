@@ -168,6 +168,10 @@ package registers is
     constant REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT    : integer := 1;
     constant REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_DEFAULT : std_logic := '1';
 
+    constant REG_TRIGGER_MT_TRIGGER_IS_LEVEL_ADDR    : std_logic_vector(9 downto 0) := "00" & x"41";
+    constant REG_TRIGGER_MT_TRIGGER_IS_LEVEL_BIT    : integer := 2;
+    constant REG_TRIGGER_MT_TRIGGER_IS_LEVEL_DEFAULT : std_logic := '0';
+
     constant REG_COUNTERS_CNT_SEM_CORRECTION_ADDR    : std_logic_vector(9 downto 0) := "00" & x"50";
     constant REG_COUNTERS_CNT_SEM_CORRECTION_MSB    : integer := 15;
     constant REG_COUNTERS_CNT_SEM_CORRECTION_LSB     : integer := 0;

@@ -54,10 +54,8 @@ entity top_readout_board is
     drs_plllock_i : in  std_logic;                      --
     drs_dtap_i    : in  std_logic;                      --
 
-    ext_trigger_sma_p : in std_logic;     -- trigger_i from rj45
-
-    trigger_i_p : in std_logic;     -- trigger_i from rj45
-    trigger_i_n : in std_logic;     -- trigger_i from rj45
+    mt_trigger_i_p : in std_logic;     -- trigger_i from rj45
+    mt_trigger_i_n : in std_logic;     -- trigger_i from rj45
 
     ext_trigger_i : in std_logic;
 
@@ -122,9 +120,11 @@ architecture Behavioral of top_readout_board is
   signal trigger               : std_logic := '0';
   signal posneg                : std_logic := '0';
   signal ext_trigger_active_hi : std_logic := '0';
-  signal trigger_i             : std_logic := '0';
+  signal mt_trigger_i          : std_logic := '0';
   signal ext_trigger_en        : std_logic := '0';
   signal force_trig            : std_logic := '0';
+  signal mt_is_level_trigger   : std_logic := '0';
+  signal mt_level_trigger      : std_logic := '0';
 
   signal trigger_rate      : std_logic_vector (31 downto 0) := (others => '0');
   signal lost_trigger_rate : std_logic_vector (31 downto 0) := (others => '0');
@@ -385,10 +385,12 @@ begin
       IBUF_LOW_PWR => true              -- Low power="TRUE", Highest performance="FALSE"
       )
     port map (
-      O  => trigger_i,              -- Buffer output
-      I  => trigger_i_p,            -- Diff_p buffer input (connect directly to top-level port)
-      IB => trigger_i_n             -- Diff_n buffer input (connect directly to top-level port)
+      O  => mt_trigger_i,              -- Buffer output
+      I  => mt_trigger_i_p,            -- Diff_p buffer input (connect directly to top-level port)
+      IB => mt_trigger_i_n             -- Diff_n buffer input (connect directly to top-level port)
       );
+
+  mt_level_trigger <= mt_trigger_i when mt_is_level_trigger = '1' else '0';
 
   drs_dwrite_o <= drs_dwrite_sync and drs_dwrite_async;
 
@@ -397,7 +399,7 @@ begin
     port map (
       clock => clock,
 
-      ext_trigger_i         => ext_trigger_i,
+      ext_trigger_i         => ext_trigger_i or mt_level_trigger,
       ext_trigger_en        => ext_trigger_en,
       ext_trigger_active_hi => ext_trigger_active_hi,
 
@@ -886,6 +888,7 @@ begin
     regs_read_arr(22)(REG_FPGA_BOARD_ID_MSB downto REG_FPGA_BOARD_ID_LSB) <= board_id;
     regs_read_arr(25)(REG_TRIGGER_EXT_TRIGGER_EN_BIT) <= ext_trigger_en;
     regs_read_arr(25)(REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT) <= ext_trigger_active_hi;
+    regs_read_arr(25)(REG_TRIGGER_MT_TRIGGER_IS_LEVEL_BIT) <= mt_is_level_trigger;
     regs_read_arr(26)(REG_COUNTERS_CNT_SEM_CORRECTION_MSB downto REG_COUNTERS_CNT_SEM_CORRECTION_LSB) <= cnt_sem_corrected;
     regs_read_arr(27)(REG_COUNTERS_CNT_SEM_UNCORRECTABLE_MSB downto REG_COUNTERS_CNT_SEM_UNCORRECTABLE_LSB) <= cnt_sem_uncorrectable;
     regs_read_arr(28)(REG_COUNTERS_CNT_READOUTS_COMPLETED_MSB downto REG_COUNTERS_CNT_READOUTS_COMPLETED_LSB) <= cnt_readouts;
@@ -930,6 +933,7 @@ begin
     board_id <= regs_write_arr(22)(REG_FPGA_BOARD_ID_MSB downto REG_FPGA_BOARD_ID_LSB);
     ext_trigger_en <= regs_write_arr(25)(REG_TRIGGER_EXT_TRIGGER_EN_BIT);
     ext_trigger_active_hi <= regs_write_arr(25)(REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT);
+    mt_is_level_trigger <= regs_write_arr(25)(REG_TRIGGER_MT_TRIGGER_IS_LEVEL_BIT);
     trig_gen_rate <= regs_write_arr(35)(REG_TRIG_GEN_RATE_MSB downto REG_TRIG_GEN_RATE_LSB);
     gfp_use_eventid <= regs_write_arr(53)(REG_GFP_EVENTID_SPI_EN_BIT);
 
@@ -1056,6 +1060,7 @@ begin
     regs_defaults(22)(REG_FPGA_BOARD_ID_MSB downto REG_FPGA_BOARD_ID_LSB) <= REG_FPGA_BOARD_ID_DEFAULT;
     regs_defaults(25)(REG_TRIGGER_EXT_TRIGGER_EN_BIT) <= REG_TRIGGER_EXT_TRIGGER_EN_DEFAULT;
     regs_defaults(25)(REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT) <= REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_DEFAULT;
+    regs_defaults(25)(REG_TRIGGER_MT_TRIGGER_IS_LEVEL_BIT) <= REG_TRIGGER_MT_TRIGGER_IS_LEVEL_DEFAULT;
     regs_defaults(35)(REG_TRIG_GEN_RATE_MSB downto REG_TRIG_GEN_RATE_LSB) <= REG_TRIG_GEN_RATE_DEFAULT;
     regs_defaults(53)(REG_GFP_EVENTID_SPI_EN_BIT) <= REG_GFP_EVENTID_SPI_EN_DEFAULT;
 
