@@ -42,9 +42,10 @@ architecture behavioral of trigger_mux is
   signal trigger_os     : std_logic                         := '0';
   signal trigger_os_cnt : natural range 0 to TRIGGER_OS_MAX := 0;
 
-  signal trigger_r  : std_logic := '0';
-  signal trigger_rr : std_logic := '0';
-  signal trigger    : std_logic := '0';
+  signal trigger_r     : std_logic := '0';
+  signal trigger_rr    : std_logic := '0';
+  signal trigger       : std_logic := '0';
+  signal trigger_r_neg : std_logic := '0';
 
   -- put a dont touch to allow manual placement
   attribute DONT_TOUCH : string;
@@ -120,7 +121,7 @@ begin
     if (rising_edge(clock)) then
 
       trigger_r  <= trigger;
-      trigger_rr <= trigger_r;
+      trigger_rr <= trigger_r or trigger_r_neg;
 
       if (trigger_r = '1') then
         trigger_os_cnt <= TRIGGER_OS_MAX;
@@ -137,5 +138,11 @@ begin
     end if;
   end process;
 
+  process (clock) is
+  begin
+    if (falling_edge(clock)) then
+      trigger_r_neg <= trigger;
+    end if;
+  end process;
 
 end behavioral;
