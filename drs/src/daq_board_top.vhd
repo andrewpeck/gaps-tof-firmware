@@ -21,7 +21,7 @@ entity top_readout_board is
   generic (
     EN_TMR_IPB_SLAVE_DRS : integer := 0;
 
-    CLK_FREQUENCY : integer := 15000000;
+    CLK_FREQUENCY : integer := 33000000;
 
     -- these generics get set by hog at synthesis
     GLOBAL_DATE : std_logic_vector (31 downto 0) := x"00000000";
