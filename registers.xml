@@ -243,6 +243,11 @@
                 fw_default="0x0"
                 mask="0x4"
                 fw_signal="mt_is_level_trigger" />
+            <node id="TRIGGER_DELAY" address="0x2" permission="rw"
+                description="Set to 1 for mt level trigger on v2.4 boards"
+                fw_default="0x0"
+                mask="0xfff"
+                fw_signal="drs_dwrite_delay_sel" />
         </node> <!--TRIGGER-->
 
         <node id="COUNTERS" address="0x50" description="Counters">
