@@ -1,0 +1,2 @@
+trigger/xdc/master_trigger.tcl nosynth
+trigger/xdc/generated_pinout.xdc
