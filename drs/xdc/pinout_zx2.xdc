@@ -1,5 +1,6 @@
 ################################################################################
 # Pinouts
+# https://download.enclustra.com/public_files/SoC_Modules/Mars_ZX2/Mars_ZX2-R2-0_User_Schematics_V3.pdf
 ################################################################################
 
 set_property PACKAGE_PIN E17 [get_ports {mt_trigger_i_p}]; # IO_B35_L3_AD1_E17_P
