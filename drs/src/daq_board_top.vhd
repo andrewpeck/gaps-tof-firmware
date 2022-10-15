@@ -253,6 +253,23 @@ architecture Behavioral of top_readout_board is
   signal gfp_eventid_timeout_cnt : std_logic_vector (15 downto 0) := (others => '0');
   ------ Register signals end ----------------------------------------------
 
+  signal mt_event_cnt_valid : std_logic                      := '0';
+  signal mt_mask_valid      : std_logic                      := '0';
+  signal mt_mask            : std_logic_vector (7 downto 0)  := (others => '0');
+  signal mt_event_cnt       : std_logic_vector (31 downto 0) := (others => '0');
+
+  signal event_queue_din, event_queue_dout :
+    std_logic_vector (
+      1 + -- (drs busy)
+      mt_event_cnt'length  +
+      mt_mask'length  +
+      timestamp'length - 1 downto 0) := (others => '0');
+
+  signal xfifo_busy      : std_logic_vector (0 downto 0);
+  signal xfifo_timestamp : std_logic_vector (timestamp'range);
+  signal xfifo_mask      : std_logic_vector (mt_mask'range);
+  signal xfifo_event_cnt : std_logic_vector (mt_event_cnt'range);
+
   signal gfp_use_eventid      : std_logic;
   signal gfp_eventid_rx       : std_logic_vector (31 downto 0);
   signal gfp_eventid_rx_valid : std_logic;
@@ -510,16 +527,41 @@ begin
       cmd_o       => open,
       cmd_valid_o => open,
 
-      event_cnt_o       => open,
-      event_cnt_valid_o => open,
+      event_cnt_o       => mt_event_cnt,
+      event_cnt_valid_o => mt_event_cnt_valid,
 
-      mask_o       => open,
-      mask_valid_o => open
+      mask_o       => mt_mask,
+      mask_valid_o => mt_mask_valid
       );
 
   --------------------------------------------------------------------------------
   -- Event Queue
   --------------------------------------------------------------------------------
+
+  event_queue_din <= mt_event_cnt & mt_mask & drs_busy & std_logic_vector(timestamp);
+
+  xfifo_timestamp <= event_queue_dout(xfifo_timestamp'length-1 downto 0);
+  xfifo_busy      <= event_queue_dout(xfifo_timestamp'length + xfifo_busy'length - 1 downto xfifo_timestamp'length);
+  xfifo_mask      <= event_queue_dout(xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length - 1 downto xfifo_busy'length + xfifo_timestamp'length);
+  xfifo_event_cnt <= event_queue_dout(xfifo_event_cnt'length + xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length - 1 downto xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length);
+
+  event_fifo_inst : entity work.fifo_sync
+    generic map (
+      DEPTH     => 128,
+      WR_WIDTH  => event_queue_din'length,
+      RD_WIDTH  => event_queue_din'length
+      )
+    port map (
+      rst    => reset,
+      clk    => clock,
+      wr_en  => mt_event_cnt_valid,
+      rd_en  => '1', -- FIXME: this should not be 1; it should be controlled by the DAQ
+      din    => event_queue_din,
+      dout   => event_queue_dout,
+      valid  => daq_valid,
+      full   => open,
+      empty  => open
+      );
 
   --------------------------------------------------------------------------------
   -- Trigger output
