@@ -13,6 +13,5 @@ git config -f $SCRIPTPATH/../../.git/config filter.reset_xci.smudge "$(echo $fil
 
 filter=$"sed -E s/\\(--\\)*\\(.*emio.*\\)/\\\\2/"
 
-echo $filter
 git config -f $SCRIPTPATH/../../.git/config filter.emio_filter.smudge "$(echo $filter)"
 git config -f $SCRIPTPATH/../../.git/config filter.emio_filter.clean  "$(echo $filter)"
