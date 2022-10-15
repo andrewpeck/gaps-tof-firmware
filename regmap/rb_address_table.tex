@@ -212,6 +212,8 @@
     EXT\_TRIGGER\_ACTIVE\_HI & \texttt{0x41} & \texttt{[1:1]} & rw & \texttt{0x1} & Set to 1 for active high external trigger \\\hline
     MT\_TRIGGER\_IS\_LEVEL & \texttt{0x41} & \texttt{[2:2]} & rw & \texttt{0x0} & Set to 1 for mt level trigger on v2.4 boards \\\hline
     TRIGGER\_DELAY & \texttt{0x42} & \texttt{[11:0]} & rw & \texttt{0x0} & Trigger delay measured in LUT1 units \\\hline
+    CNT\_MT\_PRBS\_ERRS & \texttt{0x43} & \texttt{[31:0]} & r & \texttt{} & Number of PRBS errors on the MT line \\\hline
+    MT\_PRBS\_ERR\_RESET & \texttt{0x44} & \texttt{[0:0]} & w & Pulse & Write 1 to reset the MT PRBS Error Counter \\\hline
     \end{tabularx}
     \vspace{5mm}
 

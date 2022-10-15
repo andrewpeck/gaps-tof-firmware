@@ -17,6 +17,8 @@ common/src/ipbus_slave.vhd
 common/src/ipbus_slave_tmr.vhd
 common/src/synchonizer.vhd
 common/src/types_pkg.vhd
+common/src/manchester_decoder.vhd
+common/src/prbs_any.vhd
 
 # Readout Board
 drs/src/ipbus_pkg.vhd
@@ -35,6 +37,7 @@ drs/src/rate_counter.vhd
 drs/src/rate_counter.vhd
 drs/src/trig_gen.vhd
 drs/src/urand_inf.vhd
+drs/src/mt_rx.vhd
 
 drs/src/drs.v
 drs/src/crc32.vhd
