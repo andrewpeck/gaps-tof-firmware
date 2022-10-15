@@ -64,6 +64,8 @@ entity top_readout_board is
     gfp_sdat : in std_logic;
 
     -- Zynq IO
+    emio_scl          : inout std_logic;
+    emio_sda          : inout std_logic;
     fixed_io_mio      : inout std_logic_vector (53 downto 0);
     fixed_io_ddr_vrn  : inout std_logic;
     fixed_io_ddr_vrp  : inout std_logic;
@@ -84,9 +86,7 @@ entity top_readout_board is
     ddr_dm            : inout std_logic_vector (3 downto 0);
     ddr_dq            : inout std_logic_vector (31 downto 0);
     ddr_dqs_n         : inout std_logic_vector (3 downto 0);
-    ddr_dqs_p         : inout std_logic_vector (3 downto 0);
-    emio_scl          : inout std_logic;
-    emio_sda          : inout std_logic
+    ddr_dqs_p         : inout std_logic_vector (3 downto 0)
 
     -- gpio_p : inout std_logic_vector (9 downto 0);
     -- gpio_n : inout std_logic_vector (9 downto 0)
