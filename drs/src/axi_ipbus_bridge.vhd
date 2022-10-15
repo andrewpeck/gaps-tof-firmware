@@ -8,7 +8,7 @@
 --                 acting as IPbus master which can drive multiple IPbus slaves. It only adds 2 clocks of latency.
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
-use work.ipbus_pkg.all;
+use work.ipbus.all;
 
 library ieee;
 use ieee.std_logic_1164.all;

@@ -29,28 +29,28 @@ class Node:
         return self.name.replace(TOP_NODE_NAME + '.', '').replace('.', '_')
 
     def output(self):
-        print 'Name:',self.name
-        print 'Address:','{0:#010x}'.format(self.address)
-        print 'Permission:',self.permission
-        print 'Mask:','{0:#010x}'.format(self.mask)
-        print 'Module:',self.isModule
-        print 'Parent:',self.parent.name
+        print('Name:',self.name)
+        print('Address:','{0:#010x}'.format(self.address))
+        print('Permission:',self.permission)
+        print('Mask:','{0:#010x}'.format(self.mask))
+        print('Module:',self.isModule)
+        print('Parent:',self.parent.name)
 
 def main():
     parseXML()
-    print 'Example:'
+    print('Example:')
     random_node = nodes[76]
     #print str(random_node.__class__.__name__)
-    print 'Node:',random_node.name
-    print 'Parent:',random_node.parent.name
+    print('Node:',random_node.name)
+    print('Parent:',random_node.parent.name)
     kids = []
     getAllChildren(random_node, kids)
-    print len(kids), kids.name
+    print(len(kids), kids.name)
 
 def parseXML(filename = None, num_of_oh = None):
     if filename == None:
         filename = ADDRESS_TABLE_TOP
-    print 'Parsing',filename,'...'
+    print('Parsing',filename,'...')
     tree = xml.parse(filename)
     root = tree.getroot()[0]
     vars = {}
@@ -195,7 +195,7 @@ def displayReg(reg,option=None):
 def writeReg(reg, value):
     try: address = reg.real_address
     except:
-        print 'Reg',reg,'not a Node'
+        print('Reg',reg,'not a Node')
         return
     if 'w' not in reg.permission:
         return 'No write permission!'
@@ -269,7 +269,7 @@ def substituteVars(string, vars):
     if string is None:
         return string
     ret = string
-    for varKey in vars.keys():
+    for varKey in list(vars.keys()):
         ret = ret.replace('${' + varKey + '}', str(vars[varKey]))
     return ret
 

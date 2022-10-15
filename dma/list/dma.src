@@ -1,9 +1,7 @@
-# -*- mode: TCL;-*-
-
 # IP Cores
-ip/ila_s2mm/ila_s2mm.xci
-ip/axis2aximm/axis2aximm.xci
-ip/fifo_generator_0/fifo_generator_0.xci
+ip/readout_board/ila_s2mm/ila_s2mm.xci
+ip/readout_board/axis2aximm/axis2aximm.xci
+ip/readout_board/fifo_generator_0/fifo_generator_0.xci
 
 # DMA Files
 dma/src/dma_controller.vhd
