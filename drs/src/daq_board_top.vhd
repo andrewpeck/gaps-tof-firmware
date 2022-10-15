@@ -126,7 +126,6 @@ architecture Behavioral of top_readout_board is
   signal srout_posneg          : std_logic;
   signal srout_latency         : std_logic_vector(2 downto 0);
 
-  signal ext_trigger_i         : std_logic := '0';
   signal ext_trigger_active_hi : std_logic := '0';
   signal mt_trigger_i          : std_logic := '0';
   signal ext_trigger_en        : std_logic := '0';
