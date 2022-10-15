@@ -168,7 +168,7 @@ architecture Behavioral of top_readout_board is
   signal readout_mask_trig             : std_logic_vector (8 downto 0) := (others => '0');
   signal readout_mask_or               : std_logic_vector (8 downto 0) := (others => '0');
   signal readout_mask_9th_channel_auto : std_logic;
-  signal read_ch8, read_ch17           : std_logic                     := '0';
+  signal read_ch8                      : std_logic                     := '0';
 
   signal drs_reset        : std_logic;
   signal daq_reset        : std_logic;
@@ -481,10 +481,9 @@ begin
 
   -- TODO: this needs to be expanded when there are two drs chips
   read_ch8 <= readout_mask_9th_channel_auto and or_reduce(readout_mask_or (7 downto 0));
---read_ch17 <= readout_mask_9th_channel_auto and or_reduce(readout_mask_or (16 downto 9));
 
   -- TODO: this needs to be expanded when there are two drs chips
-  readout_mask <= '0' & x"00" & (readout_mask_or or (read_ch8 & x"00"));  -- or (read_ch17 & '1' & x"00");
+  readout_mask <= '0' & x"00" & (readout_mask_or or (read_ch8 & x"00"));
 
   drs_config(0) <= dmode;
   drs_config(1) <= '1';                 -- pllen
