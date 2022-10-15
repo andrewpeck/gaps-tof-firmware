@@ -31,10 +31,11 @@ entity daq is
     event_cnt_i : in std_logic_vector (31 downto 0);
     mask_i      : in std_logic_vector (17 downto 0);
 
-    gfp_use_eventid_i   : in  std_logic;
-    gfp_eventid_i       : in  std_logic_vector (31 downto 0);
-    gfp_eventid_valid_i : in  std_logic;
-    gfp_eventid_read_o  : out std_logic;
+    gfp_use_eventid_i     : in  std_logic;
+    gfp_eventid_i         : in  std_logic_vector (31 downto 0);
+    gfp_eventid_valid_i   : in  std_logic;
+    gfp_eventid_read_o    : out std_logic;
+    gfp_eventid_timeout_o : out std_logic;
 
     -- status
     temperature_i : in std_logic_vector (11 downto 0);
@@ -66,7 +67,7 @@ architecture behavioral of daq is
                    DNA_state, HASH_state, ID_state, CHMASK_state, WAIT_EVENT_CNT_state,
                    EVENT_CNT_state, DTAP0_state, DTAP1_state, TIMESTAMP_state, CALC_CH_CRC_state,
                    CH_CRC_state, CH_HEADER_state, PAYLOAD_state, STOP_CELL_state, CALC_CRC32_state,
-                   CRC32_state, TAIL_state, PAD_state);
+                   CRC32_state, TAIL_state, PAD_state, WAIT_state);
 
   signal state : state_t := IDLE_state;
 
@@ -111,6 +112,9 @@ architecture behavioral of daq is
   signal state_word_cnt : natural range 0 to 1024 := 0;
   signal channel_cnt    : natural range 0 to 15   := 0;
   signal channel_id     : natural range 0 to 17   := 0;
+
+  constant EVENTID_TIMEOUT_MAX : natural := 170000;
+  signal gfp_eventid_timeout_counter : natural range 0 to EVENTID_TIMEOUT_MAX := 0;
 
   signal dav : boolean := false;
 
@@ -258,7 +262,7 @@ begin
       crc    => channel_crc
       );
 
-  busy_o <= '0' when state = IDLE_state else '1';
+  busy_o <= '0' when state = IDLE_state or state=WAIT_state else '1';
   done_o <= '1' when state = TAIL_state else '0';
 
   --------------------------------------------------------------------------------
@@ -322,9 +326,10 @@ begin
   begin
     if (rising_edge(clock)) then
 
-      dav        <= false;
-      data       <= (others => '0');
-      drs_rden_o <= '0';
+      dav                   <= false;
+      data                  <= (others => '0');
+      drs_rden_o            <= '0';
+      gfp_eventid_timeout_o <= '0';
 
       case state is
 
@@ -401,23 +406,31 @@ begin
             event_cnt_mux <= event_cnt;
           end if;
 
-          data <= mask (16 downto 9) & mask (7 downto 0);
+          data <= "0000000" & mask (8 downto 0);
           dav  <= true;
 
           channel_id <= get_first_channel(mask);
 
         when WAIT_EVENT_CNT_state =>
 
-          if (gfp_eventid_valid_i = '1') then
-            state              <= EVENT_CNT_state;
-            event_cnt_mux      <= gfp_eventid_i;
-            gfp_eventid_read_o <= '1';
+          gfp_eventid_timeout_counter <= gfp_eventid_timeout_counter + 1;
+
+          if (gfp_eventid_timeout_counter = EVENTID_TIMEOUT_MAX) then
+            state                   <= EVENT_CNT_state;
+            event_cnt_mux           <= x"FFFFFFFE";
+            gfp_eventid_timeout_o   <= '1';
+          elsif (gfp_eventid_valid_i = '1') then
+            state                   <= EVENT_CNT_state;
+            event_cnt_mux           <= gfp_eventid_i;
+            gfp_eventid_read_o      <= '1';
           end if;
+
           dav <= false;
 
         when EVENT_CNT_state =>
 
           gfp_eventid_read_o <= '0';
+          gfp_eventid_timeout_counter <= 0;
 
           if (state_word_cnt = event_cnt'length / g_WORD_SIZE - 1) then
             state          <= DTAP0_state;
@@ -570,7 +583,7 @@ begin
         when PAD_state =>
 
           if (state_word_cnt = packet_padding - 1) then
-            state          <= IDLE_state;
+            state          <= WAIT_state;
             state_word_cnt <= 0;
           else
             state_word_cnt <= state_word_cnt + 1;
@@ -578,6 +591,24 @@ begin
 
           data <= x"0000";
           dav  <= true;
+
+        when WAIT_state =>
+
+          -- the dma block is fragile and I think it mayb have some dependency on a few idle cycles
+          -- between packets, add this here to make sure there is always some small period between
+          -- one packet and the next
+
+          if (state_word_cnt = g_PACKET_PAD-1) then
+            state          <= IDLE_state;
+            state_word_cnt <= 0;
+          else
+            state_word_cnt <= state_word_cnt + 1;
+          end if;
+
+          data <= x"0000";
+          dav  <= true; -- we write one PAD worth of information
+                        -- (one DMA transfer's worth) with the busy bit deasserted so that
+                        -- the fifo can switch
 
         when others =>
 

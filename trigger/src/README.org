@@ -1,0 +1,21 @@
+#+TITLE: Readme
+
+* Gbe
+https://ww1.microchip.com/downloads/en/DeviceDoc/KSZ9021RL-RN-Data-Sheet-DS00003050A.pdf
+| Signal     |         Pin | Dir(Phy) | Description              |   |
+|------------+-------------+----------+--------------------------+---|
+| GTX_CLK    |          32 | I        | Transmit reference clock |   |
+| TX_EN      |          33 | I        | Transmit control         |   |
+| TXD{0-3}   | 24/25/26/27 | I        | Transmit data            |   |
+| RX_CLK     |          46 | O        | Receive clock            |   |
+| RX_DV      |          43 | O        | Receive control          |   |
+| RXD{0-3}   | 42/41/38/36 | O        | Receive data             |   |
+| TX_ER      |          31 | I        | Not used, should be NC   |   |
+| RX_ER      |          45 | O        | Not used, should be NC   |   |
+| CRS        |          47 | O        | Not used, should be NC   |   |
+| MDC        |          48 | IPU      | MDIO reference clock     |   |
+| MDIO       |          49 | IO       | MDIO data                |   |
+| COL        |          50 | O        | Not used, should be NC   |   |
+| INTN       |          51 | O        | Interrupt out            |   |
+| CLK125_NDO |          55 | O        | 125 MHz refclk           |   |
+| RESETN     |          56 | I        | Reset                    |   |

@@ -1,3 +1,13 @@
+----------------------------------------------------------------------------------
+-- DMA Controller
+-- GAPS DRS4 Readout Firmware
+-- I. Garcia, A. Peck, S. Quinn
+----------------------------------------------------------------------------------
+--
+-- https://www.xilinx.com/support/documentation/ip_documentation/axi_datamover/v5_1/pg022_axi_datamover.pdf
+--
+----------------------------------------------------------------------------------
+
 ------------------------------------------------------------
 -- DMA Controller 
 ------------------------------------------------------------
@@ -8,22 +18,31 @@ use ieee.math_real.all;
 
 entity dma_controller is
   generic (
-    C_DEBUG : boolean := true;
+    C_DEBUG : boolean := false;
 
     FIFO_LATENCY : natural := 1;
 
-    RESET_ACTIVE : std_logic := '0';    -- set to 1 for active high, 0 for active low
+    OCCUPANCY_IS_OFFSET : boolean := false;
 
     WORDS_TO_SEND : integer := 16;
-    
-    BUFF_FRAC_DIVISOR  : integer := 1040384;  --Corresponds to 1/64 of RAM_BUFF_SIZE
-    
+
     -- NOTE: WORDS_TO_SEND MUST NOT EXCEED MaxBurst in DataMover core (u1: axis2aximm)!
 
-    -- TODO: make START_ADDRESS, TOP_HALF_ADDRESS programmable from userspace
+    -- TODO: make BOT_HALF_ADDRESS, TOP_HALF_ADDRESS programmable from userspace
     RAM_BUFF_SIZE    : integer                       := 66584576;
-    START_ADDRESS    : std_logic_vector(31 downto 0) := x"04100000";
+    BOT_HALF_ADDRESS : std_logic_vector(31 downto 0) := x"04100000";
     TOP_HALF_ADDRESS : std_logic_vector(31 downto 0) := x"08100000";
+
+    -- reserve the tail of the buffer to be allocated for overflow only,
+    -- i.e., if the buffer is 64 Mb, we want to trigger a switch to the
+    -- adjacent buffer at 64 Mb - max_packet_size so that the rest
+    -- of the data packet has a place to be written
+    --
+    -- If this mechanism didn't exist, then when we trigger the buffer
+    -- switch at 64 Mb, if the packet end doesn't exactly align to the buffer
+    -- end then the packet would get split across two different buffers
+
+    MAX_PACKET_SIZE : integer := 64000;  --
 
     HEAD : std_logic_vector(15 downto 0) := x"AAAA";
     TAIL : std_logic_vector(15 downto 0) := x"5555"
@@ -32,23 +51,25 @@ entity dma_controller is
 
     clk_in  : in std_logic;             -- daq clock
     clk_axi : in std_logic;             -- axi clock
-    rst_in  : in std_logic;             -- active high reset, synchronous to the axi clock
-    
+    reset_i : in std_logic;             -- active high reset, synchronous to the axi clock
+
     --------------------------------------------------------------
     -- RAM Occupancy signals
     --------------------------------------------------------------
-    ram_a_occ_rst  : in std_logic;
-    ram_b_occ_rst  : in std_logic;
 
+    ram_a_occ_rst : in std_logic;
+    ram_b_occ_rst : in std_logic;
 
-    ram_buff_a_occupancy_o  : out std_logic_vector(31 downto 0) := (others => '0');
-    ram_buff_b_occupancy_o  : out std_logic_vector(31 downto 0) := (others => '0');
-    dma_pointer_o           : out std_logic_vector(31 downto 0) := (others => '0');
+    ram_toggle_request_i : in std_logic := '0';
 
+    ram_buff_a_occupancy_o : out std_logic_vector(31 downto 0) := BOT_HALF_ADDRESS;
+    ram_buff_b_occupancy_o : out std_logic_vector(31 downto 0) := TOP_HALF_ADDRESS;
+    dma_pointer_o          : out std_logic_vector(31 downto 0) := BOT_HALF_ADDRESS;
 
     --------------------------------------------------------------
     -- DAQ Signal(s)
     --------------------------------------------------------------
+
     fifo_in     : in  std_logic_vector(15 downto 0);
     fifo_wr_en  : in  std_logic;
     fifo_full   : out std_logic;
@@ -77,28 +98,27 @@ entity dma_controller is
     m_axi_s2mm_bvalid  : in  std_logic;
     m_axi_s2mm_bready  : out std_logic;
 
-    m_axi_mm2s_arid    : out std_logic_vector(3 downto 0);
-    m_axi_mm2s_araddr  : out std_logic_vector(31 downto 0);
-    m_axi_mm2s_arlen   : out std_logic_vector(7 downto 0);
-    m_axi_mm2s_arsize  : out std_logic_vector(2 downto 0);
-    m_axi_mm2s_arburst : out std_logic_vector(1 downto 0);
-    m_axi_mm2s_arprot  : out std_logic_vector(2 downto 0);
-    m_axi_mm2s_arcache : out std_logic_vector(3 downto 0);
-    m_axi_mm2s_aruser  : out std_logic_vector(3 downto 0);
-    m_axi_mm2s_arvalid : out std_logic;
+    m_axi_mm2s_arid    : out std_logic_vector(3 downto 0)  := (others => '0');  -- these aren't driven
+    m_axi_mm2s_araddr  : out std_logic_vector(31 downto 0) := (others => '0');  -- these aren't driven
+    m_axi_mm2s_arlen   : out std_logic_vector(7 downto 0)  := (others => '0');  -- these aren't driven
+    m_axi_mm2s_arsize  : out std_logic_vector(2 downto 0)  := (others => '0');  -- these aren't driven
+    m_axi_mm2s_arburst : out std_logic_vector(1 downto 0)  := (others => '0');  -- these aren't driven
+    m_axi_mm2s_arprot  : out std_logic_vector(2 downto 0)  := (others => '0');  -- these aren't driven
+    m_axi_mm2s_arcache : out std_logic_vector(3 downto 0)  := (others => '0');  -- these aren't driven
+    m_axi_mm2s_aruser  : out std_logic_vector(3 downto 0)  := (others => '0');  -- these aren't driven
+    m_axi_mm2s_arvalid : out std_logic                     := '0';
     m_axi_mm2s_arready : in  std_logic;
     m_axi_mm2s_rdata   : in  std_logic_vector(31 downto 0);
     m_axi_mm2s_rresp   : in  std_logic_vector(1 downto 0);
     m_axi_mm2s_rlast   : in  std_logic;
     m_axi_mm2s_rvalid  : in  std_logic;
-    m_axi_mm2s_rready  : out std_logic;
+    m_axi_mm2s_rready  : out std_logic                     := '0';
 
     -----------------------------------------------------------------------------
     -- DMA AXI4 Lite Registers
     -----------------------------------------------------------------------------
 
     packet_sent_o : out std_logic_vector(31 downto 0) := (others => '0');
-    reset_sys     : in  std_logic                     := '0';
     clear_ps_mem  : in  std_logic                     := '0'
 
     );
@@ -181,15 +201,10 @@ architecture Behavioral of dma_controller is
       );
   end component;
 
-  type cmd_state  is (IDLE, SET, DONE);
-  type data_state is (IDLE, ASSERT_CMD, DELAY0, READ_FIFO, DONE, DELAY1,CLEAR_MEM,CONTINUE_CLEAR);
+  type data_state is (IDLE, ASSERT_CMD, DELAY0, READ_FIFO, DONE, DELAY1, CLEAR_MEM, CONTINUE_CLEAR);
 
-  signal aresetn : std_logic := '1';
+  signal s2mm_data_state : data_state := IDLE;
 
-  signal s2mm_cmd_state  : cmd_state;
-  signal s2mm_data_state : data_state;
-
-  signal data_counter   : std_logic_vector(9 downto 0);
   signal packet_sent    : std_logic_vector(31 downto 0) := (others => '0');
   signal packet_is_tail : std_logic                     := '0';
 
@@ -201,11 +216,12 @@ architecture Behavioral of dma_controller is
   signal fifo_count               : std_logic_vector(8 downto 0);
   signal fifo_rd_en               : std_logic;
   signal fifo_out_valid           : std_logic;
-  signal wfifo_full               : std_logic;
-  signal wfifo_empty              : std_logic;
-  signal wfifo_prog_full          : std_logic;
-  signal wfifo_prog_empty         : std_logic;
+  signal fifo_out_valid_r         : std_logic;
+  signal fifo_empty               : std_logic;
+  signal fifo_prog_full           : std_logic;
+  signal fifo_prog_empty          : std_logic;
   signal wr_rst_busy              : std_logic;
+  signal wr_rst_busy_sync         : std_logic;
   signal rd_rst_busy              : std_logic;
   signal daq_busy_xfifo           : std_logic := '0';
   signal data_xfifo, data_xfifo_r : std_logic_vector(31 downto 0);
@@ -215,129 +231,154 @@ architecture Behavioral of dma_controller is
   --------------------------------------------------------------------------------
 
   --command port
-  signal s2mm_cmd_tvalid : std_logic;
-  signal s2mm_cmd_tready : std_logic;
-  signal s2mm_cmd_tdata  : std_logic_vector(71 downto 0);
+  signal s2mm_cmd_tvalid : std_logic                     := '0';
+  signal s2mm_cmd_tready : std_logic                     := '0';
+  signal s2mm_cmd_tdata  : std_logic_vector(71 downto 0) := (others => '0');
 
-  --data port
-  signal s2mm_tdata     : std_logic_vector(31 downto 0);
-  signal s2mm_tkeep     : std_logic_vector(3 downto 0);
-  signal s2mm_tlast     : std_logic;
-  signal s2mm_tlast_r1  : std_logic;
-  signal s2mm_tlast_r2  : std_logic;
-  signal s2mm_tvalid    : std_logic;
-  signal s2mm_tvalid_r1 : std_logic;
-  signal s2mm_tready    : std_logic;
+  -- axi stream data port
+  signal s2mm_tdata  : std_logic_vector(31 downto 0) := (others => '0');
+  signal s2mm_tlast  : std_logic                     := '0';
+  signal s2mm_tvalid : std_logic                     := '0';
+  signal s2mm_tready : std_logic                     := '0';
 
-  signal btt          : std_logic_vector(22 downto 0);
-  signal saddr        : std_logic_vector(31 downto 0);
-  signal saddress_mux : std_logic_vector(31 downto 0) := START_ADDRESS;
-  signal data_type    : std_logic;
+  --bytes to transfer
+  constant BTT        : std_logic_vector(22 downto 0) := std_logic_vector(to_unsigned(WORDS_TO_SEND * 4, 23));
+  constant DATA_TYPE  : std_logic                     := '1';  -- incr = 1, fixed = 0
+  constant S2MM_TKEEP : std_logic_vector(3 downto 0)  := x"F"; -- keep all 4 bytes in the word
 
-  signal init_cmd : std_logic;
+  signal saddr : std_logic_vector(31 downto 0) := BOT_HALF_ADDRESS;
 
-  ---
-  signal delay_counter   : integer range 0 to 21 := 0;
+  signal delay_counter : integer range 0 to 21 := 0;
 
-  signal valid_fifo_data : std_logic_vector(31 downto 0) := (others => '0');
+  signal words_sent_cnt : integer range 0 to WORDS_TO_SEND;
 
-  signal s2mm_allow_addr_req_reg  : std_logic;
-  signal s2mm_addr_req_posted_reg : std_logic;
-  signal s2mm_wr_xfer_cmplt_reg   : std_logic;
-  signal s2mm_ld_nxt_len_reg      : std_logic;
+  -- Used to control the MM2S in posting an address on the AXI4 Read address
+  -- channel. A 1 allows posting and a 0 inhibits posting.
+  signal s2mm_allow_addr_req_reg  : std_logic                    := '0';
+
+  -- This output signal is asserted to 1 for one m_axi_mm2s_aclk period for each
+  -- new address posted to the AXI4 Read Address Channel.
+  signal s2mm_addr_req_posted_reg : std_logic                    := '0';
+
+  signal s2mm_wr_xfer_cmplt_reg   : std_logic                    := '0';
+  signal s2mm_ld_nxt_len_reg      : std_logic                    := '0';
   signal s2mm_wr_len_reg          : std_logic_vector(7 downto 0) := (others => '0');
 
   --datamover status signals
-  signal m_axis_s2mm_sts_tvalid_reg : std_logic;
-  signal m_axis_s2mm_sts_tdata_reg  : std_logic_vector(7 downto 0);
-  signal m_axis_s2mm_sts_tkeep_reg  : std_logic_vector(0 downto 0);
-  signal m_axis_s2mm_sts_tlast_Reg  : std_logic;
-  signal s2mm_err_reg               : std_logic := '0';
+  signal m_axis_s2mm_sts_tvalid_reg : std_logic                    := '0';
+  signal m_axis_s2mm_sts_tdata_reg  : std_logic_vector(7 downto 0) := (others => '0');
+  signal m_axis_s2mm_sts_tkeep_reg  : std_logic_vector(0 downto 0) := (others => '0');
+  signal m_axis_s2mm_sts_tlast_reg  : std_logic                    := '0';
+  signal s2mm_err_reg               : std_logic                    := '0';
 
-  signal reset_pointer_address    : std_logic := '0';
-  signal reset_pointer_address_r2 : std_logic := '0';
+  signal buff_switch_request  : std_logic := '0';
+  signal buff_switch_response : std_logic := '0';
 
   --------------------------------------------------------------------------------
-  --Circular buffer wrap signals
+  -- Circular buffer wrap signals
   --------------------------------------------------------------------------------
 
-  constant RAM_ADRB : integer := integer(ceil(log2(real(RAM_BUFF_SIZE))));
+  constant CNT_ADRB : integer := integer(ceil(log2(real(RAM_BUFF_SIZE))));
+  constant PTR_ADRB : integer := integer(ceil(log2(real(
+    to_integer(unsigned(TOP_HALF_ADDRESS))+RAM_BUFF_SIZE))));
 
-  signal mem_bytes_written : unsigned(RAM_ADRB - 1 downto 0) := (others => '0');
-  signal mem_buff_size     : unsigned(RAM_ADRB - 1 downto 0) := to_unsigned(RAM_BUFF_SIZE, RAM_ADRB);
+  signal base_addr : std_logic_vector(31 downto 0) := BOT_HALF_ADDRESS;
+
+  signal mem_bytes_written : integer range 0 to RAM_BUFF_SIZE-1 := 0;
+  signal buffer_remaining  : integer range 0 to RAM_BUFF_SIZE-1 := 0;
+
+  signal tripped       : std_logic := '0';
+  signal guardrail_err : std_logic := '0';
+  signal ram_in_a_buff : std_logic := '1';
+  signal ram_in_b_buff : std_logic := '0';
+  signal toggle_buffer : std_logic := '0';
+
+  signal current_buffer_reg  : std_logic := '0';
+  signal buff_switched_pulse : std_logic := '0';  -- goes high for 1 clock after the buffer switches
 
   --------------------------------------------------------------------------------
   -- DMA Clear Signals
   --------------------------------------------------------------------------------
 
-  signal clear_mode      : std_logic := '0';
-  signal clear_ack       : std_logic := '0';
-  signal clear_valid     : std_logic := '0';
-  signal clear_r_edge_r1 : std_logic := '0';
-  signal clear_r_edge_r2 : std_logic := '0';
-  signal clear_pulse_r1  : std_logic := '0';
-  
-  --------------------------------------------------------------------------------
-  -- RAM Occupancy Signals
-  --------------------------------------------------------------------------------
+  signal clear_mode     : std_logic := '0';  -- flag while memory is being cleared
+  signal clear_valid    : std_logic := '0';  -- tvalid for clearing the memory
+  signal clear_ps_mem_r : std_logic := '0';  -- register to make a rising edge sensitive clear_pulse
+  signal clear_pulse    : std_logic := '0';  -- single clock wide pulse to clear the memory
 
-  signal ram_buff_a_occupancy  : unsigned(RAM_ADRB-1 downto 0) := (others => '0');
-  signal ram_buff_b_occupancy  : unsigned(RAM_ADRB-1 downto 0) := (others => '0');
+  signal fifo_reset : std_logic             := '1';
+  signal reset      : std_logic             := '1';
+  signal reset_cnt  : integer range 0 to 63 := 63;
 
-  signal dma_pointer           : unsigned(RAM_ADRB-1 downto 0);
-  
+  component synchronizer is
+    generic (
+      N_STAGES : integer);
+    port (
+      async_i : in  std_logic;
+      clk_i   : in  std_logic;
+      sync_o  : out std_logic);
+  end component synchronizer;
+
 begin
 
-  --active low reset for logic
-  aresetn <= not (rst_in or reset_sys);
+  --------------------------------------------------------------------------------
+  -- Make sure the reset is always at least 7 clocks wide
+  --------------------------------------------------------------------------------
+
+  synchronizer_inst : synchronizer
+    generic map (
+      N_STAGES => 2
+      )
+    port map (
+      async_i => wr_rst_busy,
+      clk_i   => clk_axi,
+      sync_o  => wr_rst_busy_sync
+      );
+
+  process (clk_axi) is
+  begin
+    if (rising_edge(clk_axi)) then
+      if (reset_i='1') then
+        reset_cnt <= 63;
+      elsif (reset_cnt > 0) then
+        reset_cnt <= reset_cnt - 1;
+      end if;
+
+      if (reset_cnt /= 0) then
+        fifo_reset <= '1';
+      else
+        fifo_reset <= '0';
+      end if;
+
+      reset <= fifo_reset or wr_rst_busy_sync or rd_rst_busy;
+
+    end if;
+  end process;
 
   -------------------------------------------------------------------------------
   -- Datamover Commmand Interface Signals
   -------------------------------------------------------------------------------
 
-  -- incr = 1, fixed = 0
-  data_type <= '1';
-
-  --bytes to transfer
-  btt <= std_logic_vector(to_unsigned(WORDS_TO_SEND * 4, btt'length));
-
   --s2mm command signals
-  s2mm_cmd_tdata(71 downto 68) <= (others => '0');
-  s2mm_cmd_tdata(67 downto 64) <= (others => '0');
-  s2mm_cmd_tdata(63 downto 32) <= saddr;      --start address
-  s2mm_cmd_tdata(31 downto 24) <= (others => '0');
-  s2mm_cmd_tdata(23)           <= data_type;  --data type
-  s2mm_cmd_tdata(22 downto 0)  <= btt;        -- bytes to transfer
+  s2mm_cmd_tdata(71 downto 68) <= (others => '0');  --
+  s2mm_cmd_tdata(67 downto 64) <= (others => '0');  --
+  s2mm_cmd_tdata(63 downto 32) <= saddr;            -- start address
+  s2mm_cmd_tdata(31 downto 24) <= (others => '0');  --
+  s2mm_cmd_tdata(23)           <= DATA_TYPE;        -- data type
+  s2mm_cmd_tdata(22 downto 0)  <= BTT;              -- bytes to transfer
 
   --s2mm command valid assertion
   s2mm_cmd_tvalid <= '1' when (s2mm_data_state = ASSERT_CMD) else '0';
 
-  s2mm_tvalid <= s2mm_tvalid_r1 or clear_valid;
-  s2mm_tkeep  <= x"F";
-  
-  -- RAM occupancy connections
-  process (clk_axi) is
-  begin
-    if (rising_edge(clk_axi)) then
-      ram_buff_a_occupancy_o <= (others => '0');
-      ram_buff_b_occupancy_o <= (others => '0');
+  -- data is valid when either the output fifo data is valid, or the memory is being cleared
+  s2mm_tvalid <= fifo_out_valid_r or clear_valid;
 
-      ram_buff_a_occupancy_o(RAM_ADRB-1 downto 0) <= std_logic_vector(ram_buff_a_occupancy);
-      ram_buff_b_occupancy_o(RAM_ADRB-1 downto 0) <= std_logic_vector(ram_buff_b_occupancy);
-    end if;
-  end process;
-
-  dma_pointer_o(RAM_ADRB-1 downto 0) <= std_logic_vector(dma_pointer);
-
-  assert BUFF_FRAC_DIVISOR rem (WORDS_TO_SEND * 4) = 0 report "BUFF_FRAC_DIVISOR must be divisible by WORDS_TO_SEND * 4" severity ERROR;
-  
   -------------------------------------------------------------------------------
   -- FIFO Generator
   -------------------------------------------------------------------------------
 
   u0 : fifo_generator_0
     port map(
-      rst           => not aresetn,
+      rst           => fifo_reset,
       wr_clk        => clk_in,
       rd_clk        => clk_axi,
       din           => daq_busy_in & fifo_in,
@@ -346,15 +387,17 @@ begin
       rd_data_count => fifo_count,
       dout          => fifo_out,
       valid         => fifo_out_valid,
-      full          => wfifo_full,
-      empty         => wfifo_empty,
-      prog_full     => wfifo_prog_full,
-      prog_empty    => wfifo_prog_empty,
+      full          => fifo_full,
+      empty         => fifo_empty,
+      prog_full     => fifo_prog_full,
+      prog_empty    => fifo_prog_empty,
       wr_rst_busy   => wr_rst_busy,
       rd_rst_busy   => rd_rst_busy
       );
 
-  daq_busy_xfifo <= fifo_out(16) and fifo_out(33);
+  daq_busy_xfifo <= fifo_out(16) or fifo_out(33);
+
+  -- concatenate together the two 16 bit words into one 32 bit word
   data_xfifo     <= fifo_out(15 downto 0) & fifo_out(32 downto 17);
 
   -- add an additional ff stage for timing.. can only use it in some places
@@ -367,36 +410,36 @@ begin
     end if;
   end process;
 
-
   -------------------------------------------------------------------------------
-  -- Clear Memory Block Procedure
+  -- Clear Memory Block Process
+  --
+  -- if asserted, the dma block will loop through its memory and clear everything
+  -- back to zero
+  --
   -------------------------------------------------------------------------------
 
   process(clk_axi)
   begin
     if(rising_edge(clk_axi)) then
-
-      if aresetn = RESET_ACTIVE then
-        clear_r_edge_r1 <= '0';
-        clear_r_edge_r2 <= '0';
-        clear_pulse_r1  <= '0';
+      if (reset = '1') then
+        clear_ps_mem_r <= '0';
+        clear_pulse    <= '0';
       else
 
-        clear_r_edge_r1 <= clear_ps_mem;
-        clear_r_edge_r2 <= clear_r_edge_r1;
+        -- make a clear pulse that is rising edge sensitive only
+        clear_ps_mem_r <= clear_ps_mem;
 
-        if(clear_r_edge_r1 = '1' and clear_r_edge_r2 = '0') then
-          clear_pulse_r1 <= '1';
+        if(clear_ps_mem = '1' and clear_ps_mem_r = '0') then
+          clear_pulse <= '1';
         elsif(clear_mode = '1') then
-          clear_pulse_r1 <= '0';
+          clear_pulse <= '0';
         else
-          clear_pulse_r1 <= clear_pulse_r1;
+          clear_pulse <= clear_pulse;
         end if;
 
       end if;
     end if;
   end process;
-
 
   -------------------------------------------------------------------------------
   -- Post-AXI packet counter
@@ -409,15 +452,16 @@ begin
 
       packet_sent_o <= packet_sent;
 
-      if (data_xfifo_r(31 downto 16) = TAIL or data_xfifo_r(15 downto 0) = TAIL) then
+      if (data_xfifo_r(31 downto 16) = TAIL or
+          data_xfifo_r(15 downto 0) = TAIL) then
         packet_is_tail <= '1';
       else
         packet_is_tail <= '0';
       end if;
 
-      if RST_IN = RESET_ACTIVE or reset_sys = '1' then
+      if reset = '1' then
         packet_sent <= (others => '0');
-      elsif (fifo_rd_en = '1' and packet_is_tail = '1') then
+      elsif (fifo_rd_en = '1' and packet_is_tail = '1' and packet_sent /= x"FFFFFFFF") then
         packet_sent <= std_logic_vector(unsigned(packet_sent) + 1);
       else
         packet_sent <= packet_sent;
@@ -426,66 +470,126 @@ begin
     end if;
   end process;
 
+  --------------------------------------------------------------------------------
+  -- Buffer Switch Monitor
+  --
+  -- Provides a set of signals indicating which buffer the logic is in
+  --------------------------------------------------------------------------------
+
+  ram_in_b_buff <= not ram_in_a_buff;
+
+
+  process (clk_axi) is
+  begin
+    if (rising_edge(clk_axi)) then
+
+      current_buffer_reg  <= ram_in_a_buff;
+      buff_switched_pulse <= ram_in_a_buff xor current_buffer_reg;
+
+      if (saddr < TOP_HALF_ADDRESS) then
+        ram_in_a_buff <= '1';
+        base_addr     <= BOT_HALF_ADDRESS;
+      else
+        ram_in_a_buff <= '0';
+        base_addr     <= TOP_HALF_ADDRESS;
+      end if;
+    end if;
+  end process;
+
   -------------------------------------------------------------------------------
-  -- DMA Write Address Control
+  -- DMA Buffer Switching
   -------------------------------------------------------------------------------
 
-  -- Restart address when x address is reached.
+  buffer_remaining <= RAM_BUFF_SIZE - mem_bytes_written;
+  tripped          <= '1' when (buffer_remaining < MAX_PACKET_SIZE) else '0';
+
   address_pointer : process(clk_axi)
   begin
     if(rising_edge(clk_axi)) then
 
-      if aresetn = RESET_ACTIVE then
-        reset_pointer_address <= '0';
-        saddress_mux          <= START_ADDRESS;
-
+      if (reset = '1') then
+        buff_switch_request <= '0';
+        toggle_buffer       <= '0';
       else
+
+        -- we have a request to toggle the ram buffer...
+        -- save the request until it can be attended to at a ram boundary
+        if (ram_toggle_request_i = '1') then
+          toggle_buffer <= '1';
+        end if;
 
         -- switch memory region
         --   - the dma is now writing into the "overflow region"
-        --   - as soon as the daq is idle (it always goes idle between packets)
-        --     it will jump to the other memory region
+        --   - as soon as the daq is idle, as indicated by daq_busy_xfifo
+        --     (it always goes idle between packets)
+        --     the dma controller will jump to the other memory region
 
-        if (daq_busy_xfifo = '0' and mem_bytes_written > mem_buff_size) then
+        if (daq_busy_xfifo = '0' and (tripped = '1' or toggle_buffer='1') and buff_switch_request = '0') then
 
-          reset_pointer_address <= '1';
-
-          -- jump to opposite half of ring
-          if(saddress_mux = START_ADDRESS)then
-            saddress_mux <= TOP_HALF_ADDRESS;
-          else
-            saddress_mux <= START_ADDRESS;
-          end if;
+          toggle_buffer       <= '0';
+          buff_switch_request <= '1';
 
         -- if a wipe of the memory is requested, we switch to the 0th address in
         -- the memory region
-        elsif ((clear_pulse_r1 = '1' and s2mm_data_state = IDLE) or
-               (clear_mode = '1' and mem_bytes_written > mem_buff_size)) then
-          reset_pointer_address <= '1';
+        elsif ((clear_pulse = '1' and s2mm_data_state = IDLE) or
+               (clear_mode = '1' and tripped = '1')) then
+
+          buff_switch_request <= '1';
 
         -- nothing requested, just keep going along
-        else
-          reset_pointer_address <= '0';
+        elsif (buff_switch_response = '1') then
+          buff_switch_request <= '0';
         end if;
-
-        reset_pointer_address_r2 <= reset_pointer_address;
 
       end if;
     end if;
   end process;
 
+  -------------------------------------------------------------------------------
+  -- Address Accumulator
+  -------------------------------------------------------------------------------
+
   address_handler : process(clk_axi)
   begin
     if(rising_edge(clk_axi)) then
-      if aresetn = RESET_ACTIVE or reset_pointer_address_r2 = '1' then
-        saddr             <= saddress_mux;
-        mem_bytes_written <= (others => '0');
-      elsif (s2mm_addr_req_posted_reg = '1') then
-        saddr             <= std_logic_vector(unsigned(saddr) + unsigned(btt));
-        mem_bytes_written <= mem_bytes_written + unsigned(btt);
+
+      if (reset = '1' or buff_switch_request = '1' or buff_switch_response = '1') then
+        -- hold low while a switch is happening
+        mem_bytes_written <= 0;
       else
-        saddr             <= saddr;
-        mem_bytes_written <= mem_bytes_written;
+        mem_bytes_written <= to_integer(unsigned(saddr) - unsigned(base_addr));
+      end if;
+
+      if (reset = '1') then
+
+        saddr         <= BOT_HALF_ADDRESS;
+        guardrail_err <= '0';
+      -- sanity check to see if the saddr has gone below the minimum address,
+      -- or above the maximum address
+      elsif (unsigned(saddr) > (unsigned(TOP_HALF_ADDRESS) + to_unsigned(RAM_BUFF_SIZE,32)) or
+             saddr < BOT_HALF_ADDRESS) then
+
+        saddr     <= BOT_HALF_ADDRESS;
+        guardrail_err <= '1';
+
+      elsif buff_switch_request = '1' then
+
+
+        -- jump to opposite half of ring
+        if (ram_in_a_buff = '1')then
+          saddr <= TOP_HALF_ADDRESS;
+        else
+          saddr <= BOT_HALF_ADDRESS;
+        end if;
+
+        buff_switch_response <= '1';
+
+      elsif (s2mm_addr_req_posted_reg = '1') then
+        saddr                <= std_logic_vector(unsigned(saddr) + unsigned(BTT));
+        buff_switch_response <= '0';
+      else
+        saddr                <= saddr;
+        buff_switch_response <= '0';
       end if;
     end if;
   end process;
@@ -498,28 +602,30 @@ begin
   begin
     if(rising_edge(clk_axi)) then
 
-      if aresetn = RESET_ACTIVE then
+      if (reset = '1') then
         s2mm_allow_addr_req_reg <= '0';
         s2mm_data_state         <= IDLE;
         delay_counter           <= 0;
         fifo_rd_en              <= '0';
         s2mm_tlast              <= '0';
         s2mm_tdata              <= (others => '0');
-
-        clear_mode <= '0';
+        clear_mode              <= '0';
       else
 
         case s2mm_data_state is
 
           when IDLE =>
 
+            -- Used to control the MM2S in posting an address on the AXI4 Read address
+            -- channel. A 1 allows posting and a 0 inhibits posting.
             s2mm_allow_addr_req_reg <= '1';
 
+            -- make sure we have enough words in the FIFO for a burst transfer
             if((unsigned(fifo_count) mod WORDS_TO_SEND) = 0
                and unsigned(fifo_count) /= 0
                and s2mm_cmd_tready = '1') then
               s2mm_data_state <= ASSERT_CMD;
-            elsif(clear_pulse_r1 = '1' and s2mm_cmd_tready = '1') then
+            elsif(clear_pulse = '1' and s2mm_cmd_tready = '1') then
               s2mm_data_state <= ASSERT_CMD;
               clear_mode      <= '1';
             else
@@ -530,14 +636,18 @@ begin
 
           when ASSERT_CMD =>
 
+            -- this state asserts s2mm_cmd_tvalid
             s2mm_data_state <= DELAY0;
 
-          when DELAY0 =>
+          when DELAY0 => -- what does this state do??
+
+            -- there is some latency from s_axis_mm2s_cmd_tvalid to m_axi_mm2s_arvalid (8 clocks)?
+            -- I guess this just sits and waits a while
 
             if delay_counter > 20 then
               s2mm_allow_addr_req_reg <= '0';
               delay_counter           <= 0;
-              if(clear_mode = '0') then
+              if (clear_mode = '0') then
                 s2mm_data_state <= READ_FIFO;
               else
                 s2mm_data_state <= CLEAR_MEM;
@@ -548,16 +658,17 @@ begin
 
           when READ_FIFO =>
 
-            -- Reorder words, otherwise will be swapped by fifo
-            s2mm_tdata     <= data_xfifo;
-            s2mm_tvalid_r1 <= fifo_out_valid;
+            -- copy signals
+            s2mm_tdata       <= data_xfifo;
+            fifo_out_valid_r <= fifo_out_valid;
 
-            if(unsigned(valid_fifo_data) >= WORDS_TO_SEND) then
-              valid_fifo_data <= (others => '0');
-              s2mm_tlast      <= '0';
-              fifo_rd_en      <= '0';
-              s2mm_tvalid_r1  <= '0';
-              s2mm_data_state <= DONE;
+            -- sent all WORDS_TO_SEND words, go to DONE state
+            if (words_sent_cnt >= WORDS_TO_SEND) then
+              words_sent_cnt   <= 0;
+              s2mm_tlast       <= '0';
+              fifo_rd_en       <= '0';
+              fifo_out_valid_r <= '0';
+              s2mm_data_state  <= DONE;
 
               --XXX: Potential to break things if fifo core is modified (certain
               --     options/checkboxes enabled). Hard coded/hand tuned latency
@@ -578,17 +689,24 @@ begin
               ----   Should make the FIFO latency a parameter, and just have
               ----   this subtraction happen automatically.
 
-            elsif(unsigned(valid_fifo_data) >= WORDS_TO_SEND - 1) then
-              valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
+            -- assert tlast one clock before the last word
+            elsif(words_sent_cnt >= WORDS_TO_SEND - 1) then
+              words_sent_cnt <= words_sent_cnt + 1;
               fifo_rd_en      <= '0';
               s2mm_tlast      <= '1';
-            elsif(unsigned(valid_fifo_data) >= WORDS_TO_SEND - FIFO_LATENCY - 1) then
+
+            -- stop reading the FIFO 2 1+FIFO_LATENCY before the last word
+            elsif(words_sent_cnt >= WORDS_TO_SEND - FIFO_LATENCY - 1) then
               fifo_rd_en      <= '0';
-              valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
+              words_sent_cnt <= words_sent_cnt + 1;
+
+            --
             elsif(fifo_out_valid = '1') then
-              valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
+              words_sent_cnt <= words_sent_cnt + 1;
+
+            --
             else
-              valid_fifo_data <= valid_fifo_data;
+              words_sent_cnt <= words_sent_cnt;
               fifo_rd_en      <= '1';
             end if;
 
@@ -598,26 +716,26 @@ begin
 
           when CLEAR_MEM =>
 
-            if(unsigned(valid_fifo_data) >= WORDS_TO_SEND) then
-              valid_fifo_data <= (others => '0');
+            if (words_sent_cnt >= WORDS_TO_SEND) then
+              words_sent_cnt  <= 0;
               s2mm_tlast      <= '0';
               clear_valid     <= '0';
               s2mm_data_state <= CONTINUE_CLEAR;
-            elsif(unsigned(valid_fifo_data) >= WORDS_TO_SEND - 1) then
-              valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
-              s2mm_tlast      <= '1';
+            elsif (words_sent_cnt >= WORDS_TO_SEND - 1) then
+              words_sent_cnt <= words_sent_cnt + 1;
+              s2mm_tlast     <= '1';
             else
-              valid_fifo_data <= std_logic_vector(unsigned(valid_fifo_data) + 1);
-              s2mm_tdata      <= x"00000000";
-              clear_valid     <= '1';
+              words_sent_cnt <= words_sent_cnt + 1;
+              s2mm_tdata     <= x"00000000";
+              clear_valid    <= '1';
             end if;
 
           when CONTINUE_CLEAR =>
 
-            if (reset_pointer_address_r2 = '1') then
+            if (buff_switch_request = '1') then
               s2mm_data_state <= IDLE;
               clear_mode      <= '0';
-            elsif(clear_mode = '1')then
+            elsif (clear_mode = '1') then
               s2mm_allow_addr_req_reg <= '1';
               s2mm_data_state         <= ASSERT_CMD;
             else
@@ -636,35 +754,69 @@ begin
       end if;
     end if;
   end process;
-  
+
   --------------------------------------------------------------------------------
   -- RAM Occupancy
+  --
   -- Running count of split buffer fullness in units of 64ths
   -- Also provides integer value of saddr pointer
+  --
+  -- (only used for readout, not important to the logic here)
   --------------------------------------------------------------------------------
+
   ram_occupancy : process(clk_axi)
-    begin
+  begin
     if(rising_edge(clk_axi)) then
-      dma_pointer <= unsigned(saddr(RAM_ADRB-1 downto 0));
-      if s2mm_addr_req_posted_reg = '1' then
-          if (mem_bytes_written mod BUFF_FRAC_DIVISOR) = 0 then
-            if (dma_pointer < unsigned(TOP_HALF_ADDRESS)) then
-                 ram_buff_a_occupancy <= ram_buff_a_occupancy + 1;
-            end if;
-            if (dma_pointer >= unsigned(TOP_HALF_ADDRESS)) then
-                 ram_buff_b_occupancy <= ram_buff_b_occupancy + 1;
-            end if;
+
+      dma_pointer_o <= std_logic_vector(saddr);
+
+      if (guardrail_err = '1') then
+        ram_buff_a_occupancy_o <= x"FFFFFFFF";
+        ram_buff_b_occupancy_o <= x"FFFFFFFF";
+      elsif (s2mm_addr_req_posted_reg = '1') then
+
+        if (OCCUPANCY_IS_OFFSET) then
+
+          if (ram_in_a_buff = '1') then
+            ram_buff_a_occupancy_o <= std_logic_vector(unsigned(saddr)-unsigned(base_addr) + unsigned(BTT));
           end if;
+
+          if (ram_in_b_buff = '1') then
+            ram_buff_b_occupancy_o <= std_logic_vector(unsigned(saddr)-unsigned(base_addr) + unsigned(BTT));
+          end if;
+
+        else
+          if (ram_in_a_buff = '1') then
+            ram_buff_a_occupancy_o <= std_logic_vector(unsigned(saddr) + unsigned(BTT));
+          end if;
+
+          if (ram_in_b_buff = '1') then
+            ram_buff_b_occupancy_o <= std_logic_vector(unsigned(saddr) + unsigned(BTT));
+          end if;
+        end if;
+
       end if;
-      if ram_a_occ_rst = '1' then
-        ram_buff_a_occupancy <= (others => '0');
+
+      if (ram_in_a_buff = '1' and buff_switched_pulse='1')
+        or reset='1' or ram_a_occ_rst = '1' then
+        if (OCCUPANCY_IS_OFFSET) then
+          ram_buff_a_occupancy_o <= (others => '0');
+        else
+          ram_buff_a_occupancy_o <= BOT_HALF_ADDRESS;
+        end if;
       end if;
-      if ram_b_occ_rst = '1' then
-        ram_buff_b_occupancy <= (others => '0');
+
+      if (ram_in_b_buff = '1' and buff_switched_pulse='1')
+        or reset='1' or ram_b_occ_rst = '1' then
+        if (OCCUPANCY_IS_OFFSET) then
+          ram_buff_b_occupancy_o <= (others => '0');
+        else
+          ram_buff_b_occupancy_o <= TOP_HALF_ADDRESS;
+        end if;
       end if;
+
     end if;
   end process;
-  
 
   -------------------------------------------------------------------------------
   -- Data Mover IP
@@ -673,7 +825,7 @@ begin
   u1 : axis2aximm
     port map (
       m_axi_s2mm_aclk    => clk_axi,
-      m_axi_s2mm_aresetn => aresetn,
+      m_axi_s2mm_aresetn => not reset,  -- active low
       s2mm_halt          => '0',
       s2mm_dbg_sel       => x"0",
 
@@ -683,13 +835,13 @@ begin
       s_axis_s2mm_cmd_tdata  => s2mm_cmd_tdata,
       --s2mm data
       s_axis_s2mm_tdata      => s2mm_tdata,
-      s_axis_s2mm_tkeep      => s2mm_tkeep,
+      s_axis_s2mm_tkeep      => S2MM_TKEEP,
       s_axis_s2mm_tlast      => s2mm_tlast,
       s_axis_s2mm_tvalid     => s2mm_tvalid,
       s_axis_s2mm_tready     => s2mm_tready,
 
       m_axis_s2mm_cmdsts_awclk   => clk_axi,
-      m_axis_s2mm_cmdsts_aresetn => aresetn,
+      m_axis_s2mm_cmdsts_aresetn => not reset,  -- active low
 
       m_axis_s2mm_sts_tvalid => m_axis_s2mm_sts_tvalid_reg,
       m_axis_s2mm_sts_tready => '1',
@@ -755,7 +907,7 @@ begin
         probe19 : in std_logic;
         probe20 : in std_logic;
         probe21 : in std_logic_vector(15 downto 0);
-        probe22 : in unsigned(31 downto 0);
+        probe22 : in std_logic_vector(31 downto 0);
         probe23 : in std_logic;
         probe24 : in std_logic_vector(33 downto 0);
         probe25 : in std_logic_vector(7 downto 0);
@@ -763,18 +915,18 @@ begin
         );
     end component;
 
-    signal fifo_debug_concat : std_logic_vector(5 downto 0);
+    signal dma_state : std_logic_vector (3 downto 0) := (others => '0');
 
   begin
 
-    fifo_debug_concat <= fifo_wr_en & fifo_rd_en & wfifo_empty & '0' & fifo_out_valid & reset_pointer_address;
+    dma_state <= std_logic_vector(to_unsigned(data_state'POS(s2mm_data_state) , 4));
 
     ila_s2mm_inst : ila_s2mm
       port map(
         clk     => clk_axi,
         probe0  => s2mm_cmd_tvalid,
         probe1  => s2mm_cmd_tready,
-        probe2  => s2mm_cmd_tdata,
+        probe2  => (others => '0'), --s2mm_cmd_tdata,
         probe3  => s2mm_tdata,
         probe4  => s2mm_tkeep,
         probe5  => s2mm_tlast,
@@ -782,7 +934,7 @@ begin
         probe7  => s2mm_tready,
         probe8  => saddr,
         probe9  => fifo_rd_en,
-        probe10 => data_xfifo,
+        probe10 => data_xfifo_r,
         probe11 => s2mm_allow_addr_req_reg,
         probe12 => s2mm_addr_req_posted_reg,
         probe13 => s2mm_wr_xfer_cmplt_reg,
@@ -792,14 +944,28 @@ begin
         probe17 => m_axis_s2mm_sts_tvalid_reg,
         probe18 => m_axis_s2mm_sts_tdata_reg,
         probe19 => m_axis_s2mm_sts_tkeep_reg(0),
-        probe20 => m_axis_s2mm_sts_tlast_Reg,
-        probe21 => fifo_in,
-        probe22(RAM_ADRB-1 downto 0) => mem_bytes_written,
-        probe22(31 downto RAM_ADRB ) => (others => '0'),
-        probe23 => daq_busy_xfifo,
-        probe24 => fifo_out,
-        probe25 => (others => '0'),
-        probe26 => fifo_debug_concat
+        probe20 => m_axis_s2mm_sts_tlast_reg,
+        probe21(3 downto 0) => dma_state,
+        probe21(12 downto 4) => fifo_count,
+        probe21(15 downto 13) => (others => '0'),
+        probe22 => std_logic_vector(to_unsigned(mem_bytes_written,32)),
+        probe23 => ram_toggle_request_i,
+        probe24(15 downto 0) => fifo_in,
+        probe24(33 downto 16) => (others => '0'),
+        probe25(0) => ram_in_a_buff,
+        probe25(1) => ram_in_b_buff,
+        probe25(2) => tripped,
+        probe25(3) => guardrail_err,
+        probe25(4) => buff_switch_request,
+        probe25(5) => buff_switch_response,
+        probe25(6) => daq_busy_xfifo,
+        probe25(7) => toggle_buffer,
+        probe26(0) => fifo_out_valid,
+        probe26(1) => fifo_empty,
+        probe26(2) => fifo_rd_en,
+        probe26(3) => clear_pulse,
+        probe26(4) => clear_ps_mem,
+        probe26(5) => fifo_wr_en
         );
   end generate;
 

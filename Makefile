@@ -27,20 +27,31 @@ init:
 reg:
 	cd regmap && make
 
-tcl_to_bd:
-	$(TIMECMD) Hog/CreateProject.sh tcl_to_bd $(COLORIZE)
+################################################################################
+# Project creation / compilation
+################################################################################
 
-bd_to_tcl:
-	$(TIMECMD) Hog/CreateProject.sh bd_to_tcl $(COLORIZE)
+PROJECT_LIST = $(patsubst %/,%,$(patsubst Top/%,%,$(dir $(dir $(shell find Top/ -name hog.conf)))))
+CREATE_LIST = $(addprefix create_,$(PROJECT_LIST))
+OPEN_LIST = $(addprefix open_,$(PROJECT_LIST))
 
-create:
-	$(TIMECMD) Hog/CreateProject.sh readout_board $(COLORIZE)
+list_hog_projects:
+	@echo $(PROJECT_LIST)
 
-synth:
-	$(TIMECMD) Hog/LaunchWorkflow.sh -synth_only readout_board $(COLORIZE)
+$(CREATE_LIST):
+	@echo -------------------------------------------------------------------------------- $(COLORIZE)
+	@echo Creating Project $(patsubst create_%,%,$@)                                       $(COLORIZE)
+	@echo -------------------------------------------------------------------------------- $(COLORIZE)
+	@time Hog/CreateProject.sh $(patsubst create_%,%,$@)                                   $(COLORIZE)
 
-impl:
-	$(TIMECMD) Hog/LaunchWorkflow.sh -impl_only readout_board $(COLORIZE)
+$(PROJECT_LIST):
+	@echo -------------------------------------------------------------------------------- $(COLORIZE)
+	@echo Launching Hog Workflow $@                                                        $(COLORIZE)
+	@echo -------------------------------------------------------------------------------- $(COLORIZE)
+	@time Hog/LaunchWorkflow.sh $@                                                         $(COLORIZE)
+
+$(OPEN_LIST):
+	vivado Projects/$(patsubst open_%,%,$@)/$(patsubst open_%,%,$@).xpr &
 
 fpgaman_bin:
 	cd util; python3 create_fpga_manager_bin.py

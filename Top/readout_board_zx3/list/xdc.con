@@ -1,4 +1,4 @@
-xdc/mars_common.xdc
-xdc/pinout_zx3.xdc
-xdc/timing.xdc
-#xdc/placements-zx3.tcl nosynth
+drs/xdc/mars_common.xdc
+drs/xdc/pinout_zx3.xdc
+drs/xdc/timing.xdc
+#drs/xdc/placements-zx3.tcl nosynth

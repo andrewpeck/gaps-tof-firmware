@@ -1,0 +1,3 @@
+*.xci filter=reset_xci
+daq_board_top.vhd filter=emio_filter
+ps_interface.vhd filter=emio_filter

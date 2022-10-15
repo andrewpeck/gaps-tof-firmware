@@ -1,36 +1,40 @@
-# -*- mode: TCL;-*-
-
 # IP Cores
 #
 # MUST remove unused IP in Vivado 2020.1 due to a bug; it crashes when trying to
 # export XSA files when IPs are included in the project, but not used in the
 # design
+#
+ip/readout_board/clock_wizard/clock_wizard.xci
+ip/readout_board/sem_core/sem_core.xci
+ip/readout_board/ila_drs/ila_drs.xci
+ip/readout_board/xadc_wiz/xadc_wiz.xci
 
-ip/clock_wizard/clock_wizard.xci
-ip/sem_core/sem_core.xci
-#ip/ila_axi_ipbus_bridge/ila_axi_ipbus_bridge.xci
-ip/ila_drs/ila_drs.xci
-ip/xadc_wiz/xadc_wiz.xci
+# Common
+common/src/counter_snap.vhd
+common/src/fifo_async.vhd
+common/src/fifo_sync.vhd
+common/src/ipbus_slave.vhd
+common/src/ipbus_slave_tmr.vhd
+common/src/synchonizer.vhd
+common/src/types_pkg.vhd
 
-# DRS4 Controller
-drs/src/fifo_async.vhd
-drs/src/fifo_sync.vhd
+# Readout Board
+drs/src/ipbus_pkg.vhd
+drs/src/adc.vhd
 drs/src/axi_ipbus_bridge.vhd
 drs/src/axi_pkg.vhd
-drs/src/counter_snap.vhd
 drs/src/daq_board_top.vhd top=top_readout_board
-drs/src/ipbus_pkg.vhd
-drs/src/ipbus_slave.vhd
-drs/src/ipbus_slave_tmr.vhd
+drs/src/dtap.vhd
+
 drs/src/ps_interface.vhd
 drs/src/registers.vhd
 drs/src/sem.vhd
-drs/src/synchonizer.vhd
-drs/src/types_pkg.vhd
-drs/src/trigger_mux.vhd
-drs/src/dtap.vhd
-drs/src/adc.vhd
 drs/src/spi_rx.vhd
+drs/src/trigger_mux.vhd
+drs/src/rate_counter.vhd
+drs/src/rate_counter.vhd
+drs/src/trig_gen.vhd
+drs/src/urand_inf.vhd
 
 drs/src/drs.v
 drs/src/crc32.vhd

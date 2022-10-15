@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_DRS_NUM_REGS : integer := 49;
+    constant REG_DRS_NUM_REGS : integer := 57;
     constant REG_DRS_ADDRESS_MSB : integer := 9;
     constant REG_DRS_ADDRESS_LSB : integer := 0;
     constant REG_CHIP_DMODE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
@@ -107,6 +107,9 @@ package registers is
     constant REG_READOUT_SROUT_LATENCY_LSB     : integer := 4;
     constant REG_READOUT_SROUT_LATENCY_DEFAULT : std_logic_vector(6 downto 4) := "010";
 
+    constant REG_READOUT_DMA_CLEAR_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1b";
+    constant REG_READOUT_DMA_CLEAR_BIT    : integer := 0;
+
     constant REG_FPGA_DNA_DNA_LSBS_ADDR    : std_logic_vector(9 downto 0) := "00" & x"20";
     constant REG_FPGA_DNA_DNA_LSBS_MSB    : integer := 31;
     constant REG_FPGA_DNA_DNA_LSBS_LSB     : integer := 0;
@@ -174,6 +177,15 @@ package registers is
     constant REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT    : integer := 1;
     constant REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_DEFAULT : std_logic := '1';
 
+    constant REG_TRIGGER_MT_TRIGGER_IS_LEVEL_ADDR    : std_logic_vector(9 downto 0) := "00" & x"41";
+    constant REG_TRIGGER_MT_TRIGGER_IS_LEVEL_BIT    : integer := 2;
+    constant REG_TRIGGER_MT_TRIGGER_IS_LEVEL_DEFAULT : std_logic := '0';
+
+    constant REG_TRIGGER_TRIGGER_DELAY_ADDR    : std_logic_vector(9 downto 0) := "00" & x"42";
+    constant REG_TRIGGER_TRIGGER_DELAY_MSB    : integer := 11;
+    constant REG_TRIGGER_TRIGGER_DELAY_LSB     : integer := 0;
+    constant REG_TRIGGER_TRIGGER_DELAY_DEFAULT : std_logic_vector(11 downto 0) := x"000";
+
     constant REG_COUNTERS_CNT_SEM_CORRECTION_ADDR    : std_logic_vector(9 downto 0) := "00" & x"50";
     constant REG_COUNTERS_CNT_SEM_CORRECTION_MSB    : integer := 15;
     constant REG_COUNTERS_CNT_SEM_CORRECTION_LSB     : integer := 0;
@@ -197,6 +209,22 @@ package registers is
     constant REG_COUNTERS_CNT_EVENT_ADDR    : std_logic_vector(9 downto 0) := "00" & x"55";
     constant REG_COUNTERS_CNT_EVENT_MSB    : integer := 31;
     constant REG_COUNTERS_CNT_EVENT_LSB     : integer := 0;
+
+    constant REG_COUNTERS_TRIGGER_RATE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"56";
+    constant REG_COUNTERS_TRIGGER_RATE_MSB    : integer := 31;
+    constant REG_COUNTERS_TRIGGER_RATE_LSB     : integer := 0;
+
+    constant REG_COUNTERS_LOST_TRIGGER_RATE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"57";
+    constant REG_COUNTERS_LOST_TRIGGER_RATE_MSB    : integer := 31;
+    constant REG_COUNTERS_LOST_TRIGGER_RATE_LSB     : integer := 0;
+
+    constant REG_COUNTERS_CNT_RESET_ADDR    : std_logic_vector(9 downto 0) := "00" & x"58";
+    constant REG_COUNTERS_CNT_RESET_BIT    : integer := 0;
+
+    constant REG_TRIG_GEN_RATE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"59";
+    constant REG_TRIG_GEN_RATE_MSB    : integer := 31;
+    constant REG_TRIG_GEN_RATE_LSB     : integer := 0;
+    constant REG_TRIG_GEN_RATE_DEFAULT : std_logic_vector(31 downto 0) := x"00000000";
 
     constant REG_HOG_GLOBAL_DATE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"60";
     constant REG_HOG_GLOBAL_DATE_MSB    : integer := 31;
@@ -261,6 +289,9 @@ package registers is
     constant REG_DMA_DMA_POINTER_MSB    : integer := 31;
     constant REG_DMA_DMA_POINTER_LSB     : integer := 0;
 
+    constant REG_DMA_TOGGLE_RAM_ADDR    : std_logic_vector(9 downto 0) := "01" & x"05";
+    constant REG_DMA_TOGGLE_RAM_BIT    : integer := 0;
+
     constant REG_GFP_EVENTID_SPI_EN_ADDR    : std_logic_vector(9 downto 0) := "10" & x"00";
     constant REG_GFP_EVENTID_SPI_EN_BIT    : integer := 0;
     constant REG_GFP_EVENTID_SPI_EN_DEFAULT : std_logic := '0';
@@ -268,6 +299,10 @@ package registers is
     constant REG_GFP_EVENTID_RX_ADDR    : std_logic_vector(9 downto 0) := "10" & x"01";
     constant REG_GFP_EVENTID_RX_MSB    : integer := 31;
     constant REG_GFP_EVENTID_RX_LSB     : integer := 0;
+
+    constant REG_GFP_EVENTID_TIMEOUT_CNT_ADDR    : std_logic_vector(9 downto 0) := "10" & x"02";
+    constant REG_GFP_EVENTID_TIMEOUT_CNT_MSB    : integer := 15;
+    constant REG_GFP_EVENTID_TIMEOUT_CNT_LSB     : integer := 0;
 
 
 end registers;
