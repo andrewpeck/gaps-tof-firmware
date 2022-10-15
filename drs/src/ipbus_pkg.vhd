@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-package ipbus_pkg is
+package ipbus is
 
     constant IPB_MASTERS : integer := 1;
     constant IPB_SLAVES : integer := 2;
@@ -67,9 +67,9 @@ package ipbus_pkg is
 
     function ipb_addr_sel(signal addr : in std_logic_vector(IPB_ADDR_SIZE-1 downto 0)) return integer;
 
-end ipbus_pkg;
+end ipbus;
 
-package body ipbus_pkg is
+package body ipbus is
 
     --== Address decoder ==--
 
@@ -103,5 +103,4 @@ package body ipbus_pkg is
         return sel;
     end ipb_addr_sel;
 
-end ipbus_pkg;
-
+end ipbus;

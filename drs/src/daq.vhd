@@ -31,10 +31,11 @@ entity daq is
     event_cnt_i : in std_logic_vector (31 downto 0);
     mask_i      : in std_logic_vector (17 downto 0);
 
-    gfp_use_eventid_i   : in  std_logic;
-    gfp_eventid_i       : in  std_logic_vector (31 downto 0);
-    gfp_eventid_valid_i : in  std_logic;
-    gfp_eventid_read_o  : out std_logic;
+    gfp_use_eventid_i     : in  std_logic;
+    gfp_eventid_i         : in  std_logic_vector (31 downto 0);
+    gfp_eventid_valid_i   : in  std_logic;
+    gfp_eventid_read_o    : out std_logic;
+    gfp_eventid_timeout_o : out std_logic;
 
     -- status
     temperature_i : in std_logic_vector (11 downto 0);
@@ -111,6 +112,9 @@ architecture behavioral of daq is
   signal state_word_cnt : natural range 0 to 1024 := 0;
   signal channel_cnt    : natural range 0 to 15   := 0;
   signal channel_id     : natural range 0 to 17   := 0;
+
+  constant EVENTID_TIMEOUT_MAX : natural := 170000;
+  signal gfp_eventid_timeout_counter : natural range 0 to EVENTID_TIMEOUT_MAX := 0;
 
   signal dav : boolean := false;
 
@@ -322,9 +326,10 @@ begin
   begin
     if (rising_edge(clock)) then
 
-      dav        <= false;
-      data       <= (others => '0');
-      drs_rden_o <= '0';
+      dav                   <= false;
+      data                  <= (others => '0');
+      drs_rden_o            <= '0';
+      gfp_eventid_timeout_o <= '0';
 
       case state is
 
@@ -408,16 +413,24 @@ begin
 
         when WAIT_EVENT_CNT_state =>
 
-          if (gfp_eventid_valid_i = '1') then
-            state              <= EVENT_CNT_state;
-            event_cnt_mux      <= gfp_eventid_i;
-            gfp_eventid_read_o <= '1';
+          gfp_eventid_timeout_counter <= gfp_eventid_timeout_counter + 1;
+
+          if (gfp_eventid_timeout_counter = EVENTID_TIMEOUT_MAX) then
+            state                   <= EVENT_CNT_state;
+            event_cnt_mux           <= x"FFFFFFFE";
+            gfp_eventid_timeout_o   <= '1';
+          elsif (gfp_eventid_valid_i = '1') then
+            state                   <= EVENT_CNT_state;
+            event_cnt_mux           <= gfp_eventid_i;
+            gfp_eventid_read_o      <= '1';
           end if;
+
           dav <= false;
 
         when EVENT_CNT_state =>
 
           gfp_eventid_read_o <= '0';
+          gfp_eventid_timeout_counter <= 0;
 
           if (state_word_cnt = event_cnt'length / g_WORD_SIZE - 1) then
             state          <= DTAP0_state;

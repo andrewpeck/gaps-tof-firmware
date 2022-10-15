@@ -1,4 +1,4 @@
-VivadoProject
+.Xil
 Projects
 *~undo-tree~
 *.pyc
@@ -6,12 +6,16 @@ Projects
 tags
 *.o
 daq_tb
+bin/
 *.cf
-ip/*/*
-!ip/*/*.xci
+!ip/*/*/*
+ip/*/*/*
+ip/*
+!ip/*/*/*.xci
 bd/*
 !bd/*.bd
 bin/
 usage_statistics_webtalk.*
 .Xil
 .write_bitstream.error.rst
+*.str

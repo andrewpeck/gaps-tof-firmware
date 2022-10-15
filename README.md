@@ -84,7 +84,7 @@ git clone --recursive https://gitlab.com/ucla-gaps-tof/firmware.git
 The firmware can then be built with:
 
 ```bash
-make all
+make readout_board_zx3
 ```
 
 a list of Make targets will be displayed by typing:
@@ -102,7 +102,7 @@ to contain a similar command as below, depending on where you installed
 Vivado.
 
 ```bash
-source /home/your_usr_name/Xilinx/Vivado/2019.2/settings64.sh
+source /opt/Xilinx/Vivado/2020.1/settings64.sh
 ```
 
 The scripts use only very primitive bash and otherwise use the Vivado

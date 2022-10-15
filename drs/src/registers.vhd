@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_DRS_NUM_REGS : integer := 55;
+    constant REG_DRS_NUM_REGS : integer := 57;
     constant REG_DRS_ADDRESS_MSB : integer := 9;
     constant REG_DRS_ADDRESS_LSB : integer := 0;
     constant REG_CHIP_DMODE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
@@ -168,6 +168,15 @@ package registers is
     constant REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT    : integer := 1;
     constant REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_DEFAULT : std_logic := '1';
 
+    constant REG_TRIGGER_MT_TRIGGER_IS_LEVEL_ADDR    : std_logic_vector(9 downto 0) := "00" & x"41";
+    constant REG_TRIGGER_MT_TRIGGER_IS_LEVEL_BIT    : integer := 2;
+    constant REG_TRIGGER_MT_TRIGGER_IS_LEVEL_DEFAULT : std_logic := '0';
+
+    constant REG_TRIGGER_TRIGGER_DELAY_ADDR    : std_logic_vector(9 downto 0) := "00" & x"42";
+    constant REG_TRIGGER_TRIGGER_DELAY_MSB    : integer := 11;
+    constant REG_TRIGGER_TRIGGER_DELAY_LSB     : integer := 0;
+    constant REG_TRIGGER_TRIGGER_DELAY_DEFAULT : std_logic_vector(11 downto 0) := x"000";
+
     constant REG_COUNTERS_CNT_SEM_CORRECTION_ADDR    : std_logic_vector(9 downto 0) := "00" & x"50";
     constant REG_COUNTERS_CNT_SEM_CORRECTION_MSB    : integer := 15;
     constant REG_COUNTERS_CNT_SEM_CORRECTION_LSB     : integer := 0;
@@ -281,6 +290,10 @@ package registers is
     constant REG_GFP_EVENTID_RX_ADDR    : std_logic_vector(9 downto 0) := "10" & x"01";
     constant REG_GFP_EVENTID_RX_MSB    : integer := 31;
     constant REG_GFP_EVENTID_RX_LSB     : integer := 0;
+
+    constant REG_GFP_EVENTID_TIMEOUT_CNT_ADDR    : std_logic_vector(9 downto 0) := "10" & x"02";
+    constant REG_GFP_EVENTID_TIMEOUT_CNT_MSB    : integer := 15;
+    constant REG_GFP_EVENTID_TIMEOUT_CNT_LSB     : integer := 0;
 
 
     --============================================================================

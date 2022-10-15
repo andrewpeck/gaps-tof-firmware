@@ -1,0 +1,377 @@
+* [[https://numato.com/docs/callisto-kintex-7-usb-3-1-fpga-module/][Callisto Kintex 7 USB 3.1 FPGA Module | Numato Lab Help Center]] :website:
+
+[2022-05-09 Mon 18:57]
+
+** Article
+
+*** 1. Introduction
+
+
+[[https://numato.com/help/wp-content/uploads/2018/06/callisto_K7_board_image.png][[[https://numato.com/help/wp-content/uploads/2018/06/callisto_K7_board_image.png]]]]
+
+Callisto K7 is an easy to use FPGA Module featuring the Xilinx Kintex 7 FPGA with 4Gb DDR3 SDRAM. This board contains the Xilinx XC7K410T-- FBG676 FPGA. The high-speed USB 3.1 interface (USB-C connector) provides a fast and easy configuration download to the onboard SPI flash. There is no need for a programmer or special downloader cable to download bitstream to the board. The FPGA Module also provides easy access to JTAG signals on a standard Xilinx Platform Cable compatible header. Callisto K7 provides the user with the flexibility of adding their own peripherals through IO Expansion Headers.
+
+*** 1.1. Board Features
+
+
+- FPGA: Kintex XC7K410T in FBG676 package
+- DDR3: 4Gb DDR3 (MT41J256M16HA-125:K or equivalent)
+- Flash memory: 1 Gb Quad SPI flash memory (MT25QL01GBBB)
+- 1 x 100MHz CMOS oscillator
+- USB 3.1 Gen1 @5Gbps (USB Type-C connector)
+- Onboard voltage regulators for single power rail operation
+- 12V DC power supply
+- A Push Button for the reset pin
+- JTAG header for programming and debugging.
+- Maximum IOs for user-defined purposes
+
+  - FPGA -- 274 IOs
+
+*** 1.2. Applications
+
+
+- Product Prototype Development
+- Communication Devices Development
+- Accelerated Computing Integration
+- Development and Testing of Custom embedded processors
+- Signal Processing
+- Educational tool for Schools and Universities
+
+*** 2. How to use Callisto Kintex 7 FPGA Development Board
+
+
+The following sections describe in detail how to use this module.
+
+*** 2.1. Components/Tools Required
+
+
+Along with the module, you may need the accessories listed below for easy and fast installation:
+
+1. 12 V DC Power Supply.
+2. USB A to USB-C cable (Optional).
+3. A Xilinx Platform Cable USB II compatible JTAG programmer
+
+*** 2.2. Connection Diagram
+
+This diagram should be used as a reference only. For detailed information, see
+Callisto K7's schematics and mechanical dimensions at the end of this page.
+Details of individual connectors are as shown below.
+
+[[https://numato.com/help/wp-content/uploads/2018/06/callisto_K7_connection_diagram.png][[[https://numato.com/help/wp-content/uploads/2018/06/callisto_K7_connection_diagram.png]]]]
+
+*** 2.3. USB Interface
+
+[[https://numato.com/help/wp-content/uploads/2018/06/callisto_K7_USB.png][[[https://numato.com/help/wp-content/uploads/2018/06/callisto_K7_USB.png]]]]This
+super speed USB 3.1 interface ( [[https://en.wikipedia.org/wiki/USB-C][USB-C]] connector) is used to help the host PC to
+communicate with the module at very high speed (5Gbps). A USB-A to USB-C cable
+is used to connect the module to the host PC. It is primarily used to output
+debug information or as a console for the design running on the board. (the
+picture on the right shows USB-C connector).
+
+*** 2.4. DC Power Supply
+
+*[[https://numato.com/help/wp-content/uploads/2018/06/callisto_K7_power_supply.png][[[https://numato.com/help/wp-content/uploads/2018/06/callisto_K7_power_supply.png]]]]
+
+By default, the board is configured to use the +5V supply from USB. So an
+external power is not required unless USB port is unable to supply enough
+current. USB 3.1 ports are only capable of providing enough current for the
+module for small designs that require less power. The current requirement for
+this board largely depends on your application. Please consult the FPGA
+datasheet for more details on power requirements. *If for any reason, an
+external power supply needs to be used for the board, connect the DC power
+supply. Please refer to the marking on the board for more details. The external
+power supply should be in the range of +5 to +12V, with sufficient current
+rating.
+
+*** 2.5. Heat Sink
+
+A Heat Sink comes factory-installed with Callisto K7 to provide for heat
+dissipation for the Kintex-7 FPGA onboard. A header is provided to optionally
+connect a fan (not factory installed) for forced-cooling. The fan's speed is
+controlled by the  *FAN_PWM* signal connected to FPGA IO location  *N16*, and the
+signal is pulled up by default, which means unless actively driven to 0 or
+controlled via PWM, the fan will run at maximum speed.
+
+*** 2.6. Reset Button
+
+Callisto K7 features a Push-button  *S1* normally meant to be used as a “Reset”
+signal for designs running on FPGA. Push-button S2 is connected to FPGA pin 
+*K21. *Push-button S1 is  *active-high*. This push-button can also be used for any
+other input and is not just limited to be used as a Reset signal.
+
+*** 2.7. JTAG Connector
+
+JTAG connector allows the FPGA's JTAG registers to be accessed using a JTAG
+cable, compatible with Xilinx Platform Cable USB. Use this header, to attach
+JTAG cable for programming and debugging.
+
+[[https://numato.com/help/wp-content/uploads/2018/06/callisto_K7_jtag.png][[[https://numato.com/help/wp-content/uploads/2018/06/callisto_K7_jtag.png]]]]
+
+*** 2.8. FT601 - Kintex 7 (FBG676) FPGA Connection Details
+
+| FTDI Pin No. | Pin Function (245 FIFO) | Kintex-7 (FBG676) Pin No. |
+|--------------+-------------------------+---------------------------|
+| 40           | FT_D0                   | N17                       |
+| 41           | FT_D1                   | N18                       |
+| 42           | FT_D2                   | M19                       |
+| 43           | FT_D3                   | M20                       |
+| 44           | FT_D4                   | N19                       |
+| 45           | FT_D5                   | K25                       |
+| 46           | FT_D6                   | K26                       |
+| 47           | FT_D7                   | L24                       |
+| 50           | FT_D8                   | L25                       |
+| 51           | FT_D9                   | M24                       |
+| 52           | FT_D10                  | M25                       |
+| 53           | FT_D11                  | M26                       |
+| 54           | FT_D12                  | N22                       |
+| 55           | FT_D13                  | N24                       |
+| 56           | FT_D14                  | N26                       |
+| 57           | FT_D15                  | P16                       |
+| 60           | FT_D16                  | R16                       |
+| 61           | FT_D17                  | U16                       |
+| 62           | FT_D18                  | R17                       |
+| 63           | FT_D19                  | T17                       |
+| 64           | FT_D20                  | U17                       |
+| 65           | FT_D21                  | R18                       |
+| 66           | FT_D22                  | P26                       |
+| 67           | FT_D23                  | P25                       |
+| 69           | FT_D24                  | P24                       |
+| 70           | FT_D25                  | R26                       |
+| 71           | FT_D26                  | R25                       |
+| 72           | FT_D27                  | R23                       |
+| 73           | FT_D28                  | T25                       |
+| 74           | FT_D29                  | T24                       |
+| 75           | FT_D30                  | R22                       |
+| 76           | FT_D31                  | T22                       |
+| 4            | FT_BE0                  | P18                       |
+| 5            | FT_BE1                  | P19                       |
+| 6            | FT_BE2                  | T18                       |
+| 7            | FT_BE3                  | T19                       |
+| 8            | FT_TXE                  | U19                       |
+| 9            | FT_RXE                  | R20                       |
+| 11           | FT_WR                   | R21                       |
+| 12           | FT_RD                   | P21                       |
+| 13           | FT_OE                   | T20                       |
+| 15           | FT_RST                  | U20                       |
+| 16           | FT_WK                   | T23                       |
+| 58           | FT_CLK                  | N21                       |
+
+*** 2.9. GPIOs
+
+
+This device is equipped with a maximum of 274 user IO pins that can be used for various custom applications. All user IOs are length matched and can be used as differential pairs.
+
+*** 2.9.1. Header P1
+
+
+| PIN NO. ON HEADER | Kintex 7 (XC7K410T-1FBG676) | PIN NO. ON HEADER | Kintex 7 (XC7K410T-1FBG676) | PIN NO. ON HEADER | Kintex 7 (XC7K410T-1FBG676) | PIN NO. ON HEADER | Kintex 7 (XC7K410T-1FBG676) | PIN NO. ON HEADER | Kintex 7 (XC7K410T-1FBG676) | PIN NO. ON HEADER | Kintex 7 (XC7K410T-1FBG676) |
+|-------------------+-----------------------------+-------------------+-----------------------------+-------------------+-----------------------------+-------------------+-----------------------------+-------------------+-----------------------------+-------------------+-----------------------------|
+| A1                | EXT_VCC                     | B1                | EXT_VCC                     | C1                | EXT_VCC                     | D1                | EXT_VCC                     | E1                | EXT_VCC                     | F1                | EXT_VCC                     |
+| A2                | GND                         | B2                | GND                         | C2                | GND                         | D2                | GND                         | E2                | GND                         | F2                | GND                         |
+| A3                | GND                         | B3                | K23                         | C3                | J23                         | D3                | GND                         | E3                | J24                         | F3                | J25                         |
+| A4                | J21                         | B4                | H22                         | C4                | GND                         | D4                | L22                         | E4                | K22                         | F4                | GND                         |
+| A5                | GND                         | B5                | F25                         | C5                | E26                         | D5                | GND                         | E5                | H23                         | F5                | H24                         |
+| A6                | G24                         | B6                | F24                         | C6                | GND                         | D6                | J26                         | E6                | H26                         | F6                | GND                         |
+| A7                | GND                         | B7                | G22                         | C7                | F23                         | D7                | GND                         | E7                | G25                         | F7                | G26                         |
+| A8                | D26                         | B8                | C26                         | C8                | GND                         | D8                | H21                         | E8                | G21                         | F8                | GND                         |
+| A9                | GND                         | B9                | D23                         | C9                | D24                         | D9                | GND                         | E9                | E25                         | F9                | D25                         |
+| A10               | D21                         | B10               | C22                         | C10               | GND                         | D10               | E21                         | E10               | E22                         | F10               | GND                         |
+| A11               | GND                         | B11               | C21                         | C11               | B21                         | D11               | GND                         | E11               | A23                         | F11               | A24                         |
+| A12               | K15                         | B12               | M16                         | C12               | GND                         | D12               | B20                         | E12               | A20                         | F12               | GND                         |
+| A13               | GND                         | B13               | C16                         | C13               | B16                         | D13               | GND                         | E13               | C17                         | F13               | C18                         |
+| A14               | B17                         | B14               | A17                         | C14               | GND                         | D14               | C19                         | E14               | B19                         | F14               | GND                         |
+| A15               | GND                         | B15               | H16                         | C15               | G16                         | D15               | GND                         | E15               | A18                         | F15               | A19                         |
+| A16               | G15                         | B16               | F15                         | C16               | GND                         | D16               | J15                         | E16               | J16                         | F16               | GND                         |
+| A17               | GND                         | B17               | D15                         | C17               | D16                         | D17               | GND                         | E17               | E18                         | F17               | D18                         |
+| A18               | E15                         | B18               | E16                         | C18               | GND                         | D18               | F17                         | E18               | E17                         | F18               | GND                         |
+| A19               | GND                         | B19               | G17                         | C19               | F18                         | D19               | GND                         | E19               | F19                         | F19               | E20                         |
+| A20               | H17                         | B20               | H18                         | C20               | GND                         | D20               | G19                         | E20               | F20                         | F20               | GND                         |
+| A21               | GND                         | B21               | D19                         | C21               | D20                         | D21               | GND                         | E21               | L19                         | F21               | L20                         |
+| A22               | H19                         | B22               | G20                         | C22               | GND                         | D22               | J18                         | E22               | J19                         | F22               | GND                         |
+| A23               | GND                         | B23               | K20                         | C23               | J20                         | D23               | GND                         | E23               | M17                         | F23               | L18                         |
+| A24               | K16                         | B24               | K17                         | C24               | GND                         | D24               | L17                         | E24               | K18                         | F24               | GND                         |
+| A25               | GND                         | B25               | J8                          | C25               | J14                         | D25               | GND                         | E25               | B15                         | F25               | A15                         |
+| A26               | B14                         | B26               | A14                         | C26               | GND                         | D26               | F14                         | E26               | F13                         | F26               | GND                         |
+| A27               | GND                         | B27               | C14                         | C27               | C13                         | D27               | GND                         | E27               | G12                         | F27               | F12                         |
+| A28               | A13                         | B28               | A12                         | C28               | GND                         | D28               | E13                         | E28               | E12                         | F28               | GND                         |
+| A29               | GND                         | B29               | D14                         | C29               | D13                         | D29               | GND                         | E29               | G11                         | F29               | F10                         |
+| A30               | B12                         | B30               | B11                         | C30               | GND                         | D30               | E11                         | E30               | D11                         | F30               | GND                         |
+| A31               | GND                         | B31               | B10                         | C31               | A10                         | D31               | GND                         | E31               | G10                         | F31               | G9                          |
+| A32               | A9                          | B32               | A8                          | C32               | GND                         | D32               | H9                          | E32               | H8                          | F32               | GND                         |
+| A33               | GND                         | B33               | C9                          | C33               | B9                          | D33               | GND                         | E33               | H14                         | F33               | G14                         |
+| A34               | C12                         | B34               | C11                         | C34               | GND                         | D34               | J13                         | E34               | H13                         | F34               | GND                         |
+| A35               | GND                         | B35               | D9                          | C35               | D8                          | D35               | GND                         | E35               | H12                         | F35               | H11                         |
+| A36               | E10                         | B36               | D10                         | C36               | GND                         | D36               | J11                         | E36               | J10                         | F36               | GND                         |
+| A37               | GND                         | B37               | F9                          | C37               | F8                          | D37               | GND                         | E37               | NC                          | F37               | NC                          |
+| A38               | NC                          | B38               | NC                          | C38               | GND                         | D38               | NC                          | E38               | NC                          | F38               | GND                         |
+| A39               | GND                         | B39               | GND                         | C39               | GND                         | D39               | GND                         | E39               | GND                         | F39               | GND                         |
+| A40               | VADJ_B12                    | B40               | VADJ_B15                    | C40               | VADJ_B16                    | D40               | VADJ_B32                    | E40               | VBATT                       | F40               | VCC3V3                      |
+|                   |                             |                   |                             |                   |                             |                   |                             |                   |                             |                   |                             |
+
+*** 2.9.2. Header P2
+
+
+| PIN NO. ON HEADER | Kintex 7 (XC7K410T-1FBG676) | PIN NO. ON HEADER | Kintex 7 (XC7K410T-1FBG676) | PIN NO. ON HEADER | Kintex 7 (XC7K410T-1FBG676) | PIN NO. ON HEADER | Kintex 7 (XC7K410T-1FBG676) | PIN NO. ON HEADER | Kintex 7 (XC7K410T-1FBG676) | PIN NO. ON HEADER | Kintex 7 (XC7K410T-1FBG676) |
+|-------------------+-----------------------------+-------------------+-----------------------------+-------------------+-----------------------------+-------------------+-----------------------------+-------------------+-----------------------------+-------------------+-----------------------------|
+| A1                | U24                         | B1                | U25                         | C1                | GND                         | D1                | U21                         | E1                | Y20                         | F1                | GND                         |
+| A2                | GND                         | B2                | U22                         | C2                | V22                         | D2                | GND                         | E2                | V23                         | F2                | V24                         |
+| A3                | U26                         | B3                | V26                         | C3                | GND                         | D3                | V21                         | E3                | W21                         | F3                | GND                         |
+| A4                | GND                         | B4                | W25                         | C4                | W26                         | D4                | GND                         | E4                | AA25                        | F4                | AB25                        |
+| A5                | W23                         | B5                | W24                         | C5                | GND                         | D5                | Y25                         | E5                | Y26                         | F5                | GND                         |
+| A6                | GND                         | B6                | AB26                        | C6                | AC26                        | D6                | GND                         | E6                | AA23                        | F6                | AB24                        |
+| A7                | Y23                         | B7                | AA24                        | C7                | GND                         | D7                | AC23                        | E7                | AC24                        | F7                | GND                         |
+| A8                | GND                         | B8                | Y22                         | C8                | AA22                        | D8                | GND                         | E8                | W20                         | F8                | Y21                         |
+| A9                | AD23                        | B9                | AD24                        | C9                | GND                         | D9                | AB21                        | E9                | AC21                        | F9                | GND                         |
+| A10               | GND                         | B10               | AB22                        | C10               | AC22                        | D10               | GND                         | E10               | AD21                        | F10               | AE21                        |
+| A11               | AF24                        | B11               | AF25                        | C11               | GND                         | D11               | AE23                        | E11               | AF23                        | F11               | GND                         |
+| A12               | GND                         | B12               | AD26                        | C12               | AE26                        | D12               | GND                         | E12               | AD25                        | F12               | AE25                        |
+| A13               | AE22                        | B13               | AF22                        | C13               | GND                         | D13               | V13                         | E13               | W13                         | F13               | GND                         |
+| A14               | GND                         | B14               | AE17                        | C14               | AF17                        | D14               | GND                         | E14               | AA17                        | F14               | AA18                        |
+| A15               | AF14                        | B15               | AF15                        | C15               | GND                         | D15               | AD15                        | E15               | AE15                        | F15               | GND                         |
+| A16               | GND                         | B16               | AE18                        | C16               | AF18                        | D16               | GND                         | E16               | AB16                        | F16               | AC16                        |
+| A17               | AF19                        | B17               | AF20                        | C17               | GND                         | D17               | AA14                        | E17               | AA15                        | F17               | GND                         |
+| A18               | GND                         | B18               | AD16                        | C18               | AE16                        | D18               | GND                         | E18               | AC18                        | F18               | AD18                        |
+| A19               | AC14                        | B19               | AD14                        | C19               | GND                         | D19               | AB14                        | E19               | AB15                        | F19               | GND                         |
+| A20               | GND                         | B20               | Y15                         | C20               | Y16                         | D20               | GND                         | E20               | AB17                        | F20               | AC17                        |
+| A21               | AD20                        | B21               | AE20                        | C21               | GND                         | D21               | AC19                        | E21               | AD19                        | F21               | GND                         |
+| A22               | GND                         | B22               | AA19                        | C22               | AA20                        | D22               | GND                         | E22               | AB19                        | F22               | AB20                        |
+| A23               | Y17                         | B23               | Y18                         | C23               | GND                         | D23               | W18                         | E23               | W19                         | F23               | GND                         |
+| A24               | GND                         | B24               | V16                         | C24               | V17                         | D24               | GND                         | E24               | W15                         | F24               | W16                         |
+| A25               | V18                         | B25               | V19                         | C25               | GND                         | D25               | V14                         | E25               | W14                         | F25               | GND                         |
+| A26               | GND                         | B26               | AE7                         | C26               | AF7                         | D26               | GND                         | E26               | U9                          | F26               | V12                         |
+| A27               | AA8                         | B27               | AA7                         | C27               | GND                         | D27               | AB7                         | E27               | AC7                         | F27               | GND                         |
+| A28               | GND                         | B28               | AC8                         | C28               | AD8                         | D28               | GND                         | E28               | AA9                         | F28               | AB9                         |
+| A29               | AC9                         | B29               | AD9                         | C29               | GND                         | D29               | AA10                        | E29               | AB10                        | F29               | GND                         |
+| A30               | GND                         | B30               | AB11                        | C30               | AC11                        | D30               | GND                         | E30               | AB12                        | F30               | AC12                        |
+| A31               | AA13                        | B31               | AA12                        | C31               | GND                         | D31               | Y13                         | E31               | Y12                         | F31               | GND                         |
+| A32               | GND                         | B32               | AC13                        | C32               | AD13                        | D32               | GND                         | E32               | AD10                        | F32               | AE10                        |
+| A33               | AE12                        | B33               | AF12                        | C33               | GND                         | D33               | AE13                        | E33               | AF13                        | F33               | GND                         |
+| A34               | GND                         | B34               | AE8                         | C34               | AF8                         | D34               | GND                         | E34               | AF10                        | F34               | AF9                         |
+| A35               | N12                         | B35               | P11                         | C35               | GND                         | D35               | NC                          | E35               | NC                          | F35               | GND                         |
+| A36               | NC                          | B36               | J7                          | C36               | B24                         | D36               | A22                         | E36               | C23                         | F36               | G7                          |
+| A37               | B22                         | B37               | C8                          | C37               | A25                         | D37               | NC                          | E37               | GND                         | F37               | P6                          |
+| A38               | VCC3V3                      | B38               | L8                          | C38               | N8                          | D38               | R7                          | E38               | R6                          | F38               | GND                         |
+| A39               | GND                         | B39               | GND                         | C39               | GND                         | D39               | GND                         | E39               | GND                         | F39               | GND                         |
+| A40               | VCC3V3                      | B40               | VCC3V3                      | C40               | VCC3V3                      | D40               | VCC3V3                      | E40               | VCC3V3                      | F40               | VCC3V3                      |
+
+*** 3. Driver Installation
+
+This product requires a driver to be installed for proper functioning when used
+with Windows. The D3XX driver can be downloaded from 
+[[http://www.ftdichip.com/Drivers/D3XX.htm]]. Callisto K7 also has one FT232 which
+requires D2XX driver (It can be downloaded from 
+[[http://www.ftdichip.com/Drivers/D2XX.htm]]). Windows users should download and run
+the latest WHQL Certified executable file that will prompt to install the FTDI
+CDM drivers. When the driver installation is complete, the module should appear
+in Callisto K7 Flash Config Tool as Callisto Kintex 7 USB 3.1 FPGA Module.
+
+*** 4. Generating Bitstream Using Vivado
+
+
+The bitstream can be generated for Callisto K7 in Vivado by following the steps below:
+
+*Step 1:* It is recommended to generate a .bin bitstream file along with .bit bitstream file. Click “Bitstream Settings”.
+
+[[https://numato.com/help/wp-content/uploads/2018/05/bitstream-settings.png][[[https://numato.com/help/wp-content/uploads/2018/05/bitstream-settings.png]]]]
+
+*Step 2:* In the window that pops up, select the “-bin_file*” option and click OK.
+
+[[https://numato.com/help/wp-content/uploads/2018/05/bitstream-settings1.png][[[https://numato.com/help/wp-content/uploads/2018/05/bitstream-settings1.png]]]]
+
+*Step 3:* Finally click “Generate Bitstream”.
+
+[[https://numato.com/help/wp-content/uploads/2018/05/generatebitstream.png][[[https://numato.com/help/wp-content/uploads/2018/05/generatebitstream.png]]]]
+
+*** 5. Powering Up Callisto K7
+
+
+Callisto K7 is factory configured to be powered directly from the USB port so
+make sure that you are using a USB port that can power the board properly. It is
+recommended to connect the board directly to the PC instead of using a hub. It
+is practically very difficult to estimate the power consumption of the board, as
+it depends heavily on your design and the clock used. Xilinx provides tools to
+estimate power consumption. In any case, if power from USB is not enough for
+your application, external supply can be applied to the board. Callisto K7
+requires three different voltages, a 3.3V, a 1.8V supply, and a 1.2V supply.
+Onboard regulators derive these voltages from the USB/Ext power supply.
+
+*** 6. Programming Callisto K7 Using JTAG
+
+
+Callisto Kintex-7 USB 3.1 FPGA Module features an onboard JTAG connector that facilitates easy reprogramming of SRAM and onboard SPI flash through JTAG programmer like “Xilinx Platform cable USB”. The following steps illustrate how to program FPGA on Callisto K7 using JTAG.
+
+*Step 1:* Connect Xilinx Platform cable USB to Callisto K7 using JTAG cable. Power up Callisto K7.
+
+*Step 2: * Open Vivado Project. Click on “Open Target” in “Open Hardware Manager” in the “Program and Debug” section of the Flow Navigator window. Select “Auto Connect”.
+
+[[https://numato.com/help/wp-content/uploads/2018/05/auto-connect.png][[[https://numato.com/help/wp-content/uploads/2018/05/auto-connect.png]]]]
+
+*Step 3:* If the device is successfully detected, then right-click on the “xc7k410t_0(1)”. Select “Program Device” as shown below.
+
+[[https://numato.com/help/wp-content/uploads/2018/06/callisto_K7_vivado_program_device3.png][[[https://numato.com/help/wp-content/uploads/2018/06/callisto_K7_vivado_program_device3.png]]]]
+
+*Step 4:* In the dialog window which opens up, Vivado automatically chooses the correct bitstream file if the design was synthesized and implemented, and its bitstream was generated successfully. If needed, you can browse to the bitstream which needs to be programmed to the FPGA.
+
+[[https://numato.com/help/wp-content/uploads/2018/06/callisto_bit_program.png][[[https://numato.com/help/wp-content/uploads/2018/06/callisto_bit_program.png]]]]
+
+Click on the “Program” button and let the FPGA be programmed. There is a green colored LED (D1) on Callisto K7 which was lights up as an indicator that the FPGA is not programmed. Hence, once the programming process of FPGA is completed, the LED stops glowing.
+
+*** 7. Programming QSPI Flash using Vivado
+
+A .bin or .mcs file is required for programming Callisto K7's onboard QSPI flash.
+
+*Step 1:* Open Vivado Project. Click on “Open Target” in “Open Hardware Manager” in the “Program and Debug” section of the Flow Navigator window.
+
+[[https://numato.com/help/wp-content/uploads/2018/05/auto-connect.png][[[https://numato.com/help/wp-content/uploads/2018/05/auto-connect.png]]]]
+
+*Step 2:* If the device is successfully detected, then right-click on the “xc7k410t_0”. Select “Add Configuration Memory Device” as shown below.
+
+[[https://numato.com/help/wp-content/uploads/2018/06/callisto_K7_vivado_add_config_mem.png][[[https://numato.com/help/wp-content/uploads/2018/06/callisto_K7_vivado_add_config_mem.png]]]]
+
+*Step 3:* Select the memory device “mt25ql01g-spi-x1_x2_x4”, then click OK.
+
+[[https://numato.com/help/wp-content/uploads/2018/06/callisto_K7_vivado_select_mem_device3.png][[[https://numato.com/help/wp-content/uploads/2018/06/callisto_K7_vivado_select_mem_device3.png]]]]
+
+*Step 4:* After completion of Step 3 the following dialog box will open. Click OK.
+
+[[https://numato.com/help/wp-content/uploads/2017/02/qspi_3.png][[[https://numato.com/help/wp-content/uploads/2017/02/qspi_3.png]]]]
+
+*Step 5:* Browse to the working .bin file or the .mcs file (whichever applicable)
+and click OK to program as shown below. If programming is successful, a
+confirmation message will be displayed.
+
+[[https://numato.com/help/wp-content/uploads/2018/06/callisto_K7_vivado_prog_config_mem_device1.png][[[https://numato.com/help/wp-content/uploads/2018/06/callisto_K7_vivado_prog_config_mem_device1.png]]]]
+
+*** 8. Technical Specifications
+
+| Parameter*                                            | Value       | Unit |
+|-------------------------------------------------------+-------------+------|
+| *Basic Specifications*                                  |             |      |
+| Number of GPIOs(max)                                  | 274         |      |
+| On-board Oscillator Frequency (ASEM1-100.000MHZ-LC-T) | 100 (x1)    | MHz  |
+| DDR3(MT41J256M16HA-125:K)                             | 4 (x1)      | Gb   |
+| Quad SPI Flash Memory (MT25QL01GBBB)                  | 1 (x1)      | Gb   |
+| Power Supply voltage (External)                       | 5 - 12      | V    |
+| *FPGA Specifications*                                   |             |      |
+| Internal supply voltage relative to GND               | -0.5 to 1.1 | V    |
+| Auxillary supply voltage relative to GND              | -0.5 to 2.0 | V    |
+| Output driver supply voltage relative to GND          | -0.5 to 3.6 | V    |
+
+*** 9. Mechanical Dimensions
+
+[[https://numato.com/help/wp-content/uploads/2018/06/CallistoK7Pd.pdf][[[https://numato.com/help/wp-content/uploads/2018/06/callisto_K7_physical_dimensions.png]]]]
+
+*** 10. Vivado XDC Constraints
+
+[[https://numato.com/download/callisto-k7-constraints-for-vivado/][Download XDC Constraints for Vivado]]
+
+*** 11. Schematics
+
+[[https://numato.com/help/wp-content/uploads/2018/06/CallistoK7Sch.pdf][Callisto K7 Schematics]]
+
+*** 12. Callisto K7 GPIO Easy Reference
+
+
+[[https://numato.com/help/wp-content/uploads/2018/06/CallistoK7_GPIO_Easy_Reference1.pdf][Callisto K7 GPIO Easy Reference]]
+
+Help Guide Powered by [[https://documentor.in/?utm_source=plugin&utm_medium=footer&utm_campaign=powered-by][Documentor]]

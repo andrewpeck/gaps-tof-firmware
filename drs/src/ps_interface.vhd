@@ -2,7 +2,7 @@ library xpm;
 use xpm.vcomponents.all;
 
 library work;
-use work.ipbus_pkg.all;
+use work.ipbus.all;
 use work.registers.all;
 use work.types_pkg.all;
 use work.axi_pkg.all;
@@ -44,6 +44,8 @@ entity ps_interface is
     ddr_dq            : inout std_logic_vector (31 downto 0);
     ddr_dqs_n         : inout std_logic_vector (3 downto 0);
     ddr_dqs_p         : inout std_logic_vector (3 downto 0);
+    emio_scl          : inout std_logic;
+    emio_sda          : inout std_logic;
 
     -- From Logic
     fifo_data_in  : in std_logic_vector (15 downto 0);
@@ -210,6 +212,9 @@ begin
     port map (
 
       dma_axi_clk_o => dma_axi_aclk,
+
+      IIC_0_0_scl_io => emio_scl,
+      IIC_0_0_sda_io => emio_sda,
 
       ipb_clk => ipb_axi_clk,
 
