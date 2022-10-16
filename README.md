@@ -29,7 +29,6 @@ readout-firmware/
   * git
   * make
   * python3.6+
-  * python2
 * Optional
   * emacs
 
@@ -68,10 +67,15 @@ make reg
 
 ### Special note for 2020.1 and hardware generation
 
-Vivado 2020.1 cannot be used with Hog to export hardware `.xsa` out of the box due to a bug Xilinx shipped in that version. Implement either of two work arounds below.
+Vivado 2020.1 cannot be used with Hog to export hardware `.xsa` out of the box due to a bug Xilinx
+shipped in that version. Implement either of two work arounds below.
 
- 1. Stock 2020.1: ensure bitstream successfully generated. Open BD or Implemented Design: File->Export->Export Hardware (Platform type=Fixed), next-> Check include bitstream, next->set file name/path->finish.
- 2. Fix 2020.1 with Xilinx "tactical patch". See <https://www.xilinx.com/support/answers/75210.html>. If using this option, no further steps are required when using the Hog build system.
+ 1. Stock 2020.1: ensure bitstream successfully generated. Open BD or Implemented Design:
+    File->Export->Export Hardware (Platform type=Fixed), next-> Check include bitstream, next->set
+    file name/path->finish.
+ 2. Fix 2020.1 with Xilinx "tactical patch". See
+    <https://www.xilinx.com/support/answers/75210.html>. If using this option, no further steps are
+    required when using the Hog build system.
 
 ### Build instructions
 
@@ -90,6 +94,8 @@ The firmware can then be built with:
 
 ```bash
 make readout_board_zx3
+make readout_board_zx2
+make trigger_board
 ```
 
 a list of Make targets will be displayed by typing:
