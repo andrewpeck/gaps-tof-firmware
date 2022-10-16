@@ -25,6 +25,8 @@ set_property IOSTANDARD LVDS_25 [get_ports clock_i_*]
 
 set_property IOSTANDARD LVCMOS25 [get_ports {gfp_s*}]
 
+set_property IOSTANDARD LVCMOS25 [get_ports led*]
+
 set_property SLEW SLOW [get_ports drs_*_o]
 
 set_property DRIVE 4 [get_ports drs_*_o]
