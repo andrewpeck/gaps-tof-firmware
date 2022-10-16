@@ -21,6 +21,7 @@ common/src/manchester_decoder.vhd
 common/src/prbs_any.vhd
 
 # Readout Board
+drs/src/cylon.v
 drs/src/ipbus_pkg.vhd
 drs/src/axi_ipbus_bridge.vhd
 drs/src/axi_pkg.vhd

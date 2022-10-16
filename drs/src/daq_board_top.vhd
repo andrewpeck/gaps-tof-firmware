@@ -139,7 +139,6 @@ architecture Behavioral of top_readout_board is
   signal mt_trigger_data        : std_logic             := '0';
   signal mt_trigger_dav         : std_logic             := '0';
   signal mt_trigger_data_ff     : std_logic             := '0';
-  signal mt_trigger_data_ff     : std_logic             := '0';
   signal mt_prbs_err            : std_logic             := '0';
   signal mt_prbs_rst            : std_logic             := '0';
   signal mt_inactive            : std_logic             := '0';
@@ -163,7 +162,6 @@ architecture Behavioral of top_readout_board is
   signal daq_busy            : std_logic := '0';
   signal debug_packet_inject : std_logic;
 
-  signal drs_srclk_en            : std_logic;
   signal sem_correction          : std_logic;
   signal sem_uncorrectable_error : std_logic;
 
@@ -173,6 +171,7 @@ architecture Behavioral of top_readout_board is
 
   signal drs_diagnostic_mode : std_logic := '0';
 
+  signal drs_srclk_en  : std_logic;
   signal drs_busy      : std_logic;
   signal roi_mode      : std_logic;
   signal spike_removal : std_logic;
