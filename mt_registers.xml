@@ -40,6 +40,14 @@
           fw_signal="fb_clock_rates(${FB_IDX})">
     </node>
 
+    <node id="DSI_ON"
+          address="0x7"
+          permission="rw"
+          mask="0x1f"
+          description="Bitmask 1 = enable DSI"
+          fw_default="0x0"
+          fw_signal="dsi_on_ipb"/>
+
     <node id="PULSE_STRETCH"
           address="0xf"
           permission="rw"
