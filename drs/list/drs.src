@@ -22,7 +22,6 @@ common/src/prbs_any.vhd
 
 # Readout Board
 drs/src/ipbus_pkg.vhd
-drs/src/adc.vhd
 drs/src/axi_ipbus_bridge.vhd
 drs/src/axi_pkg.vhd
 drs/src/daq_board_top.vhd top=top_readout_board
@@ -30,7 +29,6 @@ drs/src/dtap.vhd
 drs/src/components.vhd
 drs/src/ps_interface.vhd
 drs/src/registers.vhd
-drs/src/sem.vhd
 drs/src/spi_rx.vhd
 drs/src/trigger_mux.vhd
 drs/src/rate_counter.vhd
@@ -42,3 +40,5 @@ drs/src/drs.v
 drs/src/crc32.vhd
 drs/src/dna.v
 drs/src/daq.vhd
+common/src/adc.vhd
+common/src/sem.vhd
