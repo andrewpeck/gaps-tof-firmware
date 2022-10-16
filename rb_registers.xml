@@ -251,13 +251,18 @@
             <node id="CNT_MT_PRBS_ERRS" address="0x3" permission="r"
                 description="Number of PRBS errors on the MT line"
                 mask="0xffffffff"
-                fw_cnt_reset_signal="mt_prbs_reset"
+                fw_cnt_reset_signal="mt_prbs_rst"
                 fw_cnt_en_signal="mt_prbs_err or mt_inactive"
                 fw_signal="cnt_mt_prbs_err"/>
             <node id="MT_PRBS_ERR_RESET" address="0x4" permission="w"
                 description="Write 1 to reset the MT PRBS Error Counter"
                 mask="0x1"
                 fw_write_pulse_signal="mt_prbs_rst" />
+            <node id="MT_TRIGGER_MODE" address="0x5" permission="w"
+                description="1 to use the MT as the source of the trigger"
+                mask="0x1"
+                fw_default="0x1"
+                fw_signal="mt_trigger_mode" />
         </node> <!--TRIGGER-->
 
         <node id="COUNTERS" address="0x50" description="Counters">
