@@ -1,23 +1,6 @@
--- TODO: Input/Output delays for rgmii
---
--- TODO: Need for pulse extension
---         -- make it programmable
---
--- TODO: Need for alignment
---          -- add inferred SRL16s (prior to the deserializer)
---
--- TODO: Connect idelays to wishbone
---
--- TODO: channel masking (for e.g. hot channels)
---
 -- TODO: LT format has changed from hit to 3 level thing, need to receive accordingly
 --
 -- FIXME: counters will multi-count pulse-extended hits
---
--- QUESTIONS:
---
---  async oversampling? multi-phase clock w/ cd?
---         need to decide if LTMT link carries a clock
 
 library ieee;
 use ieee.std_logic_1164.all;

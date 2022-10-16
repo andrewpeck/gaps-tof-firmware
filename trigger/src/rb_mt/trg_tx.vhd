@@ -102,12 +102,7 @@ begin
   end process;
 
   gen_manchester : if (MANCHESTER) generate
-    process (clock) is
-    begin
-      if (rising_edge(clock)) then
-        serial_o <= serial_data xor clock;
-      end if;
-    end process;
+    serial_o <= serial_data xor clock;
   end generate;
 
   gen_nomanchester : if (not MANCHESTER) generate

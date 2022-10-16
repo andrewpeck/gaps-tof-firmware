@@ -11,8 +11,6 @@ entity trg_tx_wrapper is
     );
   port(
 
-    clock : in std_logic
-
     clock    : in  std_logic;
     reset    : in  std_logic;
     serial_o : out std_logic_vector (NUM_RB_CHANNELS-1 downto 0);
