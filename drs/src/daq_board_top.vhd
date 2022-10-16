@@ -90,7 +90,9 @@ entity top_readout_board is
     ddr_dm            : inout std_logic_vector (3 downto 0);
     ddr_dq            : inout std_logic_vector (31 downto 0);
     ddr_dqs_n         : inout std_logic_vector (3 downto 0);
-    ddr_dqs_p         : inout std_logic_vector (3 downto 0)
+    ddr_dqs_p         : inout std_logic_vector (3 downto 0);
+
+    led : out std_logic_vector (3 downto 0)
 
     -- gpio_p : inout std_logic_vector (9 downto 0);
     -- gpio_n : inout std_logic_vector (9 downto 0)
@@ -294,6 +296,9 @@ architecture Behavioral of top_readout_board is
   signal ipb_miso_arr : ipb_rbus_array(IPB_SLAVES - 1 downto 0) := (others => (ipb_rdata => (others => '0'), ipb_ack => '0', ipb_err => '0'));
   signal ipb_mosi_arr : ipb_wbus_array(IPB_SLAVES - 1 downto 0);
 
+  signal cylon : std_logic_vector (3 downto 0) := (others => '0');
+
+
 begin
 
   -------------------------------------------------------------------------------
@@ -313,6 +318,19 @@ begin
 
   reset <= not locked;
   clock <= clk33;
+
+  --------------------------------------------------------------------------------
+  -- LED Control
+  --------------------------------------------------------------------------------
+
+  cylon1_inst : cylon1
+    port map (
+      clock => clock,
+      rate  => "00",
+      q     => cylon
+      );
+
+  led <= not cylon;
 
   -------------------------------------------------------------------------------
   -- GFP Trigger Input

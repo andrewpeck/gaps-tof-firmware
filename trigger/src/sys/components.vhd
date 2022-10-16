@@ -126,4 +126,12 @@ package components is
       );
   end component ila_prbs;
 
+  component cylon1 is
+    port (
+      clock : in  std_logic;
+      rate  : in  std_logic_vector (1 downto 0);
+      q     : out std_logic_vector (3 downto 0)
+      );
+  end component;
+
 end package components;

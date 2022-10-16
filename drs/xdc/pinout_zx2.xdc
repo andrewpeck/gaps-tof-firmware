@@ -71,3 +71,8 @@ set_property PACKAGE_PIN G18 [get_ports gfp_sclk];# IO_B35_L16_G18_N
 
 # ext trigger on GPIO
 set_property PACKAGE_PIN D19 [get_ports ext_trigger_i]; # IO_B35_L4_D19_P
+
+set_property PACKAGE_PIN R19 [get_ports led[0]]
+set_property PACKAGE_PIN T19 [get_ports led[1]]
+set_property PACKAGE_PIN G14 [get_ports led[2]]
+set_property PACKAGE_PIN J15 [get_ports led[3]]

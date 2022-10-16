@@ -1,5 +1,6 @@
 ################################################################################
 # zx3
+# https://download.enclustra.com/public_files/SoC_Modules/Mars_ZX3/MA-ZX3-R7-1_User_Schematics_V1.pdf
 ################################################################################
 set_property PACKAGE_PIN P17 [get_ports          drs_wsrin_o]; # IO_B34_L20_P17_P
 set_property PACKAGE_PIN P18 [get_ports        drs_denable_o]; # IO_B34_L20_P18_N
@@ -41,3 +42,8 @@ set_property PACKAGE_PIN R15 [get_ports             emio_scl];
 set_property PACKAGE_PIN R19 [get_ports        ext_trigger_i];
 
 set_property PULLDOWN true [get_ports ext_trigger_i]
+
+set_property PACKAGE_PIN H18  [get_ports led[0]]
+set_property PACKAGE_PIN AA14 [get_ports led[1]]
+set_property PACKAGE_PIN AA13 [get_ports led[2]]
+set_property PACKAGE_PIN AB15 [get_ports led[3]]
