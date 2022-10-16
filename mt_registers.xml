@@ -167,6 +167,42 @@
       </node>
     </node>
 
+    <node id="XADC" address="0x120"
+          description="Zynq XADC">
+        <node id="CALIBRATION" address="0x0" permission="r"
+              description="XADC Calibration"
+              mask="0x00000fff"
+              fw_signal="calibration" />
+        <node id="VCCPINT" address="0x0" permission="r"
+              description="XADC vccpint"
+              mask="0x0fff0000"
+              fw_signal="vccpint"/>
+        <node id="VCCPAUX" address="0x1" permission="r"
+              description="XADC Calibration"
+              mask="0x00000fff"
+              fw_signal="vccpaux" />
+        <node id="VCCODDR" address="0x1" permission="r"
+              description="XADC vccoddr"
+              mask="0x0fff0000"
+              fw_signal="vccoddr"/>
+        <node id="TEMP" address="0x2" permission="r"
+              description="XADC Temperature"
+              mask="0x00000fff"
+              fw_signal="temp" />
+        <node id="VCCINT" address="0x2" permission="r"
+              description="XADC vccint"
+              mask="0x0fff0000"
+              fw_signal="vccint"/>
+        <node id="VCCAUX" address="0x3" permission="r"
+              description="XADC VCCAUX"
+              mask="0x00000fff"
+              fw_signal="vccaux" />
+        <node id="VCCBRAM" address="0x3" permission="r"
+              description="XADC vccbram"
+              mask="0x0fff0000"
+              fw_signal="vccbram"/>
+    </node> <!--XADC-->
+
     <node id="HOG" address="0x200" description = "HOG Parameters">
       <node id="GLOBAL_DATE" mask="0xFFFFFFFF" permission="r" address="0x0" description="HOG Global Date"    fw_signal="GLOBAL_DATE"/>
       <node id="GLOBAL_TIME" mask="0xFFFFFFFF" permission="r" address="0x1" description="HOG Global Time"    fw_signal="GLOBAL_TIME"/>

@@ -149,6 +149,16 @@ architecture structural of gaps_mt is
 
   signal clock_rate : std_logic_vector (31 downto 0) := (others => '0');
 
+  -- xadc
+
+  signal calibration : std_logic_vector(11 downto 0) := (others => '0');
+  signal vccpint     : std_logic_vector(11 downto 0) := (others => '0');
+  signal vccpaux     : std_logic_vector(11 downto 0) := (others => '0');
+  signal vccoddr     : std_logic_vector(11 downto 0) := (others => '0');
+  signal temp        : std_logic_vector(11 downto 0) := (others => '0');
+  signal vccint      : std_logic_vector(11 downto 0) := (others => '0');
+  signal vccaux      : std_logic_vector(11 downto 0) := (others => '0');
+  signal vccbram     : std_logic_vector(11 downto 0) := (others => '0');
 
   --------------------------------------------------------------------------------
   -- IPbus / wishbone
@@ -984,6 +994,10 @@ begin
 
   end generate;
 
+  --------------------------------------------------------------------------------
+  -- Single Event Correction
+  --------------------------------------------------------------------------------
+
   sem_wrapper : entity work.sem_wrapper
     port map (
       clk_i            => clock,
@@ -995,6 +1009,24 @@ begin
       observation_o    => open,
       essential_o      => open,
       sump             => open
+      );
+
+  --------------------------------------------------------------------------------
+  -- XADC
+  --------------------------------------------------------------------------------
+
+  adc_inst : entity work.adc
+    port map (
+      clock       => clock,
+      reset       => reset,
+      calibration => calibration,
+      vccpint     => vccpint,
+      vccpaux     => vccpaux,
+      vccoddr     => vccoddr,
+      temp        => temp,
+      vccint      => vccint,
+      vccaux      => vccaux,
+      vccbram     => vccbram
       );
 
   ----------------------------------------------------------------------------------
@@ -1161,14 +1193,18 @@ begin
   regs_addresses(126)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"11";
   regs_addresses(127)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"12";
   regs_addresses(128)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"13";
-  regs_addresses(129)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"00";
-  regs_addresses(130)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"01";
-  regs_addresses(131)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"02";
-  regs_addresses(132)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"03";
-  regs_addresses(133)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"04";
-  regs_addresses(134)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"05";
-  regs_addresses(135)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"06";
-  regs_addresses(136)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"07";
+  regs_addresses(129)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"20";
+  regs_addresses(130)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"21";
+  regs_addresses(131)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"22";
+  regs_addresses(132)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"23";
+  regs_addresses(133)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"00";
+  regs_addresses(134)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"01";
+  regs_addresses(135)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"02";
+  regs_addresses(136)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"03";
+  regs_addresses(137)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"04";
+  regs_addresses(138)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"05";
+  regs_addresses(139)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"06";
+  regs_addresses(140)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"07";
 
   -- Connect read signals
   regs_read_arr(0)(REG_MT_LOOPBACK_MSB downto REG_MT_LOOPBACK_LSB) <= loopback;
@@ -1360,14 +1396,22 @@ begin
   regs_read_arr(127)(REG_MT_POSNEGS_LT18_CH1_BIT) <= posnegs(18)(1);
   regs_read_arr(128)(REG_MT_POSNEGS_LT19_CH0_BIT) <= posnegs(19)(0);
   regs_read_arr(128)(REG_MT_POSNEGS_LT19_CH1_BIT) <= posnegs(19)(1);
-  regs_read_arr(129)(REG_MT_HOG_GLOBAL_DATE_MSB downto REG_MT_HOG_GLOBAL_DATE_LSB) <= GLOBAL_DATE;
-  regs_read_arr(130)(REG_MT_HOG_GLOBAL_TIME_MSB downto REG_MT_HOG_GLOBAL_TIME_LSB) <= GLOBAL_TIME;
-  regs_read_arr(131)(REG_MT_HOG_GLOBAL_VER_MSB downto REG_MT_HOG_GLOBAL_VER_LSB) <= GLOBAL_VER;
-  regs_read_arr(132)(REG_MT_HOG_GLOBAL_SHA_MSB downto REG_MT_HOG_GLOBAL_SHA_LSB) <= GLOBAL_SHA;
-  regs_read_arr(133)(REG_MT_HOG_TOP_SHA_MSB downto REG_MT_HOG_TOP_SHA_LSB) <= TOP_SHA;
-  regs_read_arr(134)(REG_MT_HOG_TOP_VER_MSB downto REG_MT_HOG_TOP_VER_LSB) <= TOP_VER;
-  regs_read_arr(135)(REG_MT_HOG_HOG_SHA_MSB downto REG_MT_HOG_HOG_SHA_LSB) <= HOG_SHA;
-  regs_read_arr(136)(REG_MT_HOG_HOG_VER_MSB downto REG_MT_HOG_HOG_VER_LSB) <= HOG_VER;
+  regs_read_arr(129)(REG_MT_XADC_CALIBRATION_MSB downto REG_MT_XADC_CALIBRATION_LSB) <= calibration;
+  regs_read_arr(129)(REG_MT_XADC_VCCPINT_MSB downto REG_MT_XADC_VCCPINT_LSB) <= vccpint;
+  regs_read_arr(130)(REG_MT_XADC_VCCPAUX_MSB downto REG_MT_XADC_VCCPAUX_LSB) <= vccpaux;
+  regs_read_arr(130)(REG_MT_XADC_VCCODDR_MSB downto REG_MT_XADC_VCCODDR_LSB) <= vccoddr;
+  regs_read_arr(131)(REG_MT_XADC_TEMP_MSB downto REG_MT_XADC_TEMP_LSB) <= temp;
+  regs_read_arr(131)(REG_MT_XADC_VCCINT_MSB downto REG_MT_XADC_VCCINT_LSB) <= vccint;
+  regs_read_arr(132)(REG_MT_XADC_VCCAUX_MSB downto REG_MT_XADC_VCCAUX_LSB) <= vccaux;
+  regs_read_arr(132)(REG_MT_XADC_VCCBRAM_MSB downto REG_MT_XADC_VCCBRAM_LSB) <= vccbram;
+  regs_read_arr(133)(REG_MT_HOG_GLOBAL_DATE_MSB downto REG_MT_HOG_GLOBAL_DATE_LSB) <= GLOBAL_DATE;
+  regs_read_arr(134)(REG_MT_HOG_GLOBAL_TIME_MSB downto REG_MT_HOG_GLOBAL_TIME_LSB) <= GLOBAL_TIME;
+  regs_read_arr(135)(REG_MT_HOG_GLOBAL_VER_MSB downto REG_MT_HOG_GLOBAL_VER_LSB) <= GLOBAL_VER;
+  regs_read_arr(136)(REG_MT_HOG_GLOBAL_SHA_MSB downto REG_MT_HOG_GLOBAL_SHA_LSB) <= GLOBAL_SHA;
+  regs_read_arr(137)(REG_MT_HOG_TOP_SHA_MSB downto REG_MT_HOG_TOP_SHA_LSB) <= TOP_SHA;
+  regs_read_arr(138)(REG_MT_HOG_TOP_VER_MSB downto REG_MT_HOG_TOP_VER_LSB) <= TOP_VER;
+  regs_read_arr(139)(REG_MT_HOG_HOG_SHA_MSB downto REG_MT_HOG_HOG_SHA_LSB) <= HOG_SHA;
+  regs_read_arr(140)(REG_MT_HOG_HOG_VER_MSB downto REG_MT_HOG_HOG_VER_LSB) <= HOG_VER;
 
   -- Connect write signals
   loopback <= regs_write_arr(0)(REG_MT_LOOPBACK_MSB downto REG_MT_LOOPBACK_LSB);

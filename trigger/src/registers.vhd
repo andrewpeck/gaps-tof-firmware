@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_MT_NUM_REGS : integer := 137;
+    constant REG_MT_NUM_REGS : integer := 141;
     constant REG_MT_ADDRESS_MSB : integer := 9;
     constant REG_MT_ADDRESS_LSB : integer := 0;
     constant REG_MT_LOOPBACK_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
@@ -871,6 +871,38 @@ package registers is
     constant REG_MT_POSNEGS_LT19_CH1_ADDR    : std_logic_vector(9 downto 0) := "01" & x"13";
     constant REG_MT_POSNEGS_LT19_CH1_BIT    : integer := 4;
     constant REG_MT_POSNEGS_LT19_CH1_DEFAULT : std_logic := '0';
+
+    constant REG_MT_XADC_CALIBRATION_ADDR    : std_logic_vector(9 downto 0) := "01" & x"20";
+    constant REG_MT_XADC_CALIBRATION_MSB    : integer := 11;
+    constant REG_MT_XADC_CALIBRATION_LSB     : integer := 0;
+
+    constant REG_MT_XADC_VCCPINT_ADDR    : std_logic_vector(9 downto 0) := "01" & x"20";
+    constant REG_MT_XADC_VCCPINT_MSB    : integer := 27;
+    constant REG_MT_XADC_VCCPINT_LSB     : integer := 16;
+
+    constant REG_MT_XADC_VCCPAUX_ADDR    : std_logic_vector(9 downto 0) := "01" & x"21";
+    constant REG_MT_XADC_VCCPAUX_MSB    : integer := 11;
+    constant REG_MT_XADC_VCCPAUX_LSB     : integer := 0;
+
+    constant REG_MT_XADC_VCCODDR_ADDR    : std_logic_vector(9 downto 0) := "01" & x"21";
+    constant REG_MT_XADC_VCCODDR_MSB    : integer := 27;
+    constant REG_MT_XADC_VCCODDR_LSB     : integer := 16;
+
+    constant REG_MT_XADC_TEMP_ADDR    : std_logic_vector(9 downto 0) := "01" & x"22";
+    constant REG_MT_XADC_TEMP_MSB    : integer := 11;
+    constant REG_MT_XADC_TEMP_LSB     : integer := 0;
+
+    constant REG_MT_XADC_VCCINT_ADDR    : std_logic_vector(9 downto 0) := "01" & x"22";
+    constant REG_MT_XADC_VCCINT_MSB    : integer := 27;
+    constant REG_MT_XADC_VCCINT_LSB     : integer := 16;
+
+    constant REG_MT_XADC_VCCAUX_ADDR    : std_logic_vector(9 downto 0) := "01" & x"23";
+    constant REG_MT_XADC_VCCAUX_MSB    : integer := 11;
+    constant REG_MT_XADC_VCCAUX_LSB     : integer := 0;
+
+    constant REG_MT_XADC_VCCBRAM_ADDR    : std_logic_vector(9 downto 0) := "01" & x"23";
+    constant REG_MT_XADC_VCCBRAM_MSB    : integer := 27;
+    constant REG_MT_XADC_VCCBRAM_LSB     : integer := 16;
 
     constant REG_MT_HOG_GLOBAL_DATE_ADDR    : std_logic_vector(9 downto 0) := "10" & x"00";
     constant REG_MT_HOG_GLOBAL_DATE_MSB    : integer := 31;

@@ -315,6 +315,31 @@
 
 
     \noindent
+    \subsection*{\textcolor{parentcolor}{\textbf{MT.XADC}}}
+
+    \vspace{4mm}
+    \noindent
+    Zynq XADC
+    \noindent
+
+    \keepXColumns
+    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
+    \hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
+    \nopagebreak
+    CALIBRATION & \texttt{0x120} & \texttt{[11:0]} & r & \texttt{} & XADC Calibration \\\hline
+    VCCPINT & \texttt{0x120} & \texttt{[27:16]} & r & \texttt{} & XADC vccpint \\\hline
+    VCCPAUX & \texttt{0x121} & \texttt{[11:0]} & r & \texttt{} & XADC Calibration \\\hline
+    VCCODDR & \texttt{0x121} & \texttt{[27:16]} & r & \texttt{} & XADC vccoddr \\\hline
+    TEMP & \texttt{0x122} & \texttt{[11:0]} & r & \texttt{} & XADC Temperature \\\hline
+    VCCINT & \texttt{0x122} & \texttt{[27:16]} & r & \texttt{} & XADC vccint \\\hline
+    VCCAUX & \texttt{0x123} & \texttt{[11:0]} & r & \texttt{} & XADC VCCAUX \\\hline
+    VCCBRAM & \texttt{0x123} & \texttt{[27:16]} & r & \texttt{} & XADC vccbram \\\hline
+    \end{tabularx}
+    \vspace{5mm}
+
+
+    \noindent
     \subsection*{\textcolor{parentcolor}{\textbf{MT.HOG}}}
 
     \vspace{4mm}
