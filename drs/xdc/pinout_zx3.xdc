@@ -2,7 +2,8 @@
 # zx3
 # https://download.enclustra.com/public_files/SoC_Modules/Mars_ZX3/MA-ZX3-R7-1_User_Schematics_V1.pdf
 ################################################################################
-set_property PACKAGE_PIN P17 [get_ports          drs_wsrin_o]; # IO_B34_L20_P17_P
+# set_property PACKAGE_PIN P17 [get_ports          drs_wsrin_o]; # IO_B34_L20_P17_P
+# set_property PACKAGE_PIN A21 [get_ports         drs_wsrout_i]; # IO_B35_L15_AD12_A21_P
 set_property PACKAGE_PIN P18 [get_ports        drs_denable_o]; # IO_B34_L20_P18_N
 set_property PACKAGE_PIN P16 [get_ports         drs_dwrite_o]; # IO_B34_L24_P16_P
 set_property PACKAGE_PIN R16 [get_ports        drs_plllock_i]; # IO_B34_L24_R16_N
@@ -30,7 +31,6 @@ set_property PACKAGE_PIN D20 [get_ports        drs_rsrload_o]; # IO_B35_L14_SRCC
 set_property PACKAGE_PIN C20 [get_ports          drs_srclk_o]; # IO_B35_L14_SRCC_AD4_C20_N
 set_property PACKAGE_PIN B21 [get_ports           drs_srin_o]; # IO_B35_L18_AD13_B21_P
 set_property PACKAGE_PIN B22 [get_ports          drs_srout_i]; # IO_B35_L18_AD13_B22_N
-set_property PACKAGE_PIN A21 [get_ports         drs_wsrout_i]; # IO_B35_L15_AD12_A21_P
 set_property PACKAGE_PIN L18 [get_ports            clock_i_p]; # IO_B34_L12_MRCC_L18_P
 set_property PACKAGE_PIN L19 [get_ports            clock_i_n]; # IO_B34_L12_MRCC_L19_N
 set_property PACKAGE_PIN A18 [get_ports             gfp_sdat]; # IO_B35_L10_AD11_A18_P

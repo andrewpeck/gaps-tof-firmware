@@ -39,14 +39,14 @@ set_false_path -from [get_ports drs_dtap_i]
 set_false_path -from [get_ports drs_plllock_i]
 set_false_path -to   [get_ports drs_nreset_o]
 
-#set_min_delay -from [get_ports ext_trigger_i_p] -to [get_ports drs_dwrite_o] 8
+#set_min_delay -from [get_ports ext_trigger_i] -to [get_ports drs_dwrite_o] 8
 # DWRITE Special Output
-set_max_delay -datapath_only -from [get_ports ext_trigger_i_p] -to [get_ports drs_dwrite_o] 19
+set_max_delay -datapath_only -from [get_ports ext_trigger_i] -to [get_ports drs_dwrite_o] 19
 
 # false path for dma ILA
-set_false_path \
-    -from [get_pins {daq_inst/*/C}] \
-    -to [get_pins {ps_interface_inst/dma_controller_inst/debug.ila_s2mm_inst/U0/*/D}]
+# set_false_path \
+#     -from [get_pins {daq_inst/*/C}] \
+#     -to [get_pins {ps_interface_inst/dma_controller_inst/debug.ila_s2mm_inst/U0/*/D}]
 
 set_max_delay \
     -to   [get_pins {ps_interface_inst/dma_controller_inst/synchronizer_inst/sync_gen.gen_ff[0].s_resync_reg[1]/D}] 8.0
