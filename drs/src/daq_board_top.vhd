@@ -182,7 +182,7 @@ architecture Behavioral of top_readout_board is
 
   signal wait_vdd_clocks : std_logic_vector (15 downto 0);
 
-  signal readout_mask                  : std_logic_vector (9*2-1 downto 0);
+  signal readout_mask                  : std_logic_vector (8 downto 0);
   signal readout_mask_axi              : std_logic_vector (8 downto 0) := (others => '0');
   signal readout_mask_mt               : std_logic_vector (8 downto 0) := (others => '0');
   signal readout_mask_or               : std_logic_vector (8 downto 0) := (others => '0');
@@ -259,17 +259,25 @@ architecture Behavioral of top_readout_board is
   signal mt_mask            : std_logic_vector (7 downto 0)  := (others => '0');
   signal mt_event_cnt       : std_logic_vector (31 downto 0) := (others => '0');
 
-  signal event_queue_din, event_queue_dout :
-    std_logic_vector (
-      1 + -- (drs busy)
-      mt_event_cnt'length  +
-      mt_mask'length  +
-      timestamp'length - 1 downto 0) := (others => '0');
+  signal daq_event_cnt   : std_logic_vector(31 downto 0);
+  signal daq_timestamp   : std_logic_vector(47 downto 0);
+  signal daq_mask        : std_logic_vector(8 downto 0);
+  signal daq_drs_busy    : std_logic;
+  signal daq_event_ack   : std_logic := '0';
+  signal daq_trigger     : std_logic := '0';
+  signal daq_event_valid : std_logic := '0';
 
   signal xfifo_busy      : std_logic_vector (0 downto 0);
   signal xfifo_timestamp : std_logic_vector (timestamp'range);
-  signal xfifo_mask      : std_logic_vector (mt_mask'range);
+  signal xfifo_mask      : std_logic_vector (readout_mask'range);
   signal xfifo_event_cnt : std_logic_vector (mt_event_cnt'range);
+
+  signal event_queue_din, event_queue_dout :
+    std_logic_vector (
+      xfifo_busy'length +
+      xfifo_event_cnt'length  +
+      xfifo_mask'length  +
+      xfifo_timestamp'length - 1 downto 0) := (others => '0');
 
   signal gfp_use_eventid      : std_logic;
   signal gfp_eventid_rx       : std_logic_vector (31 downto 0);
@@ -539,7 +547,7 @@ begin
   -- Event Queue
   --------------------------------------------------------------------------------
 
-  event_queue_din <= mt_event_cnt & mt_mask & drs_busy & std_logic_vector(timestamp);
+  event_queue_din <= mt_event_cnt & readout_mask & drs_busy & std_logic_vector(timestamp);
 
   xfifo_timestamp <= event_queue_dout(xfifo_timestamp'length-1 downto 0);
   xfifo_busy      <= event_queue_dout(xfifo_timestamp'length + xfifo_busy'length - 1 downto xfifo_timestamp'length);
@@ -556,10 +564,10 @@ begin
       rst    => reset,
       clk    => clock,
       wr_en  => mt_event_cnt_valid,
-      rd_en  => '1', -- FIXME: this should not be 1; it should be controlled by the DAQ
+      rd_en  => not daq_busy,
       din    => event_queue_din,
       dout   => event_queue_dout,
-      valid  => daq_valid,
+      valid  => daq_event_valid,
       full   => open,
       empty  => open
       );
@@ -648,7 +656,7 @@ begin
   -- take the readout mask from either the trigger or axi control
   readout_mask_or <= readout_mask_mt when mt_trigger_mode='1' else readout_mask_axi;
   read_ch8        <= readout_mask_9th_channel_auto and or_reduce(readout_mask_or (7 downto 0));
-  readout_mask    <= '0' & x"00" & (readout_mask_or or (read_ch8 & x"00"));
+  readout_mask    <= readout_mask_or or (read_ch8 & x"00");
 
   drs_config(0) <= dmode;
   drs_config(1) <= '1';                 -- pllen
@@ -689,7 +697,7 @@ begin
       drs_ctl_reinit           => reinit,
       drs_ctl_configure_drs    => configure,
       drs_ctl_chn_config       => chn_config(7 downto 0),
-      drs_ctl_readout_mask_i   => readout_mask (8 downto 0),
+      drs_ctl_readout_mask_i   => readout_mask(8 downto 0),
       drs_ctl_wait_vdd_clocks  => wait_vdd_clocks,
 
       drs_srout_i => drs_srout_i,
@@ -735,33 +743,40 @@ begin
       empty  => daq_empty
       );
 
+  daq_event_cnt <= xfifo_event_cnt when mt_trigger_mode = '1' else event_counter;
+  daq_timestamp <= xfifo_timestamp when mt_trigger_mode = '1' else std_logic_vector(timestamp);
+  daq_mask      <= xfifo_mask      when mt_trigger_mode = '1' else readout_mask;
+  daq_drs_busy  <= xfifo_busy(0)   when mt_trigger_mode = '1' else drs_busy;
+  daq_trigger   <= daq_event_valid when mt_trigger_mode = '1' else trigger;
+
   daq_inst : entity work.daq
     port map (
       clock                 => clock,
       reset                 => daq_reset or reset,
       debug_packet_inject_i => debug_packet_inject,
       temperature_i         => temp,
-      trigger_i             => trigger,
       stop_cell_i           => drs_stop_cell,
-      event_cnt_i           => event_counter,
 
-      gfp_use_eventid_i     => gfp_use_eventid,
+      event_cnt_i => daq_event_cnt,
+      timestamp_i => daq_timestamp,
+      mask_i      => daq_mask,
+      drs_busy_i  => daq_drs_busy,
+      trigger_i   => trigger,
+
+      gfp_use_eventid_i     => gfp_use_eventid and not mt_trigger_mode,
       gfp_eventid_i         => gfp_eventid,
       gfp_eventid_valid_i   => gfp_eventid_valid,
       gfp_eventid_read_o    => gfp_eventid_read,
       gfp_eventid_timeout_o => gfp_eventid_timeout,
 
-      mask_i      => readout_mask,
       board_id    => board_id,
       sync_err_i  => '0',
       dna_i       => "0000000" & dna,
       hash_i      => GLOBAL_SHA,
-      timestamp_i => std_logic_vector(timestamp),
       roi_size_i  => sample_count_max,
       dtap0_i     => dtap_cnt,
       dtap1_i     => (others => '0'),
 
-      drs_busy_i  => '0', -- FIXME
       drs_data_i  => drs_data,
       drs_valid_i => drs_data_valid,
       drs_rden_o  => drs_rden,

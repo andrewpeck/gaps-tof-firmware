@@ -29,7 +29,7 @@ entity daq is
     stop_cell_i : in std_logic_vector (9 downto 0);
     trigger_i   : in std_logic;
     event_cnt_i : in std_logic_vector (31 downto 0);
-    mask_i      : in std_logic_vector (17 downto 0);
+    mask_i      : in std_logic_vector (8 downto 0);
 
     gfp_use_eventid_i     : in  std_logic;
     gfp_eventid_i         : in  std_logic_vector (31 downto 0);
@@ -92,7 +92,7 @@ architecture behavioral of daq is
   signal num_channels   : natural range 0 to 15          := 0;
   signal id             : std_logic_vector (15 downto 0) := (others => '0');
 
-  signal mask          : std_logic_vector (mask_i'range)      := (others => '0');
+  signal mask          : std_logic_vector (17 downto 0)       := (others => '0');
   signal event_cnt     : std_logic_vector (event_cnt_i'range) := (others => '0');
   -- mux the event count between normal daq and gfp
   signal event_cnt_mux : std_logic_vector (event_cnt_i'range) := (others => '0');
@@ -302,9 +302,9 @@ begin
           dna          <= dna_i;
           hash         <= hash_i (27 downto 12);
           debug        <= false;
-          dropped      <= '0';          -- drs_busy_i; FIXME correct this when there is a real trigger
+          dropped      <= drs_busy_i;
           num_channels <= count_ones (mask_i);
-          mask         <= mask_i;
+          mask         <= "000000000" & mask_i;
           event_cnt    <= event_cnt_i;
           timestamp    <= timestamp_i;
         end if;
