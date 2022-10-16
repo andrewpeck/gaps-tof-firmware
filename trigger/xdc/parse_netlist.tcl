@@ -26,7 +26,7 @@ proc translate_name {name} {
         set rb   [expr [lindex $args 4] - 1]
         set pin [expr $dsi * 10 + $rb * 2 + $pair]
         set name rb_data_o\[$pin\]
-        puts $name
+        # puts $name
     }
 
     # lt_data_X_Y_Z --> lt_data_i[Q]
@@ -37,7 +37,7 @@ proc translate_name {name} {
         set pair [lindex $args 3]
         set pol  [lindex $args 5]
         set pin [expr $dsi * 15 + $lt * 3 + $pair]
-        puts "DSI = $dsi lt = $lt pair=$pair"
+        #puts "DSI = $dsi lt = $lt pair=$pair"
         set name lt_data_i_$pol\[$pin\]
     }
 
@@ -58,8 +58,8 @@ proc translate_name {name} {
 
     # gbe_rxdX  rgmii_rxd[X]
     if {[regexp -all {gbe_([tr])xd([0-9])} $name sig txrx number]} {
-        puts $txrx
-        puts $number
+        # puts $txrx
+        # puts $number
         set name "rgmii_${txrx}xd\[$number\]"
     }
 
