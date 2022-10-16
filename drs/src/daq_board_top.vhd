@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------------
 -- DRS DAQ Board Top
 -- GAPS DRS4 Readout Firmware
--- I. Garcia, A. Peck, S. Quinn
+-- I. Garcia, A. Peck, S. Quinn, T. Hayashi
 ----------------------------------------------------------------------------------
 
 library ieee;
@@ -13,6 +13,7 @@ use work.ipbus.all;
 use work.registers.all;
 use work.types_pkg.all;
 use work.axi_pkg.all;
+use work.components.all;
 
 library unisim;
 use unisim.vcomponents.all;
@@ -293,87 +294,7 @@ architecture Behavioral of top_readout_board is
   signal ipb_miso_arr : ipb_rbus_array(IPB_SLAVES - 1 downto 0) := (others => (ipb_rdata => (others => '0'), ipb_ack => '0', ipb_err => '0'));
   signal ipb_mosi_arr : ipb_wbus_array(IPB_SLAVES - 1 downto 0);
 
-
-  component device_dna
-    port(
-      clock : in  std_logic;
-      reset : in  std_logic;
-      dna   : out std_logic_vector
-      );
-  end component;
-
-  component drs
-    port(
-      clock                    : in  std_logic;
-      reset                    : in  std_logic;
-      diagnostic_mode          : in  std_logic;
-      trigger_i                : in  std_logic;
-      posneg_i                 : in  std_logic;
-      adc_data_i               : in  std_logic_vector;
-      drs_ctl_spike_removal    : in  std_logic;
-      drs_ctl_roi_mode         : in  std_logic;
-      drs_ctl_dmode            : in  std_logic;
-      drs_ctl_adc_latency      : in  std_logic_vector;
-      drs_ctl_sample_count_max : in  std_logic_vector;
-      drs_ctl_config           : in  std_logic_vector;
-      drs_ctl_standby_mode     : in  std_logic;
-      drs_ctl_transp_mode      : in  std_logic;
-      drs_ctl_start            : in  std_logic;
-      drs_ctl_reinit           : in  std_logic;
-      drs_ctl_configure_drs    : in  std_logic;
-      drs_ctl_chn_config       : in  std_logic_vector;
-      drs_ctl_readout_mask_i   : in  std_logic_vector;
-      drs_ctl_wait_vdd_clocks  : in  std_logic_vector;
-      drs_srout_i              : in  std_logic;
-      drs_addr_o               : out std_logic_vector;
-      drs_nreset_o             : out std_logic;
-      drs_denable_o            : out std_logic;
-      drs_dwrite_o             : out std_logic;
-      drs_rsrload_o            : out std_logic;
-      drs_srclk_en_o           : out std_logic;
-      drs_srin_o               : out std_logic;
-      drs_on_o                 : out std_logic;
-      drs_stop_cell_o          : out std_logic_vector(9 downto 0);
-      fifo_wdata_o             : out std_logic_vector;
-      fifo_wen_o               : out std_logic;
-      readout_complete         : out std_logic;
-      busy_o                   : out std_logic
-      );
-  end component;
-
-  component clock_wizard
-    port (
-      -- Clock out ports
-      drs_clk   : out std_logic;
-      trg_clk   : out std_logic;
-      trg_clk8x : out std_logic;
-      daq_clk   : out std_logic;
-      -- Status and control signals
-      locked    : out std_logic;
-      -- Clock in ports
-      clk_in1_p : in  std_logic;
-      clk_in1_n : in  std_logic
-      );
-  end component;
-
 begin
-
-  ---- TODO: do this outside the drs module for TMR
-  ------ take data in on negedge of clock, assuming that adc and fpga clocks are synchronous
-  --process (clock) is
-  --begin
-  --  if (falling_edge(clock)) then
-  --    adc_data_iob <= adc_data_i;
-  --  end if;
-  --end process;
-
-  ---- transfer on flops from negedge to posedge before fifo
-  --process (clock) is
-  --begin
-  --  if (rising_edge(clock)) then
-  --    adc_data <= adc_data_iob;
-  --  end if;
-  --end process;
 
   -------------------------------------------------------------------------------
   -- MMCM / PLL
@@ -394,7 +315,7 @@ begin
   clock <= clk33;
 
   -------------------------------------------------------------------------------
-  -- Trigger Input
+  -- GFP Trigger Input
   -------------------------------------------------------------------------------
 
   gfp_spi_rx : entity work.spi_rx
@@ -428,6 +349,9 @@ begin
     end if;
   end process;
 
+  --------------------------------------------------------------------------------
+  -- MT Trigger Input
+  --------------------------------------------------------------------------------
 
   ibuftrigger : IBUFDS
     generic map (                       --

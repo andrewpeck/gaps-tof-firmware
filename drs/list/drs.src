@@ -27,7 +27,7 @@ drs/src/axi_ipbus_bridge.vhd
 drs/src/axi_pkg.vhd
 drs/src/daq_board_top.vhd top=top_readout_board
 drs/src/dtap.vhd
-
+drs/src/components.vhd
 drs/src/ps_interface.vhd
 drs/src/registers.vhd
 drs/src/sem.vhd
@@ -38,7 +38,6 @@ drs/src/rate_counter.vhd
 drs/src/trig_gen.vhd
 drs/src/urand_inf.vhd
 drs/src/mt_rx.vhd
-
 drs/src/drs.v
 drs/src/crc32.vhd
 drs/src/dna.v
