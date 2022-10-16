@@ -149,6 +149,7 @@ no files are missing, the build directory is clean, and so on.
   | START     | `[0:0]`  | '1' = Start bit; initiates a trigger     |
   | CH\_MASK  | `[7:0]`  | bitfield set to '1' to readout a channel |
   | EVENT\_ID | `[31:0]` | Event ID                                 |
+  | CMD       | `[1:0]`  | 3 = resync, 2/1/0 reserved               |
 
 ## Local Trigger Data Format
 

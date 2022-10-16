@@ -139,6 +139,7 @@ architecture Behavioral of top_readout_board is
   signal mt_trigger_data        : std_logic             := '0';
   signal mt_trigger_dav         : std_logic             := '0';
   signal mt_trigger_data_ff     : std_logic             := '0';
+  signal mt_trigger_data_ff     : std_logic             := '0';
   signal mt_prbs_err            : std_logic             := '0';
   signal mt_prbs_rst            : std_logic             := '0';
   signal mt_inactive            : std_logic             := '0';
@@ -172,7 +173,6 @@ architecture Behavioral of top_readout_board is
 
   signal drs_diagnostic_mode : std_logic := '0';
 
-  signal resync        : std_logic := '0';
   signal drs_busy      : std_logic;
   signal roi_mode      : std_logic;
   signal spike_removal : std_logic;
@@ -261,6 +261,9 @@ architecture Behavioral of top_readout_board is
   signal mt_mask_valid      : std_logic                      := '0';
   signal mt_mask            : std_logic_vector (7 downto 0)  := (others => '0');
   signal mt_event_cnt       : std_logic_vector (31 downto 0) := (others => '0');
+  signal mt_cmd             : std_logic_vector(1 downto 0);
+  signal mt_cmd_valid       : std_logic;
+  signal mt_resync          : std_logic := '0';
 
   signal daq_event_cnt   : std_logic_vector(31 downto 0);
   signal daq_timestamp   : std_logic_vector(47 downto 0);
@@ -463,9 +466,9 @@ begin
 
   mt_rx_inst : entity work.mt_rx
     generic map (
-      EVENTCNTB => 32,
-      MASKCNTB  => 8,
-      CMDB      => 0
+      EVENTCNTB => mt_event_cnt'length,
+      MASKCNTB  => mt_mask'length,
+      CMDB      => mt_cmd'length
       )
     port map (
       clock       => clock,
@@ -475,8 +478,8 @@ begin
 
       trg_o       => mt_trigger,
 
-      cmd_o       => open,
-      cmd_valid_o => open,
+      cmd_o       => mt_cmd,
+      cmd_valid_o => mt_cmd_valid,
 
       event_cnt_o       => mt_event_cnt,
       event_cnt_valid_o => mt_event_cnt_valid,
@@ -484,6 +487,24 @@ begin
       mask_o       => mt_mask,
       mask_valid_o => mt_mask_valid
       );
+
+  process (clock) is
+  begin
+    if (rising_edge(clock)) then
+
+      mt_resync <= '0';
+
+      if (mt_cmd_valid='1') then
+        case mt_cmd is
+          when "11" =>
+            mt_resync <= '1';
+          when others =>
+        end case;
+
+      end if;
+    end if;
+  end process;
+
 
   --------------------------------------------------------------------------------
   -- Event Queue
@@ -583,7 +604,7 @@ begin
   process (clock)
   begin
     if (rising_edge(clock)) then
-      if (reset = '1' or resync = '1') then
+      if (reset = '1' or mt_resync = '1') then
         timestamp <= (others => '0');
       else
         timestamp <= timestamp + 1;
