@@ -1,4 +1,4 @@
-# DRS4 Readout Board Firmware
+# DRS4 Readout Board + Master Trigger Firmware
 
 [[_TOC_]]
 
@@ -6,17 +6,18 @@
 
 <pre>
 readout-firmware/
-  ├── <a href="https://gitlab.cern.ch/hog/Hog">Hog</a>      : Submodule containing the HOG project
   ├── <a href="./Top">Top</a>      : Top level project configuration files for HOG
   ├── <a href="./bd">bd</a>       : Block diagram files
-  ├── <a href="./regmap">regmap</a>   : Register XML to VHDL tools
-  ├── <a href="./tcl">tcl</a>      : TCL scripts for ip core creation
-  ├── <a href="./ip">ip</a>       : Holds both user and Vivado IP cores
+  ├── <a href="./common">common</a>   : Files common to MT and RB design
   ├── <a href="./dma">dma</a>      : Files for DMA driver
   ├── <a href="./drs">drs</a>      : Files for DRS4 control
-  ├── <a href="./xdc">xdc</a>      : Xilinx XDC constraint files
-  ├── Projects : Auto-generated directory containing the Vivado project
+  ├── <a href="./ip">ip</a>       : Vivado IP cores
+  ├── <a href="./regmap">regmap</a>   : Register XML to VHDL tools
+  ├── <a href="./trigger">trigger</a>  : Master Trigger Design
   ├── <a href="./util">util</a>     : Helper scripts for build system
+  ├── <a href="./xdc">xdc</a>      : Xilinx XDC constraint files
+  ├── <a href="https://gitlab.cern.ch/hog/Hog">Hog</a>      : Submodule containing the HOG project
+  ├── Projects : Auto-generated directory containing the Vivado projects
   └── <a href="./plnx">plnx</a>     : PetaLinux source files and docs
 </pre>
 
@@ -53,9 +54,11 @@ The address table is defined in a "templated" XML file: *registers.xml*
 
 A convenient document describing the address table can be seen at:
 
-* [DRS Address Table](regmap/address_table.org)
+* [Readout Board Address Table](regmap/rb_address_table.org)
+* [Master Trigger Address Table](regmap/mt_address_table.org)
 
-To update the address table in the project, make edits directly to `registers.xml`, then build using
+To update the address table in the project, make edits directly to `rb_registers.xml` or
+`mt_registers.xml`, then build using
 
 ```bash
 make reg
@@ -69,6 +72,8 @@ Vivado 2020.1 cannot be used with Hog to export hardware `.xsa` out of the box d
 
  1. Stock 2020.1: ensure bitstream successfully generated. Open BD or Implemented Design: File->Export->Export Hardware (Platform type=Fixed), next-> Check include bitstream, next->set file name/path->finish.
  2. Fix 2020.1 with Xilinx "tactical patch". See <https://www.xilinx.com/support/answers/75210.html>. If using this option, no further steps are required when using the Hog build system.
+
+### Build instructions
 
 This firmware is using the HOG framework as a build system:
 
@@ -116,33 +121,6 @@ no files are missing, the build directory is clean, and so on.
 
 ![data-flow](./drs/data-flow.svg)
 
-## Block Design Creation
-
-HOG wrappers provide facilities for creation of TCL files from Block
-Designs, and Block Designs from TCL.
-
-To export a TCL file from a block design:
-
-```bash
-Hog/CreateProject.sh bd-to-tcl
-```
-
-To generate a block design from a TCL file:
-
-```bash
-Hog/CreateProject.sh tcl-to-bd
-```
-
-Block designs are easier to work with, but do not play well with diff
-and have more issues with version lock-in.
-
-Both tcl and bd should be committed to the repository. For working with
-the same (or close) Vivado versions the bd file can just be opened
-directly (and the tcl should be exported after any changes are made).
-
-The tcl-to-bd flow can be used when changing versions. There is still
-some version-lock-in but efforts were made to minimize it.
-
 ## Dataformat
 
   | Field      | Len             | Description                                                                                                                                                                                   |
@@ -164,21 +142,17 @@ some version-lock-in but efforts were made to minimize it.
   | CRC32      | `[31:0]`        | Packet CRC (excluding Trailer)                                                                                                                                                                |
   | TAIL       | `[15:0]`        | 0x5555                                                                                                                                                                                        |
 
-## Trigger Data Format
+## Master Trigger Data Format
 
-  | Field     | Len       | Description                                                                                            |
-  | :-------- | :-------- | :-------------                                                                                         |
-  | START     | `[0:0]`   | '1' = Start bit; initiates a trigger                                                                   |
-  | DWRITE0   | `[0:0]`   | '1' = deassert dwrite on drs 0                                                                         |
-  | DWRITE1   | `[0:0]`   | '1' = deassert dwrite on drs 1                                                                         |
-  | CH\_MASK  | `[15:0]`  | bitfield set to '1' to readout a chanel <br> `[7:0]`=DRS0 channels 7:0 <br> `[15:8]`=DRS1 channels 7:0 |
-  | EVENT\_ID | `[31:0]`  | Event ID                                                                                               |
-  | CMD       | `[3:0]`   | Command (c.f. command list for details)                                                                |
-  
-  Note that DWRITE0 and DWRITE1 are redundant with the channel mask, but are here in order to reduce
-  the latency to assert DWRITE. The firmware handles this through a fast path with minimum latency
-  to deassert DWRITE. After that, the data is frozen in the ring buffer so we can wait until the CH\_MASK 
-  is received to start the readout. 
+  | Field     | Len      | Description                              |
+  |:----------|:---------|:-----------------------------------------|
+  | START     | `[0:0]`  | '1' = Start bit; initiates a trigger     |
+  | CH\_MASK  | `[7:0]`  | bitfield set to '1' to readout a channel |
+  | EVENT\_ID | `[31:0]` | Event ID                                 |
+
+## Local Trigger Data Format
+
+?
 
 ## Gitlab runner registration
 
