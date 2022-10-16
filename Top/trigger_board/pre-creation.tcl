@@ -1,3 +1,2 @@
-set PATH_REPO "[file normalize [file dirname [info script]]]/../../"
-cd "$PATH_REPO/trigger/xdc/"
-source "parse_netlist.tcl"
+set script_path "[file normalize [file dirname [info script]]]"
+puts [exec bash $script_path/setup-gitfilters.sh]

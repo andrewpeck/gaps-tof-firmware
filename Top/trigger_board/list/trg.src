@@ -5,6 +5,9 @@ trigger/src/*/*.vhd
 common/src/*.vhd
 ip/master_trigger/*/*.xci
 
+drs/src/sem.vhd
+ip/readout_board/sem_core/sem_core.xci
+
 verilog-ethernet/rtl/eth_mac_1g_rgmii.v
 verilog-ethernet/rtl/eth_mac_1g_rgmii_fifo.v
 verilog-ethernet/rtl/eth_mac_1g.v
