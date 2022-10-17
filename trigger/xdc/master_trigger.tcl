@@ -120,10 +120,10 @@ set rgmiirx_dv_bfe          1.200;
 set rgmiirx_dv_afe          1.200;
 set input_ports             [list rgmii_rx_ctl {rgmii_rxd[0]} {rgmii_rxd[1]} {rgmii_rxd[2]} {rgmii_rxd[3]}];
 
-set_input_delay -clock $rx_clk -max [expr $rgmiirx_rxc_period/2 - $rgmiirx_dv_bfe] [get_ports $input_ports] -add_delay;
-set_input_delay -clock $rx_clk -min $rgmiirx_dv_are [get_ports $input_ports] -add_delay;
-set_input_delay -clock $rx_clk -max [expr $rgmiirx_rxc_period/2 - $rgmiirx_dv_bre] [get_ports $input_ports] -clock_fall -add_delay;
-set_input_delay -clock $rx_clk -min $rgmiirx_dv_afe [get_ports $input_ports] -clock_fall -add_delay;
+# set_input_delay -clock $rx_clk -max [expr $rgmiirx_rxc_period/2 - $rgmiirx_dv_bfe] [get_ports $input_ports] -add_delay;
+# set_input_delay -clock $rx_clk -min $rgmiirx_dv_are [get_ports $input_ports] -add_delay;
+# set_input_delay -clock $rx_clk -max [expr $rgmiirx_rxc_period/2 - $rgmiirx_dv_bre] [get_ports $input_ports] -clock_fall -add_delay;
+# set_input_delay -clock $rx_clk -min $rgmiirx_dv_afe [get_ports $input_ports] -clock_fall -add_delay;
 
 #  Double Data Rate Source Synchronous Outputs
 #
