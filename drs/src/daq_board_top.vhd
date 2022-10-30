@@ -310,8 +310,8 @@ begin
 
   clock_wizard_inst : clock_wizard
     port map (
-      trg_clk   => trg_clk,
       drs_clk   => clock,
+      trg_clk   => open,
       trg_clk8x => trg_clk_oversample,
       daq_clk   => open,
       locked    => locked,
@@ -423,7 +423,7 @@ begin
     port map (
       rst     => reset,
       wr_clk  => trg_clk_oversample,
-      rd_clk  => trg_clk,
+      rd_clk  => clock,
       wr_en   => mt_trigger_decoded_dav,
       rd_en   => '1',
       din(0)  => mt_trigger_decoded,
@@ -437,9 +437,9 @@ begin
   -- MT PRBS Checker
   --------------------------------------------------------------------------------
 
-  process (trg_clk) is
+  process (clock) is
   begin
-    if (rising_edge(trg_clk)) then
+    if (rising_edge(clock)) then
 
       mt_trigger_data_ff <= mt_trigger_data;
 
@@ -459,9 +459,9 @@ begin
   -- active high and deactivate the link if we detect it
   mt_trigger_data_inv <= mt_trigger_data_pol xor mt_trigger_data;
 
-  process (trg_clk) is
+  process (clock) is
   begin
-    if (rising_edge(trg_clk)) then
+    if (rising_edge(clock)) then
       if (mt_trigger_dav = '1') then
         if (mt_trigger_data_inv = '0') then
           mt_active_hi_cnts <= 0;
@@ -485,7 +485,7 @@ begin
       )
     port map (
       rst         => reset,
-      clk         => trg_clk,
+      clk         => clock,
       data_in(0)  => mt_trigger_data_inv,
       en          => mt_trigger_dav,
       data_out(0) => mt_prbs_err
@@ -502,7 +502,7 @@ begin
       CMDB      => 0
       )
     port map (
-      clock    => trg_clk,
+      clock    => clock,
       reset    => reset,
       serial_i => mt_trigger_data_inv,
       enable_i => mt_trigger_dav,
