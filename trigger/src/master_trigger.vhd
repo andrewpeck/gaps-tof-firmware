@@ -598,7 +598,7 @@ begin
           if (rb_triggers(I)='1') then
             trg_extend <= (others => '1');
           else
-            trg_extend <= '0' & trg_extend(trg_extend'length-2 downto 0);
+            trg_extend <= '0' & trg_extend(trg_extend'length-1 downto 1);
           end if;
         end if;
       end process;
