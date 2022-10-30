@@ -1044,19 +1044,6 @@ begin
     mask_cnts_loop : for I in err_cnts'range generate
     begin
       err_cnts_masked(I) <= repeat(inactive(I), err_cnts(I)'length) or err_cnts(I);
-
-      -- process (loopback_clk) is
-      -- begin
-      --   if (rising_edge(loopback_clk)) then
-      --     if (ila_ch_sel = I) then
-      --       err_cnts_sel(I) <= err_cnts_masked(I);
-      --     else
-      --       err_cnts_sel(I) <= (others => '0');
-      --     end if;
-      --   end if;
-
-      -- end process;
-
     end generate;
 
     vio_prbs_inst : vio_prbs
