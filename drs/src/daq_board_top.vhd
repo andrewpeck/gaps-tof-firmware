@@ -102,9 +102,7 @@ end top_readout_board;
 
 architecture Behavioral of top_readout_board is
 
-  signal clk33     : std_logic;
   signal clock     : std_logic;
-  signal trg_clk   : std_logic := '0';
   signal trg_clk_oversample : std_logic := '0';
   signal locked    : std_logic;
 
@@ -312,8 +310,8 @@ begin
 
   clock_wizard_inst : clock_wizard
     port map (
-      drs_clk   => clk33,
       trg_clk   => trg_clk,
+      drs_clk   => clock,
       trg_clk8x => trg_clk_oversample,
       daq_clk   => open,
       locked    => locked,
@@ -321,8 +319,14 @@ begin
       clk_in1_n => clock_i_n
       );
 
-  reset <= not locked;
-  clock <= clk33;
+  process (clock, locked) is
+  begin
+    if (locked = '0') then
+      reset <= '1';
+    elsif (rising_edge(clock)) then
+      reset <= '0';
+    end if;
+  end process;
 
   --------------------------------------------------------------------------------
   -- LED Control
