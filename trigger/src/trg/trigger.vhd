@@ -18,6 +18,8 @@ entity trigger is
 
     busy_i : in std_logic;
 
+    force_trigger_i : in std_logic;
+
     triggers_o       : out channel_array_t;
     rb_triggers_o    : out std_logic_vector (NUM_RBS-1 downto 0);
     global_trigger_o : out std_logic
@@ -1679,7 +1681,7 @@ begin
     process (clk) is
     begin
       if (rising_edge(clk)) then
-        rb_ors(I) <= or_reduce(rb_triggers(I));
+        rb_ors(I) <= force_trigger_i or or_reduce(rb_triggers(I));
       end if;
     end process;
   end generate;

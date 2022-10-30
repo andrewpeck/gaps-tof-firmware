@@ -147,7 +147,6 @@ architecture structural of gaps_mt is
   signal rb_hits           : rb_channel_array_t;  -- reshaped 2d array of 40x8 hits
 
   signal global_trigger : std_logic;  -- single bit == the baloon triggered somewhere
-  signal trigger_found  : std_logic := '0';
 
   signal trig_gen_rate   : std_logic_vector (31 downto 0) := (others => '0');
   signal trig_gen        : std_logic                      := '0';
@@ -523,9 +522,10 @@ begin
 
       single_hit_en_i => '1',
       bool_trg_en_i   => '1',
+      force_trigger_i => trigger_ipb or trig_gen,
 
       -- ouptut from trigger logic
-      global_trigger_o => trigger_found,   -- OR of the trigger menu
+      global_trigger_o => global_trigger,   -- OR of the trigger menu
       rb_triggers_o    => rb_triggers,     -- 40 trigger outputs  (1 per rb)
       triggers_o       => triggers         -- trigger output (320 trigger outputs)
       );
@@ -539,13 +539,6 @@ begin
       rate       => trig_gen_rate,
       trig       => trig_gen
       );
-
-  process (clock) is
-  begin
-    if (rising_edge(clock)) then
-      global_trigger <= trigger_found or trigger_ipb or trig_gen;
-    end if;
-  end process;
 
   --------------------------------------------------------------------------------
   -- event counter:
