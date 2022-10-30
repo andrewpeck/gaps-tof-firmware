@@ -121,21 +121,35 @@ architecture rtl of eth_infra is
   signal speed              : std_logic_vector(1 downto 0);
   signal ifg_delay          : std_logic_vector (7 downto 0);
 
+  signal reset_ff  : std_logic := '0';
+
   signal gtx_rst_r0, gtx_rst_r1, gtx_rst_r2 : std_logic := '1';
   signal gtx_rst                            : std_logic := '1';
 
+  attribute async_reg     : string;
   attribute shreg_extract : string;
   attribute shreg_extract of gtx_rst_r0 : signal is "false";
   attribute shreg_extract of gtx_rst_r1 : signal is "false";
   attribute shreg_extract of gtx_rst_r2 : signal is "false";
   attribute shreg_extract of gtx_rst    : signal is "false";
+  attribute async_reg of gtx_rst_r0     : signal is "true";
+  attribute async_reg of gtx_rst_r1     : signal is "true";
+  attribute async_reg of gtx_rst_r2     : signal is "true";
+  attribute async_reg of gtx_rst        : signal is "true";
 
 begin
+
+  process (clock) is
+  begin
+    if (rising_edge(clock)) then
+      reset_ff <= reset;
+    end if;
+  end process;
 
   process (gtx_clk) is
   begin
     if (rising_edge(gtx_clk)) then
-      gtx_rst_r0 <= reset;
+      gtx_rst_r0 <= reset_ff;
       gtx_rst_r1 <= gtx_rst_r0;
       gtx_rst_r2 <= gtx_rst_r1;
       gtx_rst    <= gtx_rst_r2;
