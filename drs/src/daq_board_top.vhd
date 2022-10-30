@@ -755,7 +755,7 @@ begin
       timestamp_i => daq_timestamp,
       mask_i      => daq_mask,
       drs_busy_i  => daq_drs_busy,
-      trigger_i   => trigger,
+      trigger_i   => daq_trigger,
 
       gfp_use_eventid_i     => gfp_use_eventid and not mt_trigger_mode,
       gfp_eventid_i         => gfp_eventid,
