@@ -34,7 +34,7 @@ architecture rtl of tiu_tx is
 
   constant LENGTH : natural := 2 + EVENTCNTB;
 
-  type state_t is (IDLE_state, TRG_state, DATA_state, STOP_state);
+  type state_t is (IDLE_state, DATA_state);
   signal state         : state_t := IDLE_state;
   signal state_bit_cnt : natural := 0;
 
