@@ -611,13 +611,14 @@ begin
           MASKCNTB  => NUM_RB_CHANNELS
           )
         port map (
-          clock       => clk25,
-          reset       => reset,
-          serial_o    => rb_data_o(I),
+          clock => clk25,
+          reset => reset,
+
           trg_i       => or_reduce(trg_extend),
-          resync_i    => '0',
           event_cnt_i => event_cnt,
-          ch_mask_i   => rb_hits(I)
+          ch_mask_i   => rb_hits(I),  -- FIXME; this is at the wrong freq; just use a fifo uhg
+
+          serial_o => rb_data_o(I)
           );
     end generate;
   end generate;
