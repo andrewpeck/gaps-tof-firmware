@@ -158,8 +158,11 @@ architecture structural of gaps_mt is
   signal rb_triggers    : std_logic_vector (NUM_RBS-1 downto 0);  -- 1 bit trigger for each baloon
   signal triggers       : channel_array_t;                        -- 320 bits of trigger, one for each paddle
 
-  signal fb_clk, fb_clk_i : std_logic_vector (fb_clk_p'range) := (others => '0');
+  signal fb_clk, fb_clk_i : std_logic_vector (fb_clk_p'range);
   signal fb_clock_rates   : t_std32_array(fb_clk_p'range);
+  signal fb_clk_ok        : std_logic_vector (fb_clk_p'range);
+  constant FB_CLK_FREQ    : integer := 20_000_000;
+  constant FB_CLK_TOL     : integer := 10_000;
 
   signal clock_rate : std_logic_vector (31 downto 0) := (others => '0');
 
@@ -442,6 +445,19 @@ begin
         clk_b => fb_clk(I),
         rate  => fb_clock_rates(I)
         );
+
+    process (sys_clk) is
+    begin
+      if (rising_edge(sys_clk)) then
+        if (to_int(fb_clock_rates(I)) > FB_CLK_FREQ - FB_CLK_TOL and
+            to_int(fb_clock_rates(I)) < FB_CLK_FREQ + FB_CLK_TOL) then
+          fb_clk_ok(I) <= '1';
+        else
+          fb_clk_ok(I) <= '0';
+        end if;
+      end if;
+    end process;
+
   end generate;
 
   frequency_counter_inst : entity work.frequency_counter
