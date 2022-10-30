@@ -494,7 +494,7 @@ begin
   mt_rx_inst : entity work.mt_rx
     generic map (
       EVENTCNTB => mt_event_cnt'length,
-      MASKCNTB  => mt_mask'length,
+      MASKB     => mt_mask'length,
       CMDB      => 0
       )
     port map (
