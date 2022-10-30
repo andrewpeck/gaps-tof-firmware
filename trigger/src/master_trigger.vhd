@@ -667,7 +667,7 @@ begin
         FE   => open,
         DR   => tiu_timebyte_dav,
         TR   => (others => '0'),
-        THRE => '0',
+        THRE => open,
         THRL => '0',
         TRE  => open
         );
@@ -680,7 +680,7 @@ begin
 
         tiu_timecode_sr(0) <= tiu_timecode_i;
 
-        for I in 0 to tiu_timecode_sr'length-1 loop
+        for I in 1 to tiu_timecode_sr'length-1 loop
           tiu_timecode_sr(I) <= tiu_timecode_sr(I-1);
         end loop;
 
