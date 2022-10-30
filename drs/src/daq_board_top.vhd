@@ -105,7 +105,7 @@ architecture Behavioral of top_readout_board is
   signal clk33     : std_logic;
   signal clock     : std_logic;
   signal trg_clk   : std_logic := '0';
-  signal trg_clk8x : std_logic := '0';
+  signal trg_clk_oversample : std_logic := '0';
   signal locked    : std_logic;
 
   signal reset : std_logic;
@@ -137,12 +137,15 @@ architecture Behavioral of top_readout_board is
   signal mt_trigger_decoded     : std_logic             := '0';
   signal mt_trigger_decoded_dav : std_logic             := '0';
   signal mt_trigger_data        : std_logic             := '0';
+  signal mt_trigger_data_inv    : std_logic             := '0';
+  signal mt_trigger_data_pol    : std_logic             := '0';
   signal mt_trigger_dav         : std_logic             := '0';
   signal mt_trigger_data_ff     : std_logic             := '0';
   signal mt_prbs_err            : std_logic             := '0';
   signal mt_prbs_rst            : std_logic             := '0';
   signal mt_inactive            : std_logic             := '0';
   signal mt_inactive_cnts       : integer range 0 to 63 := 0;
+  signal mt_active_hi_cnts      : integer range 0 to 127 := 0;
 
   signal ext_trigger_en        : std_logic := '0';
   signal force_trig            : std_logic := '0';
@@ -310,8 +313,8 @@ begin
   clock_wizard_inst : clock_wizard
     port map (
       drs_clk   => clk33,
-      trg_clk   => open,
-      trg_clk8x => trg_clk8x,
+      trg_clk   => trg_clk,
+      trg_clk8x => trg_clk_oversample,
       daq_clk   => open,
       locked    => locked,
       clk_in1_p => clock_i_p,
@@ -392,7 +395,7 @@ begin
 
   manchester_decoder_inst : entity work.manchester_decoder
     port map (
-      clk  => trg_clk8x,
+      clk  => trg_clk_oversample,
       din  => mt_trigger_i,
       dout => mt_trigger_decoded,
       dav  => mt_trigger_decoded_dav
@@ -401,11 +404,12 @@ begin
   process (clock) is
   begin
     if (rising_edge(clock)) then
-      mt_trigger_data_ff <= mt_trigger_data;
     end if;
   end process;
 
-  -- fifo to read data through the "spybuffer"
+  -- manchester decoder reads on the oversample clock..
+  -- transition to the lower freq trigger clock for decoding
+
   mt_rx_fifo : entity work.fifo_async
     generic map (
       DEPTH    => 16,
@@ -414,7 +418,7 @@ begin
       )
     port map (
       rst     => reset,
-      wr_clk  => trg_clk8x,
+      wr_clk  => trg_clk_oversample,
       rd_clk  => trg_clk,
       wr_en   => mt_trigger_decoded_dav,
       rd_en   => '1',
@@ -429,9 +433,12 @@ begin
   -- MT PRBS Checker
   --------------------------------------------------------------------------------
 
-  process (clock) is
+  process (trg_clk) is
   begin
-    if (rising_edge(clock)) then
+    if (rising_edge(trg_clk)) then
+
+      mt_trigger_data_ff <= mt_trigger_data;
+
       if (mt_trigger_data /= mt_trigger_data_ff) then
         mt_inactive_cnts <= 0;
         mt_inactive      <= '0';
@@ -443,6 +450,27 @@ begin
     end if;
   end process;
 
+  -- automatic polarity inversion of the mt trigger data for long seqs of
+  -- constant data... link should be active low, so listen for sequences of
+  -- active high and deactivate the link if we detect it
+  mt_trigger_data_inv <= mt_trigger_data_pol xor mt_trigger_data;
+
+  process (trg_clk) is
+  begin
+    if (rising_edge(trg_clk)) then
+      if (mt_trigger_dav = '1') then
+        if (mt_trigger_data = '0') then
+          mt_active_hi_cnts <= 0;
+        elsif (mt_active_hi_cnts < 127) then
+          mt_active_hi_cnts <= mt_active_hi_cnts + 1;
+        elsif (mt_active_hi_cnts = 127) then
+          mt_active_hi_cnts <= 0;
+          mt_trigger_data_pol <= not mt_trigger_data_pol;
+        end if;
+      end if;
+    end process;
+
+
   prbs_any_check : entity work.prbs_any
     generic map (
       chk_mode    => true,
@@ -453,8 +481,8 @@ begin
       )
     port map (
       rst         => reset,
-      clk         => clock,
-      data_in(0)  => mt_trigger_data,
+      clk         => trg_clk,
+      data_in(0)  => mt_trigger_data_inv,
       en          => mt_trigger_dav,
       data_out(0) => mt_prbs_err
       );
@@ -470,9 +498,9 @@ begin
       CMDB      => mt_cmd'length
       )
     port map (
-      clock       => clock,
+      clock       => trg_clk,
       reset       => reset,
-      serial_i    => mt_trigger_data,
+      serial_i    => mt_trigger_data_inv,
       enable_i    => mt_trigger_dav,
 
       trg_o       => mt_trigger,
