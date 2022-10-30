@@ -570,18 +570,33 @@ begin
   --------------------------------------------------------------------------------
 
   noloop_t : if (not LOOPBACK_MODE) generate
+
+    -- extend the trigger pulses by a few clocks for the fast to slow clock transition
     trg_tx_gen : for I in 0 to NUM_RBS-1 generate
+      signal trg_extend : std_logic_vector (7 downto 0) := (others => '0');
     begin
+
+      process (clock) is
+      begin
+        if (rising_edge(clock)) then
+          if (rb_triggers(I)='1') then
+            trg_extend <= (others => '1');
+          else
+            trg_extend <= '0' & trg_extend(trg_extend'length-2 downto 0);
+          end if;
+        end if;
+      end process;
+
       trg_tx_inst : entity work.trg_tx
         generic map (
           EVENTCNTB => EVENTCNTB,
           MASKCNTB  => NUM_RB_CHANNELS
           )
         port map (
-          clock       => clock,
+          clock       => clk25,
           reset       => reset,
           serial_o    => rb_data_o(I),
-          trg_i       => rb_triggers(I),
+          trg_i       => or_reduce(trg_extend),
           resync_i    => '0',
           event_cnt_i => event_cnt,
           ch_mask_i   => rb_hits(I)
