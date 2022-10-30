@@ -58,7 +58,7 @@
     <node id="TRIG_GEN_RATE" address="0x9" permission="rw"
           description="Rate of generated triggers f_trig =(2^32-1) * clk_period * rate"
           mask="0xffffffff"
-          fw_default="0x0"
+          fw_default="0x0000"
           fw_signal="trig_gen_rate"/>
 
     <node id="PULSE_STRETCH"
@@ -91,8 +91,8 @@
             generate_address_step="1"
             generate_idx_var="LT_IDX"
             permission="rw"
-            fw_default="0x00"
-            mask="0x0000ffff"
+            fw_default="0xffff"
+            mask="0xffff"
             description="1 to mask a channel of LT=${LT_IDX}"
             fw_signal="hit_mask(${LT_IDX})"
             >

@@ -223,102 +223,102 @@ package registers is
     constant REG_MT_HIT_MASK_LT0_ADDR    : std_logic_vector(9 downto 0) := "00" & x"40";
     constant REG_MT_HIT_MASK_LT0_MSB    : integer := 15;
     constant REG_MT_HIT_MASK_LT0_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT0_DEFAULT : std_logic_vector(15 downto 0) := x"0000";
+    constant REG_MT_HIT_MASK_LT0_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
 
     constant REG_MT_HIT_MASK_LT1_ADDR    : std_logic_vector(9 downto 0) := "00" & x"41";
     constant REG_MT_HIT_MASK_LT1_MSB    : integer := 15;
     constant REG_MT_HIT_MASK_LT1_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT1_DEFAULT : std_logic_vector(15 downto 0) := x"0000";
+    constant REG_MT_HIT_MASK_LT1_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
 
     constant REG_MT_HIT_MASK_LT2_ADDR    : std_logic_vector(9 downto 0) := "00" & x"42";
     constant REG_MT_HIT_MASK_LT2_MSB    : integer := 15;
     constant REG_MT_HIT_MASK_LT2_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT2_DEFAULT : std_logic_vector(15 downto 0) := x"0000";
+    constant REG_MT_HIT_MASK_LT2_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
 
     constant REG_MT_HIT_MASK_LT3_ADDR    : std_logic_vector(9 downto 0) := "00" & x"43";
     constant REG_MT_HIT_MASK_LT3_MSB    : integer := 15;
     constant REG_MT_HIT_MASK_LT3_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT3_DEFAULT : std_logic_vector(15 downto 0) := x"0000";
+    constant REG_MT_HIT_MASK_LT3_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
 
     constant REG_MT_HIT_MASK_LT4_ADDR    : std_logic_vector(9 downto 0) := "00" & x"44";
     constant REG_MT_HIT_MASK_LT4_MSB    : integer := 15;
     constant REG_MT_HIT_MASK_LT4_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT4_DEFAULT : std_logic_vector(15 downto 0) := x"0000";
+    constant REG_MT_HIT_MASK_LT4_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
 
     constant REG_MT_HIT_MASK_LT5_ADDR    : std_logic_vector(9 downto 0) := "00" & x"45";
     constant REG_MT_HIT_MASK_LT5_MSB    : integer := 15;
     constant REG_MT_HIT_MASK_LT5_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT5_DEFAULT : std_logic_vector(15 downto 0) := x"0000";
+    constant REG_MT_HIT_MASK_LT5_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
 
     constant REG_MT_HIT_MASK_LT6_ADDR    : std_logic_vector(9 downto 0) := "00" & x"46";
     constant REG_MT_HIT_MASK_LT6_MSB    : integer := 15;
     constant REG_MT_HIT_MASK_LT6_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT6_DEFAULT : std_logic_vector(15 downto 0) := x"0000";
+    constant REG_MT_HIT_MASK_LT6_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
 
     constant REG_MT_HIT_MASK_LT7_ADDR    : std_logic_vector(9 downto 0) := "00" & x"47";
     constant REG_MT_HIT_MASK_LT7_MSB    : integer := 15;
     constant REG_MT_HIT_MASK_LT7_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT7_DEFAULT : std_logic_vector(15 downto 0) := x"0000";
+    constant REG_MT_HIT_MASK_LT7_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
 
     constant REG_MT_HIT_MASK_LT8_ADDR    : std_logic_vector(9 downto 0) := "00" & x"48";
     constant REG_MT_HIT_MASK_LT8_MSB    : integer := 15;
     constant REG_MT_HIT_MASK_LT8_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT8_DEFAULT : std_logic_vector(15 downto 0) := x"0000";
+    constant REG_MT_HIT_MASK_LT8_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
 
     constant REG_MT_HIT_MASK_LT9_ADDR    : std_logic_vector(9 downto 0) := "00" & x"49";
     constant REG_MT_HIT_MASK_LT9_MSB    : integer := 15;
     constant REG_MT_HIT_MASK_LT9_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT9_DEFAULT : std_logic_vector(15 downto 0) := x"0000";
+    constant REG_MT_HIT_MASK_LT9_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
 
     constant REG_MT_HIT_MASK_LT10_ADDR    : std_logic_vector(9 downto 0) := "00" & x"4a";
     constant REG_MT_HIT_MASK_LT10_MSB    : integer := 15;
     constant REG_MT_HIT_MASK_LT10_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT10_DEFAULT : std_logic_vector(15 downto 0) := x"0000";
+    constant REG_MT_HIT_MASK_LT10_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
 
     constant REG_MT_HIT_MASK_LT11_ADDR    : std_logic_vector(9 downto 0) := "00" & x"4b";
     constant REG_MT_HIT_MASK_LT11_MSB    : integer := 15;
     constant REG_MT_HIT_MASK_LT11_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT11_DEFAULT : std_logic_vector(15 downto 0) := x"0000";
+    constant REG_MT_HIT_MASK_LT11_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
 
     constant REG_MT_HIT_MASK_LT12_ADDR    : std_logic_vector(9 downto 0) := "00" & x"4c";
     constant REG_MT_HIT_MASK_LT12_MSB    : integer := 15;
     constant REG_MT_HIT_MASK_LT12_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT12_DEFAULT : std_logic_vector(15 downto 0) := x"0000";
+    constant REG_MT_HIT_MASK_LT12_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
 
     constant REG_MT_HIT_MASK_LT13_ADDR    : std_logic_vector(9 downto 0) := "00" & x"4d";
     constant REG_MT_HIT_MASK_LT13_MSB    : integer := 15;
     constant REG_MT_HIT_MASK_LT13_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT13_DEFAULT : std_logic_vector(15 downto 0) := x"0000";
+    constant REG_MT_HIT_MASK_LT13_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
 
     constant REG_MT_HIT_MASK_LT14_ADDR    : std_logic_vector(9 downto 0) := "00" & x"4e";
     constant REG_MT_HIT_MASK_LT14_MSB    : integer := 15;
     constant REG_MT_HIT_MASK_LT14_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT14_DEFAULT : std_logic_vector(15 downto 0) := x"0000";
+    constant REG_MT_HIT_MASK_LT14_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
 
     constant REG_MT_HIT_MASK_LT15_ADDR    : std_logic_vector(9 downto 0) := "00" & x"4f";
     constant REG_MT_HIT_MASK_LT15_MSB    : integer := 15;
     constant REG_MT_HIT_MASK_LT15_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT15_DEFAULT : std_logic_vector(15 downto 0) := x"0000";
+    constant REG_MT_HIT_MASK_LT15_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
 
     constant REG_MT_HIT_MASK_LT16_ADDR    : std_logic_vector(9 downto 0) := "00" & x"50";
     constant REG_MT_HIT_MASK_LT16_MSB    : integer := 15;
     constant REG_MT_HIT_MASK_LT16_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT16_DEFAULT : std_logic_vector(15 downto 0) := x"0000";
+    constant REG_MT_HIT_MASK_LT16_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
 
     constant REG_MT_HIT_MASK_LT17_ADDR    : std_logic_vector(9 downto 0) := "00" & x"51";
     constant REG_MT_HIT_MASK_LT17_MSB    : integer := 15;
     constant REG_MT_HIT_MASK_LT17_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT17_DEFAULT : std_logic_vector(15 downto 0) := x"0000";
+    constant REG_MT_HIT_MASK_LT17_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
 
     constant REG_MT_HIT_MASK_LT18_ADDR    : std_logic_vector(9 downto 0) := "00" & x"52";
     constant REG_MT_HIT_MASK_LT18_MSB    : integer := 15;
     constant REG_MT_HIT_MASK_LT18_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT18_DEFAULT : std_logic_vector(15 downto 0) := x"0000";
+    constant REG_MT_HIT_MASK_LT18_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
 
     constant REG_MT_HIT_MASK_LT19_ADDR    : std_logic_vector(9 downto 0) := "00" & x"53";
     constant REG_MT_HIT_MASK_LT19_MSB    : integer := 15;
     constant REG_MT_HIT_MASK_LT19_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT19_DEFAULT : std_logic_vector(15 downto 0) := x"0000";
+    constant REG_MT_HIT_MASK_LT19_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
 
     constant REG_MT_FINE_DELAYS_LT0_CH0_ADDR    : std_logic_vector(9 downto 0) := "00" & x"60";
     constant REG_MT_FINE_DELAYS_LT0_CH0_MSB    : integer := 4;
