@@ -161,6 +161,7 @@ architecture Behavioral of top_readout_board is
 
   -- DAQ
   signal daq_busy            : std_logic := '0';
+  signal daq_ready           : std_logic := '0';
   signal debug_packet_inject : std_logic;
 
   signal sem_correction          : std_logic;
@@ -558,7 +559,7 @@ begin
       rst    => reset,
       clk    => clock,
       wr_en  => mt_event_cnt_valid,
-      rd_en  => not daq_busy,
+      rd_en  => daq_ready,
       din    => event_queue_din,
       dout   => event_queue_dout,
       valid  => daq_event_valid,
@@ -778,6 +779,7 @@ begin
       data_o      => fifo_data_out,
       valid_o     => fifo_data_wen,
       busy_o      => daq_busy,
+      ready_o     => daq_ready,
       done_o      => readout_complete
       );
 

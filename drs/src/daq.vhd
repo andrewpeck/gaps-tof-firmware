@@ -56,6 +56,7 @@ entity daq is
     data_o  : out std_logic_vector (g_WORD_SIZE-1 downto 0);  -- receive 16 bits / bx
     valid_o : out std_logic;
     busy_o  : out std_logic;
+    ready_o : out std_logic;
     done_o  : out std_logic
 
     );
@@ -262,8 +263,9 @@ begin
       crc    => channel_crc
       );
 
-  busy_o <= '0' when state = IDLE_state or state=WAIT_state else '1';
-  done_o <= '1' when state = TAIL_state else '0';
+  busy_o  <= '0' when state = IDLE_state or state = WAIT_state else '1';
+  done_o  <= '1' when state = TAIL_state                       else '0';
+  ready_o <= '1' when state = IDLE_state                       else '0';
 
   --------------------------------------------------------------------------------
   -- Packet Formatter
