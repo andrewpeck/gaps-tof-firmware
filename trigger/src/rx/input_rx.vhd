@@ -45,6 +45,8 @@ entity input_rx is
 
     clocks_i : in std_logic_vector (NUM_CLOCKS-1 downto 0);
 
+    link_en : in std_logic_vector (NUM_LT_INPUTS-1 downto 0);
+
     data_i_p : in std_logic_vector (NUM_LT_INPUTS-1 downto 0);
     data_i_n : in std_logic_vector (NUM_LT_INPUTS-1 downto 0);
 
@@ -72,42 +74,46 @@ architecture rtl of input_rx is
 
 begin
 
-  genloop : for I in 0 to NUM_LTS-1 generate
-    signal data_rx : std_logic_vector(NUM_LT_MT_LINKS-1 downto 0);
+  genloop : for I in 0 to NUM_LT_INPUTS-1 generate
+    signal data_i : std_logic;
   begin
 
     -- input delays + ffs for single LT board
-    lt_rx_1 : entity work.lt_rx
+    lt_rx_inst : entity work.lt_rx
       generic map (
-        DIFFERENTIAL_DATA  => true,
-        DIFFERENTIAL_CLOCK => false,
-        NUM_LT_CHANNELS    => NUM_LT_MT_LINKS
+        DIFFERENTIAL_DATA => true
         )
       port map (
         clk    => clk,
         clk200 => clk200,               -- for idelay
 
-        fine_delays   => fine_delays_i(I),
-        coarse_delays => coarse_delays_i(I),
-        posnegs       => posnegs_i(I),
+        fine_delay   => fine_delays_i(I),
+        coarse_delay => coarse_delays_i(I),
+        posneg       => posnegs_i(I),
 
-        data_i_p => data_i_p((I+1)*NUM_LT_MT_LINKS-1 downto I*NUM_LT_MT_LINKS),
-        data_i_n => data_i_n((I+1)*NUM_LT_MT_LINKS-1 downto I*NUM_LT_MT_LINKS),
-        data_o   => data_rx
+        en       => link_en(I),
+        data_i_p => data_i_p(I),
+        data_i_n => data_i_n(I),
+        data_o   => data_i
         );
 
     -- deserializes the XX MHz single bit serial data and puts out a parallel
     -- data output 16 bits wide
+
     rx_deserializer_inst : entity work.rx_deserializer
       generic map (
-        NCH       => NUM_LT_MT_LINKS,
         WORD_SIZE => NUM_LT_BITS
         )
       port map (
         clock  => clk,
-        data_i => data_rx,
-        data_o => data (I)
+        data_i => data_i,
+        data_o => open                  -- data (I)
         );
+
+    -- FIXME
+    -- need to process the LT words into hits
+    -- no idea how
+    -- take the N words from a single LT board and process them into hits
 
   end generate;
 

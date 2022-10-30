@@ -100,85 +100,43 @@
     </node>
 
     <node id="FINE_DELAYS" address="0x60">
-      <node id="LT${LT_IDX}_CH0" address="0x0"
+      <node id="LT${LT_IDX}" address="0x0"
             generate="true"
-            generate_size="20"
+            generate_size="75"
             generate_address_step="1"
             generate_idx_var="LT_IDX"
             permission="rw"
             fw_default="0x00"
             mask="0x0000001f"
-            description="78 ps delay of LT${LT_IDX} CH0"
-            fw_signal="fine_delays(${LT_IDX})(0)"
-            >
-      </node>
-      <node id="LT${LT_IDX}_CH1" address="0x0"
-            generate="true"
-            generate_size="20"
-            generate_address_step="1"
-            generate_idx_var="LT_IDX"
-            permission="rw"
-            fw_default="0x00"
-            mask="0x00001f00"
-            description="78 ps delay of LT${LT_IDX} CH1"
-            fw_signal="fine_delays(${LT_IDX})(1)"
-            >
+            description="78 ps delay of LT${LT_IDX}"
+            fw_signal="fine_delays(${LT_IDX})" >
       </node>
     </node>
 
-    <node id="COARSE_DELAYS" address="0x80">
-      <node id="LT${LT_IDX}_CH0" address="0x0"
+    <node id="COARSE_DELAYS" address="0xc0">
+      <node id="LT${LT_IDX}" address="0x0"
             generate="true"
-            generate_size="20"
+            generate_size="75"
             generate_address_step="1"
             generate_idx_var="LT_IDX"
             permission="rw"
             fw_default="0x00"
             mask="0x0000000f"
-            description="Integer clock delay of LT${LT_IDX} CH0"
-            fw_signal="coarse_delays(${LT_IDX})(0)"
-            >
-      </node>
-      <node id="LT${LT_IDX}_CH1" address="0x0"
-            generate="true"
-            generate_size="20"
-            generate_address_step="1"
-            generate_idx_var="LT_IDX"
-            permission="rw"
-            fw_default="0x00"
-            mask="0x000000f0"
-            description="Integer clock delay of LT${LT_IDX} CH1"
-            fw_signal="coarse_delays(${LT_IDX})(1)"
-            >
+            description="Integer clock delay of LT LINK ${LT_IDX}"
+            fw_signal="coarse_delays(${LT_IDX})" >
       </node>
     </node>
 
-    <node id="POSNEGS" address="0x100">
-      <node id="LT${LT_IDX}_CH0" address="0x0"
-            generate="true"
-            generate_size="20"
-            generate_address_step="1"
-            generate_idx_var="LT_IDX"
-            permission="rw"
-            fw_default="0x00"
-            mask="0x00000001"
-            description="Posneg of LT${LT_IDX} CH0"
-            fw_signal="posnegs(${LT_IDX})(0)"
-            >
-      </node>
-      <node id="LT${LT_IDX}_CH1" address="0x0"
-            generate="true"
-            generate_size="20"
-            generate_address_step="1"
-            generate_idx_var="LT_IDX"
-            permission="rw"
-            fw_default="0x00"
-            mask="0x00000010"
-            description="Posneg of LT${LT_IDX} CH1"
-            fw_signal="posnegs(${LT_IDX})(1)"
-            >
-      </node>
-    </node>
+    <node id="POSNEGS_DSI0" address="0x110" permission="rw" fw_default="0x00" mask="0x7fff"
+          description="Posneg of DSI0" fw_signal="posnegs_dsi0" > </node>
+    <node id="POSNEGS_DSI1" address="0x111" permission="rw" fw_default="0x00" mask="0x7fff"
+          description="Posneg of DSI1" fw_signal="posnegs_dsi1" > </node>
+    <node id="POSNEGS_DSI2" address="0x112" permission="rw" fw_default="0x00" mask="0x7fff"
+          description="Posneg of DSI2" fw_signal="posnegs_dsi2" > </node>
+    <node id="POSNEGS_DSI3" address="0x113" permission="rw" fw_default="0x00" mask="0x7fff"
+          description="Posneg of DSI3" fw_signal="posnegs_dsi3" > </node>
+    <node id="POSNEGS_DSI4" address="0x114" permission="rw" fw_default="0x00" mask="0x7fff"
+          description="Posneg of DSI4" fw_signal="posnegs_dsi4" > </node>
 
     <node id="XADC" address="0x120"
           description="Zynq XADC">

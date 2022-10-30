@@ -40,13 +40,8 @@ package mt_types is
   -- type for coarse (integer clock cycle) delays
   subtype coarse_delay_t is std_logic_vector (3 downto 0);
 
-  -- coarse delays x2
-  type lt_coarse_delays_t is array (integer range 0 to NUM_LT_MT_LINKS-1) of
+  type lt_coarse_delays_array_t is array (integer range 0 to NUM_LT_INPUTS-1) of
     coarse_delay_t;
-
-  -- coarse delays 2x20
-  type lt_coarse_delays_array_t is array (integer range 0 to NUM_LTS-1) of
-    lt_coarse_delays_t;
 
   --------------------------------------------------------------------------------
   -- Fine delays
@@ -55,25 +50,14 @@ package mt_types is
   -- type for fine (78 ps) tape delay
   subtype tap_delay_t is std_logic_vector (4 downto 0);
 
-  -- no more clock? :(
-  -- clock delays x 20
-  -- type lt_clk_delays_array_t is array (integer range 0 to NUM_LTS-1) of
-  --   tap_delay_t;
-
-  -- data delays x2
-  type lt_fine_delays_t is array (integer range 0 to NUM_LT_MT_LINKS-1) of
+  type lt_fine_delays_array_t is array (integer range 0 to NUM_LT_INPUTS-1) of
     tap_delay_t;
-
-  -- data delays 2x20
-  type lt_fine_delays_array_t is array (integer range 0 to NUM_LTS-1) of
-    lt_fine_delays_t;
 
   --------------------------------------------------------------------------------
   -- Posnegs
   --------------------------------------------------------------------------------
 
-  type lt_posnegs_array_t is array (integer range 0 to NUM_LTS-1)
-    of std_logic_vector(NUM_LT_MT_LINKS-1 downto 0);
+  subtype lt_posnegs_array_t is std_logic_vector (NUM_LT_INPUTS-1 downto 0);
 
 end package mt_types;
 

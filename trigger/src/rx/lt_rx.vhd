@@ -17,24 +17,21 @@ use work.mt_types.all;
 
 entity lt_rx is
   generic(
-    DIFFERENTIAL_DATA  : boolean  := false;
-    DIFFERENTIAL_CLOCK : boolean  := false;
-    NUM_LT_CHANNELS    : positive := 2
+    DIFFERENTIAL_DATA : boolean := false
     );
   port(
+
     clk : in std_logic;
 
-    --clk_delay   : in lt_clk_delays_array_t;
-    coarse_delays : in lt_coarse_delays_t;
-    posnegs       : in std_logic_vector(NUM_LT_CHANNELS-1 downto 0);
-    fine_delays   : in lt_fine_delays_t;
+    coarse_delay : in coarse_delay_t;
+    posneg       : in std_logic;
+    en           : in std_logic;
+    fine_delay   : in tap_delay_t;
 
     clk200   : in  std_logic;
-    --clock_i_p : in  std_logic;
-    --clock_i_n : in  std_logic;
-    data_i_p : in  std_logic_vector(NUM_LT_CHANNELS-1 downto 0);
-    data_i_n : in  std_logic_vector(NUM_LT_CHANNELS-1 downto 0);
-    data_o   : out std_logic_vector(NUM_LT_CHANNELS-1 downto 0)
+    data_i_p : in  std_logic;
+    data_i_n : in  std_logic;
+    data_o   : out std_logic
 
     );
 end lt_rx;
@@ -52,12 +49,9 @@ architecture behavioral of lt_rx is
   end if_then_else;
 
   signal data_i, data_idelay, data_pos,
-    data_neg, data_r, data_ibuf :
-    std_logic_vector (NUM_LT_CHANNELS-1 downto 0)
-    := (others => '0');
+    data_neg, data_r, data_ibuf : std_logic := '0';
 
-  type srl_array_t is array (integer range <>) of std_logic_vector(15 downto 0);
-  signal data_srls : srl_array_t (NUM_LT_CHANNELS-1 downto 0);
+  signal data_srl : std_logic_vector (15 downto 0);
 
 begin
 
@@ -67,43 +61,38 @@ begin
   -- IBUFDS → IDELAY → FF
   --------------------------------------------------------------------------------
 
-  rx_gen : for I in 0 to NUM_LT_CHANNELS-1 generate
-  begin
-
-    diff_gen : if (DIFFERENTIAL_DATA) generate
-      ibufdata : IBUFDS
-        generic map (                   --
-          DIFF_TERM    => true,         -- Differential Termination
-          IBUF_LOW_PWR => true          -- Low power="TRUE", Highest performance="FALSE"
-          )
-        port map (
-          O  => data_ibuf(I),
-          I  => data_i_p(I),
-          IB => data_i_n(I)
-          );
-    end generate;
-
-    single_ended_gen : if (not DIFFERENTIAL_DATA) generate
-      IBUF_inst : IBUF
-        generic map (
-          IBUF_LOW_PWR => true,         -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
-          IOSTANDARD   => "DEFAULT")
-        port map (
-          O => data_ibuf(I),            -- Buffer output
-          I => data_i_p(I)              -- Buffer input (connect directly to top-level port)
-          );
-    end generate;
-
-    idelay_inst : entity work.idelay
-      generic map (PATTERN => "DATA")
+  diff_gen : if (DIFFERENTIAL_DATA) generate
+    ibufdata : IBUFDS
+      generic map (                     --
+        DIFF_TERM    => true,           -- Differential Termination
+        IBUF_LOW_PWR => true   -- Low power="TRUE", Highest performance="FALSE"
+        )
       port map (
-        clock => clk200,
-        taps  => fine_delays(I),
-        din   => data_ibuf(I),
-        dout  => data_idelay(I)
+        O  => data_ibuf,
+        I  => data_i_p,
+        IB => data_i_n
         );
-
   end generate;
+
+  single_ended_gen : if (not DIFFERENTIAL_DATA) generate
+    IBUF_inst : IBUF
+      generic map (
+        IBUF_LOW_PWR => true,  -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
+        IOSTANDARD   => "DEFAULT")
+      port map (
+        O => data_ibuf,                 -- Buffer output
+        I => data_i_p  -- Buffer input (connect directly to top-level port)
+        );
+  end generate;
+
+  idelay_inst : entity work.idelay
+    generic map (PATTERN => "DATA")
+    port map (
+      clock => clk200,
+      taps  => fine_delay,
+      din   => data_ibuf,
+      dout  => data_idelay
+      );
 
   process (clk) is
   begin
@@ -118,13 +107,11 @@ begin
   process (clk) is
   begin
     if (rising_edge(clk)) then
-      for I in 0 to NUM_LT_CHANNELS-1 loop
-        if (posnegs(I) = '0') then
-          data_r <= data_pos;
-        else
-          data_r <= data_neg;
-        end if;
-      end loop;
+      if (posneg = '1') then
+        data_r <= data_pos;
+      else
+        data_r <= data_neg;
+      end if;
     end if;
   end process;
 
@@ -135,29 +122,30 @@ begin
   process (clk) is
   begin
     if (rising_edge(clk)) then
-      for CH in 0 to NUM_LT_CHANNELS-1 loop
 
-        --------------------------------------------------------------------------------
-        -- shift register
-        --------------------------------------------------------------------------------
+      --------------------------------------------------------------------------------
+      -- shift register
+      --------------------------------------------------------------------------------
 
-        data_srls(CH)(0) <= data_r(CH);
-        for SR in 1 to 15 loop
-          data_srls(CH)(SR) <= data_srls(CH)(SR-1);
-        end loop;
-
-        --------------------------------------------------------------------------------
-        -- output mux
-        --------------------------------------------------------------------------------
-
-        if (to_integer(unsigned(coarse_delays(CH))) = 0) then
-          data_o(CH) <= data_r(CH);
-        else
-          data_o(CH) <= data_srls(CH)
-                        (to_integer(unsigned(coarse_delays(CH))-1));
-        end if;
-
+      data_srl(0) <= data_r;
+      for SR in 1 to 15 loop
+        data_srl(SR) <= data_srl(SR-1);
       end loop;
+
+      --------------------------------------------------------------------------------
+      -- output mux
+      --------------------------------------------------------------------------------
+
+      if (en = '1') then
+        if (to_integer(unsigned(coarse_delay)) = 0) then
+          data_o <= data_r;
+        else
+          data_o <= data_srl (to_integer(unsigned(coarse_delay)-1));
+        end if;
+      else
+        data_o <= '0';
+      end if;
+
     end if;
   end process;
 
