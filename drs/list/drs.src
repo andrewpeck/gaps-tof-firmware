@@ -19,6 +19,11 @@ common/src/synchonizer.vhd
 common/src/types_pkg.vhd
 common/src/manchester_decoder.vhd
 common/src/prbs_any.vhd
+common/src/adc.vhd
+common/src/sem.vhd
+common/src/trig_gen.vhd
+common/src/urand_inf.vhd
+common/src/rate_counter.vhd
 
 # Readout Board
 drs/src/cylon.v
@@ -32,14 +37,9 @@ drs/src/ps_interface.vhd
 drs/src/registers.vhd
 drs/src/spi_rx.vhd
 drs/src/trigger_mux.vhd
-drs/src/rate_counter.vhd
-drs/src/rate_counter.vhd
-drs/src/trig_gen.vhd
-drs/src/urand_inf.vhd
 drs/src/mt_rx.vhd
 drs/src/drs.v
 drs/src/crc32.vhd
 drs/src/dna.v
 drs/src/daq.vhd
-common/src/adc.vhd
-common/src/sem.vhd
+

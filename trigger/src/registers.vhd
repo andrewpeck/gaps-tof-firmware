@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_MT_NUM_REGS : integer := 141;
+    constant REG_MT_NUM_REGS : integer := 143;
     constant REG_MT_ADDRESS_MSB : integer := 9;
     constant REG_MT_ADDRESS_LSB : integer := 0;
     constant REG_MT_LOOPBACK_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
@@ -45,7 +45,15 @@ package registers is
     constant REG_MT_DSI_ON_ADDR    : std_logic_vector(9 downto 0) := "00" & x"07";
     constant REG_MT_DSI_ON_MSB    : integer := 4;
     constant REG_MT_DSI_ON_LSB     : integer := 0;
-    constant REG_MT_DSI_ON_DEFAULT : std_logic_vector(4 downto 0) := '0' & x"0";
+    constant REG_MT_DSI_ON_DEFAULT : std_logic_vector(4 downto 0) := '1' & x"f";
+
+    constant REG_MT_FORCE_TRIGGER_ADDR    : std_logic_vector(9 downto 0) := "00" & x"08";
+    constant REG_MT_FORCE_TRIGGER_BIT    : integer := 0;
+
+    constant REG_MT_TRIG_GEN_RATE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"09";
+    constant REG_MT_TRIG_GEN_RATE_MSB    : integer := 31;
+    constant REG_MT_TRIG_GEN_RATE_LSB     : integer := 0;
+    constant REG_MT_TRIG_GEN_RATE_DEFAULT : std_logic_vector(31 downto 0) := x"00000000";
 
     constant REG_MT_PULSE_STRETCH_ADDR    : std_logic_vector(9 downto 0) := "00" & x"0f";
     constant REG_MT_PULSE_STRETCH_MSB    : integer := 3;

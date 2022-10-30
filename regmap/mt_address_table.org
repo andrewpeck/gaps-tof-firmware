@@ -31,7 +31,11 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |FB_CLOCK_RATE_4 | ~0x6~ | ~0x18~ | ~[31:0]~ | r |  | Feedback clock frequency | 
 |------------+---+---+---------+-----+-----+----------------------------|
-|DSI_ON | ~0x7~ | ~0x1c~ | ~[4:0]~ | rw | ~0x0~ | Bitmask 1 = enable DSI | 
+|DSI_ON | ~0x7~ | ~0x1c~ | ~[4:0]~ | rw | ~0x1F~ | Bitmask 1 = enable DSI | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|FORCE_TRIGGER | ~0x8~ | ~0x20~ | ~0~ | w | Pulse | Write 1 to generate a trigger | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|TRIG_GEN_RATE | ~0x9~ | ~0x24~ | ~[31:0]~ | rw | ~0x0~ | Rate of generated triggers f_trig =(2^32-1) * clk_period * rate | 
 |------------+---+---+---------+-----+-----+----------------------------|
 |PULSE_STRETCH | ~0xf~ | ~0x3c~ | ~[3:0]~ | rw | ~0x0~ | Integer clock cycles to stretch hits by | 
 |------------+---+---+---------+-----+-----+----------------------------|

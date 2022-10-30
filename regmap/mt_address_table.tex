@@ -58,7 +58,9 @@
     FB\_CLOCK\_RATE\_2 & \texttt{0x4} & \texttt{[31:0]} & r & \texttt{} & Feedback clock frequency \\\hline
     FB\_CLOCK\_RATE\_3 & \texttt{0x5} & \texttt{[31:0]} & r & \texttt{} & Feedback clock frequency \\\hline
     FB\_CLOCK\_RATE\_4 & \texttt{0x6} & \texttt{[31:0]} & r & \texttt{} & Feedback clock frequency \\\hline
-    DSI\_ON & \texttt{0x7} & \texttt{[4:0]} & rw & \texttt{0x0} & Bitmask 1 = enable DSI \\\hline
+    DSI\_ON & \texttt{0x7} & \texttt{[4:0]} & rw & \texttt{0x1F} & Bitmask 1 = enable DSI \\\hline
+    FORCE\_TRIGGER & \texttt{0x8} & \texttt{[0:0]} & w & Pulse & Write 1 to generate a trigger \\\hline
+    TRIG\_GEN\_RATE & \texttt{0x9} & \texttt{[31:0]} & rw & \texttt{0x0} & Rate of generated triggers f\_trig =(2\^32-1) * clk\_period * rate \\\hline
     PULSE\_STRETCH & \texttt{0xf} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock cycles to stretch hits by \\\hline
     \end{tabularx}
     \vspace{5mm}

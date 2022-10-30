@@ -45,8 +45,21 @@
           permission="rw"
           mask="0x1f"
           description="Bitmask 1 = enable DSI"
-          fw_default="0x0"
+          fw_default="0x1f"
           fw_signal="dsi_on_ipb"/>
+
+    <node id="FORCE_TRIGGER"
+          address="0x8"
+          permission="w"
+          mask="0x1"
+          description="Write 1 to generate a trigger"
+          fw_write_pulse_signal="trigger_ipb"/>
+
+    <node id="TRIG_GEN_RATE" address="0x9" permission="rw"
+          description="Rate of generated triggers f_trig =(2^32-1) * clk_period * rate"
+          mask="0xffffffff"
+          fw_default="0x0"
+          fw_signal="trig_gen_rate"/>
 
     <node id="PULSE_STRETCH"
           address="0xf"
