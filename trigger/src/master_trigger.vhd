@@ -29,6 +29,8 @@ entity gaps_mt is
 
     LOOPBACK_MODE : boolean := true;
 
+    MANCHESTER_LOOPBACK : boolean := true;
+
     -- these generics get set by hog at synthesis
     GLOBAL_DATE : std_logic_vector (31 downto 0) := x"00000000";
     GLOBAL_TIME : std_logic_vector (31 downto 0) := x"00000000";
@@ -118,7 +120,7 @@ architecture structural of gaps_mt is
 
   signal clock : std_logic;
 
-  signal clk100,  clk200,  clk125,  clk125_90 : std_logic;
+  signal clk25, clk100,  clk200,  clk125,  clk125_90 : std_logic;
 
   signal event_cnt     : std_logic_vector (EVENTCNTB-1 downto 0);
   signal rst_event_cnt : std_logic := '0';
@@ -386,6 +388,7 @@ begin
       lvs_sync => lvs_sync,
       ccb_sync => lvs_sync_ccb,
 
+      clk25     => clk25,                -- system clock
       clk100    => clk100,               -- system clock
       clk200    => clk200,               -- 200mhz for iodelay
       clk125    => clk125,
@@ -630,10 +633,11 @@ begin
 
     signal data_o_src : std_logic := '0';
 
-    signal prbs_reset  : std_logic := '0';
-    signal data_gen    : std_logic := '0';
-    signal prbs_err    : std_logic_vector(lt_data_i_p'range);
-    signal posneg_prbs : std_logic_vector(lt_data_i_p'range);
+    signal prbs_reset          : std_logic := '0';
+    signal data_gen            : std_logic := '0';
+    signal data_gen_manchester : std_logic := '0';
+    signal prbs_err            : std_logic_vector(lt_data_i_p'range);
+    signal posneg_prbs         : std_logic_vector(lt_data_i_p'range);
 
     signal data_i_vec : std_logic_vector(lt_data_i_p'range);
     signal data_o_vec : std_logic_vector(rb_data_o'range);
@@ -652,7 +656,11 @@ begin
     signal prbs_err_inj_ff  : std_logic := '0';
     signal prbs_err_inj     : std_logic := '0';
 
+    signal loopback_clk : std_logic := '0';
+
   begin
+
+    loopback_clk <= clk25;
 
     -- for full speed, this should be a constant 1
     -- 
@@ -667,9 +675,9 @@ begin
 
     div <= 2**to_int(div_vio);
 
-    process (clock) is
+    process (loopback_clk) is
     begin
-      if (rising_edge(clock)) then
+      if (rising_edge(loopback_clk)) then
 
         if (div=1) then
           div_pulse <= '1';
@@ -713,26 +721,42 @@ begin
         )
       port map (
         rst         => reset,
-        clk         => clock,
+        clk         => loopback_clk,
         data_in(0)  => prbs_err_inj,
         en          => prbs_clk_gate,
         data_out(0) => data_gen
         );
 
-    process (clock) is
+    manchester_encoder_inst : entity work.manchester_encoder
+      port map (
+        clk    => loopback_clk,
+        din    => data_gen,
+        dout   => data_gen_manchester
+        );
+
+    -- output multiplexer
+    process (data_gen, data_gen_manchester) is
     begin
-      if (rising_edge(clock)) then
-        if (data_o_src = '0') then
+      if (data_o_src = '0') then
+        if (MANCHESTER_LOOPBACK) then
+          rb_data_o <= (others => data_gen_manchester);
+        end if;
+        if (not MANCHESTER_LOOPBACK) then
           rb_data_o <= (others => data_gen);
-        else
+        end if;
+      else
+        if (MANCHESTER_LOOPBACK) then
+          rb_data_o <= repeat(loopback_clk, data_o_vec'length) xor data_o_vec;
+        end if;
+        if (not MANCHESTER_LOOPBACK) then
           rb_data_o <= data_o_vec;
         end if;
       end if;
     end process;
 
-    process (clock) is
+    process (loopback_clk) is
     begin
-      if (rising_edge(clock)) then
+      if (rising_edge(loopback_clk)) then
         if (prbs_clk_gate = '1') then
 
           prbs_err_inj_ff <= prbs_err_inj_vio;
@@ -768,9 +792,9 @@ begin
           );
 
       -- posedge
-      process (clock) is
+      process (loopback_clk) is
       begin
-        if (rising_edge(clock)) then
+        if (rising_edge(loopback_clk)) then
           if (prbs_clk_gate = '1') then
             data_pos <= lt_data_i;
             data_neg <= data_neg_r;
@@ -788,9 +812,9 @@ begin
       end process;
 
       -- negedge
-      process (clock) is
+      process (loopback_clk) is
       begin
-        if (falling_edge(clock)) then
+        if (falling_edge(loopback_clk)) then
           if (prbs_clk_gate = '1') then
             data_neg_r <= lt_data_i;
           end if; 
@@ -811,7 +835,7 @@ begin
           )
         port map (
           rst         => reset,
-          clk         => clock,
+          clk         => loopback_clk,
           data_in(0)  => data,
           en          => prbs_clk_gate,
           data_out(0) => prbs_err(I)
@@ -828,16 +852,16 @@ begin
           g_INCREMENT_STEP => 1
           )
         port map (
-          ref_clk_i => clock,
+          ref_clk_i => loopback_clk,
           reset_i   => reset or prbs_reset,
           en_i      => prbs_clk_gate and prbs_err(I),
           snap_i    => '1',
           count_o   => err_cnts(I)
           );
 
-      process (clock) is
+      process (loopback_clk) is
       begin
-        if (rising_edge(clock)) then
+        if (rising_edge(loopback_clk)) then
           if (prbs_clk_gate = '1') then
             if (data /= data_i_vec(I)) then
               inactivity_cnts(I) <= 0;
@@ -861,7 +885,7 @@ begin
         g_INCREMENT_STEP => 1
         )
       port map (
-        ref_clk_i => clock,
+        ref_clk_i => loopback_clk,
         reset_i   => prbs_reset,
         en_i      => prbs_clk_gate,
         snap_i    => '1',
@@ -870,7 +894,7 @@ begin
 
     ila_prbs_inst : ila_prbs
       port map (
-        clk        => clock,
+        clk        => loopback_clk,
         probe0(0)  => prbs_clk_gate,
         probe1(0)  => data_gen,
         probe2     => data_i_vec,
@@ -887,9 +911,9 @@ begin
     begin
       err_cnts_masked(I) <= repeat(inactive(I), err_cnts(I)'length) or err_cnts(I);
 
-      -- process (clock) is
+      -- process (loopback_clk) is
       -- begin
-      --   if (rising_edge(clock)) then
+      --   if (rising_edge(loopback_clk)) then
       --     if (ila_ch_sel = I) then
       --       err_cnts_sel(I) <= err_cnts_masked(I);
       --     else
@@ -903,7 +927,7 @@ begin
 
     vio_prbs_inst : vio_prbs
       port map (
-        clk           => clock,
+        clk           => loopback_clk,
         probe_in0     => frame_cnt,
         probe_in1     => err_cnts_masked(0),
         probe_in2     => err_cnts_masked(1),

@@ -17,6 +17,7 @@ entity clocking is
     lvs_sync : out std_logic_vector(NUM_DSI-1 downto 0);
     ccb_sync : out std_logic;
 
+    clk25     : out std_logic;
     clk100    : out std_logic;
     clk200    : out std_logic;
     clk125    : out std_logic;
@@ -30,6 +31,7 @@ architecture structural of clocking is
   component mt_clk_wiz
     port (
       -- Clock out ports
+      clk25     : out std_logic;
       clk100    : out std_logic;
       clk200    : out std_logic;
       clk125    : out std_logic;
@@ -90,6 +92,7 @@ begin
       -- Clock out ports
       clk100    => clk100,
       clk200    => clk200,
+      clk25     => clk25,
       clk125    => clk125,
       clk125_90 => clk125_90,
       -- Status and control signals
