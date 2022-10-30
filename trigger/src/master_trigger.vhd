@@ -27,7 +27,7 @@ entity gaps_mt is
     MAC_ADDR : std_logic_vector (47 downto 0) := x"00_08_20_83_53_00";
     IP_ADDR  : ip_addr_t                      := (192, 168, 0, 10);
 
-    LOOPBACK_MODE : boolean := true;
+    LOOPBACK_MODE : boolean := false;
 
     MANCHESTER_LOOPBACK : boolean := true;
 
