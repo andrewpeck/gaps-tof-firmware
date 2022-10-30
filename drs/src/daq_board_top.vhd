@@ -464,12 +464,12 @@ begin
         elsif (mt_active_hi_cnts < 127) then
           mt_active_hi_cnts <= mt_active_hi_cnts + 1;
         elsif (mt_active_hi_cnts = 127) then
-          mt_active_hi_cnts <= 0;
+          mt_active_hi_cnts   <= 0;
           mt_trigger_data_pol <= not mt_trigger_data_pol;
         end if;
       end if;
-    end process;
-
+    end if;
+  end process;
 
   prbs_any_check : entity work.prbs_any
     generic map (
