@@ -401,7 +401,7 @@ begin
   manchester_decoder_inst : entity work.manchester_decoder
     port map (
       clk  => trg_clk_oversample,
-      din  => mt_trigger_i,
+      din  => mt_trigger_i and not mt_is_level_trigger,
       dout => mt_trigger_decoded,
       dav  => mt_trigger_decoded_dav
       );
