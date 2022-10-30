@@ -19,7 +19,7 @@ entity mt_rx is
     trg_o : out std_logic := '0';
 
     cmd_o       : out std_logic_vector (CMDB-1 downto 0) := (others => '0');
-    cmd_valid_o : out std_logic;
+    cmd_valid_o : out std_logic := '0';
 
     mask_o       : out std_logic_vector (MASKCNTB-1 downto 0) := (others => '0');
     mask_valid_o : out std_logic;
@@ -45,8 +45,8 @@ begin
     if (rising_edge(clock)) then
 
       trg_o             <= '0';
-      event_cnt_valid_o <= '1';
-      mask_valid_o      <= '1';
+      event_cnt_valid_o <= '0';
+      mask_valid_o      <= '0';
 
       if (enable_i = '1') then
 
