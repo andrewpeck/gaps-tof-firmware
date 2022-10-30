@@ -16,6 +16,8 @@ entity trigger is
 
     hits_i : in channel_array_t;
 
+    busy_i : in std_logic;
+
     triggers_o       : out channel_array_t;
     rb_triggers_o    : out std_logic_vector (NUM_RBS-1 downto 0);
     global_trigger_o : out std_logic

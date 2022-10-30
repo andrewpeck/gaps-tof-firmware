@@ -3,6 +3,7 @@ trigger/src/master_trigger.vhd top=gaps_mt
 trigger/src/*.vhd
 trigger/src/*/*.vhd
 common/src/*.vhd
+common/src/uart/*.vhd
 ip/master_trigger/*/*.xci
 
 verilog-ethernet/rtl/eth_mac_1g_rgmii.v

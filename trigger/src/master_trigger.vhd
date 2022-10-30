@@ -103,7 +103,10 @@ end gaps_mt;
 
 architecture structural of gaps_mt is
 
-  signal dsi_on_ipb : std_logic_vector (dsi_on'range);
+  signal timestamp       : unsigned (47 downto 0) := (others => '0');
+  signal timestamp_latch : unsigned (47 downto 0) := (others => '0');
+
+  signal dsi_on_ipb  : std_logic_vector (dsi_on'range);
   signal trigger_ipb : std_logic := '0';
 
   signal rgmii_rxd_dly     : std_logic_vector(3 downto 0);
@@ -148,6 +151,11 @@ architecture structural of gaps_mt is
 
   signal trig_gen_rate   : std_logic_vector (31 downto 0) := (others => '0');
   signal trig_gen        : std_logic                      := '0';
+
+  signal tiu_busy         : std_logic                     := '0';
+  signal tiu_timebyte     : std_logic_vector (7 downto 0) := (others => '0');
+  signal tiu_timebyte_dav : std_logic                     := '0';
+
   signal rb_triggers    : std_logic_vector (NUM_RBS-1 downto 0);  -- 1 bit trigger for each baloon
   signal triggers       : channel_array_t;                        -- 320 bits of trigger, one for each paddle
 
@@ -511,6 +519,8 @@ begin
       -- hits from input stage (20x16 array of hits)
       hits_i => hits_masked,
 
+      busy_i => tiu_busy,
+
       single_hit_en_i => '1',
       bool_trg_en_i   => '1',
 
@@ -580,6 +590,133 @@ begin
           );
     end generate;
   end generate;
+
+  --------------------------------------------------------------------------------
+  -- TIU Interface
+  --------------------------------------------------------------------------------
+
+  noloop_tiu : if (not LOOPBACK_MODE) generate
+
+    signal event_cnt_wr_en  : std_logic                     := '0';
+    signal tiu_trigger_o    : std_logic                     := '0';
+    signal tiu_serial_o     : std_logic                     := '1';
+
+    signal tiu_timecode_i    : std_logic                     := '0';
+    signal tiu_timecode_sr   : std_logic_vector (2 downto 0) := (others => '0');
+    signal tiu_falling       : std_logic                     := '0';
+
+    constant TIU_CNT_MAX   : natural := 2**20-1;
+    signal tiu_falling_cnt : natural := TIU_CNT_MAX;
+
+    constant tiu_trig_cnt_max : natural   := 7;
+    signal tiu_trig_cnt       : natural
+      range 0 to tiu_trig_cnt_max := 0;
+
+  begin
+
+    tiu_trigger_o <= '1' when tiu_trig_cnt > 0 else '0';
+
+    process (clock) is
+    begin
+      if (rising_edge(clock)) then
+        if (global_trigger='1') then
+          tiu_trig_cnt <= tiu_trig_cnt_max;
+        elsif (tiu_trig_cnt > 0) then
+          tiu_trig_cnt <= tiu_trig_cnt - 1;
+        end if;
+      end if;
+    end process;
+
+    -- delay by 1 to align with event cnt
+    process (clock) is
+    begin
+      if (rising_edge(clock)) then
+        event_cnt_wr_en <= global_trigger;
+      end if;
+    end process;
+
+    tiu_tx_inst : entity work.tiu_tx
+      generic map (
+        EVENTCNTB => 32,
+        DIV       => 100
+        )
+      port map (
+        clock       => clock,
+        reset       => reset,
+        serial_o    => tiu_serial_o,
+        trg_i       => event_cnt_wr_en,
+        event_cnt_i => event_cnt
+        );
+
+    timecode_uart_inst : entity work.tiny_uart
+      generic map (
+        WLS    => 8,            --! word length select; number of data bits     [ integer ]
+        CLK    => 100_000_000,  --! master clock frequency in Hz                [ integer ]
+        BPS    => 9600,         --! transceive baud rate in Bps                 [ integer ]
+        SBS    => 1,            --! Stop bit select, only one/two stopbit       [ integer ]
+        PI     => true,         --! Parity inhibit, true: inhibit               [ boolean ]
+        EPE    => true,         --! Even parity enable, true: even, false: odd  [ boolean ]
+        DEBU   => 3,            --! Number of debouncer stages                  [ integer ]
+        TXIMPL => false,        --! implement UART TX path                      [ boolean ]
+        RXIMPL => true  )       --! implement UART RX path                      [ boolean ]
+      port map (
+        R    => reset,
+        C    => clock,
+        TXD  => open,
+        RXD  => tiu_timecode_i,
+        RR   => tiu_timebyte,
+        PE   => open,
+        FE   => open,
+        DR   => tiu_timebyte_dav,
+        TR   => (others => '0'),
+        THRE => '0',
+        THRL => '0',
+        TRE  => open
+        );
+
+    -- on the falling edge of the tiu signal, latch the timecode
+
+    process (clock) is
+    begin
+      if (rising_edge(clock)) then
+
+        tiu_timecode_sr(0) <= tiu_timecode_i;
+
+        for I in 0 to tiu_timecode_sr'length-1 loop
+          tiu_timecode_sr(I) <= tiu_timecode_sr(I-1);
+        end loop;
+
+        tiu_falling <= '0';
+        if (tiu_falling_cnt = 0 and tiu_timecode_sr(2) = '1' and tiu_timecode_sr(1) = '0') then
+          tiu_falling <= '1';
+          tiu_falling_cnt <= TIU_CNT_MAX;
+        elsif (tiu_falling_cnt > 0) then
+          tiu_falling_cnt <= tiu_falling_cnt - 1;
+        end if;
+
+        if (tiu_falling = '1') then
+          timestamp_latch <= timestamp;
+        end if;
+
+      end if;
+    end process;
+
+  end generate;
+
+  -------------------------------------------------------------------------------
+  -- Timestamp
+  -------------------------------------------------------------------------------
+
+  process (clock)
+  begin
+    if (rising_edge(clock)) then
+      if (reset = '1') then
+        timestamp <= (others => '0');
+      else
+        timestamp <= timestamp + 1;
+      end if;
+    end if;
+  end process;
 
   --------------------------------------------------------------------------------
   -- SPI master
