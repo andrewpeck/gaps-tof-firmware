@@ -16,7 +16,7 @@ package constants is
   constant NUM_LT_CLOCKS   : positive := NUM_LTS;                    --
   constant NUM_LT_BITS     : positive := 16; --
 
-  constant EVENTCNTB : positive := 48;
+  constant EVENTCNTB : positive := 32;
 
   --
   --constant MODE : string := "IDDR"; -- FF or IDDR or OVERSAMPLE
