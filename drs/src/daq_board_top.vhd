@@ -459,7 +459,7 @@ begin
   begin
     if (rising_edge(trg_clk)) then
       if (mt_trigger_dav = '1') then
-        if (mt_trigger_data = '0') then
+        if (mt_trigger_data_inv = '0') then
           mt_active_hi_cnts <= 0;
         elsif (mt_active_hi_cnts < 127) then
           mt_active_hi_cnts <= mt_active_hi_cnts + 1;
