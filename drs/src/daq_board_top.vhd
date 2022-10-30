@@ -495,15 +495,15 @@ begin
     generic map (
       EVENTCNTB => mt_event_cnt'length,
       MASKCNTB  => mt_mask'length,
-      CMDB      => mt_cmd'length
+      CMDB      => 0
       )
     port map (
-      clock       => trg_clk,
-      reset       => reset,
-      serial_i    => mt_trigger_data_inv,
-      enable_i    => mt_trigger_dav,
+      clock    => trg_clk,
+      reset    => reset,
+      serial_i => mt_trigger_data_inv,
+      enable_i => mt_trigger_dav,
 
-      trg_o       => mt_trigger,
+      trg_o => mt_trigger,
 
       cmd_o       => mt_cmd,
       cmd_valid_o => mt_cmd_valid,
