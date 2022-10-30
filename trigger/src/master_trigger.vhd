@@ -624,7 +624,7 @@ begin
     signal data_i_vec : std_logic_vector(lt_data_i_p'range);
     signal data_o_vec : std_logic_vector(rb_data_o'range);
 
-    signal dsi_on_vio : std_logic_vector (dsi_on'range);
+    signal dsi_off_vio : std_logic_vector (dsi_on'range);
 
     signal prbs_clk_gate : std_logic := '1';
 
@@ -686,7 +686,7 @@ begin
     -- Control DSI through VIO when in loopback mode
     --------------------------------------------------------------------------------
 
-    dsi_on <= dsi_on_vio;
+    dsi_on <= not dsi_off_vio;
 
     --------------------------------------------------------------------------------
     -- PRBS-7 Data Generation
@@ -992,7 +992,7 @@ begin
         probe_out1    => posneg_prbs,
         probe_out2    => data_o_vec,
         probe_out3(0) => data_o_src,
-        probe_out4    => dsi_on_vio,
+        probe_out4    => dsi_off_vio,
         probe_out5    => ext_out,
         probe_out6    => div_vio,
         probe_out7(0) => prbs_err_inj_vio
