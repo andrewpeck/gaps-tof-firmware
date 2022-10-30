@@ -383,7 +383,7 @@ begin
   -- take in a global clock, generate system clocks at the correct frequency
   --------------------------------------------------------------------------------
 
-  fb_clk_bufg : BUFG
+  sys_clk_bufg : BUFG
     port map(
       i => sys_clk_i,
       o => sys_clk
@@ -410,7 +410,12 @@ begin
 
   fb_clk_gen : for I in fb_clk_p'range generate
   begin
-    fb_clk_ibuf : IBUFDS
+    fb_clk_ibuf : ibufds
+      generic map (
+        diff_term    => true,  -- differential termination
+        ibuf_low_pwr => true,  -- low power (true) vs. performance (false) setting for referenced i/o standards
+        iostandard   => "default"
+        )
       port map(
         i  => fb_clk_p(I),
         ib => fb_clk_n(I),
