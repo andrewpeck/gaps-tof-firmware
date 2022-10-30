@@ -7,11 +7,6 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_misc.all;
 use ieee.numeric_std.all;
 
--- TODO: expand this block to handle 2x DRS chips.
--- TODO: handle the case that we get a trigger but DRS chips are busy
--- TODO: add a timeout watchdog... right now if a trigger is received but the daq block doesnt
---       generate data it will hang forever :(
-
 entity daq is
   generic(
     g_PACKET_PAD    : positive := 32;
@@ -116,6 +111,9 @@ architecture behavioral of daq is
 
   constant EVENTID_TIMEOUT_MAX : natural := 170000;
   signal gfp_eventid_timeout_counter : natural range 0 to EVENTID_TIMEOUT_MAX := 0;
+
+  constant PAYLOAD_TIMEOUT_MAX: natural := 2**14-1;
+  signal payload_timeout_counter : natural range 0 to PAYLOAD_TIMEOUT_MAX := 0;
 
   signal dav : boolean := false;
 
@@ -340,6 +338,9 @@ begin
           channel_cnt <= 0;
           channel_id  <= 0;
 
+          payload_timeout_counter     <= 0;
+          gfp_eventid_timeout_counter <= 0;
+
           if (trigger_i = '1' or debug_packet_inject_i = '1') then
             state <= HEAD_state;
           end if;
@@ -495,19 +496,25 @@ begin
           drs_rden_o <= '1';
 
           if (debug or drs_valid_i = '1') then
-            state_word_cnt <= state_word_cnt + 1;
+            state_word_cnt          <= state_word_cnt + 1;
+            payload_timeout_counter <= 0;
+          else
+            payload_timeout_counter <= payload_timeout_counter + 1;
           end if;
 
-          if (num_channels = 0) then
-            state          <= CRC32_state;
-            state_word_cnt <= 0;
-            drs_rden_o     <= '0';
+          if (payload_timeout_counter = PAYLOAD_TIMEOUT_MAX
+              or num_channels = 0) then
+            payload_timeout_counter <= 0;
+            state                   <= CRC32_state;
+            state_word_cnt          <= 0;
+            drs_rden_o              <= '0';
           elsif (debug or drs_valid_i = '1') and (state_word_cnt = roi_size) then
-            state          <= CALC_CH_CRC_state;
-            state_word_cnt <= 0;
-            channel_cnt    <= channel_cnt + 1;
-            channel_id     <= get_next_channel(channel_id, mask);
-            drs_rden_o     <= '0';
+            payload_timeout_counter <= 0;
+            state                   <= CALC_CH_CRC_state;
+            state_word_cnt          <= 0;
+            channel_cnt             <= channel_cnt + 1;
+            channel_id              <= get_next_channel(channel_id, mask);
+            drs_rden_o              <= '0';
           end if;
 
           dav  <= false;
