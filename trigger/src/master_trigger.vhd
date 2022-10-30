@@ -587,24 +587,6 @@ begin
   ext_io(8) <= hk_ext_cs_n(0);
   ext_io(9) <= hk_ext_cs_n(1);
 
-  -- spi_master_1: entity work.spi_master
-  --   generic map (
-  --     data_length => data_length)
-  --   port map (
-  --     clk     => clk,
-  --     reset_n => reset_n,
-  --     enable  => enable,
-  --     cpol    => cpol,
-  --     cpha    => cpha,
-  --     miso    => miso,
-  --     sclk    => sclk,
-  --     ss_n    => ss_n,
-  --     mosi    => mosi,
-  --     busy    => busy,
-  --     tx      => tx,
-  --     rx      => rx
-  --     );
-
   --------------------------------------------------------------------------------
   -- Signal Sump
   --------------------------------------------------------------------------------
