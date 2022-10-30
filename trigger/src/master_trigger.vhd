@@ -1038,7 +1038,12 @@ begin
         probe6(0)  => hk_ext_clk,
         probe7(0)  => hk_ext_mosi,
         probe8(0)  => hk_ext_miso,
-        probe9     => hk_ext_cs_n
+        probe9     => hk_ext_cs_n,
+        probe10    => fb_clk_rates(0),
+        probe11    => fb_clk_rates(1),
+        probe12    => fb_clk_rates(2),
+        probe13    => fb_clk_rates(3),
+        probe14    => fb_clk_rates(4)
         );
 
     mask_cnts_loop : for I in err_cnts'range generate
