@@ -11,6 +11,8 @@ entity trigger is
 
     clk : in std_logic;
 
+    reset : in std_logic;
+
     single_hit_en_i : in std_logic := '1';
     bool_trg_en_i   : in std_logic := '1';
 
@@ -22,12 +24,16 @@ entity trigger is
 
     triggers_o       : out channel_array_t;
     rb_triggers_o    : out std_logic_vector (NUM_RBS-1 downto 0);
-    global_trigger_o : out std_logic
+    global_trigger_o : out std_logic;
+
+    event_cnt_o      : out std_logic_vector (31 downto 0)
 
     );
 end trigger;
 
 architecture behavioral of trigger is
+
+  signal global_trigger : std_logic := '0';
 
   signal single_hit_triggers  : channel_array_t := (others => '0');
   signal bool_triggers        : channel_array_t := (others => '0');
@@ -1681,15 +1687,17 @@ begin
     process (clk) is
     begin
       if (rising_edge(clk)) then
-        rb_ors(I) <= force_trigger_i or or_reduce(rb_triggers(I));
+        rb_ors(I) <= force_trigger_i; -- or or_reduce(rb_triggers(I));
       end if;
     end process;
   end generate;
 
+  global_trigger <= or_reduce(rb_ors);
+
   process (clk) is
   begin
     if (rising_edge(clk)) then
-      global_trigger_o <= or_reduce(rb_ors);
+      global_trigger_o <= global_trigger;
 
       -- delay by 1 clk to align with global trigger
       rb_triggers_o <= rb_ors;
@@ -1697,5 +1705,17 @@ begin
       triggers_o    <= triggers_r;
     end if;
   end process;
+
+  --------------------------------------------------------------------------------
+  -- event counter:
+  --------------------------------------------------------------------------------
+
+  event_counter : entity work.event_counter
+    port map (
+      clk              => clk,
+      rst_i            => reset,
+      global_trigger_i => global_trigger,
+      event_count_o    => event_cnt_o
+      );
 
 end behavioral;

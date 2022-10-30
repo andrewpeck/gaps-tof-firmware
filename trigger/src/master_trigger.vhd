@@ -127,7 +127,6 @@ architecture structural of gaps_mt is
   signal clk25, clk100,  clk200,  clk125,  clk125_90 : std_logic;
 
   signal event_cnt     : std_logic_vector (EVENTCNTB-1 downto 0);
-  signal rst_event_cnt : std_logic := '0';
 
   signal fine_delays : lt_fine_delays_array_t
     := (others => (others => '0'));
@@ -550,6 +549,8 @@ begin
       -- system clock
       clk => clock,
 
+      reset => reset,
+
       -- hits from input stage (20x16 array of hits)
       hits_i => hits_masked,
 
@@ -558,6 +559,8 @@ begin
       single_hit_en_i => '1',
       bool_trg_en_i   => '1',
       force_trigger_i => trigger_ipb or trig_gen,
+
+      event_cnt_o => event_cnt,
 
       -- ouptut from trigger logic
       global_trigger_o => global_trigger,   -- OR of the trigger menu
@@ -575,21 +578,6 @@ begin
       trig       => trig_gen
       );
 
-  --------------------------------------------------------------------------------
-  -- event counter:
-  --------------------------------------------------------------------------------
-  --
-  --
-  --------------------------------------------------------------------------------
-
-  event_counter : entity work.event_counter
-    port map (
-      clk              => clock,
-      rst_i            => (reset) or rst_event_cnt,
-      global_trigger_i => global_trigger,
-    --trigger_i        => triggers,
-      event_count_o    => event_cnt
-      );
 
   --------------------------------------------------------------------------------
   -- trigger tx
@@ -640,7 +628,6 @@ begin
 
   noloop_tiu : if (not LOOPBACK_MODE) generate
 
-    signal event_cnt_wr_en  : std_logic                     := '0';
     signal tiu_trigger_o    : std_logic                     := '0';
     signal tiu_serial_o     : std_logic                     := '1';
 
@@ -670,14 +657,6 @@ begin
       end if;
     end process;
 
-    -- delay by 1 to align with event cnt
-    process (clock) is
-    begin
-      if (rising_edge(clock)) then
-        event_cnt_wr_en <= global_trigger;
-      end if;
-    end process;
-
     tiu_tx_inst : entity work.tiu_tx
       generic map (
         EVENTCNTB => 32,
@@ -687,7 +666,7 @@ begin
         clock       => clock,
         reset       => reset,
         serial_o    => tiu_serial_o,
-        trg_i       => event_cnt_wr_en,
+        trg_i       => global_trigger,
         event_cnt_i => event_cnt
         );
 
