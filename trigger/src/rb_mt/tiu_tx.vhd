@@ -12,8 +12,12 @@ use ieee.numeric_std.all;
 
 entity tiu_tx is
   generic(
-    EVENTCNTB : natural := 32;
-    DIV       : natural := 100
+    EVENTCNTB   : natural   := 32;
+    DIV         : natural   := 100;
+    IDLE_LEVEL  : std_logic := '0';
+    STOP_LEVEL  : std_logic := '1';
+    START_LEVEL : std_logic := '1';
+    MSB_FIRST   : boolean   := true
     );
   port(
 
@@ -40,29 +44,49 @@ architecture rtl of tiu_tx is
 
   signal packet_buf : std_logic_vector (LENGTH-1 downto 0) := (others => '0');
 
-  signal serial_data : std_logic := '0';
+  signal serial_data : std_logic := IDLE_LEVEL;
+
+  function reverse_vector (a: std_logic_vector)
+    return std_logic_vector is
+    variable result: std_logic_vector(a'RANGE);
+    alias aa: std_logic_vector(a'REVERSE_RANGE) is a;
+  begin
+    for i in aa'RANGE loop
+      result(i) := aa(i);
+    end loop;
+    return result;
+  end; -- function reverse_vector
+
+  signal event_cnt : std_logic_vector (EVENTCNTB-1 downto 0);
 
 begin
 
+  rev : if (MSB_FIRST) generate
+    event_cnt <= reverse_vector(event_cnt_i);
+  end generate;
+  norev : if (not MSB_FIRST) generate
+    event_cnt <= event_cnt_i;
+  end generate;
 
   process (clock)
   begin
 
     if (rising_edge(clock)) then
 
-      serial_data <= '1';
+      serial_data <= IDLE_LEVEL;
+
       case state is
 
         when IDLE_state =>
 
           if (trg_i = '1') then
-            state       <= DATA_state;
-            packet_buf  <= '0' & event_cnt_i & '1';
+            state      <= DATA_state;
+            packet_buf <= STOP_LEVEL & event_cnt & START_LEVEL;
           end if;
 
         when DATA_state =>
 
-          if (div_pulse='1') then
+          if (div_pulse = '1') then
 
             if (state_bit_cnt = LENGTH - 1) then
               state         <= IDLE_state;
