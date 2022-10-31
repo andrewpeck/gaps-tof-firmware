@@ -173,16 +173,17 @@ architecture Behavioral of top_readout_board is
 
   signal drs_diagnostic_mode : std_logic := '0';
 
-  signal drs_srclk_en  : std_logic;
-  signal drs_busy      : std_logic;
-  signal roi_mode      : std_logic;
-  signal spike_removal : std_logic;
-  signal dmode         : std_logic;
-  signal reinit        : std_logic;
-  signal configure     : std_logic;
-  signal standby_mode  : std_logic;
-  signal start         : std_logic;
-  signal transp_mode   : std_logic;
+  signal drs_srclk_en   : std_logic;
+  signal drs_busy       : std_logic;
+  signal drs_busy_latch : std_logic;
+  signal roi_mode       : std_logic;
+  signal spike_removal  : std_logic;
+  signal dmode          : std_logic;
+  signal reinit         : std_logic;
+  signal configure      : std_logic;
+  signal standby_mode   : std_logic;
+  signal start          : std_logic;
+  signal transp_mode    : std_logic;
 
   signal wait_vdd_clocks : std_logic_vector (15 downto 0);
 
@@ -541,12 +542,21 @@ begin
   -- Event Queue
   --------------------------------------------------------------------------------
 
-  event_queue_din <= mt_event_cnt & readout_mask & drs_busy & std_logic_vector(timestamp);
+  event_queue_din <= mt_event_cnt & readout_mask & drs_busy_latch & std_logic_vector(timestamp);
 
   xfifo_timestamp <= event_queue_dout(xfifo_timestamp'length-1 downto 0);
-  xfifo_busy      <= event_queue_dout(xfifo_timestamp'length + xfifo_busy'length - 1 downto xfifo_timestamp'length);
+  xfifo_busy      <= event_queue_dout(xfifo_timestamp'length downto xfifo_timestamp'length);
   xfifo_mask      <= event_queue_dout(xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length - 1 downto xfifo_busy'length + xfifo_timestamp'length);
   xfifo_event_cnt <= event_queue_dout(xfifo_event_cnt'length + xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length - 1 downto xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length);
+
+  process (clock) is
+  begin
+    if (rising_edge(clock)) then
+      if (start_readout = '1') then
+        drs_busy_latch <= drs_busy;
+      end if;
+    end if;
+  end process;
 
   event_fifo_inst : entity work.fifo_sync
     generic map (
