@@ -582,6 +582,15 @@ begin
       trig       => trig_gen
       );
 
+  process (clock) is
+  begin
+    if (rising_edge(clock)) then
+      ext_trigger_r0 <= ext_io(0);
+      ext_trigger_r1 <= ext_trigger_r0;
+      ext_trigger_r2 <= ext_trigger_r1;
+      ext_trigger <= ext_trigger_r1 and not ext_trigger_r2;
+    end if;
+  end process;
 
   --------------------------------------------------------------------------------
   -- trigger tx

@@ -182,6 +182,8 @@ set_output_delay -clock $fwclk -min [expr $trce_dly_min - $thd_f] [get_ports $ou
 set_property SLEW SLOW [get_ports ext_io*]
 set_property DRIVE 4 [get_ports ext_io*]
 
+set_property PULLDOWN true [get_ports ext_io[0]]
+
 # set_property SLEW SLOW [get_ports hk_clk]
 # set_property SLEW SLOW [get_ports hk_cs_n]
 # set_property SLEW SLOW [get_ports hk_dout]
@@ -206,6 +208,8 @@ set_property IOSTANDARD LVCMOS33 [get_ports hk_din]
 set_property IOSTANDARD LVCMOS15 [get_ports ext_io*]
 set_property IOSTANDARD LVCMOS15 [get_ports ext_out*]
 set_property IOSTANDARD LVCMOS15 [get_ports ext_in*]
+
+
 
 # | Bank | Type | VCCO      |     #Diff | #SE | #If all SE |
 # |------+------+-----------+-----------+-----+------------|
