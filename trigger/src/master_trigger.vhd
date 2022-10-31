@@ -640,22 +640,21 @@ begin
     constant TIU_CNT_MAX   : natural := 2**20-1;
     signal tiu_falling_cnt : natural := TIU_CNT_MAX;
 
-    constant tiu_trig_cnt_max : natural   := 7;
-    signal tiu_trig_cnt       : natural
-      range 0 to tiu_trig_cnt_max := 0;
-
   begin
-
-    tiu_trigger_o <= '1' when tiu_trig_cnt > 0 else '0';
 
     process (clock) is
     begin
       if (rising_edge(clock)) then
         if (global_trigger='1') then
-          tiu_trig_cnt <= tiu_trig_cnt_max;
-        elsif (tiu_trig_cnt > 0) then
-          tiu_trig_cnt <= tiu_trig_cnt - 1;
+          tiu_trigger_o <= '1';
+        elsif (tiu_busy = '1') then
+          tiu_trigger_o <= '0';
         end if;
+
+        if (reset = '1') then
+          tiu_trigger_o <= '0';
+        end if;
+
       end if;
     end process;
 
