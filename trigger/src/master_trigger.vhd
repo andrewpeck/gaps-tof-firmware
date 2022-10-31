@@ -25,7 +25,7 @@ entity gaps_mt is
     EN_TMR_IPB_SLAVE_MT : integer range 0 to 1 := 0;
 
     MAC_ADDR : std_logic_vector (47 downto 0) := x"00_08_20_83_53_00";
-    IP_ADDR  : ip_addr_t                      := (192, 168, 0, 10);
+    IP_ADDR  : ip_addr_t                      := (10, 97, 108, 15);
 
     LOOPBACK_MODE : boolean := false;
 
