@@ -188,7 +188,6 @@ architecture Behavioral of top_readout_board is
 
   signal readout_mask                  : std_logic_vector (8 downto 0);
   signal readout_mask_axi              : std_logic_vector (8 downto 0) := (others => '0');
-  signal readout_mask_mt               : std_logic_vector (8 downto 0) := (others => '0');
   signal readout_mask_or               : std_logic_vector (8 downto 0) := (others => '0');
   signal readout_mask_9th_channel_auto : std_logic;
   signal read_ch8                      : std_logic                     := '0';
@@ -649,7 +648,7 @@ begin
   -------------------------------------------------------------------------------
 
   -- take the readout mask from either the trigger or axi control
-  readout_mask_or <= readout_mask_mt when mt_trigger_mode='1' else readout_mask_axi;
+  readout_mask_or <= ("0" & mt_mask) when mt_trigger_mode='1' else readout_mask_axi;
   read_ch8        <= readout_mask_9th_channel_auto and or_reduce(readout_mask_or (7 downto 0));
   readout_mask    <= readout_mask_or or (read_ch8 & x"00");
 

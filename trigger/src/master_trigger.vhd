@@ -616,8 +616,9 @@ begin
 
           trg_i       => or_reduce(trg_extend),
           event_cnt_i => event_cnt,
-          ch_mask_i   => rb_hits(I),  -- FIXME; this is at the wrong freq; just use a fifo uhg
-
+          ch_mask_i   => (others => '1'), -- FIXME: this should come from the
+                                          -- trigger block once the logic is in
+                                          -- place, but for now just read all channels
           serial_o => rb_data_o(I)
           );
     end generate;
