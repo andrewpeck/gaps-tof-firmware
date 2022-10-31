@@ -156,9 +156,13 @@ architecture structural of gaps_mt is
   signal trig_gen_rate   : std_logic_vector (31 downto 0) := (others => '0');
   signal trig_gen        : std_logic                      := '0';
 
-  signal tiu_busy         : std_logic                     := '0';
-  signal tiu_timebyte     : std_logic_vector (7 downto 0) := (others => '0');
-  signal tiu_timebyte_dav : std_logic                     := '0';
+  signal tiu_busy         : std_logic                         := '0';
+  signal tiu_timebyte     : std_logic_vector (7 downto 0)     := (others => '0');
+  signal tiu_timebyte_dav : std_logic                         := '0';
+  signal tiu_timeword     : std_logic_vector (8*6-1 downto 0) := (others => '0');
+  signal tiu_timeword_buf : std_logic_vector (8*5-1 downto 0) := (others => '0');
+  signal tiu_byte_cnt     : integer range 0 to tiu_timeword'length/8;
+
 
   signal rb_triggers    : std_logic_vector (NUM_RBS-1 downto 0);  -- 1 bit trigger for each baloon
   signal triggers       : channel_array_t;                        -- 320 bits of trigger, one for each paddle
@@ -697,8 +701,32 @@ begin
         TRE  => open
         );
 
-    -- on the falling edge of the tiu signal, latch the timecode
+    process (clock) is
+    begin
+      if (rising_edge(clock)) then
 
+        -- synchronize the byte counter to the falling edge of the pulse
+        if (tiu_falling = '1') then
+
+          tiu_byte_cnt <= 0;
+
+        elsif (tiu_timebyte_dav = '1') then
+
+          if (tiu_byte_cnt < 5) then
+            tiu_byte_cnt <= tiu_byte_cnt + 1;
+            tiu_timeword_buf(8*(tiu_byte_cnt+1)-1 downto 8*tiu_byte_cnt)
+              <= tiu_timebyte;
+          else
+            tiu_byte_cnt <= 0;
+            tiu_timeword <= tiu_timebyte & tiu_timeword_buf;
+          end if;
+        end if;
+
+      end if;
+    end process;
+
+
+    -- on the falling edge of the tiu signal, latch the timecode
     process (clock) is
     begin
       if (rising_edge(clock)) then
@@ -710,6 +738,7 @@ begin
         end loop;
 
         tiu_falling <= '0';
+
         if (tiu_falling_cnt = 0 and tiu_timecode_sr(2) = '1' and tiu_timecode_sr(1) = '0') then
           tiu_falling <= '1';
           tiu_falling_cnt <= TIU_CNT_MAX;
