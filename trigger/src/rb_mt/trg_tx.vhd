@@ -32,7 +32,7 @@ end trg_tx;
 
 architecture rtl of trg_tx is
 
-  constant LENGTH : natural := EVENTCNTB + MASKCNTB;
+  constant LENGTH : natural := EVENTCNTB + MASKCNTB + 1;
 
   type state_t is (IDLE_state, DATA_state);
   signal state         : state_t   := IDLE_state;
@@ -58,7 +58,7 @@ begin
           if (trg_i = '1') then
             serial_data <= '1';
             state       <= DATA_state;
-            packet_buf  <= ch_mask_i & event_cnt_i;
+            packet_buf  <= or_reduce(ch_mask_i) & ch_mask_i & event_cnt_i;
           end if;
 
         when DATA_state =>

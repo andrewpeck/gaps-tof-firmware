@@ -156,6 +156,7 @@ architecture Behavioral of top_readout_board is
   signal trig_gen_rate   : std_logic_vector (31 downto 0) := (others => '0');
   signal trig_gen        : std_logic                      := '0';
   signal mt_trigger      : std_logic                      := '0';
+  signal mt_fragment     : std_logic                      := '0';
   signal cnt_reset       : std_logic                      := '0';
   signal mt_trigger_mode : std_logic                      := '1';
 
@@ -272,8 +273,10 @@ architecture Behavioral of top_readout_board is
   signal daq_drs_busy    : std_logic;
   signal daq_event_ack   : std_logic := '0';
   signal daq_trigger     : std_logic := '0';
+  signal daq_fragment    : std_logic := '0';
   signal daq_event_valid : std_logic := '0';
 
+  signal xfifo_fragment  : std_logic_vector (0 downto 0);
   signal xfifo_busy      : std_logic_vector (0 downto 0);
   signal xfifo_timestamp : std_logic_vector (timestamp'range);
   signal xfifo_mask      : std_logic_vector (readout_mask'range);
@@ -281,6 +284,7 @@ architecture Behavioral of top_readout_board is
 
   signal event_queue_din, event_queue_dout :
     std_logic_vector (
+      xfifo_fragment'length +
       xfifo_busy'length +
       xfifo_event_cnt'length  +
       xfifo_mask'length  +
@@ -508,7 +512,8 @@ begin
       serial_i => mt_trigger_data_inv,
       enable_i => mt_trigger_dav,
 
-      trg_o => mt_trigger,
+      trg_o      => mt_trigger,
+      fragment_o => mt_fragment,
 
       cmd_o       => mt_cmd,
       cmd_valid_o => mt_cmd_valid,
@@ -542,12 +547,13 @@ begin
   -- Event Queue
   --------------------------------------------------------------------------------
 
-  event_queue_din <= mt_event_cnt & readout_mask & drs_busy_latch & std_logic_vector(timestamp);
+  event_queue_din <= mt_fragment & mt_event_cnt & readout_mask & drs_busy_latch & std_logic_vector(timestamp);
 
   xfifo_timestamp <= event_queue_dout(xfifo_timestamp'length-1 downto 0);
   xfifo_busy      <= event_queue_dout(xfifo_timestamp'length downto xfifo_timestamp'length);
   xfifo_mask      <= event_queue_dout(xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length - 1 downto xfifo_busy'length + xfifo_timestamp'length);
   xfifo_event_cnt <= event_queue_dout(xfifo_event_cnt'length + xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length - 1 downto xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length);
+  xfifo_fragment  <= event_queue_dout(xfifo_event_cnt'length + xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length downto xfifo_event_cnt'length + xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length);
 
   process (clock) is
   begin
@@ -747,11 +753,12 @@ begin
       empty  => daq_empty
       );
 
-  daq_event_cnt <= xfifo_event_cnt when mt_trigger_mode = '1' else event_counter;
-  daq_timestamp <= xfifo_timestamp when mt_trigger_mode = '1' else std_logic_vector(timestamp);
-  daq_mask      <= xfifo_mask      when mt_trigger_mode = '1' else readout_mask;
-  daq_drs_busy  <= xfifo_busy(0)   when mt_trigger_mode = '1' else drs_busy;
-  daq_trigger   <= daq_event_valid when mt_trigger_mode = '1' else trigger;
+  daq_event_cnt <= xfifo_event_cnt   when mt_trigger_mode = '1' else event_counter;
+  daq_timestamp <= xfifo_timestamp   when mt_trigger_mode = '1' else std_logic_vector(timestamp);
+  daq_mask      <= xfifo_mask        when mt_trigger_mode = '1' else readout_mask;
+  daq_drs_busy  <= xfifo_busy(0)     when mt_trigger_mode = '1' else drs_busy;
+  daq_trigger   <= daq_event_valid   when mt_trigger_mode = '1' else trigger;
+  daq_fragment  <= xfifo_fragment(0) when mt_trigger_mode = '1' else '0';
 
   daq_inst : entity work.daq
     port map (
@@ -766,6 +773,7 @@ begin
       mask_i      => daq_mask,
       drs_busy_i  => daq_drs_busy,
       trigger_i   => daq_trigger,
+      fragment_i  => daq_fragment,
 
       gfp_use_eventid_i     => gfp_use_eventid and not mt_trigger_mode,
       gfp_eventid_i         => gfp_eventid,

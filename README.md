@@ -132,7 +132,7 @@ no files are missing, the build directory is clean, and so on.
   | Field      | Len             | Description                                                                                                                                                                                   |
   |:-----------|:----------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
   | HEAD       | `[15:0]`        | 0xAAAA                                                                                                                                                                                        |
-  | STATUS     | `[15:0]`        | `[0]` = sync\_err <br> `[1]` = drs was busy (lost trigger) <br> `[3:2]` = reserved <br> `[15:4]`= 12 bit temperature                                                                          |
+  | STATUS     | `[15:0]`        | `[0]` = empty event fragment <br> `[1]` = drs was busy (lost trigger) <br> `[3:2]` = reserved <br> `[15:4]`= 12 bit temperature                                                               |
   | LEN        | `[15:0]`        | length of packet in 2 byte words                                                                                                                                                              |
   | ROI        | `[15:0]`        | size of region of interest                                                                                                                                                                    |
   | DNA        | `[63:0]`        | Zynq7000 Device DNA                                                                                                                                                                           |
@@ -150,12 +150,15 @@ no files are missing, the build directory is clean, and so on.
 
 ## Master Trigger Data Format
 
-  | Field     | Len      | Description                              |
-  |:----------|:---------|:-----------------------------------------|
-  | START     | `[0:0]`  | '1' = Start bit; initiates a trigger     |
-  | CH\_MASK  | `[7:0]`  | bitfield set to '1' to readout a channel |
-  | EVENT\_ID | `[31:0]` | Event ID                                 |
-  | CMD       | `[1:0]`  | 3 = resync, 2/1/0 reserved               |
+  | Field     | Len      | Description                                        |
+  |:----------|:---------|:---------------------------------------------------|
+  | START     | `[0:0]`  | '1' to start                                       |
+  | TRIGGER   | `[0:0]`  | '1' initiates a trigger; '0' for an event fragment |
+  | CH\_MASK  | `[7:0]`  | bitfield set to '1' to readout a channel           |
+  | EVENT\_ID | `[31:0]` | Event ID                                           |
+
+- Add a CRC to the end of the packet? Yes.
+- Add a CMD field to the end of the packet? Probably.
 
 ## Local Trigger Data Format
 

@@ -16,7 +16,8 @@ entity mt_rx is
     serial_i : in std_logic;
     enable_i : in std_logic;
 
-    trg_o : out std_logic := '0';
+    trg_o      : out std_logic := '0';
+    fragment_o : out std_logic := '0';
 
     cmd_o       : out std_logic_vector (CMDB-1 downto 0) := (others => '0');
     cmd_valid_o : out std_logic                          := '0';
@@ -32,7 +33,7 @@ end mt_rx;
 
 architecture rtl of mt_rx is
 
-  type state_t is (IDLE_state, MASK_state, EVENTCNT_state, CMD_state, WAIT_state);
+  type state_t is (IDLE_state, DWRITE_state, MASK_state, EVENTCNT_state, CMD_state, WAIT_state);
 
   signal state         : state_t                                   := IDLE_state;
   signal state_bit_cnt : natural range 0 to event_cnt_o'length - 1 := 0;
@@ -52,6 +53,7 @@ begin
     if (rising_edge(clock)) then
 
       trg_o             <= '0';
+      fragment_o        <= '0';
       event_cnt_valid_o <= '0';
       mask_valid_o      <= '0';
       cmd_valid_o       <= '0';
@@ -64,8 +66,15 @@ begin
 
             -- receive the start bit
             if (serial_i = '1') then
-              state <= MASK_state;
+              state <= DWRITE_state;
+            end if;
+
+          when DWRITE_state =>
+
+            if (serial_i = '1') then
               trg_o <= '1';
+            else
+              fragment_o <= '1';
             end if;
 
           when MASK_state =>

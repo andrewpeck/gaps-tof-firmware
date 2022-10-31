@@ -23,6 +23,7 @@ entity daq is
     -- Trigger info
     stop_cell_i : in std_logic_vector (9 downto 0);
     trigger_i   : in std_logic;
+    fragment_i  : in std_logic;
     event_cnt_i : in std_logic_vector (31 downto 0);
     mask_i      : in std_logic_vector (8 downto 0);
 
@@ -78,8 +79,9 @@ architecture behavioral of daq is
   signal packet_crc_rst  : std_logic                                 := '1';
   signal channel_crc_rst : std_logic                                 := '1';
 
-  signal dropped : std_logic := '0';
-  signal debug   : boolean   := false;
+  signal dropped  : std_logic := '0';
+  signal fragment : std_logic := '0';
+  signal debug    : boolean   := false;
 
   signal status         : std_logic_vector (15 downto 0) := (others => '0');
   signal packet_length  : std_logic_vector (15 downto 0) := (others => '0');
@@ -274,13 +276,14 @@ begin
     if (rising_edge(clock)) then
 
       -- stable copies of trigger parameters
-      if (state = IDLE_state and (trigger_i = '1' or debug_packet_inject_i = '1')) then
+      if (state = IDLE_state and (fragment_i='1' or trigger_i = '1' or debug_packet_inject_i = '1')) then
         if (debug_packet_inject_i = '1') then
           status       <= x"9999";
           id           <= x"4444";
           roi_size     <= 1023;
           debug        <= true;
           dropped      <= '0';
+          fragment     <= '0';
           num_channels <= 9;
           mask         <= '0' & x"00" & '1' & x"FF";
           dna          <= x"FEDCBA9876543210";
@@ -289,7 +292,7 @@ begin
           timestamp    <= x"BA9876543210";
         else
 
-          status(0)           <= sync_err_i;
+          status(0)           <= fragment;
           status(1)           <= dropped;
           status(3 downto 2)  <= (others => '0');
           status(15 downto 4) <= temperature_i;
@@ -299,6 +302,7 @@ begin
           id (7 downto 1) <= (others => '0');
 
           roi_size     <= to_int (roi_size_i);
+          fragment     <= fragment_i;
           dna          <= dna_i;
           hash         <= hash_i (27 downto 12);
           debug        <= false;
@@ -311,7 +315,7 @@ begin
       end if;
 
       -- let this pipeline over 2 clocks
-      payload_size   <= get_payload_size(dropped, roi_size, mask);
+      payload_size   <= get_payload_size(fragment or dropped, roi_size, mask);
       packet_length  <= to_slv(get_packet_size(payload_size), packet_length'length);
       packet_padding <= get_packet_padding(to_integer(unsigned(packet_length)));
 
@@ -341,7 +345,7 @@ begin
           payload_timeout_counter     <= 0;
           gfp_eventid_timeout_counter <= 0;
 
-          if (trigger_i = '1' or debug_packet_inject_i = '1') then
+          if (fragment_i = '1' or trigger_i = '1' or debug_packet_inject_i = '1') then
             state <= HEAD_state;
           end if;
 
@@ -463,7 +467,7 @@ begin
 
           if (state_word_cnt = timestamp'length / g_WORD_SIZE - 1) then
 
-            if (dropped = '1') then
+            if (fragment = '1' or dropped = '1') then
               state <= CRC32_state;
             else
               state <= CH_HEADER_state;
