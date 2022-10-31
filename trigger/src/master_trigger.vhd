@@ -93,6 +93,7 @@ entity gaps_mt is
     hk_din  : out std_logic; -- master out, slave in
 
     ext_io  : inout std_logic_vector (13 downto 0);
+
     ext_out : out std_logic_vector (3 downto 0);
     ext_in  : in  std_logic_vector (3 downto 0);
 
@@ -155,6 +156,10 @@ architecture structural of gaps_mt is
 
   signal trig_gen_rate   : std_logic_vector (31 downto 0) := (others => '0');
   signal trig_gen        : std_logic                      := '0';
+  signal ext_trigger     : std_logic := '0';
+  signal ext_trigger_r0  : std_logic := '0';
+  signal ext_trigger_r1  : std_logic := '0';
+  signal ext_trigger_r2  : std_logic := '0';
 
   signal tiu_busy         : std_logic                         := '0';
   signal tiu_timebyte     : std_logic_vector (7 downto 0)     := (others => '0');
@@ -562,7 +567,7 @@ begin
 
       single_hit_en_i => '1',
       bool_trg_en_i   => '1',
-      force_trigger_i => trigger_ipb or trig_gen,
+      force_trigger_i => trigger_ipb or trig_gen or ext_trigger,
 
       event_cnt_o => event_cnt,
 
