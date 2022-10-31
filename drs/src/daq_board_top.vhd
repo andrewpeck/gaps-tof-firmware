@@ -306,7 +306,38 @@ architecture Behavioral of top_readout_board is
 
   signal cylon : std_logic_vector (3 downto 0) := (others => '0');
 
-
+    component ila_s2mm is
+      port (
+        clk     : in std_logic;
+        probe0  : in std_logic;
+        probe1  : in std_logic;
+        probe2  : in std_logic_vector(71 downto 0);
+        probe3  : in std_logic_vector(31 downto 0);
+        probe4  : in std_logic_vector(3 downto 0);
+        probe5  : in std_logic;
+        probe6  : in std_logic;
+        probe7  : in std_logic;
+        probe8  : in std_logic_vector(31 downto 0);
+        probe9  : in std_logic;
+        probe10 : in std_logic_vector(31 downto 0);
+        probe11 : in std_logic;
+        probe12 : in std_logic;
+        probe13 : in std_logic;
+        probe14 : in std_logic;
+        probe15 : in std_logic_vector(7 downto 0);
+        probe16 : in std_logic;
+        probe17 : in std_logic;
+        probe18 : in std_logic_vector(7 downto 0);
+        probe19 : in std_logic;
+        probe20 : in std_logic;
+        probe21 : in std_logic_vector(15 downto 0);
+        probe22 : in std_logic_vector(31 downto 0);
+        probe23 : in std_logic;
+        probe24 : in std_logic_vector(33 downto 0);
+        probe25 : in std_logic_vector(7 downto 0);
+        probe26 : in std_logic_vector(5 downto 0)
+        );
+    end component;
 begin
 
   -------------------------------------------------------------------------------
@@ -494,6 +525,45 @@ begin
       data_in(0)  => mt_trigger_data_inv,
       en          => mt_trigger_dav,
       data_out(0) => mt_prbs_err
+      );
+
+  ila_s2mm_inst : ila_s2mm
+    port map(
+      clk                  => clock,
+      probe0               => mt_trigger_data_inv,
+      probe1               => mt_trigger_dav,
+      probe2               => (others => '0'),
+      probe3(15 downto 0)  => fifo_data_out,
+      probe3(16)           => drs_dwrite_async,
+      probe3(17)           => daq_ready,
+      probe3(18)           => ext_trigger_i,
+      probe3(27 downto 19) => readout_mask,
+      probe3(28)           => mt_mask_valid,
+      probe3(29)           => daq_drs_busy,
+      probe3(31 downto 30) => (others => '0'),
+      probe4               => (others => '0'),
+      probe5               => mt_prbs_err,
+      probe6               => mt_trigger_data_ff,
+      probe7               => mt_trigger_decoded,
+      probe8               => mt_event_cnt,
+      probe9               => mt_trigger_decoded_dav,
+      probe10              => daq_event_cnt,
+      probe11              => mt_trigger_dav,
+      probe12              => mt_trigger_i,
+      probe13              => mt_event_cnt_valid,
+      probe14              => daq_trigger,
+      probe15              => (others => '0'),
+      probe16              => daq_busy,
+      probe17              => drs_busy,
+      probe18              => (others => '0'),
+      probe19              => trigger,
+      probe20              => mt_trigger,
+      probe21              => (others => '0'),
+      probe22              => (others => '0'),
+      probe23              => fifo_data_wen,
+      probe24              => (others => '0'),
+      probe25              => (others => '0'),
+      probe26              => (others => '0')
       );
 
   --------------------------------------------------------------------------------
@@ -700,7 +770,7 @@ begin
       drs_ctl_config           => drs_config(7 downto 0),
       drs_ctl_standby_mode     => standby_mode,
       drs_ctl_transp_mode      => transp_mode,
-      drs_ctl_start            => start,
+      drs_ctl_start            => '1',
       drs_ctl_adc_latency      => adc_latency,
       drs_ctl_spike_removal    => spike_removal,
       drs_ctl_sample_count_max => sample_count_max,
