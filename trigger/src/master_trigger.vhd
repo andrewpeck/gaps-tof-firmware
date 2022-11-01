@@ -150,6 +150,8 @@ architecture structural of gaps_mt is
   signal ext_trigger_r1  : std_logic := '0';
   signal ext_trigger_r2  : std_logic := '0';
 
+  signal ext_trigger_holdoff : integer range 0 to 31 := 0;
+
   signal tiu_busy         : std_logic                         := '0';
   signal tiu_timebyte     : std_logic_vector (7 downto 0)     := (others => '0');
   signal tiu_timebyte_dav : std_logic                         := '0';
@@ -575,7 +577,19 @@ begin
       ext_trigger_r0 <= ext_io(0);
       ext_trigger_r1 <= ext_trigger_r0;
       ext_trigger_r2 <= ext_trigger_r1;
-      ext_trigger <= ext_trigger_r1 and not ext_trigger_r2;
+
+      if (ext_trigger_r2 = '1')  then
+        ext_trigger_holdoff = 31;
+      elsif  (ext_trigger_holdoff > 0) then
+        ext_trigger_holdoff = ext_trigger_holdoff - 1;
+      end if;
+
+      if (ext_trigger_holdoff=0 and ext_trigger_r2='1') then
+        ext_trigger <= '1';
+      else
+        ext_trigger <= '0';
+      end if;
+
     end if;
   end process;
 
