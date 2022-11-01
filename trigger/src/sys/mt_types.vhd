@@ -43,22 +43,6 @@ package mt_types is
   type lt_coarse_delays_array_t is array (integer range 0 to NUM_LT_INPUTS-1) of
     coarse_delay_t;
 
-  --------------------------------------------------------------------------------
-  -- Fine delays
-  --------------------------------------------------------------------------------
-
-  -- type for fine (78 ps) tape delay
-  subtype tap_delay_t is std_logic_vector (4 downto 0);
-
-  type lt_fine_delays_array_t is array (integer range 0 to NUM_LT_INPUTS-1) of
-    tap_delay_t;
-
-  --------------------------------------------------------------------------------
-  -- Posnegs
-  --------------------------------------------------------------------------------
-
-  subtype lt_posnegs_array_t is std_logic_vector (NUM_LT_INPUTS-1 downto 0);
-
 end package mt_types;
 
 package body mt_types is

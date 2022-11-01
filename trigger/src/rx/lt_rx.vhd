@@ -21,14 +21,12 @@ entity lt_rx is
     );
   port(
 
-    clk : in std_logic;
+    clk   : in std_logic;
+    clk90 : in std_logic;
 
     coarse_delay : in coarse_delay_t;
-    posneg       : in std_logic;
     en           : in std_logic;
-    fine_delay   : in tap_delay_t;
 
-    clk200   : in  std_logic;
     data_i_p : in  std_logic;
     data_i_n : in  std_logic;
     data_o   : out std_logic
@@ -85,35 +83,13 @@ begin
         );
   end generate;
 
-  idelay_inst : entity work.idelay
-    generic map (PATTERN => "DATA")
+  oversample_inst : entity work.oversample
     port map (
-      clock => clk200,
-      taps  => fine_delay,
-      din   => data_ibuf,
-      dout  => data_idelay
+      clk    => clk,
+      clk90  => clk90,
+      data_i => data_ibuf,
+      data_o => data_r
       );
-
-  process (clk) is
-  begin
-    if (rising_edge(clk)) then
-      data_pos <= data_idelay;
-    end if;
-    if (falling_edge(clk)) then
-      data_neg <= data_idelay;
-    end if;
-  end process;
-
-  process (clk) is
-  begin
-    if (rising_edge(clk)) then
-      if (posneg = '1') then
-        data_r <= data_pos;
-      else
-        data_r <= data_neg;
-      end if;
-    end if;
-  end process;
 
   --------------------------------------------------------------------------------
   -- coarse delays
