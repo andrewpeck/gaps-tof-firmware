@@ -579,9 +579,9 @@ begin
       ext_trigger_r2 <= ext_trigger_r1;
 
       if (ext_trigger_r2 = '1')  then
-        ext_trigger_holdoff = 31;
+        ext_trigger_holdoff <= 31;
       elsif  (ext_trigger_holdoff > 0) then
-        ext_trigger_holdoff = ext_trigger_holdoff - 1;
+        ext_trigger_holdoff <= ext_trigger_holdoff - 1;
       end if;
 
       if (ext_trigger_holdoff=0 and ext_trigger_r2='1') then
