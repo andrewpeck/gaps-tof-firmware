@@ -8,12 +8,14 @@ tags
 daq_tb
 bin/
 *.cf
+
 !ip/*/*/*
 ip/*/*/*
-ip/*
 !ip/*/*/*.xci
+
 bd/*
 !bd/*.bd
+
 bin/
 usage_statistics_webtalk.*
 *.str

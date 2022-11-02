@@ -152,6 +152,9 @@ architecture structural of gaps_mt is
 
   signal ext_trigger_holdoff : integer range 0 to 31 := 0;
 
+
+  signal tiu_trigger_o    : std_logic                         := '0';
+  signal tiu_serial_o     : std_logic                         := '1';
   signal tiu_busy         : std_logic                         := '0';
   signal tiu_timebyte     : std_logic_vector (7 downto 0)     := (others => '0');
   signal tiu_timebyte_dav : std_logic                         := '0';
@@ -644,9 +647,6 @@ begin
 
   noloop_tiu : if (not LOOPBACK_MODE) generate
 
-    signal tiu_trigger_o    : std_logic                     := '0';
-    signal tiu_serial_o     : std_logic                     := '1';
-
     signal tiu_timecode_i    : std_logic                     := '0';
     signal tiu_timecode_sr   : std_logic_vector (2 downto 0) := (others => '0');
     signal tiu_falling       : std_logic                     := '0';
@@ -813,6 +813,37 @@ begin
   --------------------------------------------------------------------------------
 
   sump_o <= global_trigger;
+
+  --------------------------------------------------------------------------------
+  -- ILA
+  --------------------------------------------------------------------------------
+
+  not_loopback_gen : if (not LOOPBACK_MODE) generate
+    ila_mt_inst : ila_mt
+      port map (
+        clk                  => clock,
+        probe0(0)            => rb_data_o(0),
+        probe1(0)            => global_trigger,
+        probe2(4 downto 0)   => fb_clk_ok,
+        probe2(9 downto 5)   => dsi_on,
+        probe2(10)           => tiu_trigger_o,
+        probe2(11)           => tiu_serial_o,
+        probe2(12)           => ext_trigger,
+        probe2(74 downto 13) => (others => '0'),
+        probe3(7 downto 0)   => (others => '0'),
+        probe4(7 downto 0)   => (others => '0'),
+        probe5(0)            => lvs_sync_ccb,
+        probe6(0)            => hk_ext_clk,
+        probe7(0)            => hk_ext_mosi,
+        probe8(0)            => hk_ext_miso,
+        probe9               => hk_ext_cs_n,
+        probe10              => fb_clock_rates(0),
+        probe11              => fb_clock_rates(1),
+        probe12              => fb_clock_rates(2),
+        probe13              => fb_clock_rates(3),
+        probe14              => fb_clock_rates(4)
+        );
+  end generate;
 
   --------------------------------------------------------------------------------
   -- Loopback Mode
