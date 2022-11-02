@@ -770,7 +770,7 @@ begin
       drs_ctl_config           => drs_config(7 downto 0),
       drs_ctl_standby_mode     => standby_mode,
       drs_ctl_transp_mode      => transp_mode,
-      drs_ctl_start            => '1',
+      drs_ctl_start            => start,
       drs_ctl_adc_latency      => adc_latency,
       drs_ctl_spike_removal    => spike_removal,
       drs_ctl_sample_count_max => sample_count_max,
