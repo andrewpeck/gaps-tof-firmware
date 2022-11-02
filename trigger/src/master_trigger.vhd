@@ -656,6 +656,11 @@ begin
 
   begin
 
+    tiu_busy       <= ext_in(0);
+    tiu_timecode_i <= ext_in(1);
+    ext_out(0)     <= tiu_serial_o;
+    ext_out(1)     <= tiu_trigger_o;
+
     process (clock) is
     begin
       if (rising_edge(clock)) then
