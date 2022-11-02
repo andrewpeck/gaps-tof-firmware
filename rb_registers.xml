@@ -230,7 +230,7 @@
                 fw_write_pulse_signal="force_trig" />
             <node id="EXT_TRIGGER_EN" address="0x1" permission="rw"
                 description="Set to 1 to enable the external trigger"
-                fw_default="0x1"
+                fw_default="0x0"
                 mask="0x1"
                 fw_signal="ext_trigger_en" />
             <node id="EXT_TRIGGER_ACTIVE_HI" address="0x1" permission="rw"

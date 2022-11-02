@@ -162,7 +162,7 @@ package registers is
 
     constant REG_TRIGGER_EXT_TRIGGER_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"41";
     constant REG_TRIGGER_EXT_TRIGGER_EN_BIT    : integer := 0;
-    constant REG_TRIGGER_EXT_TRIGGER_EN_DEFAULT : std_logic := '1';
+    constant REG_TRIGGER_EXT_TRIGGER_EN_DEFAULT : std_logic := '0';
 
     constant REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_ADDR    : std_logic_vector(9 downto 0) := "00" & x"41";
     constant REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT    : integer := 1;
