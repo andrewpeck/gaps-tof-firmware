@@ -52,6 +52,8 @@ architecture structural of clocking is
   signal clk_cnt : natural range 0 to DIV-1 := 0;
   signal div_clk : std_logic                := '0';
 
+  signal srll : std_logic_vector (16*5 downto 0) := (others => '0');
+
 begin
 
   process (clk100) is
@@ -73,8 +75,23 @@ begin
     end if;
   end process;
 
-  lvs_sync <= (others => div_clk);
-  ccb_sync <= div_clk;
+  process (clk100) is
+  begin
+    if (rising_edge(clk100)) then
+      srll(0) <= div_clk;
+      for I in 1 to srll'length-1 loop
+        srll(I) <= srll(I-1);
+      end loop;
+    end if;
+  end process;
+
+-- phase offset the different sync signals
+  ccb_sync    <= div_clk;
+  lvs_sync(0) <= srll(15);
+  lvs_sync(1) <= srll(32);
+  lvs_sync(2) <= srll(48);
+  lvs_sync(3) <= srll(64);
+  lvs_sync(4) <= srll(80);
 
   osc_ibuf : IBUFDS
     port map(
@@ -83,11 +100,11 @@ begin
       o  => clk_i
       );
 
-   BUFG_inst : BUFG
-   port map (
-      O => clk_i_bufg, -- 1-bit output: Clock output.
-      I => clk_i  -- 1-bit input: Clock input.
-   );
+  BUFG_inst : BUFG
+    port map (
+      O => clk_i_bufg,                  -- 1-bit output: Clock output.
+      I => clk_i                        -- 1-bit input: Clock input.
+      );
 
   clocking : mt_clk_wiz
     port map (
