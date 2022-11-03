@@ -61,7 +61,6 @@
     DSI\_ON & \texttt{0x7} & \texttt{[4:0]} & rw & \texttt{0x1F} & Bitmask 1 = enable DSI \\\hline
     FORCE\_TRIGGER & \texttt{0x8} & \texttt{[0:0]} & w & Pulse & Write 1 to generate a trigger \\\hline
     TRIG\_GEN\_RATE & \texttt{0x9} & \texttt{[31:0]} & rw & \texttt{0x0} & Rate of generated triggers f\_trig =(2\^32-1) * clk\_period * rate \\\hline
-    PULSE\_STRETCH & \texttt{0xf} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock cycles to stretch hits by \\\hline
     \end{tabularx}
     \vspace{5mm}
 
@@ -104,27 +103,12 @@
     RB22 & \texttt{0x26} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=22 \\\hline
     RB23 & \texttt{0x27} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=23 \\\hline
     RB24 & \texttt{0x28} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=24 \\\hline
-    RB25 & \texttt{0x29} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=25 \\\hline
-    RB26 & \texttt{0x2a} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=26 \\\hline
-    RB27 & \texttt{0x2b} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=27 \\\hline
-    RB28 & \texttt{0x2c} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=28 \\\hline
-    RB29 & \texttt{0x2d} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=29 \\\hline
-    RB30 & \texttt{0x2e} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=30 \\\hline
-    RB31 & \texttt{0x2f} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=31 \\\hline
-    RB32 & \texttt{0x30} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=32 \\\hline
-    RB33 & \texttt{0x31} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=33 \\\hline
-    RB34 & \texttt{0x32} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=34 \\\hline
-    RB35 & \texttt{0x33} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=35 \\\hline
-    RB36 & \texttt{0x34} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=36 \\\hline
-    RB37 & \texttt{0x35} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=37 \\\hline
-    RB38 & \texttt{0x36} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=38 \\\hline
-    RB39 & \texttt{0x37} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=39 \\\hline
     \end{tabularx}
     \vspace{5mm}
 
 
     \noindent
-    \subsection*{\textcolor{parentcolor}{\textbf{MT.HIT\_MASK}}}
+    \subsection*{\textcolor{parentcolor}{\textbf{MT.CHANNEL\_MASK}}}
 
     \vspace{4mm}
     \noindent
@@ -136,26 +120,31 @@
     \hline
     \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
     \nopagebreak
-    LT0 & \texttt{0x40} & \texttt{[15:0]} & rw & \texttt{0xFFFF} & 1 to mask a channel of LT=0 \\\hline
-    LT1 & \texttt{0x41} & \texttt{[15:0]} & rw & \texttt{0xFFFF} & 1 to mask a channel of LT=1 \\\hline
-    LT2 & \texttt{0x42} & \texttt{[15:0]} & rw & \texttt{0xFFFF} & 1 to mask a channel of LT=2 \\\hline
-    LT3 & \texttt{0x43} & \texttt{[15:0]} & rw & \texttt{0xFFFF} & 1 to mask a channel of LT=3 \\\hline
-    LT4 & \texttt{0x44} & \texttt{[15:0]} & rw & \texttt{0xFFFF} & 1 to mask a channel of LT=4 \\\hline
-    LT5 & \texttt{0x45} & \texttt{[15:0]} & rw & \texttt{0xFFFF} & 1 to mask a channel of LT=5 \\\hline
-    LT6 & \texttt{0x46} & \texttt{[15:0]} & rw & \texttt{0xFFFF} & 1 to mask a channel of LT=6 \\\hline
-    LT7 & \texttt{0x47} & \texttt{[15:0]} & rw & \texttt{0xFFFF} & 1 to mask a channel of LT=7 \\\hline
-    LT8 & \texttt{0x48} & \texttt{[15:0]} & rw & \texttt{0xFFFF} & 1 to mask a channel of LT=8 \\\hline
-    LT9 & \texttt{0x49} & \texttt{[15:0]} & rw & \texttt{0xFFFF} & 1 to mask a channel of LT=9 \\\hline
-    LT10 & \texttt{0x4a} & \texttt{[15:0]} & rw & \texttt{0xFFFF} & 1 to mask a channel of LT=10 \\\hline
-    LT11 & \texttt{0x4b} & \texttt{[15:0]} & rw & \texttt{0xFFFF} & 1 to mask a channel of LT=11 \\\hline
-    LT12 & \texttt{0x4c} & \texttt{[15:0]} & rw & \texttt{0xFFFF} & 1 to mask a channel of LT=12 \\\hline
-    LT13 & \texttt{0x4d} & \texttt{[15:0]} & rw & \texttt{0xFFFF} & 1 to mask a channel of LT=13 \\\hline
-    LT14 & \texttt{0x4e} & \texttt{[15:0]} & rw & \texttt{0xFFFF} & 1 to mask a channel of LT=14 \\\hline
-    LT15 & \texttt{0x4f} & \texttt{[15:0]} & rw & \texttt{0xFFFF} & 1 to mask a channel of LT=15 \\\hline
-    LT16 & \texttt{0x50} & \texttt{[15:0]} & rw & \texttt{0xFFFF} & 1 to mask a channel of LT=16 \\\hline
-    LT17 & \texttt{0x51} & \texttt{[15:0]} & rw & \texttt{0xFFFF} & 1 to mask a channel of LT=17 \\\hline
-    LT18 & \texttt{0x52} & \texttt{[15:0]} & rw & \texttt{0xFFFF} & 1 to mask a channel of LT=18 \\\hline
-    LT19 & \texttt{0x53} & \texttt{[15:0]} & rw & \texttt{0xFFFF} & 1 to mask a channel of LT=19 \\\hline
+    LT0 & \texttt{0x40} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=0 \\\hline
+    LT1 & \texttt{0x41} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=1 \\\hline
+    LT2 & \texttt{0x42} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=2 \\\hline
+    LT3 & \texttt{0x43} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=3 \\\hline
+    LT4 & \texttt{0x44} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=4 \\\hline
+    LT5 & \texttt{0x45} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=5 \\\hline
+    LT6 & \texttt{0x46} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=6 \\\hline
+    LT7 & \texttt{0x47} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=7 \\\hline
+    LT8 & \texttt{0x48} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=8 \\\hline
+    LT9 & \texttt{0x49} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=9 \\\hline
+    LT10 & \texttt{0x4a} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=10 \\\hline
+    LT11 & \texttt{0x4b} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=11 \\\hline
+    LT12 & \texttt{0x4c} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=12 \\\hline
+    LT13 & \texttt{0x4d} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=13 \\\hline
+    LT14 & \texttt{0x4e} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=14 \\\hline
+    LT15 & \texttt{0x4f} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=15 \\\hline
+    LT16 & \texttt{0x50} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=16 \\\hline
+    LT17 & \texttt{0x51} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=17 \\\hline
+    LT18 & \texttt{0x52} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=18 \\\hline
+    LT19 & \texttt{0x53} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=19 \\\hline
+    LT20 & \texttt{0x54} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=20 \\\hline
+    LT21 & \texttt{0x55} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=21 \\\hline
+    LT22 & \texttt{0x56} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=22 \\\hline
+    LT23 & \texttt{0x57} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=23 \\\hline
+    LT24 & \texttt{0x58} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=24 \\\hline
     \end{tabularx}
     \vspace{5mm}
 
@@ -218,31 +207,6 @@
     LT47 & \texttt{0xef} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 47 \\\hline
     LT48 & \texttt{0xf0} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 48 \\\hline
     LT49 & \texttt{0xf1} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 49 \\\hline
-    LT50 & \texttt{0xf2} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 50 \\\hline
-    LT51 & \texttt{0xf3} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 51 \\\hline
-    LT52 & \texttt{0xf4} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 52 \\\hline
-    LT53 & \texttt{0xf5} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 53 \\\hline
-    LT54 & \texttt{0xf6} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 54 \\\hline
-    LT55 & \texttt{0xf7} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 55 \\\hline
-    LT56 & \texttt{0xf8} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 56 \\\hline
-    LT57 & \texttt{0xf9} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 57 \\\hline
-    LT58 & \texttt{0xfa} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 58 \\\hline
-    LT59 & \texttt{0xfb} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 59 \\\hline
-    LT60 & \texttt{0xfc} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 60 \\\hline
-    LT61 & \texttt{0xfd} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 61 \\\hline
-    LT62 & \texttt{0xfe} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 62 \\\hline
-    LT63 & \texttt{0xff} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 63 \\\hline
-    LT64 & \texttt{0x100} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 64 \\\hline
-    LT65 & \texttt{0x101} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 65 \\\hline
-    LT66 & \texttt{0x102} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 66 \\\hline
-    LT67 & \texttt{0x103} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 67 \\\hline
-    LT68 & \texttt{0x104} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 68 \\\hline
-    LT69 & \texttt{0x105} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 69 \\\hline
-    LT70 & \texttt{0x106} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 70 \\\hline
-    LT71 & \texttt{0x107} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 71 \\\hline
-    LT72 & \texttt{0x108} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 72 \\\hline
-    LT73 & \texttt{0x109} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 73 \\\hline
-    LT74 & \texttt{0x10a} & \texttt{[3:0]} & rw & \texttt{0x0} & Integer clock delay of LT LINK 74 \\\hline
     \end{tabularx}
     \vspace{5mm}
 

@@ -19,7 +19,7 @@ entity clocking is
 
     clk25     : out std_logic;
     clk100    : out std_logic;
-    clk100_90 : out std_logic;
+    clk200_90 : out std_logic;
     clk200    : out std_logic;
     clk125    : out std_logic;
     clk125_90 : out std_logic;
@@ -34,7 +34,7 @@ architecture structural of clocking is
       -- Clock out ports
       clk25     : out std_logic;
       clk100    : out std_logic;
-      clk100_90 : out std_logic;
+      clk200_90 : out std_logic;
       clk200    : out std_logic;
       clk125    : out std_logic;
       clk125_90 : out std_logic;
@@ -110,7 +110,7 @@ begin
     port map (
       -- Clock out ports
       clk100    => clk100,
-      clk100_90 => clk100_90,
+      clk200_90 => clk200_90,
       clk200    => clk200,
       clk25     => clk25,
       clk125    => clk125,

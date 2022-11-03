@@ -58,21 +58,13 @@
     <node id="TRIG_GEN_RATE" address="0x9" permission="rw"
           description="Rate of generated triggers f_trig =(2^32-1) * clk_period * rate"
           mask="0xffffffff"
-          fw_default="0x0000"
+          fw_default="0x00000000"
           fw_signal="trig_gen_rate"/>
-
-    <node id="PULSE_STRETCH"
-          address="0xf"
-          permission="rw"
-          mask="0x0000000f"
-          description="Integer clock cycles to stretch hits by"
-          fw_default="0x0"
-          fw_signal="pulse_stretch"/>
 
     <node id="HIT_COUNTERS" address="0x10" description="Counters">
       <node id="RB${RB_IDX}" address="0x0"
             generate="true"
-            generate_size="40"
+            generate_size="25"
             generate_address_step="1"
             generate_idx_var="RB_IDX"
             permission="r"
@@ -80,21 +72,21 @@
             description="hit count on LT=${RB_IDX}"
             fw_make_signal="true"
             fw_signal="hit_count_${RB_IDX}"
-            fw_cnt_en_signal="or_reduce(rb_hits(${RB_IDX}))">
+            fw_cnt_en_signal="or_reduce(discrim_1bit(${RB_IDX}))">
       </node>
     </node>
 
-    <node id="HIT_MASK" address="0x40" description="1 to mask a channel">
+    <node id="CHANNEL_MASK" address="0x40" description="1 to mask a channel">
       <node id="LT${LT_IDX}" address="0x0"
             generate="true"
-            generate_size="20"
+            generate_size="25"
             generate_address_step="1"
             generate_idx_var="LT_IDX"
             permission="rw"
-            fw_default="0xffff"
-            mask="0xffff"
+            fw_default="0x00"
+            mask="0xff"
             description="1 to mask a channel of LT=${LT_IDX}"
-            fw_signal="hit_mask(${LT_IDX})"
+            fw_signal="channel_mask(${LT_IDX})"
             >
       </node>
     </node>
@@ -102,7 +94,7 @@
     <node id="COARSE_DELAYS" address="0xc0">
       <node id="LT${LT_IDX}" address="0x0"
             generate="true"
-            generate_size="75"
+            generate_size="50"
             generate_address_step="1"
             generate_idx_var="LT_IDX"
             permission="rw"

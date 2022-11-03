@@ -1,6 +1,5 @@
 package constants is
 
-
   constant NUM_DSI  : natural := 5;
 
   --
@@ -9,16 +8,13 @@ package constants is
   constant NUM_RB_OUTPUTS  : positive := NUM_RBS*1;  -- number of output links
 
   --
-  constant NUM_LTS         : positive := NUM_DSI*5;                  -- number of lt boards in the system
-  constant NUM_LT_CHANNELS : positive := 16;                         -- number of hit channels per lt
-  constant NUM_LT_MT_LINKS : positive := 3;                          -- number of links per mt
-  constant NUM_LT_INPUTS   : positive := NUM_LT_MT_LINKS * NUM_LTS;  -- number of links in the system
-  constant NUM_LT_CLOCKS   : positive := NUM_LTS;                    --
-  constant NUM_LT_BITS     : positive := 16; --
+  constant NUM_LTS         : positive := NUM_DSI*5;                     -- 25 number of lt boards in the system
+  constant NUM_LT_BITS     : positive := 8;                             --
+  constant NUM_LT_MT_PRI   : positive := 2 * NUM_LTS;                   -- 50 number of links in the system
+  constant NUM_LT_MT_AUX   : positive := 1 * NUM_LTS;                   -- 25 number of links in the system
+  constant NUM_LT_MT_ALL   : positive := NUM_LT_MT_PRI + NUM_LT_MT_AUX; -- number of links in the system
+  constant TOT_LT_CHANNELS : positive := NUM_LT_BITS*NUM_LT_MT_PRI/2;   -- 200
 
   constant EVENTCNTB : positive := 32;
-
-  --
-  --constant MODE : string := "IDDR"; -- FF or IDDR or OVERSAMPLE
 
 end package constants;

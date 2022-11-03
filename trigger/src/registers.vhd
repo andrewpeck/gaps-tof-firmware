@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_MT_NUM_REGS : integer := 158;
+    constant REG_MT_NUM_REGS : integer := 122;
     constant REG_MT_ADDRESS_MSB : integer := 9;
     constant REG_MT_ADDRESS_LSB : integer := 0;
     constant REG_MT_LOOPBACK_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
@@ -54,11 +54,6 @@ package registers is
     constant REG_MT_TRIG_GEN_RATE_MSB    : integer := 31;
     constant REG_MT_TRIG_GEN_RATE_LSB     : integer := 0;
     constant REG_MT_TRIG_GEN_RATE_DEFAULT : std_logic_vector(31 downto 0) := x"00000000";
-
-    constant REG_MT_PULSE_STRETCH_ADDR    : std_logic_vector(9 downto 0) := "00" & x"0f";
-    constant REG_MT_PULSE_STRETCH_MSB    : integer := 3;
-    constant REG_MT_PULSE_STRETCH_LSB     : integer := 0;
-    constant REG_MT_PULSE_STRETCH_DEFAULT : std_logic_vector(3 downto 0) := x"0";
 
     constant REG_MT_HIT_COUNTERS_RB0_ADDR    : std_logic_vector(9 downto 0) := "00" & x"10";
     constant REG_MT_HIT_COUNTERS_RB0_MSB    : integer := 15;
@@ -160,165 +155,130 @@ package registers is
     constant REG_MT_HIT_COUNTERS_RB24_MSB    : integer := 15;
     constant REG_MT_HIT_COUNTERS_RB24_LSB     : integer := 0;
 
-    constant REG_MT_HIT_COUNTERS_RB25_ADDR    : std_logic_vector(9 downto 0) := "00" & x"29";
-    constant REG_MT_HIT_COUNTERS_RB25_MSB    : integer := 15;
-    constant REG_MT_HIT_COUNTERS_RB25_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT0_ADDR    : std_logic_vector(9 downto 0) := "00" & x"40";
+    constant REG_MT_CHANNEL_MASK_LT0_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT0_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT0_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_MT_HIT_COUNTERS_RB26_ADDR    : std_logic_vector(9 downto 0) := "00" & x"2a";
-    constant REG_MT_HIT_COUNTERS_RB26_MSB    : integer := 15;
-    constant REG_MT_HIT_COUNTERS_RB26_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT1_ADDR    : std_logic_vector(9 downto 0) := "00" & x"41";
+    constant REG_MT_CHANNEL_MASK_LT1_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT1_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT1_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_MT_HIT_COUNTERS_RB27_ADDR    : std_logic_vector(9 downto 0) := "00" & x"2b";
-    constant REG_MT_HIT_COUNTERS_RB27_MSB    : integer := 15;
-    constant REG_MT_HIT_COUNTERS_RB27_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT2_ADDR    : std_logic_vector(9 downto 0) := "00" & x"42";
+    constant REG_MT_CHANNEL_MASK_LT2_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT2_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT2_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_MT_HIT_COUNTERS_RB28_ADDR    : std_logic_vector(9 downto 0) := "00" & x"2c";
-    constant REG_MT_HIT_COUNTERS_RB28_MSB    : integer := 15;
-    constant REG_MT_HIT_COUNTERS_RB28_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT3_ADDR    : std_logic_vector(9 downto 0) := "00" & x"43";
+    constant REG_MT_CHANNEL_MASK_LT3_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT3_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT3_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_MT_HIT_COUNTERS_RB29_ADDR    : std_logic_vector(9 downto 0) := "00" & x"2d";
-    constant REG_MT_HIT_COUNTERS_RB29_MSB    : integer := 15;
-    constant REG_MT_HIT_COUNTERS_RB29_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT4_ADDR    : std_logic_vector(9 downto 0) := "00" & x"44";
+    constant REG_MT_CHANNEL_MASK_LT4_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT4_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT4_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_MT_HIT_COUNTERS_RB30_ADDR    : std_logic_vector(9 downto 0) := "00" & x"2e";
-    constant REG_MT_HIT_COUNTERS_RB30_MSB    : integer := 15;
-    constant REG_MT_HIT_COUNTERS_RB30_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT5_ADDR    : std_logic_vector(9 downto 0) := "00" & x"45";
+    constant REG_MT_CHANNEL_MASK_LT5_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT5_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT5_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_MT_HIT_COUNTERS_RB31_ADDR    : std_logic_vector(9 downto 0) := "00" & x"2f";
-    constant REG_MT_HIT_COUNTERS_RB31_MSB    : integer := 15;
-    constant REG_MT_HIT_COUNTERS_RB31_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT6_ADDR    : std_logic_vector(9 downto 0) := "00" & x"46";
+    constant REG_MT_CHANNEL_MASK_LT6_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT6_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT6_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_MT_HIT_COUNTERS_RB32_ADDR    : std_logic_vector(9 downto 0) := "00" & x"30";
-    constant REG_MT_HIT_COUNTERS_RB32_MSB    : integer := 15;
-    constant REG_MT_HIT_COUNTERS_RB32_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT7_ADDR    : std_logic_vector(9 downto 0) := "00" & x"47";
+    constant REG_MT_CHANNEL_MASK_LT7_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT7_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT7_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_MT_HIT_COUNTERS_RB33_ADDR    : std_logic_vector(9 downto 0) := "00" & x"31";
-    constant REG_MT_HIT_COUNTERS_RB33_MSB    : integer := 15;
-    constant REG_MT_HIT_COUNTERS_RB33_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT8_ADDR    : std_logic_vector(9 downto 0) := "00" & x"48";
+    constant REG_MT_CHANNEL_MASK_LT8_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT8_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT8_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_MT_HIT_COUNTERS_RB34_ADDR    : std_logic_vector(9 downto 0) := "00" & x"32";
-    constant REG_MT_HIT_COUNTERS_RB34_MSB    : integer := 15;
-    constant REG_MT_HIT_COUNTERS_RB34_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT9_ADDR    : std_logic_vector(9 downto 0) := "00" & x"49";
+    constant REG_MT_CHANNEL_MASK_LT9_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT9_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT9_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_MT_HIT_COUNTERS_RB35_ADDR    : std_logic_vector(9 downto 0) := "00" & x"33";
-    constant REG_MT_HIT_COUNTERS_RB35_MSB    : integer := 15;
-    constant REG_MT_HIT_COUNTERS_RB35_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT10_ADDR    : std_logic_vector(9 downto 0) := "00" & x"4a";
+    constant REG_MT_CHANNEL_MASK_LT10_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT10_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT10_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_MT_HIT_COUNTERS_RB36_ADDR    : std_logic_vector(9 downto 0) := "00" & x"34";
-    constant REG_MT_HIT_COUNTERS_RB36_MSB    : integer := 15;
-    constant REG_MT_HIT_COUNTERS_RB36_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT11_ADDR    : std_logic_vector(9 downto 0) := "00" & x"4b";
+    constant REG_MT_CHANNEL_MASK_LT11_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT11_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT11_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_MT_HIT_COUNTERS_RB37_ADDR    : std_logic_vector(9 downto 0) := "00" & x"35";
-    constant REG_MT_HIT_COUNTERS_RB37_MSB    : integer := 15;
-    constant REG_MT_HIT_COUNTERS_RB37_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT12_ADDR    : std_logic_vector(9 downto 0) := "00" & x"4c";
+    constant REG_MT_CHANNEL_MASK_LT12_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT12_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT12_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_MT_HIT_COUNTERS_RB38_ADDR    : std_logic_vector(9 downto 0) := "00" & x"36";
-    constant REG_MT_HIT_COUNTERS_RB38_MSB    : integer := 15;
-    constant REG_MT_HIT_COUNTERS_RB38_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT13_ADDR    : std_logic_vector(9 downto 0) := "00" & x"4d";
+    constant REG_MT_CHANNEL_MASK_LT13_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT13_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT13_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_MT_HIT_COUNTERS_RB39_ADDR    : std_logic_vector(9 downto 0) := "00" & x"37";
-    constant REG_MT_HIT_COUNTERS_RB39_MSB    : integer := 15;
-    constant REG_MT_HIT_COUNTERS_RB39_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT14_ADDR    : std_logic_vector(9 downto 0) := "00" & x"4e";
+    constant REG_MT_CHANNEL_MASK_LT14_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT14_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT14_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_MT_HIT_MASK_LT0_ADDR    : std_logic_vector(9 downto 0) := "00" & x"40";
-    constant REG_MT_HIT_MASK_LT0_MSB    : integer := 15;
-    constant REG_MT_HIT_MASK_LT0_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT0_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
+    constant REG_MT_CHANNEL_MASK_LT15_ADDR    : std_logic_vector(9 downto 0) := "00" & x"4f";
+    constant REG_MT_CHANNEL_MASK_LT15_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT15_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT15_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_MT_HIT_MASK_LT1_ADDR    : std_logic_vector(9 downto 0) := "00" & x"41";
-    constant REG_MT_HIT_MASK_LT1_MSB    : integer := 15;
-    constant REG_MT_HIT_MASK_LT1_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT1_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
+    constant REG_MT_CHANNEL_MASK_LT16_ADDR    : std_logic_vector(9 downto 0) := "00" & x"50";
+    constant REG_MT_CHANNEL_MASK_LT16_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT16_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT16_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_MT_HIT_MASK_LT2_ADDR    : std_logic_vector(9 downto 0) := "00" & x"42";
-    constant REG_MT_HIT_MASK_LT2_MSB    : integer := 15;
-    constant REG_MT_HIT_MASK_LT2_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT2_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
+    constant REG_MT_CHANNEL_MASK_LT17_ADDR    : std_logic_vector(9 downto 0) := "00" & x"51";
+    constant REG_MT_CHANNEL_MASK_LT17_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT17_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT17_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_MT_HIT_MASK_LT3_ADDR    : std_logic_vector(9 downto 0) := "00" & x"43";
-    constant REG_MT_HIT_MASK_LT3_MSB    : integer := 15;
-    constant REG_MT_HIT_MASK_LT3_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT3_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
+    constant REG_MT_CHANNEL_MASK_LT18_ADDR    : std_logic_vector(9 downto 0) := "00" & x"52";
+    constant REG_MT_CHANNEL_MASK_LT18_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT18_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT18_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_MT_HIT_MASK_LT4_ADDR    : std_logic_vector(9 downto 0) := "00" & x"44";
-    constant REG_MT_HIT_MASK_LT4_MSB    : integer := 15;
-    constant REG_MT_HIT_MASK_LT4_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT4_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
+    constant REG_MT_CHANNEL_MASK_LT19_ADDR    : std_logic_vector(9 downto 0) := "00" & x"53";
+    constant REG_MT_CHANNEL_MASK_LT19_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT19_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT19_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_MT_HIT_MASK_LT5_ADDR    : std_logic_vector(9 downto 0) := "00" & x"45";
-    constant REG_MT_HIT_MASK_LT5_MSB    : integer := 15;
-    constant REG_MT_HIT_MASK_LT5_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT5_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
+    constant REG_MT_CHANNEL_MASK_LT20_ADDR    : std_logic_vector(9 downto 0) := "00" & x"54";
+    constant REG_MT_CHANNEL_MASK_LT20_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT20_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT20_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_MT_HIT_MASK_LT6_ADDR    : std_logic_vector(9 downto 0) := "00" & x"46";
-    constant REG_MT_HIT_MASK_LT6_MSB    : integer := 15;
-    constant REG_MT_HIT_MASK_LT6_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT6_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
+    constant REG_MT_CHANNEL_MASK_LT21_ADDR    : std_logic_vector(9 downto 0) := "00" & x"55";
+    constant REG_MT_CHANNEL_MASK_LT21_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT21_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT21_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_MT_HIT_MASK_LT7_ADDR    : std_logic_vector(9 downto 0) := "00" & x"47";
-    constant REG_MT_HIT_MASK_LT7_MSB    : integer := 15;
-    constant REG_MT_HIT_MASK_LT7_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT7_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
+    constant REG_MT_CHANNEL_MASK_LT22_ADDR    : std_logic_vector(9 downto 0) := "00" & x"56";
+    constant REG_MT_CHANNEL_MASK_LT22_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT22_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT22_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_MT_HIT_MASK_LT8_ADDR    : std_logic_vector(9 downto 0) := "00" & x"48";
-    constant REG_MT_HIT_MASK_LT8_MSB    : integer := 15;
-    constant REG_MT_HIT_MASK_LT8_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT8_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
+    constant REG_MT_CHANNEL_MASK_LT23_ADDR    : std_logic_vector(9 downto 0) := "00" & x"57";
+    constant REG_MT_CHANNEL_MASK_LT23_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT23_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT23_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_MT_HIT_MASK_LT9_ADDR    : std_logic_vector(9 downto 0) := "00" & x"49";
-    constant REG_MT_HIT_MASK_LT9_MSB    : integer := 15;
-    constant REG_MT_HIT_MASK_LT9_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT9_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
-
-    constant REG_MT_HIT_MASK_LT10_ADDR    : std_logic_vector(9 downto 0) := "00" & x"4a";
-    constant REG_MT_HIT_MASK_LT10_MSB    : integer := 15;
-    constant REG_MT_HIT_MASK_LT10_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT10_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
-
-    constant REG_MT_HIT_MASK_LT11_ADDR    : std_logic_vector(9 downto 0) := "00" & x"4b";
-    constant REG_MT_HIT_MASK_LT11_MSB    : integer := 15;
-    constant REG_MT_HIT_MASK_LT11_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT11_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
-
-    constant REG_MT_HIT_MASK_LT12_ADDR    : std_logic_vector(9 downto 0) := "00" & x"4c";
-    constant REG_MT_HIT_MASK_LT12_MSB    : integer := 15;
-    constant REG_MT_HIT_MASK_LT12_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT12_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
-
-    constant REG_MT_HIT_MASK_LT13_ADDR    : std_logic_vector(9 downto 0) := "00" & x"4d";
-    constant REG_MT_HIT_MASK_LT13_MSB    : integer := 15;
-    constant REG_MT_HIT_MASK_LT13_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT13_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
-
-    constant REG_MT_HIT_MASK_LT14_ADDR    : std_logic_vector(9 downto 0) := "00" & x"4e";
-    constant REG_MT_HIT_MASK_LT14_MSB    : integer := 15;
-    constant REG_MT_HIT_MASK_LT14_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT14_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
-
-    constant REG_MT_HIT_MASK_LT15_ADDR    : std_logic_vector(9 downto 0) := "00" & x"4f";
-    constant REG_MT_HIT_MASK_LT15_MSB    : integer := 15;
-    constant REG_MT_HIT_MASK_LT15_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT15_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
-
-    constant REG_MT_HIT_MASK_LT16_ADDR    : std_logic_vector(9 downto 0) := "00" & x"50";
-    constant REG_MT_HIT_MASK_LT16_MSB    : integer := 15;
-    constant REG_MT_HIT_MASK_LT16_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT16_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
-
-    constant REG_MT_HIT_MASK_LT17_ADDR    : std_logic_vector(9 downto 0) := "00" & x"51";
-    constant REG_MT_HIT_MASK_LT17_MSB    : integer := 15;
-    constant REG_MT_HIT_MASK_LT17_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT17_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
-
-    constant REG_MT_HIT_MASK_LT18_ADDR    : std_logic_vector(9 downto 0) := "00" & x"52";
-    constant REG_MT_HIT_MASK_LT18_MSB    : integer := 15;
-    constant REG_MT_HIT_MASK_LT18_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT18_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
-
-    constant REG_MT_HIT_MASK_LT19_ADDR    : std_logic_vector(9 downto 0) := "00" & x"53";
-    constant REG_MT_HIT_MASK_LT19_MSB    : integer := 15;
-    constant REG_MT_HIT_MASK_LT19_LSB     : integer := 0;
-    constant REG_MT_HIT_MASK_LT19_DEFAULT : std_logic_vector(15 downto 0) := x"ffff";
+    constant REG_MT_CHANNEL_MASK_LT24_ADDR    : std_logic_vector(9 downto 0) := "00" & x"58";
+    constant REG_MT_CHANNEL_MASK_LT24_MSB    : integer := 7;
+    constant REG_MT_CHANNEL_MASK_LT24_LSB     : integer := 0;
+    constant REG_MT_CHANNEL_MASK_LT24_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
     constant REG_MT_COARSE_DELAYS_LT0_ADDR    : std_logic_vector(9 downto 0) := "00" & x"c0";
     constant REG_MT_COARSE_DELAYS_LT0_MSB    : integer := 3;
@@ -569,131 +529,6 @@ package registers is
     constant REG_MT_COARSE_DELAYS_LT49_MSB    : integer := 3;
     constant REG_MT_COARSE_DELAYS_LT49_LSB     : integer := 0;
     constant REG_MT_COARSE_DELAYS_LT49_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT50_ADDR    : std_logic_vector(9 downto 0) := "00" & x"f2";
-    constant REG_MT_COARSE_DELAYS_LT50_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT50_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT50_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT51_ADDR    : std_logic_vector(9 downto 0) := "00" & x"f3";
-    constant REG_MT_COARSE_DELAYS_LT51_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT51_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT51_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT52_ADDR    : std_logic_vector(9 downto 0) := "00" & x"f4";
-    constant REG_MT_COARSE_DELAYS_LT52_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT52_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT52_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT53_ADDR    : std_logic_vector(9 downto 0) := "00" & x"f5";
-    constant REG_MT_COARSE_DELAYS_LT53_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT53_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT53_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT54_ADDR    : std_logic_vector(9 downto 0) := "00" & x"f6";
-    constant REG_MT_COARSE_DELAYS_LT54_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT54_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT54_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT55_ADDR    : std_logic_vector(9 downto 0) := "00" & x"f7";
-    constant REG_MT_COARSE_DELAYS_LT55_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT55_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT55_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT56_ADDR    : std_logic_vector(9 downto 0) := "00" & x"f8";
-    constant REG_MT_COARSE_DELAYS_LT56_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT56_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT56_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT57_ADDR    : std_logic_vector(9 downto 0) := "00" & x"f9";
-    constant REG_MT_COARSE_DELAYS_LT57_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT57_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT57_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT58_ADDR    : std_logic_vector(9 downto 0) := "00" & x"fa";
-    constant REG_MT_COARSE_DELAYS_LT58_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT58_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT58_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT59_ADDR    : std_logic_vector(9 downto 0) := "00" & x"fb";
-    constant REG_MT_COARSE_DELAYS_LT59_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT59_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT59_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT60_ADDR    : std_logic_vector(9 downto 0) := "00" & x"fc";
-    constant REG_MT_COARSE_DELAYS_LT60_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT60_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT60_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT61_ADDR    : std_logic_vector(9 downto 0) := "00" & x"fd";
-    constant REG_MT_COARSE_DELAYS_LT61_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT61_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT61_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT62_ADDR    : std_logic_vector(9 downto 0) := "00" & x"fe";
-    constant REG_MT_COARSE_DELAYS_LT62_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT62_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT62_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT63_ADDR    : std_logic_vector(9 downto 0) := "00" & x"ff";
-    constant REG_MT_COARSE_DELAYS_LT63_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT63_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT63_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT64_ADDR    : std_logic_vector(9 downto 0) := "01" & x"00";
-    constant REG_MT_COARSE_DELAYS_LT64_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT64_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT64_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT65_ADDR    : std_logic_vector(9 downto 0) := "01" & x"01";
-    constant REG_MT_COARSE_DELAYS_LT65_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT65_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT65_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT66_ADDR    : std_logic_vector(9 downto 0) := "01" & x"02";
-    constant REG_MT_COARSE_DELAYS_LT66_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT66_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT66_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT67_ADDR    : std_logic_vector(9 downto 0) := "01" & x"03";
-    constant REG_MT_COARSE_DELAYS_LT67_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT67_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT67_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT68_ADDR    : std_logic_vector(9 downto 0) := "01" & x"04";
-    constant REG_MT_COARSE_DELAYS_LT68_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT68_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT68_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT69_ADDR    : std_logic_vector(9 downto 0) := "01" & x"05";
-    constant REG_MT_COARSE_DELAYS_LT69_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT69_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT69_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT70_ADDR    : std_logic_vector(9 downto 0) := "01" & x"06";
-    constant REG_MT_COARSE_DELAYS_LT70_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT70_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT70_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT71_ADDR    : std_logic_vector(9 downto 0) := "01" & x"07";
-    constant REG_MT_COARSE_DELAYS_LT71_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT71_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT71_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT72_ADDR    : std_logic_vector(9 downto 0) := "01" & x"08";
-    constant REG_MT_COARSE_DELAYS_LT72_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT72_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT72_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT73_ADDR    : std_logic_vector(9 downto 0) := "01" & x"09";
-    constant REG_MT_COARSE_DELAYS_LT73_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT73_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT73_DEFAULT : std_logic_vector(3 downto 0) := x"0";
-
-    constant REG_MT_COARSE_DELAYS_LT74_ADDR    : std_logic_vector(9 downto 0) := "01" & x"0a";
-    constant REG_MT_COARSE_DELAYS_LT74_MSB    : integer := 3;
-    constant REG_MT_COARSE_DELAYS_LT74_LSB     : integer := 0;
-    constant REG_MT_COARSE_DELAYS_LT74_DEFAULT : std_logic_vector(3 downto 0) := x"0";
 
     constant REG_MT_XADC_CALIBRATION_ADDR    : std_logic_vector(9 downto 0) := "01" & x"20";
     constant REG_MT_XADC_CALIBRATION_MSB    : integer := 11;

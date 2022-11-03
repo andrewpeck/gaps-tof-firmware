@@ -7,7 +7,6 @@
 -- Takes in data from the LT boards and deserializes it
 --
 -- Applies pulse stretching to the inputs to accomodate time resolution slop
---    0-15 clock cycles long
 --
 -- Applies fine delays and coarse delays to the inputs to align hits as best as
 -- we can:
@@ -33,43 +32,43 @@ use ieee.numeric_std.all;
 library work;
 use work.constants.all;
 use work.mt_types.all;
+use work.types_pkg.all;
 
 entity input_rx is
   generic(
-    NUM_INPUTS : positive := NUM_LT_INPUTS
+    NUM_INPUTS : positive := NUM_LT_MT_PRI;
+    STRETCH    : positive := 16
     );
   port(
 
     clk   : in std_logic;
     clk90 : in std_logic;
 
-    link_en : in std_logic_vector (NUM_LT_INPUTS-1 downto 0);
+    link_en : in std_logic_vector (NUM_INPUTS-1 downto 0);
 
-    data_i_p : in std_logic_vector (NUM_LT_INPUTS-1 downto 0);
-    data_i_n : in std_logic_vector (NUM_LT_INPUTS-1 downto 0);
-
-    pulse_stretch_i : in std_logic_vector (3 downto 0);
+    data_i_p : in std_logic_vector (NUM_INPUTS-1 downto 0);
+    data_i_n : in std_logic_vector (NUM_INPUTS-1 downto 0);
 
     coarse_delays_i : in lt_coarse_delays_array_t;
 
-    hits_o : out channel_array_t
+    hits_o : out threshold_array_t
     );
 end input_rx;
 
 architecture rtl of input_rx is
 
-  signal data : lt_channel_array_t;
-  signal hits : channel_array_t;
-
-  type hit_stretch_cnt_array_t is array (integer range <>) of
-    std_logic_vector(pulse_stretch_i'range);
-  signal hit_stretch_cnt : hit_stretch_cnt_array_t(hits'length-1 downto 0)
-    := (others => (others => '0'));
+  signal data_bytes       : t_std8_array (NUM_INPUTS-1 downto 0);
+  signal data_bytes_valid : std_logic_vector (NUM_INPUTS-1 downto 0) := (others => '0');
 
 begin
 
-  genloop : for I in 0 to NUM_LT_INPUTS-1 generate
-    signal data_i : std_logic;
+  assert data_bytes(0)'length = NUM_LT_BITS
+    report "input rx data width does not match constant" severity error;
+
+  genloop : for I in 0 to NUM_INPUTS-1 generate
+    signal data_serial : std_logic;
+    signal valid       : std_logic                             := '0';
+    signal valid_sr    : std_logic_vector (STRETCH-1 downto 0) := (others => '0');
   begin
 
     -- input delays + ffs for single LT board
@@ -86,59 +85,61 @@ begin
         en       => link_en(I),
         data_i_p => data_i_p(I),
         data_i_n => data_i_n(I),
-        data_o   => data_i
+        data_o   => data_serial
         );
 
-    -- deserializes the XX MHz single bit serial data and puts out a parallel
-    -- data output 16 bits wide
+    -- deserializes the 200 MHz single bit serial data and puts out a parallel
+    -- data output 8 bits wide
 
     rx_deserializer_inst : entity work.rx_deserializer
       generic map (
         WORD_SIZE => NUM_LT_BITS
         )
       port map (
-        clock  => clk,
-        data_i => data_i,
-        data_o => open                  -- data (I)
+        clock   => clk,
+        data_i  => data_serial,
+        valid_o => valid,
+        data_o  => data_bytes(I)
         );
 
-    -- FIXME
-    -- need to process the LT words into hits
-    -- no idea how
-    -- take the N words from a single LT board and process them into hits
+    process (clk) is
+    begin
+      if (rising_edge(clk)) then
+        if (valid = '1') then
+          valid_sr <= (others => '1');
+        else
+          valid_sr <= '0' & valid_sr(valid_sr'length-1 downto 1);
+        end if;
+      end if;
+    end process;
+
+    data_bytes_valid(I) <= valid_sr(0);
 
   end generate;
 
-  --------------------------------------------------------------------------------
-  -- Output hit processing / pulse stretching
-  --------------------------------------------------------------------------------
+  genloop2 : for I in 0 to NUM_INPUTS/2 - 1 generate
 
-  hits <= reshape(data);
+    -- //      | no hit| thr0 | thr1 | thr2
+    -- //----------------------------------
+    -- // bit0 |    0  |  0   |  1   |  1
+    -- // bit1 |    0  |  1   |  0   |  1
 
-  process (clk) is
-  begin
-    if (rising_edge(clk)) then
+    -- //LINK0  = START bit +paddles bit 0 (9 bits total)
+    -- //LINK1 = START bit +paddles bit 1 (9 bits total)
 
-      for I in 0 to hits_o'length-1 loop
+    process (clk) is
+    begin
+      if (rising_edge(clk)) then
+        for J in 0 to 7 loop
+          if (data_bytes_valid(I*2) = '1' and data_bytes_valid((I+1)*2-1) = '1') then
+            hits_o(I*8+J) <= data_bytes((I+1)*2-1)(J) & data_bytes(I*2)(J);
+          else
+            hits_o(I*8+J) <= (others => '0');
+          end if;
+        end loop;
+      end if;
+    end process;
 
-        if (to_integer(unsigned(hit_stretch_cnt(I))) = 0) then
-          hits_o(I) <= hits(I);
-        elsif (to_integer(unsigned(hit_stretch_cnt(I))) /= 0) then
-          hits_o(I) <= '1';
-        else
-          hits_o(I) <= '0';
-        end if;
-
-
-        if (hits(i) = '1') then
-          hit_stretch_cnt(I) <= pulse_stretch_i;
-        elsif (to_integer(unsigned(hit_stretch_cnt(I))) /= 0) then
-          hit_stretch_cnt(I) <=
-            std_logic_vector(unsigned(hit_stretch_cnt(I))-1);
-        end if;
-
-      end loop;
-    end if;
-  end process;
+  end generate;
 
 end rtl;

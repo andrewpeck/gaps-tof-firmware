@@ -7,12 +7,13 @@ use ieee.math_real.all;
 
 entity rx_deserializer is
   generic(
-    WORD_SIZE : positive := 16
+    WORD_SIZE : positive := 8
     );
   port(
-    clock  : in  std_logic;
-    data_i : in  std_logic;
-    data_o : out std_logic_vector (WORD_SIZE-1 downto 0)
+    clock   : in  std_logic;
+    data_i  : in  std_logic;
+    data_o  : out std_logic_vector (WORD_SIZE-1 downto 0);
+    valid_o : out std_logic
     );
 end rx_deserializer;
 
@@ -31,6 +32,8 @@ begin
   begin
     if (rising_edge(clock)) then
 
+      valid_o <= '0';
+
       case state is
 
         when IDLE =>
@@ -46,8 +49,9 @@ begin
           state_bit_cnt <= state_bit_cnt + 1;
 
           if (state_bit_cnt = WORD_SIZE - 1) then
-            state  <= IDLE;
-            data_o <= data_i & data_buf(WORD_SIZE-2 downto 0);
+            state   <= IDLE;
+            data_o  <= data_i & data_buf(WORD_SIZE-2 downto 0);
+            valid_o <= '1';
           else
             data_buf(state_bit_cnt) <= data_i;
           end if;
