@@ -71,6 +71,8 @@ begin
 
           when DWRITE_state =>
 
+            state <= MASK_state;
+
             if (serial_i = '1') then
               trg_o <= '1';
             else
