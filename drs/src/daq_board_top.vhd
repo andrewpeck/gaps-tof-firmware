@@ -604,7 +604,8 @@ begin
       mt_event_cnt_prev <= mt_event_cnt;
       mt_event_cnt_err  <= '0';
       if (mt_event_cnt_valid = '1') then
-        if (unsigned(mt_event_cnt_prev)+1 /= unsigned(mt_event_cnt)) then
+        if (unsigned(mt_event_cnt_prev)+1 /= unsigned(mt_event_cnt) and
+            unsigned(mt_event_cnt_prev)+2 /= unsigned(mt_event_cnt)) then
           mt_event_cnt_err <= '1';
         end if;
       end if;
