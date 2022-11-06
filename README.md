@@ -164,6 +164,15 @@ no files are missing, the build directory is clean, and so on.
 
 ?
 
+## Master Trigger External IO
+
+  | Signal       | Assignment | Description                                                                                                                                 |
+  |:-------------|:-----------|:--------------------------------------------------------------------------------------------------------------------------------------------|
+  | TIU Busy     | EXT_IN0    | LVDS IN: Busy acknowledgment from the TIU. Trigger should be deasserted only after busy is received.                                        |
+  | TIU Timecode | EXT_IN1    | LVDS IN: Asynchronous serial input containing the GPS timestamp.                                                                            |
+  | TIU Event ID | EXT_OUT0   | LVDS OUT: Asynchronous serial output containing the event ID                                                                                |
+  | TIU Trigger  | EXT_OUT1   | LVDS OUT: Trigger output from the MT to TIU. Asynchronous level which should not be deasserted until the BUSY is received back from the TIU |
+
 ## Gitlab runner registration
 
 Some simple instructions for registering a Gitlab runner
