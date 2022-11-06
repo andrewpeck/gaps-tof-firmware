@@ -262,7 +262,9 @@ architecture Behavioral of top_readout_board is
   signal mt_event_cnt_valid : std_logic                      := '0';
   signal mt_mask_valid      : std_logic                      := '0';
   signal mt_mask            : std_logic_vector (7 downto 0)  := (others => '0');
-  signal mt_event_cnt       : std_logic_vector (31 downto 0) := (others => '0');
+  signal mt_event_cnt       : std_logic_vector (31 downto 0);
+  signal mt_event_cnt_prev  : std_logic_vector (31 downto 0) := (others => '0');
+  signal mt_event_cnt_err   : std_logic;
   signal mt_cmd             : std_logic_vector(1 downto 0);
   signal mt_cmd_valid       : std_logic;
   signal mt_resync          : std_logic := '0';
@@ -540,7 +542,8 @@ begin
       probe3(27 downto 19) => readout_mask,
       probe3(28)           => mt_mask_valid,
       probe3(29)           => daq_drs_busy,
-      probe3(31 downto 30) => (others => '0'),
+      probe3(30)           => mt_event_cnt_err,
+      probe3(31)           => '0',
       probe4               => (others => '0'),
       probe5               => mt_prbs_err,
       probe6               => mt_trigger_data_ff,
@@ -594,6 +597,20 @@ begin
       mask_o       => mt_mask,
       mask_valid_o => mt_mask_valid
       );
+
+  process (clock) is
+  begin
+    if (rising_edge(clock)) then
+      mt_event_cnt_prev <= mt_event_cnt;
+      mt_event_cnt_err <= '0';
+      if (mt_event_cnt_valid = '1') then
+        if (unsigned(mt_event_cnt_prev)+1 /= unsigned(mt_event_cnt) then
+          mt_event_cnt_err <= '1';
+        end if;
+      end if;
+    end if;
+  end process;
+
 
   process (clock) is
   begin
