@@ -268,6 +268,12 @@
                 mask="0x1"
                 fw_default="0x1"
                 fw_signal="mt_trigger_mode" />
+            <node id="CNT_MT_CRC_ERR" address="0x6" permission="r"
+                description="Number of MT CRC errors"
+                mask="0xffff"
+                fw_cnt_reset_signal="reset or cnt_reset"
+                fw_cnt_en_signal="not mt_crc_ok and mt_crc_valid"
+                fw_signal="cnt_mt_crc_err"/>
         </node> <!--TRIGGER-->
 
         <node id="COUNTERS" address="0x50" description="Counters">
