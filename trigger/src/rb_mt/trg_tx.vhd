@@ -15,6 +15,7 @@ entity trg_tx is
     EVENTCNTB  : natural := 32;
     MASKCNTB   : natural := 8;
     CMDB       : natural := 2;
+    CRCB       : natural := 8;
     MANCHESTER : boolean := true
     );
   port(
@@ -35,7 +36,7 @@ end trg_tx;
 
 architecture rtl of trg_tx is
 
-  constant LENGTH : natural := CMDB + EVENTCNTB + MASKCNTB + 1;
+  constant LENGTH : natural := CRCB + CMDB + EVENTCNTB + MASKCNTB + 1;
 
   type state_t is (IDLE_state, DATA_state);
   signal state         : state_t   := IDLE_state;
@@ -48,6 +49,10 @@ architecture rtl of trg_tx is
 
   signal cmd : std_logic_vector(CMDB-1 downto 0);
 
+  signal crc_en  : std_logic                          := '0';
+  signal crc_rst : std_logic                          := '0';
+  signal crc     : std_logic_vector (CRCB-1 downto 0) := (others => '0');
+
 begin
 
   process (resync_i) is
@@ -59,23 +64,41 @@ begin
     end if;
   end process;
 
+  crc_rst <= '1' when state = IDLE_state or reset = '1' else '0';
+
+  crc_inst : entity work.crc
+    port map (
+      data_in => packet_buf(packet_buf'length-1 downto 8),
+      crc_en  => crc_en,
+      rst     => crc_rst,
+      clk     => clock,
+      crc_out => crc
+      );
+
   process (clock)
   begin
 
     if (rising_edge(clock)) then
 
       serial_data <= '0';
+      crc_en      <= '0';
+
       case state is
 
         when IDLE_state =>
 
+          state_bit_cnt <= 0;
+
           if (trg_i = '1') then
             serial_data <= '1';
             state       <= DATA_state;
-            packet_buf  <= or_reduce(ch_mask_i) & ch_mask_i & event_cnt_i & cmd;
+            packet_buf  <= or_reduce(ch_mask_i) & ch_mask_i & event_cnt_i & cmd & x"00";
+            crc_en      <= '1';
           end if;
 
         when DATA_state =>
+
+          packet_buf(7 downto 0) <= crc;
 
           if (state_bit_cnt = LENGTH - 1) then
             state         <= IDLE_state;
@@ -89,8 +112,7 @@ begin
       end case;
 
       if (reset = '1') then
-        state       <= IDLE_state;
-        serial_data <= '0';
+        state <= IDLE_state;
       end if;
 
     end if;

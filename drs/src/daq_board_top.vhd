@@ -267,6 +267,10 @@ architecture Behavioral of top_readout_board is
   signal mt_event_cnt_err   : std_logic;
   signal mt_cmd             : std_logic_vector(1 downto 0);
   signal mt_cmd_valid       : std_logic;
+  signal mt_crc             : std_logic_vector(7 downto 0);
+  signal mt_crc_calc        : std_logic_vector(7 downto 0);
+  signal mt_crc_valid       : std_logic;
+  signal mt_crc_ok          : std_logic;
   signal mt_resync          : std_logic := '0';
 
   signal daq_event_cnt   : std_logic_vector(31 downto 0);
@@ -554,20 +558,23 @@ begin
       probe11              => mt_trigger_dav,
       probe12              => mt_trigger_i,
       probe13              => mt_event_cnt_valid,
-      probe14             => daq_trigger,
-      probe15(1 downto 0) => mt_cmd,
-      probe15(2)          => mt_cmd_valid,
-      probe15(7 downto 3) => (others => '0'),
+      probe14              => daq_trigger,
+      probe15(1 downto 0)  => mt_cmd,
+      probe15(2)           => mt_cmd_valid,
+      probe15(3)           => mt_crc_valid,
+      probe15(4)           => mt_crc_ok,
+      probe15(7 downto 5)  => (others => '0'),
       probe16              => daq_busy,
       probe17              => drs_busy,
       probe18              => (others => '0'),
       probe19              => trigger,
       probe20              => mt_trigger,
-      probe21              => (others => '0'),
+      probe21(7 downto 0)  => mt_crc_calc,
+      probe21(15 downto 8) => (others => '0'),
       probe22              => (others => '0'),
       probe23              => fifo_data_wen,
       probe24              => (others => '0'),
-      probe25              => (others => '0'),
+      probe25              => mt_crc,
       probe26              => (others => '0')
       );
 
@@ -592,6 +599,11 @@ begin
 
       cmd_o       => mt_cmd,
       cmd_valid_o => mt_cmd_valid,
+
+      crc_ok_o    => mt_crc_ok,
+      crc_o       => mt_crc,
+      crc_calc_o  => mt_crc_calc,
+      crc_valid_o => mt_crc_valid,
 
       event_cnt_o       => mt_event_cnt,
       event_cnt_valid_o => mt_event_cnt_valid,

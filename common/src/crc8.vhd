@@ -9,14 +9,14 @@
 -- OR IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
 -- WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 -------------------------------------------------------------------------------
--- CRC module for data(0:0)
+-- CRC module for data(42:0)
 --   lfsr(7:0)=1+x^2+x^4+x^6+x^7+x^8;
 -------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
 
 entity crc is
-  port (data_in          : in  std_logic_vector (0 downto 0);
+  port (data_in          : in  std_logic_vector (42 downto 0);
         crc_en, rst, clk : in  std_logic;
         crc_out          : out std_logic_vector (7 downto 0));
 end crc;
@@ -27,14 +27,14 @@ architecture imp_crc of crc is
 begin
   crc_out <= lfsr_q;
 
-  lfsr_c(0) <= lfsr_q(7) xor data_in(0);
-  lfsr_c(1) <= lfsr_q(0);
-  lfsr_c(2) <= lfsr_q(1) xor lfsr_q(7) xor data_in(0);
-  lfsr_c(3) <= lfsr_q(2);
-  lfsr_c(4) <= lfsr_q(3) xor lfsr_q(7) xor data_in(0);
-  lfsr_c(5) <= lfsr_q(4);
-  lfsr_c(6) <= lfsr_q(5) xor lfsr_q(7) xor data_in(0);
-  lfsr_c(7) <= lfsr_q(6) xor lfsr_q(7) xor data_in(0);
+  lfsr_c(0) <= lfsr_q(0) xor lfsr_q(1) xor lfsr_q(2) xor lfsr_q(6) xor lfsr_q(7) xor data_in(0) xor data_in(1) xor data_in(3) xor data_in(6) xor data_in(7) xor data_in(8) xor data_in(13) xor data_in(14) xor data_in(15) xor data_in(16) xor data_in(17) xor data_in(18) xor data_in(20) xor data_in(24) xor data_in(26) xor data_in(27) xor data_in(29) xor data_in(30) xor data_in(31) xor data_in(33) xor data_in(34) xor data_in(35) xor data_in(36) xor data_in(37) xor data_in(41) xor data_in(42);
+  lfsr_c(1) <= lfsr_q(0) xor lfsr_q(1) xor lfsr_q(2) xor lfsr_q(3) xor lfsr_q(7) xor data_in(1) xor data_in(2) xor data_in(4) xor data_in(7) xor data_in(8) xor data_in(9) xor data_in(14) xor data_in(15) xor data_in(16) xor data_in(17) xor data_in(18) xor data_in(19) xor data_in(21) xor data_in(25) xor data_in(27) xor data_in(28) xor data_in(30) xor data_in(31) xor data_in(32) xor data_in(34) xor data_in(35) xor data_in(36) xor data_in(37) xor data_in(38) xor data_in(42);
+  lfsr_c(2) <= lfsr_q(3) xor lfsr_q(4) xor lfsr_q(6) xor lfsr_q(7) xor data_in(0) xor data_in(1) xor data_in(2) xor data_in(5) xor data_in(6) xor data_in(7) xor data_in(9) xor data_in(10) xor data_in(13) xor data_in(14) xor data_in(19) xor data_in(22) xor data_in(24) xor data_in(27) xor data_in(28) xor data_in(30) xor data_in(32) xor data_in(34) xor data_in(38) xor data_in(39) xor data_in(41) xor data_in(42);
+  lfsr_c(3) <= lfsr_q(0) xor lfsr_q(4) xor lfsr_q(5) xor lfsr_q(7) xor data_in(1) xor data_in(2) xor data_in(3) xor data_in(6) xor data_in(7) xor data_in(8) xor data_in(10) xor data_in(11) xor data_in(14) xor data_in(15) xor data_in(20) xor data_in(23) xor data_in(25) xor data_in(28) xor data_in(29) xor data_in(31) xor data_in(33) xor data_in(35) xor data_in(39) xor data_in(40) xor data_in(42);
+  lfsr_c(4) <= lfsr_q(0) xor lfsr_q(2) xor lfsr_q(5) xor lfsr_q(7) xor data_in(0) xor data_in(1) xor data_in(2) xor data_in(4) xor data_in(6) xor data_in(9) xor data_in(11) xor data_in(12) xor data_in(13) xor data_in(14) xor data_in(17) xor data_in(18) xor data_in(20) xor data_in(21) xor data_in(27) xor data_in(31) xor data_in(32) xor data_in(33) xor data_in(35) xor data_in(37) xor data_in(40) xor data_in(42);
+  lfsr_c(5) <= lfsr_q(1) xor lfsr_q(3) xor lfsr_q(6) xor data_in(1) xor data_in(2) xor data_in(3) xor data_in(5) xor data_in(7) xor data_in(10) xor data_in(12) xor data_in(13) xor data_in(14) xor data_in(15) xor data_in(18) xor data_in(19) xor data_in(21) xor data_in(22) xor data_in(28) xor data_in(32) xor data_in(33) xor data_in(34) xor data_in(36) xor data_in(38) xor data_in(41);
+  lfsr_c(6) <= lfsr_q(1) xor lfsr_q(4) xor lfsr_q(6) xor data_in(0) xor data_in(1) xor data_in(2) xor data_in(4) xor data_in(7) xor data_in(11) xor data_in(17) xor data_in(18) xor data_in(19) xor data_in(22) xor data_in(23) xor data_in(24) xor data_in(26) xor data_in(27) xor data_in(30) xor data_in(31) xor data_in(36) xor data_in(39) xor data_in(41);
+  lfsr_c(7) <= lfsr_q(0) xor lfsr_q(1) xor lfsr_q(5) xor lfsr_q(6) xor data_in(0) xor data_in(2) xor data_in(5) xor data_in(6) xor data_in(7) xor data_in(12) xor data_in(13) xor data_in(14) xor data_in(15) xor data_in(16) xor data_in(17) xor data_in(19) xor data_in(23) xor data_in(25) xor data_in(26) xor data_in(28) xor data_in(29) xor data_in(30) xor data_in(32) xor data_in(33) xor data_in(34) xor data_in(35) xor data_in(36) xor data_in(40) xor data_in(41);
 
 
   process (clk, rst)

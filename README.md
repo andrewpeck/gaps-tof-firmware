@@ -156,9 +156,8 @@ no files are missing, the build directory is clean, and so on.
   | TRIGGER   | `[0:0]`  | '1' initiates a trigger; '0' for an event fragment |
   | CH\_MASK  | `[7:0]`  | bitfield set to '1' to readout a channel           |
   | EVENT\_ID | `[31:0]` | Event ID                                           |
-
-- Add a CRC to the end of the packet? Yes.
-- Add a CMD field to the end of the packet? Probably.
+  | CMD       | `[1:0]`  | 3=resync                                           |
+  | CRC8      | `[7:0]`  | lfsr(7:0)=1+x^2+x^4+x^6+x^7+x^8                    |
 
 ## Local Trigger Data Format
 

@@ -21,6 +21,7 @@ common/src/manchester_decoder.vhd
 common/src/prbs_any.vhd
 common/src/adc.vhd
 common/src/sem.vhd
+common/src/crc8.vhd
 common/src/trig_gen.vhd
 common/src/urand_inf.vhd
 common/src/rate_counter.vhd

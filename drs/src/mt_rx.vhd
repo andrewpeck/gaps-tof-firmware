@@ -6,7 +6,8 @@ use ieee.numeric_std.all;
 entity mt_rx is
   generic(
     EVENTCNTB : natural := 32;
-    MASKB  : natural := 8;
+    MASKB     : natural := 8;
+    CRCB      : natural := 8;
     CMDB      : natural := 2
     );
   port(
@@ -25,6 +26,11 @@ entity mt_rx is
     mask_o       : out std_logic_vector (MASKB-1 downto 0) := (others => '0');
     mask_valid_o : out std_logic;
 
+    crc_o       : out std_logic_vector (CRCB-1 downto 0) := (others => '0');
+    crc_calc_o  : out std_logic_vector (CRCB-1 downto 0) := (others => '0');
+    crc_valid_o : out std_logic;
+    crc_ok_o    : out std_logic;
+
     event_cnt_o       : out std_logic_vector (EVENTCNTB-1 downto 0) := (others => '0');
     event_cnt_valid_o : out std_logic
 
@@ -33,19 +39,38 @@ end mt_rx;
 
 architecture rtl of mt_rx is
 
-  type state_t is (IDLE_state, DWRITE_state, MASK_state, EVENTCNT_state, CMD_state, WAIT_state);
+  type state_t is (IDLE_state, DWRITE_state, MASK_state, EVENTCNT_state, CMD_state, CRC_state, WAIT_state);
 
   signal state         : state_t                                   := IDLE_state;
   signal state_bit_cnt : natural range 0 to event_cnt_o'length - 1 := 0;
 
   signal event_cnt_buf : std_logic_vector (EVENTCNTB-1 downto 0) := (others => '0');
-  signal mask_buf      : std_logic_vector (MASKB-1 downto 0)  := (others => '0');
+  signal mask_buf      : std_logic_vector (MASKB-1 downto 0)     := (others => '0');
   signal cmd_buf       : std_logic_vector (CMDB-1 downto 0)      := (others => '0');
+  signal crc_buf       : std_logic_vector (CRCB-1 downto 0)      := (others => '0');
+  signal crc           : std_logic_vector (CRCB-1 downto 0)      := (others => '0');
 
-  constant WAIT_CNT_MAX : integer := 2**12-1;
-  signal wait_cnt : natural range 0 to WAIT_CNT_MAX := 0;
+  signal crc_en  : std_logic := '0';
+  signal crc_rst : std_logic := '0';
+
+  signal crc_data : std_logic_vector (42 downto 0) := (others => '0');
+
+  constant WAIT_CNT_MAX : integer                         := 2**12-1;
+  signal wait_cnt       : natural range 0 to WAIT_CNT_MAX := 0;
 
 begin
+
+  crc_rst  <= '1' when state = IDLE_state or reset = '1' else '0';
+  crc_data <= or_reduce(mask_o) & mask_o & event_cnt_o & cmd_o;
+
+  crc_inst : entity work.crc
+    port map (
+      data_in => crc_data,
+      crc_en  => crc_en,
+      rst     => crc_rst,
+      clk     => clock,
+      crc_out => crc
+      );
 
   process (clock)
   begin
@@ -57,12 +82,16 @@ begin
       event_cnt_valid_o <= '0';
       mask_valid_o      <= '0';
       cmd_valid_o       <= '0';
+      crc_valid_o       <= '0';
+      crc_en            <= '0';
 
       if (enable_i = '1') then
 
         case state is
 
           when IDLE_state =>
+
+            state_bit_cnt <= 0;
 
             -- receive the start bit
             if (serial_i = '1') then
@@ -114,8 +143,14 @@ begin
           when CMD_state =>
 
             if (state_bit_cnt = CMDB - 1) then
-              cmd_o         <= cmd_buf(CMDB-1 downto 1) & serial_i;
-              state         <= WAIT_state;
+
+              cmd_o <= cmd_buf(CMDB-1 downto 1) & serial_i;
+
+              if (CRCB > 0) then
+                state <= CRC_state;
+              else
+                state <= WAIT_state;
+              end if;
               state_bit_cnt <= 0;
               cmd_valid_o   <= '1';
             else
@@ -123,6 +158,33 @@ begin
             end if;
 
             cmd_buf(CMDB-1-state_bit_cnt) <= serial_i;
+
+          when CRC_state =>
+
+            -- enable for only one clock cycle, just pick something
+            if (state_bit_cnt = 1) then
+              crc_en <= '1';
+            end if;
+
+            if (state_bit_cnt = CRCB - 1) then
+              crc_o         <= crc_buf(CRCB-1 downto 1) & serial_i;
+              state         <= WAIT_state;
+              state_bit_cnt <= 0;
+              crc_valid_o   <= '1';
+
+              if (crc_buf(CRCB-1 downto 1) & serial_i = crc) then
+                crc_ok_o   <= '1';
+                crc_calc_o <= crc;
+              else
+                crc_ok_o   <= '0';
+                crc_calc_o <= crc;
+              end if;
+
+            else
+              state_bit_cnt <= state_bit_cnt + 1;
+            end if;
+
+            crc_buf(CRCB-1-state_bit_cnt) <= serial_i;
 
           when WAIT_state =>
 
