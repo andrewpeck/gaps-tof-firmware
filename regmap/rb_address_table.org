@@ -144,7 +144,7 @@ DAQ
 |---------------------+--------+--------+------+------+-------+----------------------------------------------------------------------|
 | INJECT_DEBUG_PACKET | ~0x30~ | ~0xc0~ | ~0~  | w    | Pulse | Injects a fixed format debug packet into the DAQ                     |
 |---------------------+--------+--------+------+------+-------+----------------------------------------------------------------------|
-| DAQ_FRAGMENT_EN     | ~0x30~ | ~0xc0~ | ~0~  | w    | ~0x0~ | 1 to enable daq fragments (header only packets) when the DRS is busy |
+| DAQ_FRAGMENT_EN     | ~0x30~ | ~0xc0~ | ~0~  | w    | ~0x1~ | 1 to enable daq fragments (header only packets) when the DRS is busy |
 |---------------------+--------+--------+------+------+-------+----------------------------------------------------------------------|
 
 *DRS.TRIGGER*
