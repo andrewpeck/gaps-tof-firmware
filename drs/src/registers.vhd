@@ -157,6 +157,10 @@ package registers is
     constant REG_DAQ_INJECT_DEBUG_PACKET_ADDR    : std_logic_vector(9 downto 0) := "00" & x"30";
     constant REG_DAQ_INJECT_DEBUG_PACKET_BIT    : integer := 0;
 
+    constant REG_DAQ_DAQ_FRAGMENT_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"30";
+    constant REG_DAQ_DAQ_FRAGMENT_EN_BIT    : integer := 0;
+    constant REG_DAQ_DAQ_FRAGMENT_EN_DEFAULT : std_logic := '0';
+
     constant REG_TRIGGER_FORCE_TRIGGER_ADDR    : std_logic_vector(9 downto 0) := "00" & x"40";
     constant REG_TRIGGER_FORCE_TRIGGER_BIT    : integer := 0;
 

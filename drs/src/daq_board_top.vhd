@@ -280,6 +280,7 @@ architecture Behavioral of top_readout_board is
   signal daq_event_ack   : std_logic := '0';
   signal daq_trigger     : std_logic := '0';
   signal daq_fragment    : std_logic := '0';
+  signal daq_fragment_en : std_logic := '0';
   signal daq_event_valid : std_logic := '0';
 
   signal xfifo_fragment  : std_logic_vector (0 downto 0);
@@ -874,7 +875,7 @@ begin
       mask_i      => daq_mask,
       drs_busy_i  => daq_drs_busy,
       trigger_i   => daq_trigger,
-      fragment_i  => daq_fragment,
+      fragment_i  => daq_fragment_en and daq_fragment,
 
       gfp_use_eventid_i     => gfp_use_eventid and not mt_trigger_mode,
       gfp_eventid_i         => gfp_eventid,
@@ -1250,6 +1251,7 @@ begin
   drs_diagnostic_mode <= regs_write_arr(11)(REG_READOUT_DRS_DIAGNOSTIC_MODE_BIT);
   posneg <= regs_write_arr(12)(REG_READOUT_POSNEG_BIT);
   board_id <= regs_write_arr(22)(REG_FPGA_BOARD_ID_MSB downto REG_FPGA_BOARD_ID_LSB);
+  daq_fragment_en <= regs_write_arr(23)(REG_DAQ_DAQ_FRAGMENT_EN_BIT);
   ext_trigger_en <= regs_write_arr(25)(REG_TRIGGER_EXT_TRIGGER_EN_BIT);
   ext_trigger_active_hi <= regs_write_arr(25)(REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT);
   mt_is_level_trigger <= regs_write_arr(25)(REG_TRIGGER_MT_TRIGGER_IS_LEVEL_BIT);
@@ -1393,6 +1395,7 @@ begin
   regs_defaults(11)(REG_READOUT_DRS_DIAGNOSTIC_MODE_BIT) <= REG_READOUT_DRS_DIAGNOSTIC_MODE_DEFAULT;
   regs_defaults(12)(REG_READOUT_POSNEG_BIT) <= REG_READOUT_POSNEG_DEFAULT;
   regs_defaults(22)(REG_FPGA_BOARD_ID_MSB downto REG_FPGA_BOARD_ID_LSB) <= REG_FPGA_BOARD_ID_DEFAULT;
+  regs_defaults(23)(REG_DAQ_DAQ_FRAGMENT_EN_BIT) <= REG_DAQ_DAQ_FRAGMENT_EN_DEFAULT;
   regs_defaults(25)(REG_TRIGGER_EXT_TRIGGER_EN_BIT) <= REG_TRIGGER_EXT_TRIGGER_EN_DEFAULT;
   regs_defaults(25)(REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT) <= REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_DEFAULT;
   regs_defaults(25)(REG_TRIGGER_MT_TRIGGER_IS_LEVEL_BIT) <= REG_TRIGGER_MT_TRIGGER_IS_LEVEL_DEFAULT;
@@ -1409,6 +1412,7 @@ begin
   regs_writable_arr(11) <= '1';
   regs_writable_arr(12) <= '1';
   regs_writable_arr(22) <= '1';
+  regs_writable_arr(23) <= '1';
   regs_writable_arr(25) <= '1';
   regs_writable_arr(26) <= '1';
   regs_writable_arr(29) <= '1';
