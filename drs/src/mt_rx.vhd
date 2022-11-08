@@ -7,7 +7,7 @@ entity mt_rx is
   generic(
     EVENTCNTB : natural := 32;
     MASKB  : natural := 8;
-    CMDB      : natural := 4
+    CMDB      : natural := 2
     );
   port(
 

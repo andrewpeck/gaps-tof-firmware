@@ -543,7 +543,7 @@ begin
       probe3(28)           => mt_mask_valid,
       probe3(29)           => daq_drs_busy,
       probe3(30)           => mt_event_cnt_err,
-      probe3(31)           => '0',
+      probe3(31)           => mt_resync,
       probe4               => (others => '0'),
       probe5               => mt_prbs_err,
       probe6               => mt_trigger_data_ff,
@@ -554,8 +554,10 @@ begin
       probe11              => mt_trigger_dav,
       probe12              => mt_trigger_i,
       probe13              => mt_event_cnt_valid,
-      probe14              => daq_trigger,
-      probe15              => (others => '0'),
+      probe14             => daq_trigger,
+      probe15(1 downto 0) => mt_cmd,
+      probe15(2)          => mt_cmd_valid,
+      probe15(7 downto 3) => (others => '0'),
       probe16              => daq_busy,
       probe17              => drs_busy,
       probe18              => (others => '0'),
@@ -577,7 +579,7 @@ begin
     generic map (
       EVENTCNTB => mt_event_cnt'length,
       MASKB     => mt_mask'length,
-      CMDB      => 0
+      CMDB      => mt_cmd'length
       )
     port map (
       clock    => clock,

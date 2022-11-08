@@ -131,7 +131,9 @@ architecture structural of gaps_mt is
   signal clock                                       : std_logic;
   signal clk25, clk200, clk200_90, clk125, clk125_90 : std_logic;
 
-  signal event_cnt     : std_logic_vector (EVENTCNTB-1 downto 0);
+  signal event_cnt : std_logic_vector (EVENTCNTB-1 downto 0);
+
+  signal rb_resync : std_logic := '0';
 
   signal coarse_delays : lt_coarse_delays_array_t
     := (others => (others => '0'));
@@ -630,6 +632,9 @@ begin
     -- extend the trigger pulses by a few clocks for the fast to slow clock transition
     trg_tx_gen : for I in 0 to NUM_RBS-1 generate
       signal trg_extend : std_logic_vector (7 downto 0) := (others => '0');
+      signal clk        : std_logic                     := '0';
+      signal resync     : std_logic                     := '0';
+      signal trg        : std_logic                     := '0';
     begin
 
       process (clock) is
@@ -643,22 +648,36 @@ begin
         end if;
       end process;
 
+      even : if (I mod 2 = 0) generate
+        clk <= clk25;
+      end generate;
+
+      odd : if (I mod 2 = 1) generate
+        clk <= clk25;
+      end generate;
+
+      trg    <= or_reduce(trg_extend);
+      resync <= '1' when rb_resync = '1' or (trg = '1' and event_cnt = x"00000000") else '0';
+
       trg_tx_inst : entity work.trg_tx
         generic map (
           EVENTCNTB => EVENTCNTB,
           MASKCNTB  => NUM_RB_CHANNELS
           )
         port map (
-          clock => clk25,
+          clock => clk,
           reset => reset,
 
-          trg_i       => or_reduce(trg_extend),
+          trg_i       => trg,
+          resync_i    => resync,
           event_cnt_i => event_cnt,
           ch_mask_i   => (others => '1'), -- FIXME: this should come from the
                                           -- trigger block once the logic is in
                                           -- place, but for now just read all channels
           serial_o => rb_data_o(I)
+
           );
+
     end generate;
   end generate;
 
@@ -857,7 +876,8 @@ begin
         probe2(12)           => ext_trigger,
         probe2(13)           => ext_trigger_r2,
         probe2(45 downto 14) => clock_rate,
-        probe2(74 downto 46) => (others => '0'),
+        probe2(50 downto 46) => lvs_sync,
+        probe2(74 downto 51) => (others => '0'),
         probe3(7 downto 0)   => (others => '0'),
         probe4(7 downto 0)   => (others => '0'),
         probe5(0)            => lvs_sync_ccb,

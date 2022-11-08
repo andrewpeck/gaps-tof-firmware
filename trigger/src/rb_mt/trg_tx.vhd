@@ -14,6 +14,7 @@ entity trg_tx is
   generic(
     EVENTCNTB  : natural := 32;
     MASKCNTB   : natural := 8;
+    CMDB       : natural := 2;
     MANCHESTER : boolean := true
     );
   port(
@@ -21,6 +22,8 @@ entity trg_tx is
     clock    : in  std_logic;
     reset    : in  std_logic;
     serial_o : out std_logic;
+
+    resync_i : in std_logic;
 
     trg_i : in std_logic;
 
@@ -32,7 +35,7 @@ end trg_tx;
 
 architecture rtl of trg_tx is
 
-  constant LENGTH : natural := EVENTCNTB + MASKCNTB + 1;
+  constant LENGTH : natural := CMDB + EVENTCNTB + MASKCNTB + 1;
 
   type state_t is (IDLE_state, DATA_state);
   signal state         : state_t   := IDLE_state;
@@ -43,7 +46,18 @@ architecture rtl of trg_tx is
 
   signal serial_data : std_logic := '0';
 
+  signal cmd : std_logic_vector(CMDB-1 downto 0);
+
 begin
+
+  process (resync_i) is
+  begin
+    if (resync_i = '1') then
+      cmd <= "11";
+    else
+      cmd <= "00";
+    end if;
+  end process;
 
   process (clock)
   begin
@@ -58,7 +72,7 @@ begin
           if (trg_i = '1') then
             serial_data <= '1';
             state       <= DATA_state;
-            packet_buf  <= or_reduce(ch_mask_i) & ch_mask_i & event_cnt_i;
+            packet_buf  <= or_reduce(ch_mask_i) & ch_mask_i & event_cnt_i & cmd;
           end if;
 
         when DATA_state =>
