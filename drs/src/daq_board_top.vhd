@@ -121,7 +121,7 @@ architecture Behavioral of top_readout_board is
   signal drs_data_valid   : std_logic;
   signal drs_dwrite_sync  : std_logic;
   signal drs_dwrite_async : std_logic;
-  signal drs_dwrite       : std_logic;
+  signal drs_dwrite_mask  : std_logic := '1';
 
   signal drs_dwrite_delay_sel : std_logic_vector (11 downto 0) := (others => '0');
 
@@ -689,7 +689,7 @@ begin
   -- Trigger output
   --------------------------------------------------------------------------------
 
-  drs_dwrite <= drs_dwrite_sync and drs_dwrite_async;
+  drs_dwrite_o <= drs_dwrite_mask and drs_dwrite_sync and drs_dwrite_async;
 
   trigger_mux_inst : entity work.trigger_mux
     generic map (TRIGGER_OS_MAX => 3)
@@ -779,9 +779,19 @@ begin
   begin
     if (rising_edge(clock)) then
       if (mt_trigger_mode='0') then
-        start_readout <= trigger;
+        start_readout   <= trigger;
+        drs_dwrite_mask <= '1';
       else
         start_readout <= mt_mask_valid;
+
+        -- when we get a trigger, dwrite goes low, keep it low until we get the
+        -- mask and the drs module itself takes over the dwrite
+        if (trigger = '1') then
+          drs_dwrite_mask <= '0';
+        elsif (drs_dwrite_sync = '0') then
+          drs_dwrite_mask <= '1';
+        end if;
+
       end if;
     end if;
   end process;
