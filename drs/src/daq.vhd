@@ -294,8 +294,8 @@ begin
           timestamp    <= x"BA9876543210";
         else
 
-          status(0)           <= fragment;
-          status(1)           <= dropped;
+          status(0)           <= fragment_i;
+          status(1)           <= drs_busy_i;
           status(3 downto 2)  <= (others => '0');
           status(15 downto 4) <= temperature_i;
 
