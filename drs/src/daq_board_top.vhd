@@ -886,8 +886,7 @@ begin
     generic map (
       DEPTH     => 1024,
       WR_WIDTH  => 14,
-      RD_WIDTH  => 14,
-      read_mode => "fwft"
+      RD_WIDTH  => 14
       )
     port map (
       rst    => reset,
