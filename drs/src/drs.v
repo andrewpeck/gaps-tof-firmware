@@ -101,7 +101,8 @@ module drs #(
     //------------------------------------------------------------------------------------------------------------------
 
     output reg readout_complete, // goes high 1 clock when readout finishes, for counting
-    output     busy_o            // '1' means DRS cannot accept triggers
+    output     busy_o,           // '1' means DRS cannot accept triggers
+    output     idle_o            // '1' means DRS cannot accept triggers
 );
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -223,6 +224,7 @@ localparam MXSTATEBITS = $clog2(STANDBY);
 reg [MXSTATEBITS-1:0] drs_readout_state=0;
 
 assign busy_o = (drs_readout_state != RUNNING);
+assign idle_o = (drs_readout_state == IDLE);
 
 //----------------------------------------------------------------------------------------------------------------------
 // State Machine

@@ -176,6 +176,7 @@ architecture Behavioral of top_readout_board is
 
   signal drs_srclk_en   : std_logic;
   signal drs_busy       : std_logic;
+  signal drs_idle       : std_logic;
   signal drs_busy_latch : std_logic;
   signal roi_mode       : std_logic;
   signal spike_removal  : std_logic;
@@ -537,47 +538,52 @@ begin
 
   ila_s2mm_inst : ila_s2mm
     port map(
-      clk                  => clock,
-      probe0               => mt_trigger_data_inv,
-      probe1               => mt_trigger_dav,
-      probe2               => (others => '0'),
-      probe3(15 downto 0)  => fifo_data_out,
-      probe3(16)           => drs_dwrite_async,
-      probe3(17)           => daq_ready,
-      probe3(18)           => ext_trigger_i,
-      probe3(27 downto 19) => readout_mask,
-      probe3(28)           => mt_mask_valid,
-      probe3(29)           => daq_drs_busy,
-      probe3(30)           => mt_event_cnt_err,
-      probe3(31)           => mt_resync,
-      probe4               => (others => '0'),
-      probe5               => mt_prbs_err,
-      probe6               => mt_trigger_data_ff,
-      probe7               => mt_trigger_decoded,
-      probe8               => mt_event_cnt,
-      probe9               => mt_trigger_decoded_dav,
-      probe10              => daq_event_cnt,
-      probe11              => mt_trigger_dav,
-      probe12              => mt_trigger_i,
-      probe13              => mt_event_cnt_valid,
-      probe14              => daq_trigger,
-      probe15(1 downto 0)  => mt_cmd,
-      probe15(2)           => mt_cmd_valid,
-      probe15(3)           => mt_crc_valid,
-      probe15(4)           => mt_crc_ok,
-      probe15(7 downto 5)  => (others => '0'),
-      probe16              => daq_busy,
-      probe17              => drs_busy,
-      probe18              => (others => '0'),
-      probe19              => trigger,
-      probe20              => mt_trigger,
-      probe21(7 downto 0)  => mt_crc_calc,
-      probe21(15 downto 8) => (others => '0'),
-      probe22              => (others => '0'),
-      probe23              => fifo_data_wen,
-      probe24              => (others => '0'),
-      probe25              => mt_crc,
-      probe26              => (others => '0')
+      clk                   => clock,
+      probe0                => mt_trigger_data_inv,
+      probe1                => mt_trigger_dav,
+      probe2                => (others => '0'),
+      probe3(15 downto 0)   => fifo_data_out,
+      probe3(16)            => drs_dwrite_async,
+      probe3(17)            => daq_ready,
+      probe3(18)            => ext_trigger_i,
+      probe3(27 downto 19)  => readout_mask,
+      probe3(28)            => mt_mask_valid,
+      probe3(29)            => daq_drs_busy,
+      probe3(30)            => mt_event_cnt_err,
+      probe3(31)            => mt_resync,
+      probe4                => (others => '0'),
+      probe5                => mt_prbs_err,
+      probe6                => mt_trigger_data_ff,
+      probe7                => mt_trigger_decoded,
+      probe8                => mt_event_cnt,
+      probe9                => mt_trigger_decoded_dav,
+      probe10               => daq_event_cnt,
+      probe11               => mt_trigger_dav,
+      probe12               => drs_dwrite_o,
+      probe13               => mt_event_cnt_valid,
+      probe14               => daq_trigger,
+      probe15(1 downto 0)   => mt_cmd,
+      probe15(2)            => mt_cmd_valid,
+      probe15(3)            => mt_crc_valid,
+      probe15(4)            => mt_crc_ok,
+      probe15(5)            => daq_fragment,
+      probe15(6)            => mt_fragment,
+      probe15(7)            => start_readout,
+      probe16               => daq_busy,
+      probe17               => drs_busy,
+      probe18               => (others => '0'),
+      probe19               => trigger,
+      probe20               => mt_trigger,
+      probe21(8 downto 0)   => daq_mask,
+      probe21(9)            => reinit,
+      probe21(10)           => start,
+      probe21(11)           => drs_idle,
+      probe21(15 downto 12) => (others => '0'),
+      probe22               => (others => '0'),
+      probe23               => fifo_data_wen,
+      probe24               => (others => '0'),
+      probe25               => mt_crc,
+      probe26               => (others => '0')
       );
 
   --------------------------------------------------------------------------------
@@ -839,7 +845,8 @@ begin
 
       readout_complete => open,
 
-      busy_o => drs_busy
+      busy_o => drs_busy,
+      idle_o => drs_idle
 
       );
 

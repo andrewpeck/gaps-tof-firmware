@@ -48,7 +48,8 @@ package components is
       fifo_wdata_o             : out std_logic_vector;
       fifo_wen_o               : out std_logic;
       readout_complete         : out std_logic;
-      busy_o                   : out std_logic
+      busy_o                   : out std_logic;
+      idle_o                   : out std_logic
       );
   end component;
 
