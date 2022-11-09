@@ -284,12 +284,17 @@ architecture Behavioral of top_readout_board is
   signal daq_fragment    : std_logic := '0';
   signal daq_fragment_en : std_logic := '0';
   signal daq_event_valid : std_logic := '0';
+  signal daq_acknowledge : std_logic := '0';
 
   signal xfifo_fragment  : std_logic_vector (0 downto 0);
   signal xfifo_busy      : std_logic_vector (0 downto 0);
   signal xfifo_timestamp : std_logic_vector (timestamp'range);
   signal xfifo_mask      : std_logic_vector (readout_mask'range);
   signal xfifo_event_cnt : std_logic_vector (mt_event_cnt'range);
+
+  signal event_queue_request : std_logic := '0';
+  signal event_queue_rd_en   : std_logic := '0';
+  signal event_queue_empty   : std_logic := '0';
 
   signal event_queue_din, event_queue_dout :
     std_logic_vector (
@@ -540,7 +545,7 @@ begin
     port map(
       clk                   => clock,
       probe0                => mt_trigger_data_inv,
-      probe1                => mt_trigger_dav,
+      probe1                => daq_acknowledge,
       probe2                => (others => '0'),
       probe3(15 downto 0)   => fifo_data_out,
       probe3(16)            => drs_dwrite_async,
@@ -553,8 +558,8 @@ begin
       probe3(31)            => mt_resync,
       probe4                => (others => '0'),
       probe5                => mt_prbs_err,
-      probe6                => mt_trigger_data_ff,
-      probe7                => mt_trigger_decoded,
+      probe6                => daq_event_valid,
+      probe7                => '0',
       probe8                => mt_event_cnt,
       probe9                => mt_trigger_decoded_dav,
       probe10               => daq_event_cnt,
@@ -578,7 +583,10 @@ begin
       probe21(9)            => reinit,
       probe21(10)           => start,
       probe21(11)           => drs_idle,
-      probe21(15 downto 12) => (others => '0'),
+      probe21(12)           => event_queue_rd_en,
+      probe21(13)           => event_queue_request,
+      probe21(14)           => event_queue_empty,
+      probe21(15)           => daq_ready,
       probe22               => (others => '0'),
       probe23               => fifo_data_wen,
       probe24               => (others => '0'),
@@ -683,13 +691,33 @@ begin
       rst    => reset,
       clk    => clock,
       wr_en  => mt_event_cnt_valid,
-      rd_en  => daq_ready,
+      rd_en  => event_queue_rd_en,
       din    => event_queue_din,
       dout   => event_queue_dout,
       valid  => daq_event_valid,
       full   => open,
-      empty  => open
+      empty  => event_queue_empty
       );
+
+  -- when the daq is ready, read one and only one event from the event queue
+  process (clock) is
+  begin
+    if (rising_edge(clock)) then
+
+      event_queue_rd_en <= '0';
+
+      -- if the daq is ready, and there are events in the queue, and a read has
+      -- not already been requested, then request one
+      if (daq_ready = '1' and event_queue_empty = '0' and event_queue_request = '0') then
+        event_queue_rd_en   <= '1';
+        event_queue_request <= '1';
+      -- deassert the request once an ack has been received
+      elsif (daq_acknowledge = '1') then
+        event_queue_request <= '0';
+      end if;
+
+    end if;
+  end process;
 
   --------------------------------------------------------------------------------
   -- Trigger output
@@ -894,6 +922,8 @@ begin
       drs_busy_i  => daq_drs_busy,
       trigger_i   => daq_trigger,
       fragment_i  => daq_fragment_en and daq_fragment,
+
+      ack_o  => daq_acknowledge,
 
       gfp_use_eventid_i     => gfp_use_eventid and not mt_trigger_mode,
       gfp_eventid_i         => gfp_eventid,

@@ -27,6 +27,8 @@ entity daq is
     event_cnt_i : in std_logic_vector (31 downto 0);
     mask_i      : in std_logic_vector (8 downto 0);
 
+    ack_o : out std_logic;
+
     gfp_use_eventid_i     : in  std_logic;
     gfp_eventid_i         : in  std_logic_vector (31 downto 0);
     gfp_eventid_valid_i   : in  std_logic;
@@ -334,6 +336,7 @@ begin
       data                  <= (others => '0');
       drs_rden_o            <= '0';
       gfp_eventid_timeout_o <= '0';
+      ack_o                 <= '0';
 
       case state is
 
@@ -347,6 +350,7 @@ begin
 
           if (fragment_i = '1' or trigger_i = '1' or debug_packet_inject_i = '1') then
             state <= HEAD_state;
+            ack_o <= '1';
           end if;
 
         when HEAD_state =>
