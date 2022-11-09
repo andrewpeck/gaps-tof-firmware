@@ -113,7 +113,7 @@ architecture behavioral of daq is
   signal channel_cnt    : natural range 0 to 15   := 0;
   signal channel_id     : natural range 0 to 17   := 0;
 
-  constant EVENTID_TIMEOUT_MAX : natural := 170000;
+  constant EVENTID_TIMEOUT_MAX : natural := 10000000;
   signal gfp_eventid_timeout_counter : natural range 0 to EVENTID_TIMEOUT_MAX := 0;
 
   constant PAYLOAD_TIMEOUT_MAX: natural := 2**14-1;
