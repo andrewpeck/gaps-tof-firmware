@@ -19,6 +19,7 @@ set_property IOSTANDARD LVDS_25 [get_ports mt_trigger_i_*]
 set_property IOSTANDARD LVCMOS25 [get_ports ext_trigger_i*]
 
 set_property IOSTANDARD LVCMOS25 [get_ports loss_of_lock_i]
+set_property PULLDOWN true [get_ports loss_of_lock_i]
 
 # set_property IOSTANDARD LVDS_25 [get_ports {gpio_p[*]}]
 # set_property IOSTANDARD LVDS_25 [get_ports {gpio_n[*]}]
