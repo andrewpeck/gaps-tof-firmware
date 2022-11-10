@@ -223,9 +223,9 @@ architecture Behavioral of top_readout_board is
   signal spy_valid : std_logic                      := '0';
 
   -- ADC Readout
-  signal daq_data  : std_logic_vector (13 downto 0);
-  signal daq_valid : std_logic := '0';
-  signal daq_empty : std_logic := '0';
+  signal drs_data_xfifo  : std_logic_vector (13 downto 0);
+  signal drs_valid_xfifo : std_logic := '0';
+  signal drs_fifo_empty  : std_logic := '0';
 
   signal fifo_data_out : std_logic_vector (15 downto 0);
   signal fifo_data_wen : std_logic;
@@ -593,8 +593,8 @@ begin
       probe21(15)           => daq_ready,
       probe22(13 downto 0)  => drs_data,
       probe22(14)           => drs_data_valid,
-      probe22(28 downto 15) => daq_data,
-      probe22(29)           => daq_valid,
+      probe22(28 downto 15) => drs_data_xfifo,
+      probe22(29)           => drs_valid_xfifo,
       probe22(30)           => drs_rden,
       probe22(31)           => '0',
       probe23               => fifo_data_wen,
@@ -903,10 +903,10 @@ begin
       wr_en  => drs_data_valid,
       rd_en  => drs_rden,
       din    => drs_data,
-      dout   => daq_data,
-      valid  => daq_valid,
+      dout   => drs_data_xfifo,
+      valid  => drs_valid_xfifo,
       full   => open,
-      empty  => daq_empty
+      empty  => drs_fifo_empty
       );
 
   daq_event_cnt <= xfifo_event_cnt   when mt_trigger_mode = '1' else event_counter;
@@ -948,8 +948,8 @@ begin
       dtap0_i     => dtap_cnt,
       dtap1_i     => (others => '0'),
 
-      drs_data_i  => daq_data,
-      drs_valid_i => daq_valid,
+      drs_data_i  => drs_data_xfifo,
+      drs_valid_i => drs_valid_xfifo,
       drs_rden_o  => drs_rden,
 
       data_o      => fifo_data_out,
