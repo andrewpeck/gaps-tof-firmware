@@ -235,6 +235,7 @@ architecture Behavioral of top_readout_board is
   signal dma_control_reset  : std_logic := '0';
   signal dma_clear          : std_logic := '0';
 
+  constant LOCK_POLARITY : std_logic := '1'; -- 1 == high locked, 0 == low locked
   signal lock_stable : std_logic := '0';
   signal lock_stable_counts : integer range 0 to 2**25-1 := 0;
 
@@ -925,7 +926,7 @@ begin
       reset                 => daq_reset or reset,
       debug_packet_inject_i => debug_packet_inject,
       temperature_i         => temp,
-      loss_of_lock_i        => not loss_of_lock_i,
+      loss_of_lock_i        => (not LOCK_POLARITY) xor loss_of_lock_i,
       lock_stable           => lock_stable,
       stop_cell_i           => drs_stop_cell,
 
@@ -967,7 +968,7 @@ begin
   begin
     if (rising_edge(clock)) then
 
-      if (loss_of_lock_i = '0') then -- 0 means UNLOCKED
+      if (loss_of_lock_i = LOCK_POLARITY) then
         lock_stable_counts <= 2**25-1;
       elsif (lock_stable_counts > 0) then
         lock_stable_counts <= lock_stable_counts-1;
