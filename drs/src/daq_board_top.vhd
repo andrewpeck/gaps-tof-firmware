@@ -235,6 +235,9 @@ architecture Behavioral of top_readout_board is
   signal dma_control_reset  : std_logic := '0';
   signal dma_clear          : std_logic := '0';
 
+  signal lock_stable : std_logic := '0';
+  signal lock_stable_counts : integer range 0 to 2**25-1 := 0;
+
   signal calibration : std_logic_vector(11 downto 0) := (others => '0');
   signal vccpint     : std_logic_vector(11 downto 0) := (others => '0');
   signal vccpaux     : std_logic_vector(11 downto 0) := (others => '0');
@@ -563,7 +566,7 @@ begin
       probe4                => (others => '0'),
       probe5                => mt_prbs_err,
       probe6                => daq_event_valid,
-      probe7                => '0',
+      probe7                => loss_of_lock_i,
       probe8                => mt_event_cnt,
       probe9                => mt_trigger_decoded_dav,
       probe10               => daq_event_cnt,
@@ -922,7 +925,8 @@ begin
       reset                 => daq_reset or reset,
       debug_packet_inject_i => debug_packet_inject,
       temperature_i         => temp,
-      loss_of_lock_i        => loss_of_lock_i,
+      loss_of_lock_i        => not loss_of_lock_i,
+      lock_stable           => lock_stable,
       stop_cell_i           => drs_stop_cell,
 
       event_cnt_i => daq_event_cnt,
@@ -958,6 +962,26 @@ begin
       ready_o     => daq_ready,
       done_o      => readout_complete
       );
+
+  process (clock) is
+  begin
+    if (rising_edge(clock)) then
+
+      if (loss_of_lock_i = '0') then -- 0 means UNLOCKED
+        lock_stable_counts <= 2**25-1;
+      elsif (lock_stable_counts > 0) then
+        lock_stable_counts <= lock_stable_counts-1;
+      end if;
+
+      if (lock_stable_counts = 0) then
+        lock_stable <= '1';
+      else
+        lock_stable <= '0';
+      end if;
+
+    end if;
+  end process;
+
 
   -------------------------------------------------------------------------------
   -- Spybuffer

@@ -38,6 +38,7 @@ entity daq is
     -- status
     temperature_i  : in std_logic_vector (11 downto 0);
     loss_of_lock_i : in std_logic;
+    lock_stable    : in std_logic;
     board_id       : in std_logic_vector (7 downto 0);
     sync_err_i     : in std_logic;
     dna_i          : in std_logic_vector (63 downto 0);
@@ -298,7 +299,7 @@ begin
           status(0)           <= fragment_i;
           status(1)           <= drs_busy_i;
           status(2)           <= loss_of_lock_i;
-          status(3)           <= '0';
+          status(3)           <= lock_stable;
           status(15 downto 4) <= temperature_i;
 
           id(0)           <= '0';
