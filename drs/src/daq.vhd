@@ -36,15 +36,16 @@ entity daq is
     gfp_eventid_timeout_o : out std_logic;
 
     -- status
-    temperature_i : in std_logic_vector (11 downto 0);
-    board_id      : in std_logic_vector (7 downto 0);
-    sync_err_i    : in std_logic;
-    dna_i         : in std_logic_vector (63 downto 0);
-    hash_i        : in std_logic_vector (31 downto 0);
-    timestamp_i   : in std_logic_vector (47 downto 0);
-    roi_size_i    : in std_logic_vector (9 downto 0);
-    dtap0_i       : in std_logic_vector (15 downto 0);
-    dtap1_i       : in std_logic_vector (15 downto 0);
+    temperature_i  : in std_logic_vector (11 downto 0);
+    loss_of_lock_i : in std_logic;
+    board_id       : in std_logic_vector (7 downto 0);
+    sync_err_i     : in std_logic;
+    dna_i          : in std_logic_vector (63 downto 0);
+    hash_i         : in std_logic_vector (31 downto 0);
+    timestamp_i    : in std_logic_vector (47 downto 0);
+    roi_size_i     : in std_logic_vector (9 downto 0);
+    dtap0_i        : in std_logic_vector (15 downto 0);
+    dtap1_i        : in std_logic_vector (15 downto 0);
 
     drs_busy_i  : in  std_logic;
     drs_data_i  : in  std_logic_vector (13 downto 0);
@@ -296,7 +297,8 @@ begin
 
           status(0)           <= fragment_i;
           status(1)           <= drs_busy_i;
-          status(3 downto 2)  <= (others => '0');
+          status(2)           <= loss_of_lock_i;
+          status(3)           <= '0';
           status(15 downto 4) <= temperature_i;
 
           id(0)           <= '0';

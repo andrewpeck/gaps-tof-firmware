@@ -41,6 +41,8 @@ set_property PACKAGE_PIN H15 [get_ports             emio_sda];
 set_property PACKAGE_PIN R15 [get_ports             emio_scl];
 set_property PACKAGE_PIN R19 [get_ports        ext_trigger_i];
 
+set_property PACKAGE_PIN G15 [get_ports        loss_of_lock_i];
+
 set_property PULLDOWN true [get_ports ext_trigger_i]
 
 set_property PACKAGE_PIN H18  [get_ports led[0]]

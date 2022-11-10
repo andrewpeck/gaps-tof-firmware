@@ -92,6 +92,8 @@ entity top_readout_board is
     ddr_dqs_n         : inout std_logic_vector (3 downto 0);
     ddr_dqs_p         : inout std_logic_vector (3 downto 0);
 
+    loss_of_lock_i    : in std_logic;
+
     led : out std_logic_vector (3 downto 0)
 
     -- gpio_p : inout std_logic_vector (9 downto 0);
@@ -102,9 +104,11 @@ end top_readout_board;
 
 architecture Behavioral of top_readout_board is
 
-  signal clock     : std_logic;
+  signal clock              : std_logic;
   signal trg_clk_oversample : std_logic := '0';
-  signal locked    : std_logic;
+  signal locked             : std_logic;
+
+  signal lock_of_lock : std_logic := '0';
 
   signal reset : std_logic;
 
@@ -913,6 +917,7 @@ begin
       reset                 => daq_reset or reset,
       debug_packet_inject_i => debug_packet_inject,
       temperature_i         => temp,
+      loss_of_lock_i        => loss_of_lock_i,
       stop_cell_i           => drs_stop_cell,
 
       event_cnt_i => daq_event_cnt,
