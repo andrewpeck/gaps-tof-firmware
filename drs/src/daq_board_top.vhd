@@ -135,18 +135,18 @@ architecture Behavioral of top_readout_board is
   signal posneg                : std_logic := '0';
   signal ext_trigger_active_hi : std_logic := '0';
 
-  signal mt_trigger_i           : std_logic             := '0';
-  signal mt_trigger_decoded     : std_logic             := '0';
-  signal mt_trigger_decoded_dav : std_logic             := '0';
-  signal mt_trigger_data        : std_logic             := '0';
-  signal mt_trigger_data_inv    : std_logic             := '0';
-  signal mt_trigger_data_pol    : std_logic             := '0';
-  signal mt_trigger_dav         : std_logic             := '0';
-  signal mt_trigger_data_ff     : std_logic             := '0';
-  signal mt_prbs_err            : std_logic             := '0';
-  signal mt_prbs_rst            : std_logic             := '0';
-  signal mt_inactive            : std_logic             := '0';
-  signal mt_inactive_cnts       : integer range 0 to 63 := 0;
+  signal mt_trigger_i           : std_logic              := '0';
+  signal mt_trigger_decoded     : std_logic              := '0';
+  signal mt_trigger_decoded_dav : std_logic              := '0';
+  signal mt_trigger_data_xfifo  : std_logic              := '0';
+  signal mt_trigger_data        : std_logic              := '0';
+  signal mt_trigger_data_pol    : std_logic              := '0';
+  signal mt_trigger_dav         : std_logic              := '0';
+  signal mt_trigger_data_ff     : std_logic              := '0';
+  signal mt_prbs_err            : std_logic              := '0';
+  signal mt_prbs_rst            : std_logic              := '0';
+  signal mt_inactive            : std_logic              := '0';
+  signal mt_inactive_cnts       : integer range 0 to 63  := 0;
   signal mt_active_hi_cnts      : integer range 0 to 127 := 0;
 
   signal ext_trigger_en        : std_logic := '0';
@@ -463,12 +463,6 @@ begin
       dav  => mt_trigger_decoded_dav
       );
 
-  process (clock) is
-  begin
-    if (rising_edge(clock)) then
-    end if;
-  end process;
-
   -- manchester decoder reads on the oversample clock..
   -- transition to the lower freq trigger clock for decoding
 
@@ -485,7 +479,7 @@ begin
       wr_en   => mt_trigger_decoded_dav,
       rd_en   => '1',
       din(0)  => mt_trigger_decoded,
-      dout(0) => mt_trigger_data,
+      dout(0) => mt_trigger_data_xfifo,
       valid   => mt_trigger_dav,
       full    => open,
       empty   => open
@@ -499,9 +493,9 @@ begin
   begin
     if (rising_edge(clock)) then
 
-      mt_trigger_data_ff <= mt_trigger_data;
+      mt_trigger_data_ff <= mt_trigger_data_xfifo;
 
-      if (mt_trigger_data /= mt_trigger_data_ff) then
+      if (mt_trigger_data_xfifo /= mt_trigger_data_ff) then
         mt_inactive_cnts <= 0;
         mt_inactive      <= '0';
       elsif (mt_inactive_cnts = 63) then
@@ -515,13 +509,13 @@ begin
   -- automatic polarity inversion of the mt trigger data for long seqs of
   -- constant data... link should be active low, so listen for sequences of
   -- active high and deactivate the link if we detect it
-  mt_trigger_data_inv <= mt_trigger_data_pol xor mt_trigger_data;
+  mt_trigger_data <= mt_trigger_data_pol xor mt_trigger_data_xfifo;
 
   process (clock) is
   begin
     if (rising_edge(clock)) then
       if (mt_trigger_dav = '1') then
-        if (mt_trigger_data_inv = '0') then
+        if (mt_trigger_data = '0') then
           mt_active_hi_cnts <= 0;
         elsif (mt_active_hi_cnts < 127) then
           mt_active_hi_cnts <= mt_active_hi_cnts + 1;
@@ -544,7 +538,7 @@ begin
     port map (
       rst         => reset,
       clk         => clock,
-      data_in(0)  => mt_trigger_data_inv,
+      data_in(0)  => mt_trigger_data,
       en          => mt_trigger_dav,
       data_out(0) => mt_prbs_err
       );
@@ -552,7 +546,7 @@ begin
   ila_s2mm_inst : ila_s2mm
     port map(
       clk                   => clock,
-      probe0                => mt_trigger_data_inv,
+      probe0                => mt_trigger_data,
       probe1                => daq_acknowledge,
       probe2                => (others => '0'),
       probe3(15 downto 0)   => fifo_data_out,
@@ -600,7 +594,7 @@ begin
       probe22(28 downto 15) => drs_data_xfifo,
       probe22(29)           => drs_valid_xfifo,
       probe22(30)           => drs_rden,
-      probe22(31)           => '0',
+      probe22(31)           => mt_trigger_decoded,
       probe23               => fifo_data_wen,
       probe24               => (others => '0'),
       probe25               => mt_crc,
@@ -618,11 +612,10 @@ begin
       CMDB      => mt_cmd'length
       )
     port map (
-      clock    => clock,
-      reset    => reset,
-      serial_i => mt_trigger_data_inv,
-      enable_i => mt_trigger_dav,
-
+      clock      => clock,
+      reset      => reset,
+      serial_i   => mt_trigger_data,
+      enable_i   => mt_trigger_dav,
       trg_o      => mt_trigger,
       fragment_o => mt_fragment,
 
