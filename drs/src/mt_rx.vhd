@@ -13,25 +13,27 @@ entity mt_rx is
   port(
 
     clock    : in std_logic;
+    outclk   : in std_logic;
     reset    : in std_logic;
     serial_i : in std_logic;
     enable_i : in std_logic;
 
     trg_o      : out std_logic := '0';
+    trg_fast_o : out std_logic := '0';
     fragment_o : out std_logic := '0';
 
-    cmd_o       : out std_logic_vector (CMDB-1 downto 0) := (others => '0');
-    cmd_valid_o : out std_logic                          := '0';
+    cmd_o       : out std_logic_vector (CMDB-1 downto 0);
+    cmd_valid_o : out std_logic;
 
-    mask_o       : out std_logic_vector (MASKB-1 downto 0) := (others => '0');
+    mask_o       : out std_logic_vector (MASKB-1 downto 0);
     mask_valid_o : out std_logic;
 
-    crc_o       : out std_logic_vector (CRCB-1 downto 0) := (others => '0');
-    crc_calc_o  : out std_logic_vector (CRCB-1 downto 0) := (others => '0');
+    crc_o       : out std_logic_vector (CRCB-1 downto 0);
+    crc_calc_o  : out std_logic_vector (CRCB-1 downto 0);
     crc_valid_o : out std_logic;
     crc_ok_o    : out std_logic;
 
-    event_cnt_o       : out std_logic_vector (EVENTCNTB-1 downto 0) := (others => '0');
+    event_cnt_o       : out std_logic_vector (EVENTCNTB-1 downto 0);
     event_cnt_valid_o : out std_logic
 
     );
@@ -41,14 +43,22 @@ architecture rtl of mt_rx is
 
   type state_t is (IDLE_state, DWRITE_state, MASK_state, EVENTCNT_state, CMD_state, CRC_state, WAIT_state);
 
+  signal trg, fragment                                     : std_logic := '0';
+  signal cmd_valid, mask_valid, crc_valid, event_cnt_valid : std_logic := '0';
+
+  signal event_cnt : std_logic_vector (EVENTCNTB-1 downto 0) := (others => '0');
+  signal crc_rx    : std_logic_vector (CRCB-1 downto 0)      := (others => '0');
+  signal mask      : std_logic_vector (MASKB-1 downto 0)     := (others => '0');
+  signal cmd       : std_logic_vector (CMDB-1 downto 0)      := (others => '0');
+
   signal state         : state_t                                   := IDLE_state;
   signal state_bit_cnt : natural range 0 to event_cnt_o'length - 1 := 0;
 
   signal event_cnt_buf : std_logic_vector (EVENTCNTB-1 downto 0) := (others => '0');
   signal mask_buf      : std_logic_vector (MASKB-1 downto 0)     := (others => '0');
   signal cmd_buf       : std_logic_vector (CMDB-1 downto 0)      := (others => '0');
-  signal crc_buf       : std_logic_vector (CRCB-1 downto 0)      := (others => '0');
-  signal crc           : std_logic_vector (CRCB-1 downto 0)      := (others => '0');
+  signal crc_rx_buf    : std_logic_vector (CRCB-1 downto 0)      := (others => '0');
+  signal crc_calc      : std_logic_vector (CRCB-1 downto 0)      := (others => '0');
 
   signal crc_en  : std_logic := '0';
   signal crc_rst : std_logic := '0';
@@ -61,7 +71,7 @@ architecture rtl of mt_rx is
 begin
 
   crc_rst  <= '1' when state = IDLE_state or reset = '1' else '0';
-  crc_data <= or_reduce(mask_o) & mask_o & event_cnt_o & cmd_o;
+  crc_data <= or_reduce(mask) & mask & event_cnt & cmd;
 
   crc_inst : entity work.crc
     port map (
@@ -69,23 +79,25 @@ begin
       crc_en  => crc_en,
       rst     => crc_rst,
       clk     => clock,
-      crc_out => crc
+      crc_out => crc_calc
       );
 
   process (clock)
   begin
 
+    crc_en <= '0';
+
     if (rising_edge(clock)) then
 
-      trg_o             <= '0';
-      fragment_o        <= '0';
-      event_cnt_valid_o <= '0';
-      mask_valid_o      <= '0';
-      cmd_valid_o       <= '0';
-      crc_valid_o       <= '0';
-      crc_en            <= '0';
-
       if (enable_i = '1') then
+
+        trg_fast_o      <= '0';
+        event_cnt_valid <= '0';
+        mask_valid      <= '0';
+        cmd_valid       <= '0';
+        crc_valid       <= '0';
+        trg             <= '0';
+        fragment        <= '0';
 
         case state is
 
@@ -103,18 +115,19 @@ begin
             state <= MASK_state;
 
             if (serial_i = '1') then
-              trg_o <= '1';
+              trg        <= '1';
+              trg_fast_o <= '1';
             else
-              fragment_o <= '1';
+              fragment <= '1';
             end if;
 
           when MASK_state =>
 
             if (state_bit_cnt = MASKB - 1) then
-              mask_o        <= mask_buf(MASKB-1 downto 1) & serial_i;
+              mask          <= mask_buf(MASKB-1 downto 1) & serial_i;
               state         <= EVENTCNT_state;
               state_bit_cnt <= 0;
-              mask_valid_o  <= '1';
+              mask_valid    <= '1';
             else
               state_bit_cnt <= state_bit_cnt + 1;
             end if;
@@ -125,15 +138,15 @@ begin
 
             if (state_bit_cnt = EVENTCNTB - 1) then
 
-              event_cnt_o <= event_cnt_buf(EVENTCNTB-1 downto 1) & serial_i;
+              event_cnt <= event_cnt_buf(EVENTCNTB-1 downto 1) & serial_i;
 
               if (CMDB > 0) then
                 state <= CMD_state;
               else
                 state <= WAIT_state;
               end if;
-              state_bit_cnt     <= 0;
-              event_cnt_valid_o <= '1';
+              state_bit_cnt   <= 0;
+              event_cnt_valid <= '1';
             else
               state_bit_cnt <= state_bit_cnt + 1;
             end if;
@@ -144,17 +157,20 @@ begin
 
             if (state_bit_cnt = CMDB - 1) then
 
-              cmd_o <= cmd_buf(CMDB-1 downto 1) & serial_i;
+              cmd           <= cmd_buf(CMDB-1 downto 1) & serial_i;
+              state_bit_cnt <= 0;
+              cmd_valid     <= '1';
 
               if (CRCB > 0) then
                 state <= CRC_state;
               else
                 state <= WAIT_state;
               end if;
-              state_bit_cnt <= 0;
-              cmd_valid_o   <= '1';
+
             else
+
               state_bit_cnt <= state_bit_cnt + 1;
+
             end if;
 
             cmd_buf(CMDB-1-state_bit_cnt) <= serial_i;
@@ -167,26 +183,23 @@ begin
             end if;
 
             if (state_bit_cnt = CRCB - 1) then
-              crc_o         <= crc_buf(CRCB-1 downto 1) & serial_i;
-              state         <= WAIT_state;
-              state_bit_cnt <= 0;
-              crc_valid_o   <= '1';
-
-              if (crc_buf(CRCB-1 downto 1) & serial_i = crc) then
-                crc_ok_o   <= '1';
-                crc_calc_o <= crc;
-              else
-                crc_ok_o   <= '0';
-                crc_calc_o <= crc;
-              end if;
-
+              crc_rx    <= crc_rx_buf(CRCB-1 downto 1) & serial_i;
+              state     <= WAIT_state;
+              crc_valid <= '1';
             else
               state_bit_cnt <= state_bit_cnt + 1;
             end if;
 
-            crc_buf(CRCB-1-state_bit_cnt) <= serial_i;
+            crc_rx_buf(CRCB-1-state_bit_cnt) <= serial_i;
 
           when WAIT_state =>
+
+            event_cnt_valid <= '0';
+            mask_valid      <= '0';
+            cmd_valid       <= '0';
+            crc_valid       <= '0';
+            trg             <= '0';
+            fragment        <= '0';
 
             if (wait_cnt = WAIT_CNT_MAX - 1) then
               wait_cnt <= 0;
@@ -199,14 +212,46 @@ begin
       end if;
 
       if (reset = '1') then
-        state             <= IDLE_state;
-        event_cnt_valid_o <= '0';
-        mask_valid_o      <= '0';
-        wait_cnt          <= 0;
-        state_bit_cnt     <= 0;
+        state           <= IDLE_state;
+        event_cnt_valid <= '0';
+        mask_valid      <= '0';
+        wait_cnt        <= 0;
+        state_bit_cnt   <= 0;
       end if;
 
     end if;
   end process;
+
+  process (outclk) is
+  begin
+    if (rising_edge(outclk)) then
+
+      trg_o      <= trg;
+      fragment_o <= fragment;
+
+      event_cnt_valid_o <= event_cnt_valid;
+      mask_valid_o      <= mask_valid;
+      cmd_valid_o       <= cmd_valid;
+      crc_valid_o       <= crc_valid;
+
+      event_cnt_o <= event_cnt;
+      mask_o      <= mask;
+      cmd_o       <= cmd;
+      crc_o       <= crc_rx;
+
+      if (crc_valid = '1') then
+
+
+        if (crc_rx = crc_calc) then
+          crc_ok_o <= '1';
+        else
+          crc_ok_o <= '0';
+        end if;
+      end if;
+
+    end if;
+  end process;
+
+  crc_calc_o <= crc_calc;
 
 end rtl;

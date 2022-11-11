@@ -136,9 +136,7 @@ architecture Behavioral of top_readout_board is
   signal ext_trigger_active_hi : std_logic := '0';
 
   signal mt_trigger_i           : std_logic              := '0';
-  signal mt_trigger_decoded     : std_logic              := '0';
-  signal mt_trigger_decoded_dav : std_logic              := '0';
-  signal mt_trigger_data_xfifo  : std_logic              := '0';
+  signal mt_trigger_data_xdeco  : std_logic              := '0';
   signal mt_trigger_data        : std_logic              := '0';
   signal mt_trigger_data_pol    : std_logic              := '0';
   signal mt_trigger_dav         : std_logic              := '0';
@@ -160,6 +158,7 @@ architecture Behavioral of top_readout_board is
   signal trig_gen_rate   : std_logic_vector (31 downto 0) := (others => '0');
   signal trig_gen        : std_logic                      := '0';
   signal mt_trigger      : std_logic                      := '0';
+  signal mt_trigger_fast : std_logic                      := '0';
   signal mt_fragment     : std_logic                      := '0';
   signal cnt_reset       : std_logic                      := '0';
   signal mt_trigger_mode : std_logic                      := '1';
@@ -459,43 +458,26 @@ begin
     port map (
       clk  => trg_clk_oversample,
       din  => mt_trigger_i and not mt_is_level_trigger,
-      dout => mt_trigger_decoded,
-      dav  => mt_trigger_decoded_dav
+      dout => mt_trigger_data_xdeco,
+      dav  => mt_trigger_dav
       );
 
-  -- manchester decoder reads on the oversample clock..
-  -- transition to the lower freq trigger clock for decoding
-
-  mt_rx_fifo : entity work.fifo_async
-    generic map (
-      DEPTH    => 16,
-      WR_WIDTH => 1,
-      RD_WIDTH => 1
-      )
-    port map (
-      rst     => reset,
-      wr_clk  => trg_clk_oversample,
-      rd_clk  => clock,
-      wr_en   => mt_trigger_decoded_dav,
-      rd_en   => '1',
-      din(0)  => mt_trigger_decoded,
-      dout(0) => mt_trigger_data_xfifo,
-      valid   => mt_trigger_dav,
-      full    => open,
-      empty   => open
-      );
+  -- automatic polarity inversion of the mt trigger data for long seqs of
+  -- constant data... link should be active low, so listen for sequences of
+  -- active high and deactivate the link if we detect it
+  mt_trigger_data <= mt_trigger_data_pol xor mt_trigger_data_xdeco;
 
   --------------------------------------------------------------------------------
   -- MT PRBS Checker
   --------------------------------------------------------------------------------
 
-  process (clock) is
+  process (trg_clk_oversample) is
   begin
-    if (rising_edge(clock)) then
+    if (rising_edge(trg_clk_oversample)) then
 
-      mt_trigger_data_ff <= mt_trigger_data_xfifo;
+      mt_trigger_data_ff <= mt_trigger_data_xdeco;
 
-      if (mt_trigger_data_xfifo /= mt_trigger_data_ff) then
+      if (mt_trigger_data_xdeco /= mt_trigger_data_ff) then
         mt_inactive_cnts <= 0;
         mt_inactive      <= '0';
       elsif (mt_inactive_cnts = 63) then
@@ -506,14 +488,9 @@ begin
     end if;
   end process;
 
-  -- automatic polarity inversion of the mt trigger data for long seqs of
-  -- constant data... link should be active low, so listen for sequences of
-  -- active high and deactivate the link if we detect it
-  mt_trigger_data <= mt_trigger_data_pol xor mt_trigger_data_xfifo;
-
-  process (clock) is
+  process (trg_clk_oversample) is
   begin
-    if (rising_edge(clock)) then
+    if (rising_edge(trg_clk_oversample)) then
       if (mt_trigger_dav = '1') then
         if (mt_trigger_data = '0') then
           mt_active_hi_cnts <= 0;
@@ -537,7 +514,7 @@ begin
       )
     port map (
       rst         => reset,
-      clk         => clock,
+      clk         => trg_clk_oversample,
       data_in(0)  => mt_trigger_data,
       en          => mt_trigger_dav,
       data_out(0) => mt_prbs_err
@@ -563,7 +540,7 @@ begin
       probe6                => daq_event_valid,
       probe7                => loss_of_lock_i,
       probe8                => mt_event_cnt,
-      probe9                => mt_trigger_decoded_dav,
+      probe9                => mt_trigger_dav,
       probe10               => daq_event_cnt,
       probe11               => mt_trigger_dav,
       probe12               => drs_dwrite_o,
@@ -594,9 +571,10 @@ begin
       probe22(28 downto 15) => drs_data_xfifo,
       probe22(29)           => drs_valid_xfifo,
       probe22(30)           => drs_rden,
-      probe22(31)           => mt_trigger_decoded,
+      probe22(31)           => mt_trigger_data_xdeco,
       probe23               => fifo_data_wen,
-      probe24               => (others => '0'),
+      probe24(7 downto 0)   => mt_crc_calc,
+      probe24(33 downto 8)  => (others => '0'),
       probe25               => mt_crc,
       probe26               => (others => '0')
       );
@@ -612,13 +590,18 @@ begin
       CMDB      => mt_cmd'length
       )
     port map (
-      clock      => clock,
+      clock      => trg_clk_oversample,
+      outclk     => clock,
       reset      => reset,
-      serial_i   => mt_trigger_data,
-      enable_i   => mt_trigger_dav,
+
+      -- provide a 200MHz copy of the trigger signal for a fast route to dwrite
+      -- and a 33MHz copy for the rest of the logic
+      trg_fast_o => mt_trigger_fast,
       trg_o      => mt_trigger,
       fragment_o => mt_fragment,
 
+      serial_i   => mt_trigger_data,
+      enable_i   => mt_trigger_dav,
       cmd_o       => mt_cmd,
       cmd_valid_o => mt_cmd_valid,
 
@@ -640,7 +623,8 @@ begin
       mt_event_cnt_prev <= mt_event_cnt;
       mt_event_cnt_err  <= '0';
       if (mt_event_cnt_valid = '1') then
-        if (unsigned(mt_event_cnt_prev)+1 /= unsigned(mt_event_cnt) and
+        if (unsigned(mt_event_cnt_prev)+0 /= unsigned(mt_event_cnt) and
+            unsigned(mt_event_cnt_prev)+1 /= unsigned(mt_event_cnt) and
             unsigned(mt_event_cnt_prev)+2 /= unsigned(mt_event_cnt)) then
           mt_event_cnt_err <= '1';
         end if;
@@ -744,7 +728,7 @@ begin
 
       delay_i => drs_dwrite_delay_sel,
 
-      master_trigger => mt_trigger,
+      master_trigger => mt_trigger or mt_trigger_fast,
 
       trigger_o => trigger,
       dwrite_o  => drs_dwrite_async
