@@ -180,6 +180,9 @@ set_output_delay -clock $fwclk -min [expr $trce_dly_min - $thd_f] [get_ports $ou
 set_property SLEW SLOW [get_ports ext_io*]
 set_property DRIVE 4 [get_ports ext_io*]
 
+set_property PULLUP true [get_ports lt_data_i_p*]
+set_property PULLDOWN true [get_ports lt_data_i_n*]
+
 set_property PULLDOWN true [get_ports ext_io[0]]
 
 # set_property SLEW SLOW [get_ports hk_clk]
