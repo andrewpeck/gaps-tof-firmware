@@ -9,7 +9,8 @@ use unisim.vcomponents.all;
 entity trigger_mux is
 
   generic(
-    TRIGGER_OS_MAX : natural := 3
+    TRIGGER_OS_MAX : natural := 3;
+    EN_DELAY_LINE  : boolean := false
     );
 
   port(
@@ -58,27 +59,34 @@ architecture behavioral of trigger_mux is
   attribute DONT_TOUCH                       : string;
   attribute DONT_TOUCH of trigger, trigger_r : signal is "true";
 
-  signal ext_trigger_delay_line            : std_logic_vector(4095 downto 0);
-  -- Tell P&R to not optimize away the ext_trigger_delay_line array
-  attribute keep                           : string;
-  attribute keep of ext_trigger_delay_line : signal is "true";
-
 begin
 
   -- buffer chain delay for hardware trigger
-  ext_trigger_delay_line(0) <= ext_trigger_i;
 
-  ext_trigger_dly <= ext_trigger_delay_line(to_integer(unsigned(delay_i)));
+  nodly_line_gen : if (not EN_DELAY_LINE) generate
+    ext_trigger_dly <= ext_trigger_i;
+  end generate;
 
-  delayed_trig_gen : for bit_no in 1 to 4095 generate
-    LUT1_inst : LUT1
-      generic map (
-        INIT => "10"
-        )
-      port map (
-        O  => ext_trigger_delay_line(bit_no),
-        I0 => ext_trigger_delay_line(bit_no-1)
-        );
+  dly_line_gen : if (EN_DELAY_LINE) generate
+    signal ext_trigger_delay_line            : std_logic_vector(4095 downto 0);
+    -- Tell P&R to not optimize away the ext_trigger_delay_line array
+    attribute keep                           : string;
+    attribute keep of ext_trigger_delay_line : signal is "true";
+  begin
+
+    ext_trigger_delay_line(0) <= ext_trigger_i;
+    ext_trigger_dly           <= ext_trigger_delay_line(to_integer(unsigned(delay_i)));
+
+    delayed_trig_gen : for bit_no in 1 to 4095 generate
+      LUT1_inst : LUT1
+        generic map (
+          INIT => "10"
+          )
+        port map (
+          O  => ext_trigger_delay_line(bit_no),
+          I0 => ext_trigger_delay_line(bit_no-1)
+          );
+    end generate;
   end generate;
 
   process (clock) is
