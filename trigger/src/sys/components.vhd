@@ -5,6 +5,14 @@ use ieee.numeric_std.all;
 
 package components is
 
+  component ila_200
+    port (
+      clk    : in std_logic;
+      probe0 : in std_logic_vector(0 downto 0);
+      probe1 : in std_logic_vector(0 downto 0)
+    );
+  end component;
+
   component vio_prbs is
     port (
       clk        : IN  STD_LOGIC;
