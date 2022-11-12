@@ -27,9 +27,8 @@ entity lt_rx is
     coarse_delay : in coarse_delay_t;
     en           : in std_logic;
 
-    data_i_p : in  std_logic;
-    data_i_n : in  std_logic;
-    data_o   : out std_logic
+    data_i : in  std_logic;
+    data_o : out std_logic
 
     );
 end lt_rx;
@@ -46,49 +45,19 @@ architecture behavioral of lt_rx is
     end if;
   end if_then_else;
 
-  signal data_i, data_idelay, data_pos,
-    data_neg, data_r, data_ibuf : std_logic := '0';
+  signal data_oversample : std_logic := '0';
 
   signal data_srl : std_logic_vector (15 downto 0);
 
 begin
 
-  --------------------------------------------------------------------------------
-  -- RX Data
-  --
-  -- IBUFDS → IDELAY → FF
-  --------------------------------------------------------------------------------
-
-  diff_gen : if (DIFFERENTIAL_DATA) generate
-    ibufdata : IBUFDS
-      generic map (                     --
-        DIFF_TERM    => true,           -- Differential Termination
-        IBUF_LOW_PWR => true   -- Low power="TRUE", Highest performance="FALSE"
-        )
-      port map (
-        O  => data_ibuf,
-        I  => data_i_p,
-        IB => data_i_n
-        );
-  end generate;
-
-  single_ended_gen : if (not DIFFERENTIAL_DATA) generate
-    IBUF_inst : IBUF
-      generic map (
-        IBUF_LOW_PWR => true,  -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
-        IOSTANDARD   => "DEFAULT")
-      port map (
-        O => data_ibuf,                 -- Buffer output
-        I => data_i_p  -- Buffer input (connect directly to top-level port)
-        );
-  end generate;
 
   oversample_inst : entity work.oversample
     port map (
       clk    => clk,
       clk90  => clk90,
-      data_i => data_ibuf,
-      data_o => data_r
+      data_i => data_i,
+      data_o => data_oversample
       );
 
   --------------------------------------------------------------------------------
@@ -103,7 +72,7 @@ begin
       -- shift register
       --------------------------------------------------------------------------------
 
-      data_srl(0) <= data_r;
+      data_srl(0) <= data_oversample;
       for SR in 1 to 15 loop
         data_srl(SR) <= data_srl(SR-1);
       end loop;
@@ -114,7 +83,7 @@ begin
 
       if (en = '1') then
         if (to_integer(unsigned(coarse_delay)) = 0) then
-          data_o <= data_r;
+          data_o <= data_oversample;
         else
           data_o <= data_srl (to_integer(unsigned(coarse_delay)-1));
         end if;

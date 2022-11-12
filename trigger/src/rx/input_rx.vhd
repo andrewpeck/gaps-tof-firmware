@@ -46,8 +46,7 @@ entity input_rx is
 
     link_en : in std_logic_vector (NUM_INPUTS-1 downto 0);
 
-    data_i_p : in std_logic_vector (NUM_INPUTS-1 downto 0);
-    data_i_n : in std_logic_vector (NUM_INPUTS-1 downto 0);
+    data_i : in std_logic_vector (NUM_INPUTS-1 downto 0);
 
     coarse_delays_i : in lt_coarse_delays_array_t;
 
@@ -83,8 +82,7 @@ begin
         coarse_delay => coarse_delays_i(I),
 
         en       => link_en(I),
-        data_i_p => data_i_p(I),
-        data_i_n => data_i_n(I),
+        data_i   => data_i(I),
         data_o   => data_serial
         );
 

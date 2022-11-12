@@ -106,9 +106,11 @@ architecture structural of gaps_mt is
 
   signal lt_data_i_pri_p : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '0');
   signal lt_data_i_pri_n : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '0');
+  signal lt_data_i_pri   : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '0');
 
   signal lt_data_i_aux_p : std_logic_vector (NUM_LT_MT_AUX-1 downto 0) := (others => '0');
   signal lt_data_i_aux_n : std_logic_vector (NUM_LT_MT_AUX-1 downto 0) := (others => '0');
+  signal lt_data_i_aux   : std_logic_vector (NUM_LT_MT_AUX-1 downto 0) := (others => '0');
 
   signal timestamp       : unsigned (47 downto 0) := (others => '0');
   signal timestamp_latch : unsigned (47 downto 0) := (others => '0');
@@ -496,6 +498,17 @@ begin
       lt_data_i_pri_p(I) <= lt_data_i_p(I*2 - (I+1)/2);
       lt_data_i_pri_n(I) <= lt_data_i_n(I*2 - (I+1)/2);
     end generate;
+
+    ibufdata : IBUFDS
+      generic map (                     --
+        DIFF_TERM    => true,           -- Differential Termination
+        IBUF_LOW_PWR => true   -- Low power="TRUE", Highest performance="FALSE"
+        )
+      port map (
+        O  => lt_data_i_pri(I),
+        I  => lt_data_i_pri_p(I),
+        IB => lt_data_i_pri_n(I)
+        );
   end generate;
 
   aux_assign : for I in 0 to NUM_LT_MT_AUX - 1 generate
@@ -512,8 +525,7 @@ begin
         clk90 => clk200_90,              -- logic clock
 
         -- clock and data from lt boards
-        data_i_p => lt_data_i_pri_p,
-        data_i_n => lt_data_i_pri_n,
+        data_i => lt_data_i_pri,
 
         link_en  => dsi_link_en,
 
@@ -875,9 +887,9 @@ begin
         probe2(11)           => tiu_serial_o,
         probe2(12)           => ext_trigger,
         probe2(13)           => ext_trigger_r2,
-        probe2(45 downto 14) => clock_rate,
-        probe2(50 downto 46) => lvs_sync,
-        probe2(74 downto 51) => (others => '0'),
+        probe2(18 downto 14) => lvs_sync,
+        probe2(68 downto 19) => lt_data_i_pri,
+        probe2(74 downto 69) => (others => '0'),
         probe3(7 downto 0)   => (others => '0'),
         probe4(7 downto 0)   => (others => '0'),
         probe5(0)            => lvs_sync_ccb,
@@ -888,7 +900,7 @@ begin
         probe10              => fb_clock_rates(0),
         probe11              => fb_clock_rates(1),
         probe12              => fb_clock_rates(2),
-        probe13              => fb_clock_rates(3),
+        probe13              => clock_rate,
         probe14              => event_cnt
         );
   end generate;
