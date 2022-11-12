@@ -147,6 +147,20 @@ architecture Behavioral of top_readout_board is
   signal mt_inactive_cnts       : integer range 0 to 63  := 0;
   signal mt_active_hi_cnts      : integer range 0 to 127 := 0;
 
+  signal mt_event_cnt_valid : std_logic                      := '0';
+  signal mt_mask_valid      : std_logic                      := '0';
+  signal mt_mask            : std_logic_vector (7 downto 0)  := (others => '0');
+  signal mt_event_cnt       : std_logic_vector (31 downto 0);
+  signal mt_event_cnt_prev  : std_logic_vector (31 downto 0) := (others => '0');
+  signal mt_event_cnt_err   : std_logic;
+  signal mt_cmd             : std_logic_vector(1 downto 0);
+  signal mt_cmd_valid       : std_logic;
+  signal mt_crc             : std_logic_vector(7 downto 0);
+  signal mt_crc_calc        : std_logic_vector(7 downto 0);
+  signal mt_crc_valid       : std_logic;
+  signal mt_crc_ok          : std_logic;
+  signal mt_resync          : std_logic := '0';
+
   signal ext_trigger_en        : std_logic := '0';
   signal force_trig            : std_logic := '0';
   signal mt_is_level_trigger   : std_logic := '0';
@@ -267,20 +281,6 @@ architecture Behavioral of top_readout_board is
   signal event_counter : std_logic_vector (31 downto 0) := (others => '0');
   signal gfp_eventid_timeout_cnt : std_logic_vector (15 downto 0) := (others => '0');
   ------ Register signals end ----------------------------------------------
-
-  signal mt_event_cnt_valid : std_logic                      := '0';
-  signal mt_mask_valid      : std_logic                      := '0';
-  signal mt_mask            : std_logic_vector (7 downto 0)  := (others => '0');
-  signal mt_event_cnt       : std_logic_vector (31 downto 0);
-  signal mt_event_cnt_prev  : std_logic_vector (31 downto 0) := (others => '0');
-  signal mt_event_cnt_err   : std_logic;
-  signal mt_cmd             : std_logic_vector(1 downto 0);
-  signal mt_cmd_valid       : std_logic;
-  signal mt_crc             : std_logic_vector(7 downto 0);
-  signal mt_crc_calc        : std_logic_vector(7 downto 0);
-  signal mt_crc_valid       : std_logic;
-  signal mt_crc_ok          : std_logic;
-  signal mt_resync          : std_logic := '0';
 
   signal daq_event_cnt   : std_logic_vector(31 downto 0);
   signal daq_timestamp   : std_logic_vector(47 downto 0);
