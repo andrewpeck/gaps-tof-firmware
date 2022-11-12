@@ -211,6 +211,12 @@
                   fw_default="0x00"
                   fw_signal="board_id"/>
 
+            <node id="DRS_TEMP" address="0xB" permission="rw"
+                  description="Copy of the I2C DRS temperature reading"
+                  mask="0x0000ffff"
+                  fw_default="0x3039"
+                  fw_signal="drs_temp" />
+
         </node> <!--FPGA-->
 
 

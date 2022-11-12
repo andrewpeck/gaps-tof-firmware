@@ -45,8 +45,8 @@ entity daq is
     hash_i         : in std_logic_vector (31 downto 0);
     timestamp_i    : in std_logic_vector (47 downto 0);
     roi_size_i     : in std_logic_vector (9 downto 0);
-    dtap0_i        : in std_logic_vector (15 downto 0);
-    dtap1_i        : in std_logic_vector (15 downto 0);
+    dtap_i         : in std_logic_vector (15 downto 0);
+    drs_temp_i     : in std_logic_vector (15 downto 0);
 
     drs_busy_i  : in  std_logic;
     drs_data_i  : in  std_logic_vector (13 downto 0);
@@ -66,7 +66,7 @@ architecture behavioral of daq is
 
   type state_t is (IDLE_state, ERR_state, HEAD_state, STATUS_state, LENGTH_state, ROI_state,
                    DNA_state, HASH_state, ID_state, CHMASK_state, WAIT_EVENT_CNT_state,
-                   EVENT_CNT_state, DTAP0_state, DTAP1_state, TIMESTAMP_state, CALC_CH_CRC_state,
+                   EVENT_CNT_state, DTAP_state, DRS_TEMP_state, TIMESTAMP_state, CALC_CH_CRC_state,
                    CH_CRC_state, CH_HEADER_state, PAYLOAD_state, STOP_CELL_state, CALC_CRC32_state,
                    CRC32_state, TAIL_state, PAD_state, WAIT_state);
 
@@ -225,8 +225,8 @@ architecture behavioral of daq is
       + id'length / g_WORD_SIZE
       + mask'length / g_WORD_SIZE
       + event_cnt'length / g_WORD_SIZE
-      + dtap0_i'length / g_WORD_SIZE
-      + dtap1_i'length / g_WORD_SIZE
+      + dtap_i'length / g_WORD_SIZE
+      + drs_temp_i'length / g_WORD_SIZE
       + timestamp'length / g_WORD_SIZE
       + packet_payload_size             -- roi counts from 0
       + packet_crc'length / g_WORD_SIZE
@@ -447,7 +447,7 @@ begin
           gfp_eventid_timeout_counter <= 0;
 
           if (state_word_cnt = event_cnt'length / g_WORD_SIZE - 1) then
-            state          <= DTAP0_state;
+            state          <= DTAP_state;
             state_word_cnt <= 0;
           else
             state_word_cnt <= state_word_cnt + 1;
@@ -456,18 +456,18 @@ begin
           data <= data_sel(g_MSB_FIRST, g_WORD_SIZE, EVENT_CNT_WORDS, state_word_cnt, event_cnt_mux);
           dav  <= true;
 
-        when DTAP0_state =>
+        when DTAP_state =>
 
-          state <= DTAP1_state;
+          state <= DRS_TEMP_state;
 
-          data <= dtap0_i;
+          data <= dtap_i;
           dav  <= true;
 
-        when DTAP1_state =>
+        when DRS_TEMP_state =>
 
           state <= TIMESTAMP_state;
 
-          data <= dtap1_i;
+          data <= drs_temp_i;
           dav  <= true;
 
         when TIMESTAMP_state =>

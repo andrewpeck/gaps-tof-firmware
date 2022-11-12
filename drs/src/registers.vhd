@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_DRS_NUM_REGS : integer := 61;
+    constant REG_DRS_NUM_REGS : integer := 62;
     constant REG_DRS_ADDRESS_MSB : integer := 9;
     constant REG_DRS_ADDRESS_LSB : integer := 0;
     constant REG_CHIP_DMODE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
@@ -153,6 +153,11 @@ package registers is
     constant REG_FPGA_BOARD_ID_MSB    : integer := 7;
     constant REG_FPGA_BOARD_ID_LSB     : integer := 0;
     constant REG_FPGA_BOARD_ID_DEFAULT : std_logic_vector(7 downto 0) := x"00";
+
+    constant REG_FPGA_DRS_TEMP_ADDR    : std_logic_vector(9 downto 0) := "00" & x"2b";
+    constant REG_FPGA_DRS_TEMP_MSB    : integer := 15;
+    constant REG_FPGA_DRS_TEMP_LSB     : integer := 0;
+    constant REG_FPGA_DRS_TEMP_DEFAULT : std_logic_vector(15 downto 0) := x"3039";
 
     constant REG_DAQ_INJECT_DEBUG_PACKET_ADDR    : std_logic_vector(9 downto 0) := "00" & x"30";
     constant REG_DAQ_INJECT_DEBUG_PACKET_BIT    : integer := 0;
