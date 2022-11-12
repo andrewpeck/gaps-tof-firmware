@@ -43,4 +43,4 @@ set_property PULLDOWN true [get_ports gfp_sclk]
 set_property PULLDOWN true [get_ports gfp_sdat]
 
 set_max_delay \
-    -from [get_pins mt_rx_inst/trg_fast*/C] -to [get_ports drs_dwrite_o] 18
+    -from [get_pins mt_rx_inst/trg_fast*/C] -to [get_ports drs_dwrite_o] 20
