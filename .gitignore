@@ -20,3 +20,4 @@ bin/
 usage_statistics_webtalk.*
 *.str
 .write_bitstream.error.rst
+hs_err_*.log
