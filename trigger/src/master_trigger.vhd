@@ -594,6 +594,9 @@ begin
       busy_i    => tiu_busy,
       rb_busy_i => (others => '0'),
 
+
+      all_triggers_are_global => '1',
+
       single_hit_en_i => '1',
       -- force_trigger_i => trigger_ipb or trig_gen or ext_trigger,
       force_trigger_i => trigger_ipb or trig_gen,

@@ -16,6 +16,8 @@ entity trigger is
 
     single_hit_en_i : in std_logic := '1';
 
+    all_triggers_are_global : in std_logic := '1';
+
     -- this is an array of 25*8 = 200 thresholds, where each threshold is a 2
     -- bit value
     hits_i : in threshold_array_t;
@@ -34,6 +36,10 @@ entity trigger is
 end trigger;
 
 architecture behavioral of trigger is
+
+  signal dead          : std_logic                      := '0';
+  constant deadcnt_max : integer                        := 31;
+  signal deadcnt       : integer range 0 to deadcnt_max := 0;
 
   signal global_trigger : std_logic := '0';
 
@@ -65,8 +71,6 @@ begin
   -- Outputs
   --------------------------------------------------------------------------------
 
-  global_trigger <= or_reduce(rb_triggers);
-
   process (clk) is
   begin
     if (rising_edge(clk)) then
@@ -75,23 +79,39 @@ begin
       channels_r <= channels;
 
       for I in rb_triggers'range loop
-        --rb_triggers(I) <= or_reduce(channels((I+1)*4-1 downto I*4));
-        rb_triggers(I) <= or_reduce(channels);
+        rb_triggers(I) <= not dead and or_reduce(channels((I+1)*4-1 downto I*4));
       end loop;
 
     end if;
   end process;
 
---------------------------------------------------------------------------------
--- event counter:
---------------------------------------------------------------------------------
+  global_trigger <= or_reduce(rb_triggers);
+
+  --------------------------------------------------------------------------------
+  -- event counter:
+  --------------------------------------------------------------------------------
+
+  process (clk) is
+  begin
+    if (rising_edge(clk)) then
+      if (dead = '0' and global_trigger = '1') then
+        deadcnt <= deadcnt_max;
+        dead    <= '1';
+      elsif (deadcnt > 0) then
+        deadcnt <= deadcnt - 1;
+        dead    <= '1';
+      elsif (deadcnt = 0) then
+        dead <= '0';
+      end if;
+    end if;
+  end process;
 
   -- delay by 1 clock to align with event count
   process (clk) is
   begin
     if (rising_edge(clk)) then
       channel_select_o <= channels_r;
-      rb_triggers_o    <= rb_triggers;
+      rb_triggers_o    <= rb_triggers or repeat(global_trigger and all_triggers_are_global, rb_triggers_o'length);
       global_trigger_o <= global_trigger;
     end if;
   end process;
