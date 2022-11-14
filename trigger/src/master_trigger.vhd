@@ -108,6 +108,8 @@ architecture structural of gaps_mt is
   signal lt_data_i_pri_n : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '0');
   signal lt_data_i_pri   : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '0');
   signal lt_data_i_inv   : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '1');
+  signal lt_data_i_en    : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) :=
+    "00" & x"000000000003";
 
   signal lt_data_i_aux_p : std_logic_vector (NUM_LT_MT_AUX-1 downto 0) := (others => '0');
   signal lt_data_i_aux_n : std_logic_vector (NUM_LT_MT_AUX-1 downto 0) := (others => '0');
@@ -171,8 +173,11 @@ architecture structural of gaps_mt is
   signal tiu_byte_cnt     : integer range 0 to tiu_timeword'length/8;
 
 
-  signal rb_triggers    : std_logic_vector (NUM_RBS-1 downto 0);  -- 1 bit trigger for each baloon
-  signal triggers       : channel_bitmask_t;                      -- 1 bit trigger for each paddle
+  -- 1 bit trigger for rb; this is just the OR of the channel_select
+  signal rb_triggers    : std_logic_vector (NUM_RBS-1 downto 0);
+
+  -- 1 bit for each paddle; 1 to select it for readout in the hitmask
+  signal channel_select : channel_bitmask_t;
 
   signal fb_clk, fb_clk_i : std_logic_vector (fb_clk_p'range);
   signal fb_clock_rates   : t_std32_array(fb_clk_p'range);
@@ -526,7 +531,7 @@ begin
         clk90 => clk200_90,              -- logic clock
 
         -- clock and data from lt boards
-        data_i => lt_data_i_pri xor lt_data_i_inv,
+        data_i => (lt_data_i_pri xor lt_data_i_inv) and lt_data_i_en,
 
         link_en  => dsi_link_en,
 
@@ -586,18 +591,19 @@ begin
       -- discrim from input stage (20x16 array of discrim)
       hits_i => discrim_masked,
 
-      busy_i => tiu_busy,
+      busy_i    => tiu_busy,
+      rb_busy_i => (others => '0'),
 
-      single_hit_en_i => '0',
-      bool_trg_en_i   => '0',
-      force_trigger_i => trigger_ipb or trig_gen or ext_trigger,
+      single_hit_en_i => '1',
+      -- force_trigger_i => trigger_ipb or trig_gen or ext_trigger,
+      force_trigger_i => trigger_ipb or trig_gen,
 
       event_cnt_o => event_cnt,
 
       -- ouptut from trigger logic
-      global_trigger_o => global_trigger,   -- OR of the trigger menu
-      rb_triggers_o    => rb_triggers,     -- 40 trigger outputs  (1 per rb)
-      triggers_o       => triggers         -- trigger output (320 trigger outputs)
+      global_trigger_o => global_trigger, -- OR of the trigger menu
+      rb_triggers_o    => rb_triggers,    -- 39 trigger outputs  (-1 per rb)
+      channel_select_o => channel_select  -- trigger output (197 trigger outputs)
       );
 
   -- Trigger generator
@@ -878,48 +884,51 @@ begin
 
   not_loopback_gen : if (not LOOPBACK_MODE) generate
 
-    ila_200_inst : ila_200
-      port map (
-        clk       => clk200,
-        probe0(0) => lt_data_i_pri(0),
-        probe1(0) => lt_data_i_pri(1),
-        probe2    => (others => '0'),
-        probe3    => (others => '0'),
-        probe4    => (others => '0'),
-        probe5    => (others => '0'),
-        probe6    => (others => '0'),
-        probe7    => (others => '0'),
-        probe8    => (others => '0'),
-        probe9    => (others => '0'),
-        probe10    => (others => '0')
-        );
+    -- ila_200_inst : ila_200
+    --   port map (
+    --     clk       => clk200,
+    --     probe0(0) => lt_data_i_pri(0),
+    --     probe1(0) => lt_data_i_pri(1),
+    --     probe2    => (others => '0'),
+    --     probe3    => (others => '0'),
+    --     probe4    => (others => '0'),
+    --     probe5    => (others => '0'),
+    --     probe6    => (others => '0'),
+    --     probe7    => (others => '0'),
+    --     probe8    => (others => '0'),
+    --     probe9    => (others => '0'),
+    --     probe10    => (others => '0')
+    --     );
 
     ila_mt_inst : ila_mt
       port map (
-        clk                  => clock,
-        probe0(0)            => rb_data_o(0),
-        probe1(0)            => global_trigger,
-        probe2(4 downto 0)   => fb_clk_ok,
-        probe2(9 downto 5)   => dsi_on,
-        probe2(10)           => tiu_trigger_o,
-        probe2(11)           => tiu_serial_o,
-        probe2(12)           => ext_trigger,
-        probe2(13)           => ext_trigger_r2,
-        probe2(18 downto 14) => lvs_sync,
-        probe2(68 downto 19) => lt_data_i_pri,
-        probe2(74 downto 69) => (others => '0'),
-        probe3(7 downto 0)   => (others => '0'),
-        probe4(7 downto 0)   => (others => '0'),
-        probe5(0)            => lvs_sync_ccb,
-        probe6(0)            => hk_ext_clk,
-        probe7(0)            => hk_ext_mosi,
-        probe8(0)            => hk_ext_miso,
-        probe9               => hk_ext_cs_n,
-        probe10              => fb_clock_rates(0),
-        probe11              => fb_clock_rates(1),
-        probe12              => fb_clock_rates(2),
-        probe13              => clock_rate,
-        probe14              => event_cnt
+        clk                   => clock,
+        probe0(0)             => rb_data_o(0),
+        probe1(0)             => global_trigger,
+        probe2(4 downto 0)    => fb_clk_ok,
+        probe2(9 downto 5)    => dsi_on,
+        probe2(10)            => tiu_trigger_o,
+        probe2(11)            => tiu_serial_o,
+        probe2(12)            => ext_trigger,
+        probe2(13)            => ext_trigger_r2,
+        probe2(18 downto 14)  => lvs_sync,
+        probe2(68 downto 19)  => lt_data_i_pri,
+        probe2(74 downto 69)  => (others => '0'),
+        probe3(7 downto 0)    => (others => '0'),
+        probe4(7 downto 0)    => (others => '0'),
+        probe5(0)             => lvs_sync_ccb,
+        probe6(0)             => hk_ext_clk,
+        probe7(0)             => hk_ext_mosi,
+        probe8(0)             => hk_ext_miso,
+        probe9                => hk_ext_cs_n,
+        probe10               => fb_clock_rates(0),
+        probe11               => fb_clock_rates(1),
+        probe12(24 downto 0)  => rb_triggers(24 downto 0),
+        probe12(26 downto 25) => discrim(0),
+        probe12(28 downto 27) => discrim_masked(0),
+        probe12(31 downto 29) => (others => '0'),
+        probe13               => clock_rate,
+        probe14               => event_cnt
         );
   end generate;
 

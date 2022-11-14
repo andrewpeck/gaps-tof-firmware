@@ -16,9 +16,6 @@ use ieee.numeric_std.all;
 use work.mt_types.all;
 
 entity lt_rx is
-  generic(
-    DIFFERENTIAL_DATA : boolean := false
-    );
   port(
 
     clk   : in std_logic;

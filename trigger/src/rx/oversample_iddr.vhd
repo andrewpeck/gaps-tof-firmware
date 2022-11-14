@@ -2,15 +2,12 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-library unisim;
-use unisim.vcomponents.all;
-
 entity oversample is
   port(
     clk    : in  std_logic;
     clk90  : in  std_logic;
     data_i : in  std_logic;
-    data_o : out std_logic
+    data_o : out std_logic := '0'
     );
 end oversample;
 
@@ -67,21 +64,21 @@ begin
   process (clk) is
   begin
     if (rising_edge(clk)) then
-      if (e0 and e1) then
+      if '1' = (e0 and e1) then
         sel <= 3;
-      elsif (e1 and e2) then
+      elsif '1' = (e1 and e2) then
         sel <= 0;
-      elsif (e2 and e3) then
+      elsif '1' = (e2 and e3) then
         sel <= 1;
-      elsif (e3 and e0) then
+      elsif '1' = (e3 and e0) then
         sel <= 2;
-      elsif (e0) then
+      elsif ('1' = e0) then
         sel <= 2;
-      elsif (e1) then
+      elsif ('1' = e1) then
         sel <= 3;
-      elsif (e2) then
+      elsif ('1' = e2) then
         sel <= 0;
-      elsif (e3) then
+      elsif ('1' = e3) then
         sel <= 1;
       end if;
     end if;

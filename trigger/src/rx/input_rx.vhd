@@ -59,6 +59,8 @@ architecture rtl of input_rx is
 
   signal data_bytes       : t_std8_array (NUM_INPUTS-1 downto 0);
   signal data_bytes_valid : std_logic_vector (NUM_INPUTS-1 downto 0) := (others => '0');
+  signal data_rx          : std_logic_vector (NUM_INPUTS-1 downto 0);
+  signal data_valid       : std_logic_vector (NUM_INPUTS-1 downto 0);
 
 begin
 
@@ -67,42 +69,42 @@ begin
 
   genloop : for I in 0 to NUM_INPUTS-1 generate
     signal data_serial : std_logic;
-    signal valid       : std_logic                             := '0';
     signal valid_sr    : std_logic_vector (STRETCH-1 downto 0) := (others => '0');
   begin
 
-    ilagen : if (I=0) generate
+    ilagen : if (I = 0) generate
       ila_200_inst : ila_200
         port map (
-          clk       => clk,
-          probe0(0) => data_i(I),
-          probe1(0) => data_serial,
-          probe2    => data_bytes(I),
-          probe3    => hits_o(0),
-          probe4    => hits_o(1),
-          probe5    => hits_o(2),
-          probe6    => hits_o(3),
-          probe7    => hits_o(4),
-          probe8    => hits_o(5),
-          probe9    => hits_o(6),
-          probe10   => hits_o(7)
+          clk                => clk,
+          probe0(0)          => data_rx(I),
+          probe1(0)          => data_rx(I+1),
+          probe2(0)          => data_valid(I),
+          probe2(1)          => data_valid(I+1),
+          probe2(2)          => data_bytes_valid(I),
+          probe2(3)          => data_bytes_valid(I+1),
+          probe2(7 downto 4) => data_bytes(I)(3 downto 0),
+          probe3             => hits_o(0),
+          probe4             => hits_o(1),
+          probe5             => hits_o(2),
+          probe6             => hits_o(3),
+          probe7             => hits_o(4),
+          probe8             => hits_o(5),
+          probe9             => hits_o(6),
+          probe10            => hits_o(7)
           );
     end generate;
 
     -- input delays + ffs for single LT board
     lt_rx_inst : entity work.lt_rx
-      generic map (
-        DIFFERENTIAL_DATA => true
-        )
       port map (
         clk   => clk,
         clk90 => clk90,
 
         coarse_delay => coarse_delays_i(I),
 
-        en       => link_en(I),
-        data_i   => data_i(I),
-        data_o   => data_serial
+        en     => link_en(I),
+        data_i => data_i(I),
+        data_o => data_rx(I)
         );
 
     -- deserializes the 200 MHz single bit serial data and puts out a parallel
@@ -114,15 +116,15 @@ begin
         )
       port map (
         clock   => clk,
-        data_i  => data_serial,
-        valid_o => valid,
+        data_i  => data_rx(I),
+        valid_o => data_valid(I),
         data_o  => data_bytes(I)
         );
 
     process (clk) is
     begin
       if (rising_edge(clk)) then
-        if (valid = '1') then
+        if (data_valid(I) = '1') then
           valid_sr <= (others => '1');
         else
           valid_sr <= '0' & valid_sr(valid_sr'length-1 downto 1);
@@ -136,13 +138,13 @@ begin
 
   genloop2 : for I in 0 to NUM_INPUTS/2 - 1 generate
 
-    -- //      | no hit| thr0 | thr1 | thr2
-    -- //----------------------------------
-    -- // bit0 |    0  |  0   |  1   |  1
-    -- // bit1 |    0  |  1   |  0   |  1
-
-    -- //LINK0  = START bit +paddles bit 0 (9 bits total)
-    -- //LINK1 = START bit +paddles bit 1 (9 bits total)
+    --      | no hit| thr0 | thr1 | thr2
+    -- -----+-------+------+------+------
+    -- bit0 |    0  |  0   |  1   |  1
+    -- bit1 |    0  |  1   |  0   |  1
+    --
+    -- LINK0 = START bit + paddles bit 0 (9 bits total)
+    -- LINK1 = START bit + paddles bit 1 (9 bits total)
 
     process (clk) is
     begin

@@ -24,7 +24,7 @@ architecture behavioral of rx_deserializer is
   type rx_state_t is (IDLE, RX);
   signal state : rx_state_t := IDLE;
 
-  signal state_bit_cnt : natural range 0 to data_buf'length - 1 := 0;
+  signal state_bit_cnt : natural range 0 to WORD_SIZE - 1 := 0;
 
 begin
 
@@ -46,14 +46,14 @@ begin
 
         when RX =>
 
-          state_bit_cnt <= state_bit_cnt + 1;
-
           if (state_bit_cnt = WORD_SIZE - 1) then
-            state   <= IDLE;
-            data_o  <= data_i & data_buf(WORD_SIZE-2 downto 0);
-            valid_o <= '1';
+            state         <= IDLE;
+            data_o        <= data_i & data_buf(WORD_SIZE-2 downto 0);
+            valid_o       <= '1';
+            state_bit_cnt <= 0;
           else
             data_buf(state_bit_cnt) <= data_i;
+            state_bit_cnt           <= state_bit_cnt + 1;
           end if;
 
       end case;

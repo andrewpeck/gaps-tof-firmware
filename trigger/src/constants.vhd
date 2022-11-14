@@ -1,19 +1,20 @@
 package constants is
 
-  constant NUM_DSI  : natural := 5;
+  constant NUM_DSI : natural := 5;
 
   --
-  constant NUM_RBS         : positive := 10*NUM_DSI; -- number of readout boards in the system
-  constant NUM_RB_CHANNELS : positive := 8;          -- number of channels per rb
-  constant NUM_RB_OUTPUTS  : positive := NUM_RBS*1;  -- number of output links
+  constant NUM_RBS         : positive := 50;  -- number of readout boards in the system
+  constant NUM_RB_CHANNELS : positive := 8;   -- number of channels per rb
+  constant NUM_RB_OUTPUTS  : positive := 50;  -- number of output links
+  constant TOT_RB_CHANNELS : positive := 400; -- total number of RB channels
 
   --
-  constant NUM_LTS         : positive := NUM_DSI*5;                     -- 25 number of lt boards in the system
-  constant NUM_LT_BITS     : positive := 8;                             --
-  constant NUM_LT_MT_PRI   : positive := 2 * NUM_LTS;                   -- 50 number of links in the system
-  constant NUM_LT_MT_AUX   : positive := 1 * NUM_LTS;                   -- 25 number of links in the system
-  constant NUM_LT_MT_ALL   : positive := NUM_LT_MT_PRI + NUM_LT_MT_AUX; -- number of links in the system
-  constant TOT_LT_CHANNELS : positive := NUM_LT_BITS*NUM_LT_MT_PRI/2;   -- 200
+  constant NUM_LTS         : positive := 25;  -- number of lt boards in the system
+  constant NUM_LT_BITS     : positive := 8;   --
+  constant NUM_LT_MT_PRI   : positive := 50;  -- number of primary links in the system
+  constant NUM_LT_MT_AUX   : positive := 25;  -- number of auxillary links in the system
+  constant NUM_LT_MT_ALL   : positive := 75;  -- number of total links in the system
+  constant TOT_LT_CHANNELS : positive := 200; -- total number of LT channels
 
   constant EVENTCNTB : positive := 32;
 
