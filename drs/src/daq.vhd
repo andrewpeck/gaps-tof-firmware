@@ -118,7 +118,7 @@ architecture behavioral of daq is
   constant EVENTID_TIMEOUT_MAX : natural := 10000000;
   signal gfp_eventid_timeout_counter : natural range 0 to EVENTID_TIMEOUT_MAX := 0;
 
-  constant PAYLOAD_TIMEOUT_MAX: natural := 2**14-1;
+  constant PAYLOAD_TIMEOUT_MAX: natural := 2**16-1;
   signal payload_timeout_counter : natural range 0 to PAYLOAD_TIMEOUT_MAX := 0;
   signal packet_timed_out : std_logic := '0';
 
