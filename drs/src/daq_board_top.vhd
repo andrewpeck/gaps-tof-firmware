@@ -664,6 +664,10 @@ begin
   xfifo_event_cnt <= event_queue_dout(xfifo_event_cnt'length + xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length - 1 downto xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length);
   xfifo_fragment  <= event_queue_dout(xfifo_event_cnt'length + xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length downto xfifo_event_cnt'length + xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length);
 
+  -- save a copy of whether the drs was busy when the trigger was received,
+  -- push this into the FIFO when the rest of the metadata is received
+  -- i.e. the event count... this is needed since the start signal comes early,
+  -- as soon as the MT packet shows up, but the metadata comes later
   process (clock) is
   begin
     if (rising_edge(clock)) then

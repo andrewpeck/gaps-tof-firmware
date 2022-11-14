@@ -18,6 +18,8 @@ entity mt_rx is
     serial_i : in std_logic;
     enable_i : in std_logic;
 
+    wr_en_o : out std_logic;
+
     trg_o      : out std_logic := '0';
     trg_fast_o : out std_logic := '0';
     fragment_o : out std_logic := '0';
@@ -43,8 +45,9 @@ architecture rtl of mt_rx is
 
   type state_t is (IDLE_state, DWRITE_state, MASK_state, EVENTCNT_state, CMD_state, CRC_state, WAIT_state);
 
-  signal trg, fragment                                     : std_logic := '0';
-  signal cmd_valid, mask_valid, crc_valid, event_cnt_valid : std_logic := '0';
+  signal trg, fragment                                             : std_logic := '0';
+  signal cmd_valid, mask_valid, crc_valid, event_cnt_valid         : std_logic := '0';
+  signal cmd_valid_r, mask_valid_r, crc_valid_r, event_cnt_valid_r : std_logic := '0';
 
   signal event_cnt : std_logic_vector (EVENTCNTB-1 downto 0) := (others => '0');
   signal crc_rx    : std_logic_vector (CRCB-1 downto 0)      := (others => '0');
@@ -194,13 +197,6 @@ begin
 
           when WAIT_state =>
 
-            event_cnt_valid <= '0';
-            mask_valid      <= '0';
-            cmd_valid       <= '0';
-            crc_valid       <= '0';
-            trg             <= '0';
-            fragment        <= '0';
-
             if (wait_cnt = WAIT_CNT_MAX - 1) then
               wait_cnt <= 0;
               state    <= IDLE_state;
@@ -229,10 +225,12 @@ begin
       trg_o      <= trg;
       fragment_o <= fragment;
 
-      event_cnt_valid_o <= event_cnt_valid;
-      mask_valid_o      <= mask_valid;
-      cmd_valid_o       <= cmd_valid;
-      crc_valid_o       <= crc_valid;
+      -- make these rising edge sensitive on the outclk so they are only 1
+      -- clock wide and can be used as write enables
+      event_cnt_valid_o <= event_cnt_valid and not event_cnt_valid_o;
+      mask_valid_o      <= mask_valid and not mask_valid_o;
+      cmd_valid_o       <= cmd_valid and not cmd_valid_o;
+      crc_valid_o       <= crc_valid and not crc_valid_o;
 
       event_cnt_o <= event_cnt;
       mask_o      <= mask;
@@ -240,7 +238,6 @@ begin
       crc_o       <= crc_rx;
 
       if (crc_valid = '1') then
-
 
         if (crc_rx = crc_calc) then
           crc_ok_o <= '1';
