@@ -120,6 +120,7 @@ architecture behavioral of daq is
 
   constant PAYLOAD_TIMEOUT_MAX: natural := 2**14-1;
   signal payload_timeout_counter : natural range 0 to PAYLOAD_TIMEOUT_MAX := 0;
+  signal packet_timed_out : std_logic := '0';
 
   signal dav : boolean := false;
 
@@ -348,6 +349,7 @@ begin
           channel_cnt <= 0;
           channel_id  <= 0;
 
+          packet_timed_out            <= '0';
           payload_timeout_counter     <= 0;
           gfp_eventid_timeout_counter <= 0;
 
@@ -506,20 +508,22 @@ begin
 
           drs_rden_o <= '1';
 
-          if (debug or drs_valid_i = '1') then
+          if (packet_timed_out = '1' or debug or drs_valid_i = '1') then
             state_word_cnt          <= state_word_cnt + 1;
             payload_timeout_counter <= 0;
           else
             payload_timeout_counter <= payload_timeout_counter + 1;
           end if;
 
-          if (payload_timeout_counter = PAYLOAD_TIMEOUT_MAX
-              or num_channels = 0) then
+          if (payload_timeout_counter = PAYLOAD_TIMEOUT_MAX) then
             payload_timeout_counter <= 0;
-            state                   <= CRC32_state;
-            state_word_cnt          <= 0;
-            drs_rden_o              <= '0';
-          elsif (debug or drs_valid_i = '1') and (state_word_cnt = roi_size) then
+            packet_timed_out        <= '1';
+          elsif (num_channels = 0) then
+            state          <= CRC32_state;
+            state_word_cnt <= 0;
+            drs_rden_o     <= '0';
+          elsif (packet_timed_out = '1' or debug or drs_valid_i = '1')
+            and (state_word_cnt = roi_size) then
             payload_timeout_counter <= 0;
             state                   <= CALC_CH_CRC_state;
             state_word_cnt          <= 0;
@@ -534,6 +538,9 @@ begin
           if (debug) then
             dav  <= true;
             data <= to_slv(state_word_cnt, g_WORD_SIZE);
+          elsif (packet_timed_out = '1' and num_channels > 0) then
+            dav  <= true;
+            data <= x"fffe";
           elsif (drs_valid_i = '1' and num_channels > 0) then
             data <= xor_reduce(drs_data_i(13 downto 7)) & xor_reduce(drs_data_i(6 downto 0))  -- parity bits
                     & drs_data_i;                                                             -- adc data
