@@ -123,7 +123,7 @@ Best practice is for released builds the entire repo should be cloned
 from scratch and built from the clean cloned repository to ensure that
 no files are missing, the build directory is clean, and so on.
 
-## Data Flow 
+## Data Flow
 
 ![data-flow](./drs/data-flow.svg)
 
@@ -138,9 +138,9 @@ no files are missing, the build directory is clean, and so on.
   | DNA        | `[63:0]`        | Zynq7000 Device DNA                                                                                                                                                                           |
   | FW\_HASH   | `[15:0]`        | First 16 bits of Git Hash                                                                                                                                                                     |
   | ID         | `[15:0]`        | `[15:8]` = readout board ID <br> `[7:0]` = reserved <br>                                                                                                                                      |
-  | CH\_MASK   | `[15:0]`        | `[8:0]` = Channel Enable Mask '1'=ON, `[15:9]` reserved                                                                                                                                           |
+  | CH\_MASK   | `[15:0]`        | `[8:0]` = Channel Enable Mask '1'=ON, `[15:9]` reserved                                                                                                                                       |
   | EVENT\_CNT | `[31:0]`        | Event ID Received From Trigger                                                                                                                                                                |
-  | DTAP0      | `[15:0]`        | DTAP0 Frequency in 100Hz                                                                                                                                                                      |
+  | DTAP       | `[15:0]`        | DTAP Frequency in 100Hz                                                                                                                                                                       |
   | DRS_TEMP   | `[15:0]`        | DRS temperature, written by software                                                                                                                                                          |
   | TIMESTAMP  | `[47:0]`        | \# of 33MHz clocks elapsed since resync                                                                                                                                                       |
   | PAYLOAD    | 0 to XXXX words | `HEADER[15:0]` = Channel ID <br> ----- begin block data ----- <br> `DATA[13:0]` = ADC data <br> `DATA[15:14]` parity <br> ----- end block: len = ROI words ----- <br> `TRAILER[31:0]` = crc32 |
@@ -161,7 +161,17 @@ no files are missing, the build directory is clean, and so on.
 
 ## Local Trigger Data Format
 
-?
+https://gaps1.astro.ucla.edu/wiki/gaps/index.php?title=Local_Trigger_Board_Operation
+
+``` example
+  //      | no hit| thr0 | thr1 | thr2
+  //----------------------------------
+  // bit0 |    0  |  0   |  1   |  1
+  // bit1 |    0  |  1   |  0   |  1
+
+  //LINK0  = START bit +paddles bit 0 (9 bits total)
+  //LINK1 = START bit +paddles bit 1 (9 bits total)
+```
 
 ## Master Trigger External IO
 
