@@ -7,9 +7,18 @@ package components is
 
   component ila_200
     port (
-      clk    : in std_logic;
-      probe0 : in std_logic_vector(0 downto 0);
-      probe1 : in std_logic_vector(0 downto 0)
+      clk     : in std_logic;
+      probe0  : in std_logic_vector(0 downto 0);
+      probe1  : in std_logic_vector(0 downto 0);
+      probe2  : in std_logic_vector(7 downto 0);
+      probe3  : in std_logic_vector(1 downto 0);
+      probe4  : in std_logic_vector(1 downto 0);
+      probe5  : in std_logic_vector(1 downto 0);
+      probe6  : in std_logic_vector(1 downto 0);
+      probe7  : in std_logic_vector(1 downto 0);
+      probe8  : in std_logic_vector(1 downto 0);
+      probe9  : in std_logic_vector(1 downto 0);
+      probe10 : in std_logic_vector(1 downto 0)
     );
   end component;
 

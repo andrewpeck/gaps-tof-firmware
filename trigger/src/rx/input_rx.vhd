@@ -33,6 +33,7 @@ library work;
 use work.constants.all;
 use work.mt_types.all;
 use work.types_pkg.all;
+use work.components.all;
 
 entity input_rx is
   generic(
@@ -69,6 +70,24 @@ begin
     signal valid       : std_logic                             := '0';
     signal valid_sr    : std_logic_vector (STRETCH-1 downto 0) := (others => '0');
   begin
+
+    ilagen : if (I=0) generate
+      ila_200_inst : ila_200
+        port map (
+          clk       => clk,
+          probe0(0) => data_i(I),
+          probe1(0) => data_serial,
+          probe2    => data_bytes(I),
+          probe3    => hits_o(0),
+          probe4    => hits_o(1),
+          probe5    => hits_o(2),
+          probe6    => hits_o(3),
+          probe7    => hits_o(4),
+          probe8    => hits_o(5),
+          probe9    => hits_o(6),
+          probe10   => hits_o(7)
+          );
+    end generate;
 
     -- input delays + ffs for single LT board
     lt_rx_inst : entity work.lt_rx
