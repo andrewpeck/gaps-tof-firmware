@@ -41,15 +41,15 @@ architecture behavioral of trigger is
   constant deadcnt_max : integer                        := 31;
   signal deadcnt       : integer range 0 to deadcnt_max := 0;
 
-  signal global_trigger : std_logic := '0';
+  signal global_trigger, global_trigger_r : std_logic := '0';
 
   -- flatten the 200 inputs from a threshold to just a bitmask meaning that a
   -- channel is either on or off
   signal single_hit_triggers : channel_bitmask_t := (others => '0');
 
-  signal channels, channels_r : channel_bitmask_t := (others => '0');
+  signal channels : channel_bitmask_t := (others => '0');
 
-  signal rb_triggers : std_logic_vector (NUM_RBS-1 downto 0);
+  signal rb_triggers, rb_triggers_r : std_logic_vector (NUM_RBS-1 downto 0);
 
 begin
 
@@ -74,21 +74,45 @@ begin
   process (clk) is
   begin
     if (rising_edge(clk)) then
-
-      channels   <= single_hit_triggers or repeat(force_trigger_i, channels'length);
-      channels_r <= channels;
-
-      for I in rb_triggers'range loop
-        rb_triggers(I) <= not dead and or_reduce(channels((I+1)*4-1 downto I*4));
-      end loop;
-
+      channels <= single_hit_triggers or
+                  repeat(force_trigger_i, channels'length);
     end if;
   end process;
+
+  rb_trig_gen : for I in rb_triggers'range generate
+  begin
+    rb_triggers(I) <= not dead and or_reduce(channels((I+1)*4-1 downto I*4));
+  end generate;
 
   global_trigger <= or_reduce(rb_triggers);
 
   --------------------------------------------------------------------------------
   -- event counter:
+  --------------------------------------------------------------------------------
+
+  -- delay by 1 clock to align with event count
+  process (clk) is
+  begin
+    if (rising_edge(clk)) then
+      global_trigger_r <= global_trigger;
+      rb_triggers_r    <= rb_triggers;
+
+      channel_select_o <= channels;
+      rb_triggers_o    <= rb_triggers_r or repeat(global_trigger_r and all_triggers_are_global, rb_triggers_o'length);
+      global_trigger_o <= global_trigger_r;
+    end if;
+  end process;
+
+  event_counter : entity work.event_counter
+    port map (
+      clk              => clk,
+      rst_i            => reset,
+      global_trigger_i => global_trigger_r,
+      event_count_o    => event_cnt_o
+      );
+
+  --------------------------------------------------------------------------------
+  -- Deadtime
   --------------------------------------------------------------------------------
 
   process (clk) is
@@ -105,23 +129,5 @@ begin
       end if;
     end if;
   end process;
-
-  -- delay by 1 clock to align with event count
-  process (clk) is
-  begin
-    if (rising_edge(clk)) then
-      channel_select_o <= channels_r;
-      rb_triggers_o    <= rb_triggers or repeat(global_trigger and all_triggers_are_global, rb_triggers_o'length);
-      global_trigger_o <= global_trigger;
-    end if;
-  end process;
-
-  event_counter : entity work.event_counter
-    port map (
-      clk              => clk,
-      rst_i            => reset,
-      global_trigger_i => global_trigger,
-      event_count_o    => event_cnt_o
-      );
 
 end behavioral;
