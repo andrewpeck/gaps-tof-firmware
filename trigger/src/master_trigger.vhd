@@ -107,6 +107,7 @@ architecture structural of gaps_mt is
   signal lt_data_i_pri_p : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '0');
   signal lt_data_i_pri_n : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '0');
   signal lt_data_i_pri   : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '0');
+  signal lt_data_i_inv   : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '1');
 
   signal lt_data_i_aux_p : std_logic_vector (NUM_LT_MT_AUX-1 downto 0) := (others => '0');
   signal lt_data_i_aux_n : std_logic_vector (NUM_LT_MT_AUX-1 downto 0) := (others => '0');
@@ -525,7 +526,7 @@ begin
         clk90 => clk200_90,              -- logic clock
 
         -- clock and data from lt boards
-        data_i => lt_data_i_pri,
+        data_i => lt_data_i_pri xor lt_data_i_inv,
 
         link_en  => dsi_link_en,
 
