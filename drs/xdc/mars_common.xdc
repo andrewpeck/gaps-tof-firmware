@@ -33,7 +33,7 @@ set_property IOSTANDARD LVCMOS25 [get_ports led*]
 set_property SLEW SLOW [get_ports drs_*_o]
 
 set_property DRIVE 4 [get_ports drs_*_o]
-set_property DRIVE 6 [get_ports drs_srclk_o]
+set_property DRIVE 4 [get_ports drs_srclk_o]
 
 set_property PULLUP true [get_ports mt_trigger_i_p]
 set_property PULLDOWN true [get_ports mt_trigger_i_n]
