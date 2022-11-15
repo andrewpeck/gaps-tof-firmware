@@ -48,6 +48,12 @@
                 description="Frequency of DTAP in units of 100Hz"
                 mask="0x0000ffff"
                 fw_signal="dtap_cnt" />
+            <node id="CLK_IDELAY" address="0x2" permission="rw"
+                description="DRS CLK IDELAY Setting 0-31 in 78 ps increments"
+                mask="0x1f"
+                fw_default="0x1f"
+                fw_signal="clock_tap_delays" />
+
         </node> <!--CONFIG-->
 
         <node id="READOUT" address="0x10" description="Registers for configuring the readout state machine">
@@ -332,7 +338,6 @@
                 description="Rate of lost triggers in Hz"
                 mask="0xffffffff"
                 fw_signal="lost_trigger_rate"/>
-
 
             <node id="CNT_RESET" address="0x8" permission="w"
                 description="Reset the counters"

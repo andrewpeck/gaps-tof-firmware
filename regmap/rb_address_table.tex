@@ -57,6 +57,7 @@
     DRS\_PLL\_LOCK & \texttt{0x0} & \texttt{[4:4]} & r & \texttt{} & DRS PLL Locked \\\hline
     CHANNEL\_CONFIG & \texttt{0x0} & \texttt{[31:24]} & rw & \texttt{0xFF} & Write Shift Register Configuration                             \\\\ \# of chn - \# of cells per ch - bit pattern                             \\\\ 8        - 1024              - 11111111b                             \\\\ 4        - 2048              - 01010101b                             \\\\ 2        - 4096              - 00010001b                             \\\\ 1        - 8192              - 00000001b \\\hline
     DTAP\_FREQ & \texttt{0x1} & \texttt{[15:0]} & r & \texttt{} & Frequency of DTAP in units of 100Hz \\\hline
+    CLK\_IDELAY & \texttt{0x2} & \texttt{[4:0]} & rw & \texttt{0x1F} & DRS CLK IDELAY Setting 0-31 in 78 ps increments \\\hline
     \end{tabularx}
     \vspace{5mm}
 

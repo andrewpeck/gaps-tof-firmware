@@ -63,8 +63,7 @@ package components is
       -- Status and control signals
       locked    : out std_logic;
       -- Clock in ports
-      clk_in1_p : in  std_logic;
-      clk_in1_n : in  std_logic
+      clk_in1   : in  std_logic
       );
   end component;
 
