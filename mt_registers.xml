@@ -61,6 +61,13 @@
           fw_default="0x00000000"
           fw_signal="trig_gen_rate"/>
 
+    <node id="RESYNC"
+          address="0xa"
+          permission="w"
+          mask="0x1"
+          description="Write 1 to resync"
+          fw_write_pulse_signal="rb_resync"/>
+
     <node id="HIT_COUNTERS" address="0x10" description="Counters">
       <node id="RB${RB_IDX}" address="0x0"
             generate="true"

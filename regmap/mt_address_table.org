@@ -37,6 +37,8 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |TRIG_GEN_RATE | ~0x9~ | ~0x24~ | ~[31:0]~ | rw | ~0x0~ | Rate of generated triggers f_trig =(2^32-1) * clk_period * rate | 
 |------------+---+---+---------+-----+-----+----------------------------|
+|RESYNC | ~0xa~ | ~0x28~ | ~0~ | w | Pulse | Write 1 to resync | 
+|------------+---+---+---------+-----+-----+----------------------------|
 
 *MT.HIT_COUNTERS*
 
