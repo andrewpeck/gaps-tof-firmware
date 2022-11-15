@@ -65,10 +65,11 @@ end daq;
 architecture behavioral of daq is
 
   type state_t is (IDLE_state, ERR_state, HEAD_state, STATUS_state, LENGTH_state, ROI_state,
-                   DNA_state, HASH_state, ID_state, CHMASK_state, WAIT_EVENT_CNT_state,
-                   EVENT_CNT_state, DTAP_state, DRS_TEMP_state, TIMESTAMP_state, CALC_CH_CRC_state,
-                   CH_CRC_state, CH_HEADER_state, PAYLOAD_state, STOP_CELL_state, CALC_CRC32_state,
-                   CRC32_state, TAIL_state, PAD_state, WAIT_state);
+                   DNA_state, RSVD0_state, RSVD1_state, RSVD2_state, HASH_state, ID_state,
+                   CHMASK_state, WAIT_EVENT_CNT_state, EVENT_CNT_state, DTAP_state, DRS_TEMP_state,
+                   TIMESTAMP_state, CALC_CH_CRC_state, CH_CRC_state, CH_HEADER_state, PAYLOAD_state,
+                   STOP_CELL_state, CALC_CRC32_state, CRC32_state, TAIL_state, PAD_state,
+                   WAIT_state);
 
   signal state : state_t := IDLE_state;
 
@@ -88,6 +89,9 @@ architecture behavioral of daq is
   signal debug    : boolean   := false;
 
   signal status         : std_logic_vector (15 downto 0) := (others => '0');
+  signal rsvd0          : std_logic_vector (15 downto 0) := (others => '0');
+  signal rsvd1          : std_logic_vector (15 downto 0) := (others => '0');
+  signal rsvd2          : std_logic_vector (15 downto 0) := (others => '0');
   signal packet_length  : std_logic_vector (15 downto 0) := (others => '0');
   signal packet_padding : natural range 0 to g_PACKET_PAD;
   signal payload_size   : natural                        := 0;
@@ -100,7 +104,7 @@ architecture behavioral of daq is
   signal event_cnt_mux : std_logic_vector (event_cnt_i'range) := (others => '0');
 
   signal timestamp : std_logic_vector (timestamp_i'range) := (others => '0');
-  signal dna       : std_logic_vector (dna_i'range)       := (others => '0');
+  signal dna       : std_logic_vector (15 downto 0)       := (others => '0');
   signal hash      : std_logic_vector (15 downto 0)       := (others => '0');
 
   constant DNA_WORDS         : positive := dna'length / g_WORD_SIZE;
@@ -220,6 +224,9 @@ architecture behavioral of daq is
       + status'length / g_WORD_SIZE
       + packet_length'length / g_WORD_SIZE
       + dna'length / g_WORD_SIZE
+      + rsvd0'length / g_WORD_SIZE
+      + rsvd1'length / g_WORD_SIZE
+      + rsvd2'length / g_WORD_SIZE
       + hash'length / g_WORD_SIZE
       + data'length / g_WORD_SIZE       -- roi
       + data'length / g_WORD_SIZE       -- stop cell
@@ -291,7 +298,7 @@ begin
           fragment     <= '0';
           num_channels <= 9;
           mask         <= '0' & x"00" & '1' & x"FF";
-          dna          <= x"FEDCBA9876543210";
+          dna          <= x"3210";
           hash         <= x"3210";
           event_cnt    <= x"76543210";
           timestamp    <= x"BA9876543210";
@@ -309,7 +316,10 @@ begin
 
           roi_size     <= to_int (roi_size_i);
           fragment     <= fragment_i;
-          dna          <= dna_i;
+          dna          <= dna_i(15 downto 0) xor
+                          dna_i(31 downto 16) xor
+                          dna_i(47 downto 32) xor
+                          dna_i(63 downto 48);
           hash         <= hash_i (27 downto 12);
           debug        <= false;
           dropped      <= drs_busy_i;
@@ -387,16 +397,24 @@ begin
           dav  <= true;
 
         when DNA_state =>
+          state <= RSVD0_state;
+          data  <= dna;
+          dav   <= true;
 
-          if (state_word_cnt = dna'length / g_WORD_SIZE - 1) then
-            state          <= HASH_state;
-            state_word_cnt <= 0;
-          else
-            state_word_cnt <= state_word_cnt + 1;
-          end if;
+        when RSVD0_state =>
+          state <= RSVD1_state;
+          data  <= x"0000";
+          dav   <= true;
 
-          data <= data_sel(g_MSB_FIRST, g_WORD_SIZE, DNA_WORDS, state_word_cnt, dna);
-          dav  <= true;
+        when RSVD1_state =>
+          state <= RSVD2_state;
+          data  <= x"0000";
+          dav   <= true;
+
+        when RSVD2_state =>
+          state <= HASH_state;
+          data  <= x"0000";
+          dav   <= true;
 
         when HASH_state =>
 
