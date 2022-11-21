@@ -888,22 +888,6 @@ begin
 
   not_loopback_gen : if (not LOOPBACK_MODE) generate
 
-    -- ila_200_inst : ila_200
-    --   port map (
-    --     clk       => clk200,
-    --     probe0(0) => lt_data_i_pri(0),
-    --     probe1(0) => lt_data_i_pri(1),
-    --     probe2    => (others => '0'),
-    --     probe3    => (others => '0'),
-    --     probe4    => (others => '0'),
-    --     probe5    => (others => '0'),
-    --     probe6    => (others => '0'),
-    --     probe7    => (others => '0'),
-    --     probe8    => (others => '0'),
-    --     probe9    => (others => '0'),
-    --     probe10    => (others => '0')
-    --     );
-
     ila_mt_inst : ila_mt
       port map (
         clk                   => clock,
