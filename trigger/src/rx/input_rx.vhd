@@ -138,6 +138,11 @@ begin
 
   genloop2 : for I in 0 to NUM_INPUTS/2 - 1 generate
 
+    --
+    -- https://gaps1.astro.ucla.edu/wiki/gaps/index.php?title=Local_Trigger_Board_Operation
+    --
+    -- LT (at lest in the current scheme) is doing an AND for each paddle
+    --
     --      | no hit| thr0 | thr1 | thr2
     -- -----+-------+------+------+------
     -- bit0 |    0  |  0   |  1   |  1
@@ -145,7 +150,13 @@ begin
     --
     -- LINK0 = START bit + paddles bit 0 (9 bits total)
     -- LINK1 = START bit + paddles bit 1 (9 bits total)
-
+    --
+    -- paddle 0 ~> paddle 1 ~> etc
+    --
+    -- ltb shifts out MSB first
+    --
+    -- data word = {start, A, B, C, D, E, F, G, H};
+    --
     process (clk) is
     begin
       if (rising_edge(clk)) then

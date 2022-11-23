@@ -19,6 +19,8 @@ library unisim;
 use unisim.vcomponents.all;
 
 -- CCB Schematics: http://ohm.bu.edu/~apeck/20220516_gaps_mt_data_package/20220516_GAPS_CCBv1/GAPS_CCBv1_docs/CCB_Schematics.pdf
+-- DSI Schematics: http://ohm.bu.edu/~apeck/20220516_gaps_mt_data_package/20220516_GAPS_DSIv1/GAPS_DSIv1_docs/Schematics%20DAQ%20Stack%20Interface.pdf
+-- LTB Schematics: http://weber.bu.edu/~apeck/schematics/GAPS/GAPSLocalTriggerV6/GAPSLocalTriggerV6.pdf
 
 entity gaps_mt is
   generic (
@@ -290,9 +292,8 @@ begin
 
   clk_src_sel <= '0';
 
-  -- i2c_reset <= reset;
-  ipb_reset     <= reset;
-  ipb_clk       <= clock;
+  ipb_reset <= reset;
+  ipb_clk   <= clock;
 
   delayctrl_inst : IDELAYCTRL
     port map (
