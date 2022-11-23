@@ -7,7 +7,8 @@ entity oversample is
     clk    : in  std_logic;
     clk90  : in  std_logic;
     data_i : in  std_logic;
-    data_o : out std_logic := '0'
+    data_o : out std_logic := '0';
+    sel_o  : out std_logic_vector(1 downto 0)
     );
 end oversample;
 
@@ -22,6 +23,8 @@ architecture behavioral of oversample is
   signal sel : natural range 0 to 3 := 0;
 
 begin
+
+  sel_o <= std_logic_vector(to_unsigned(sel, 2));
 
   process (clk) is
   begin

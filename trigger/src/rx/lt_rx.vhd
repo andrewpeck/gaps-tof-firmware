@@ -25,7 +25,9 @@ entity lt_rx is
     en           : in std_logic;
 
     data_i : in  std_logic;
-    data_o : out std_logic
+    data_o : out std_logic;
+
+    sel_o  : out std_logic_vector(1 downto 0)
 
     );
 end lt_rx;
@@ -54,7 +56,8 @@ begin
       clk    => clk,
       clk90  => clk90,
       data_i => data_i,
-      data_o => data_oversample
+      data_o => data_oversample,
+      sel_o  => sel_o
       );
 
   --------------------------------------------------------------------------------

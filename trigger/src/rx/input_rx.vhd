@@ -76,6 +76,8 @@ begin
     signal zero_count     : integer range 0 to zero_cnt_max := 0;
     signal rdy, err       : std_logic                       := '0';
 
+    signal sel : std_logic_vector (1 downto 0) := (others => '0');
+
     signal valid_sr : std_logic_vector (STRETCH-1 downto 0) := (others => '0');
   begin
 
@@ -84,12 +86,14 @@ begin
         port map (
           clk                => clk,
           probe0(0)          => data_rx(I),
-          probe1(0)          => err,
-          probe2(0)          => rdy,
-          probe2(1)          => data_valid(I),
+          probe1(0)          => data_rx(I+1),
+          probe2(0)          => data_valid(I),
+          probe2(1)          => data_valid(I+1),
           probe2(2)          => data_bytes_valid(I),
           probe2(3)          => data_bytes_valid(I+1),
-          probe2(7 downto 4) => data_bytes(I)(3 downto 0),
+          probe2(4)          => err,
+          probe2(5)          => rdy,
+          probe2(7 downto 6) => sel,
           probe3             => hits_o(0),
           probe4             => hits_o(1),
           probe5             => hits_o(2),
@@ -111,7 +115,8 @@ begin
 
         en     => link_en(I),
         data_i => data_i(I),
-        data_o => data_rx(I)
+        data_o => data_rx(I),
+        sel_o  => sel
         );
 
     -- use some primitive logic to find links that don't appear to be noise or
