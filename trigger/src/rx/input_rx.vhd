@@ -118,7 +118,8 @@ begin
         clock   => clk,
         data_i  => data_rx(I),
         valid_o => data_valid(I),
-        data_o  => data_bytes(I)
+        data_o  => data_bytes(I),
+        err_o   => open
         );
 
     process (clk) is
