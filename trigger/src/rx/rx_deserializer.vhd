@@ -11,6 +11,7 @@ entity rx_deserializer is
     );
   port(
     clock   : in  std_logic;
+    reset   : in  std_logic;
     data_i  : in  std_logic;
     data_o  : out std_logic_vector (WORD_SIZE-1 downto 0);
     valid_o : out std_logic;
@@ -63,7 +64,8 @@ begin
         when ERR_CHECK =>
 
           if (data_i = '1') then
-            err_o <= '1';
+            err_o  <= '1';
+            data_o <= (others => '0');
           end if;
 
           if (state_bit_cnt = DEAD_TIME - 1) then
@@ -73,6 +75,10 @@ begin
           end if;
 
       end case;
+
+      if (reset = '1') then
+        state <= IDLE;
+      end if;
 
     end if;
   end process;

@@ -42,6 +42,8 @@ entity input_rx is
     );
   port(
 
+    reset : in std_logic;
+
     clk   : in std_logic;
     clk90 : in std_logic;
 
@@ -69,7 +71,12 @@ begin
 
   genloop : for I in 0 to NUM_INPUTS-1 generate
     signal data_serial : std_logic;
-    signal valid_sr    : std_logic_vector (STRETCH-1 downto 0) := (others => '0');
+
+    constant zero_cnt_max : integer                         := 2047;
+    signal zero_count     : integer range 0 to zero_cnt_max := 0;
+    signal rdy, err       : std_logic                       := '0';
+
+    signal valid_sr : std_logic_vector (STRETCH-1 downto 0) := (others => '0');
   begin
 
     ilagen : if (I = 0) generate
@@ -77,9 +84,9 @@ begin
         port map (
           clk                => clk,
           probe0(0)          => data_rx(I),
-          probe1(0)          => data_rx(I+1),
-          probe2(0)          => data_valid(I),
-          probe2(1)          => data_valid(I+1),
+          probe1(0)          => err,
+          probe2(0)          => rdy,
+          probe2(1)          => data_valid(I),
           probe2(2)          => data_bytes_valid(I),
           probe2(3)          => data_bytes_valid(I+1),
           probe2(7 downto 4) => data_bytes(I)(3 downto 0),
@@ -107,6 +114,28 @@ begin
         data_o => data_rx(I)
         );
 
+    -- use some primitive logic to find links that don't appear to be noise or
+    -- super hot or accidentally inverted etc by looking for a long series of 0 bits
+    process (clk) is
+    begin
+      if (rising_edge(clk)) then
+        if (zero_count = zero_cnt_max) then
+          zero_count <= zero_count;
+          rdy        <= '1';
+        elsif (data_rx(I) = '0') then
+          zero_count <= zero_count + 1;
+          rdy        <= '0';
+        else
+          zero_count <= 0;
+          rdy        <= '0';
+        end if;
+
+        if (err = '1' or reset = '1') then
+          zero_count <= 0;
+        end if;
+      end if;
+    end process;
+
     -- deserializes the 200 MHz single bit serial data and puts out a parallel
     -- data output 8 bits wide
 
@@ -116,10 +145,11 @@ begin
         )
       port map (
         clock   => clk,
+        reset   => reset or not rdy,
         data_i  => data_rx(I),
         valid_o => data_valid(I),
         data_o  => data_bytes(I),
-        err_o   => open
+        err_o   => err
         );
 
     process (clk) is

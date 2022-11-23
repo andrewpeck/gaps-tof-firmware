@@ -111,7 +111,7 @@ architecture structural of gaps_mt is
   signal lt_data_i_pri   : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '0');
   signal lt_data_i_inv   : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '1');
   signal lt_data_i_en    : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) :=
-    "00" & x"000000000003";
+    "11" & x"ffffffffffff";
 
   signal lt_data_i_aux_p : std_logic_vector (NUM_LT_MT_AUX-1 downto 0) := (others => '0');
   signal lt_data_i_aux_n : std_logic_vector (NUM_LT_MT_AUX-1 downto 0) := (others => '0');
@@ -527,6 +527,8 @@ begin
   noloop_r : if (not LOOPBACK_MODE) generate
     input_rx : entity work.input_rx
       port map (
+
+        reset => reset,
 
         -- system clock
         clk   => clk200,                 -- logic clock
