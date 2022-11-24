@@ -411,12 +411,12 @@ begin
 
   clock_wizard_inst : clock_wizard
     port map (
-      drs_clk   => clock_i_dly2,
+      drs_clk   => clock,
       trg_clk   => open,
       trg_clk8x => trg_clk_oversample,
       daq_clk   => open,
       locked    => locked,
-      clk_in1   => clock_i
+      clk_in1   => clock_i_dly2
       );
 
   clk200 <= trg_clk_oversample;
