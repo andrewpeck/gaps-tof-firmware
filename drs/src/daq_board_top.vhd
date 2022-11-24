@@ -108,7 +108,6 @@ architecture Behavioral of top_readout_board is
   signal clock_i            : std_logic := '0';
   signal clk200             : std_logic := '0';
   signal clock_i_dly        : std_logic := '0';
-  signal clock_i_dly2       : std_logic := '0';
   signal trg_clk_oversample : std_logic := '0';
   signal locked             : std_logic;
 
@@ -398,17 +397,6 @@ begin
       dout  => clock_i_dly
       );
 
-  idelay_clk2 : entity work.idelay
-    generic map (
-      PATTERN => "clock"
-      )
-    port map (
-      clock => trg_clk_oversample,
-      taps  => clock_tap_delays,
-      din   => clock_i_dly,
-      dout  => clock_i_dly2
-      );
-
   clock_wizard_inst : clock_wizard
     port map (
       drs_clk   => clock,
@@ -416,7 +404,7 @@ begin
       trg_clk8x => trg_clk_oversample,
       daq_clk   => open,
       locked    => locked,
-      clk_in1   => clock_i_dly2
+      clk_in1   => clock_i_dly
       );
 
   clk200 <= trg_clk_oversample;

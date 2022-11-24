@@ -40,7 +40,7 @@ package registers is
     constant REG_CHIP_CLK_IDELAY_ADDR    : std_logic_vector(9 downto 0) := "00" & x"02";
     constant REG_CHIP_CLK_IDELAY_MSB    : integer := 4;
     constant REG_CHIP_CLK_IDELAY_LSB     : integer := 0;
-    constant REG_CHIP_CLK_IDELAY_DEFAULT : std_logic_vector(4 downto 0) := '1' & x"f";
+    constant REG_CHIP_CLK_IDELAY_DEFAULT : std_logic_vector(4 downto 0) := '0' & x"f";
 
     constant REG_READOUT_ROI_MODE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"10";
     constant REG_READOUT_ROI_MODE_BIT    : integer := 0;
