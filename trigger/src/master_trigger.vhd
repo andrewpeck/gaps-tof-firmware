@@ -21,6 +21,7 @@ use unisim.vcomponents.all;
 -- CCB Schematics: http://ohm.bu.edu/~apeck/20220516_gaps_mt_data_package/20220516_GAPS_CCBv1/GAPS_CCBv1_docs/CCB_Schematics.pdf
 -- DSI Schematics: http://ohm.bu.edu/~apeck/20220516_gaps_mt_data_package/20220516_GAPS_DSIv1/GAPS_DSIv1_docs/Schematics%20DAQ%20Stack%20Interface.pdf
 -- LTB Schematics: http://weber.bu.edu/~apeck/schematics/GAPS/GAPSLocalTriggerV6/GAPSLocalTriggerV6.pdf
+-- Callisto Schematics: https://numato.com/help/wp-content/uploads/2018/06/CallistoK7Sch.pdf
 
 entity gaps_mt is
   generic (
@@ -392,19 +393,17 @@ begin
   -- take in a global clock, generate system clocks at the correct frequency
   --------------------------------------------------------------------------------
 
-  sys_clk_bufg : BUFG
-    port map(
-      i => sys_clk_i,
-      o => sys_clk
-      );
-
   clocking : entity work.clocking
     generic map (
-      NUM_DSI => NUM_DSI
+      NUM_DSI => NUM_DSI,
+      EXT_CLK => false
       )
     port map (
       clk_p     => clk_p,
       clk_n     => clk_n,
+
+      sys_clk_i => sys_clk_i,
+      sys_clk_o => sys_clk,
 
       lvs_sync => lvs_sync,
       ccb_sync => lvs_sync_ccb,

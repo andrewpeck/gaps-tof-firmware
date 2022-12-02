@@ -8,11 +8,15 @@ use unisim.vcomponents.all;
 
 entity clocking is
   generic (
-    NUM_DSI : natural := 5
+    NUM_DSI : natural := 5;
+    EXT_CLK : boolean := true
     );
   port(
     clk_p : in std_logic;
     clk_n : in std_logic;
+
+    sys_clk_i : in  std_logic;
+    sys_clk_o : out std_logic;
 
     lvs_sync : out std_logic_vector(NUM_DSI-1 downto 0);
     ccb_sync : out std_logic;
@@ -45,6 +49,8 @@ architecture structural of clocking is
       clk_in1   : in  std_logic
       );
   end component;
+
+  signal sys_clk : std_logic := '0';
 
   signal clk_i, clk_i_bufg : std_logic := '0';
 
@@ -93,18 +99,51 @@ begin
   lvs_sync(3) <= srll(64);
   lvs_sync(4) <= srll(80);
 
-  osc_ibuf : IBUFDS
+  --------------------------------------------------------------------------------
+  -- Always running sysclk
+  --------------------------------------------------------------------------------
+
+  sys_clk_bufg : BUFG
     port map(
-      i  => clk_p,
-      ib => clk_n,
-      o  => clk_i
+      i => sys_clk_i,
+      o => sys_clk
       );
 
-  BUFG_inst : BUFG
-    port map (
-      O => clk_i_bufg,                  -- 1-bit output: Clock output.
-      I => clk_i                        -- 1-bit input: Clock input.
-      );
+  --------------------------------------------------------------------------------
+  -- Using external clock from CCB, route the diff clock through ibufds and bufg
+  --------------------------------------------------------------------------------
+
+  ccb_clk : if (EXT_CLK) generate
+
+    osc_ibuf : IBUFDS
+      port map(
+        i  => clk_p,
+        ib => clk_n,
+        o  => clk_i
+        );
+
+    BUFG_inst : BUFG
+      port map (
+        O => clk_i_bufg,                -- 1-bit output: Clock output.
+        I => clk_i                      -- 1-bit input: Clock input.
+        );
+
+    sys_clk_o <= sys_clk;
+
+  end generate;
+
+  --------------------------------------------------------------------------------
+  -- Using the numato's oscillator, just take the sysclk which is already on a bufg
+  --------------------------------------------------------------------------------
+
+  xo_clk : if (not EXT_CLK) generate
+    clk_i_bufg <= sys_clk;
+    sys_clk_o  <= clk100;
+  end generate;
+
+  --------------------------------------------------------------------------------
+  -- clock wizard
+  --------------------------------------------------------------------------------
 
   clocking : mt_clk_wiz
     port map (
