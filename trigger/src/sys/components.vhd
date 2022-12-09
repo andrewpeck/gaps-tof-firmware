@@ -10,7 +10,7 @@ package components is
       clk     : in std_logic;
       probe0  : in std_logic_vector(7 downto 0);
       probe1  : in std_logic_vector(7 downto 0);
-      probe2  : in std_logic_vector(2 downto 0);
+      probe2  : in std_logic_vector(3 downto 0);
       probe3  : in std_logic_vector(31 downto 0)
     );
   end component;

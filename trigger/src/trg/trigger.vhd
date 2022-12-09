@@ -15,8 +15,9 @@ entity trigger is
 
     reset : in std_logic;
 
-    single_hit_en_i : in std_logic := '1';
-    ucla_trig_en_i  : in std_logic := '1';
+    single_hit_en_i : in std_logic := '0';
+    ucla_trig_en_i  : in std_logic := '0';
+    ssl_trig_en_i   : in std_logic := '0';
 
     all_triggers_are_global : in std_logic := '1';
 
@@ -53,6 +54,14 @@ architecture behavioral of trigger is
   signal top_2_ab, bottom_2_ab : std_logic;
   signal top_3_ab, bottom_3_ab : std_logic;
   signal top_4_ab, bottom_4_ab : std_logic;
+
+  --------------------------------------------------------------------------------
+  -- SSL Trigger
+  --------------------------------------------------------------------------------
+
+  signal ssl_trigger : std_logic := '0';
+  signal ssl_top     : std_logic_vector(7 downto 0);
+  signal ssl_bot     : std_logic_vector(7 downto 0);
 
   --------------------------------------------------------------------------------
   -- Global trigger
@@ -114,9 +123,9 @@ begin
   ila_trigger_inst : ila_trigger
     port map (
       clk    => clk,
-      probe0 => x"0" & top_4_ab & top_3_ab & top_2_ab & top_1_ab,
-      probe1 => x"0" & bottom_4_ab & bottom_3_ab & bottom_2_ab & bottom_1_ab,
-      probe2 => global_trigger & dead & ucla_trigger,
+      probe0 => ssl_top,
+      probe1 => ssl_bot,
+      probe2 => ssl_trigger & global_trigger & dead & ucla_trigger,
       probe3 => event_cnt_o
       );
 
@@ -129,16 +138,30 @@ begin
   bottom_3_ab <= hitmask(2);
   bottom_4_ab <= hitmask(3);
 
-  top_1_ab    <= hitmask(4);
-  top_2_ab    <= hitmask(5);
-  top_3_ab    <= hitmask(6);
-  top_4_ab    <= hitmask(7);
+  top_1_ab <= hitmask(4);
+  top_2_ab <= hitmask(5);
+  top_3_ab <= hitmask(6);
+  top_4_ab <= hitmask(7);
 
   process (clk) is
   begin
     if (rising_edge(clk)) then
       -- trigger on bottom paddle 1 (ch0 and ch1 on LTB) and top paddle 1 (ch7 and ch8 on LTB).
       ucla_trigger <= (bottom_1_ab and top_1_ab);
+    end if;
+  end process;
+
+  --------------------------------------------------------------------------------
+  -- SSL Cosmic Trigger
+  --------------------------------------------------------------------------------
+
+  ssl_top <= hitmask(7 downto 0);
+  ssl_bot <= hitmask(15 downto 8);
+
+  process (clk) is
+  begin
+    if (rising_edge(clk)) then
+      ssl_trigger <= or_reduce(ssl_top) and or_reduce(ssl_bot);
     end if;
   end process;
 
@@ -152,7 +175,8 @@ begin
       for I in 0 to per_channel_triggers'length-1 loop
         per_channel_triggers(I) <= not dead and (force_trigger_i or
                                                  (hitmask(I) and single_hit_en_i) or
-                                                 (ucla_trigger and ucla_trig_en_i));
+                                                 (ucla_trigger and ucla_trig_en_i) or
+                                                 (ssl_trigger and ssl_trig_en_i));
       end loop;
     end if;
   end process;
