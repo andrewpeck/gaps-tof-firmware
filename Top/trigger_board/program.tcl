@@ -11,23 +11,24 @@ proc program_flash {binfile devicename flash} {
     set program_hw_cfgmem [get_property PROGRAM.HW_CFGMEM $device]
 
     create_hw_cfgmem -hw_device $device [lindex [get_cfgmem_parts $flash] 0]
+
     set_property PROGRAM.BLANK_CHECK 0 [get_property PROGRAM.HW_CFGMEM $device]
-    set_property PROGRAM.ERASE 1 [ get_property PROGRAM.HW_CFGMEM [lindex [get_hw_devices xc7k160t_0] 0]]
-    set_property PROGRAM.CFG_PROGRAM  1 [get_property PROGRAM.HW_CFGMEM $device]
-    set_property PROGRAM.VERIFY  1 [get_property PROGRAM.HW_CFGMEM $device]
-    set_property PROGRAM.CHECKSUM  0 [get_property PROGRAM.HW_CFGMEM $device]
+    set_property PROGRAM.ERASE       1 [get_property PROGRAM.HW_CFGMEM $device]
+    set_property PROGRAM.CFG_PROGRAM 1 [get_property PROGRAM.HW_CFGMEM $device]
+    set_property PROGRAM.VERIFY      1 [get_property PROGRAM.HW_CFGMEM $device]
+    set_property PROGRAM.CHECKSUM    0 [get_property PROGRAM.HW_CFGMEM $device]
 
     refresh_hw_device -quiet $device
 
-    set_property PROGRAM.ADDRESS_RANGE  {use_file} [get_property PROGRAM.HW_CFGMEM $device]
-    set_property PROGRAM.FILES [list "$binfile" ] [get_property PROGRAM.HW_CFGMEM $device]
-    set_property PROGRAM.PRM_FILE {} [get_property PROGRAM.HW_CFGMEM $device]
+    set_property PROGRAM.ADDRESS_RANGE          {use_file}  [get_property PROGRAM.HW_CFGMEM $device]
+    set_property PROGRAM.FILES           [list "$binfile" ] [get_property PROGRAM.HW_CFGMEM $device]
+    set_property PROGRAM.PRM_FILE               {}          [get_property PROGRAM.HW_CFGMEM $device]
     set_property PROGRAM.UNUSED_PIN_TERMINATION {pull-none} [get_property PROGRAM.HW_CFGMEM $device]
-    set_property PROGRAM.BLANK_CHECK  0 [get_property PROGRAM.HW_CFGMEM $device]
-    set_property PROGRAM.ERASE  1 [get_property PROGRAM.HW_CFGMEM $device]
-    set_property PROGRAM.CFG_PROGRAM  1 [get_property PROGRAM.HW_CFGMEM $device]
-    set_property PROGRAM.VERIFY  1 [get_property PROGRAM.HW_CFGMEM $device]
-    set_property PROGRAM.CHECKSUM  0 [get_property PROGRAM.HW_CFGMEM $device]
+    set_property PROGRAM.BLANK_CHECK            0           [get_property PROGRAM.HW_CFGMEM $device]
+    set_property PROGRAM.ERASE                  1           [get_property PROGRAM.HW_CFGMEM $device]
+    set_property PROGRAM.CFG_PROGRAM            1           [get_property PROGRAM.HW_CFGMEM $device]
+    set_property PROGRAM.VERIFY                 1           [get_property PROGRAM.HW_CFGMEM $device]
+    set_property PROGRAM.CHECKSUM               0           [get_property PROGRAM.HW_CFGMEM $device]
 
     create_hw_bitstream -hw_device $device [get_property PROGRAM.HW_CFGMEM_BITFILE $device];
     program_hw_devices $device;
@@ -109,18 +110,20 @@ foreach target $targets {
             gets stdin select
             if {[string equal $select "y"]} {
                 program_flash $binfile "xc7k160t_0" "mt25ql01g-spi-x1_x2_x4"
+                boot_hw_device  [lindex [get_hw_devices xc7k160t_0] 0]
+                set programmed "True"
             }
         }
 
-        puts " > Programming FPGA"
-        current_hw_device [get_hw_devices $device]
-        refresh_hw_device -quiet -update_hw_probes false $device
-        set_property PROGRAM.FILE $bitfile $device
-        set_property PROBES.FILE $ltxfile $device
-        set_property FULL_PROBES.FILE $ltxfile $device
-        program_hw_devices $device
-
+        if {[string equal $programmed "True"] == 0} {
+            puts " > Programming FPGA"
+            current_hw_device [get_hw_devices $device]
+            refresh_hw_device -quiet -update_hw_probes false $device
+            set_property PROGRAM.FILE $bitfile $device
+            set_property PROBES.FILE $ltxfile $device
+            set_property FULL_PROBES.FILE $ltxfile $device
+            program_hw_devices $device
+        }
     }
     close_hw_target
 }
-
