@@ -20,10 +20,10 @@ set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
 ################################################################################
 
 # flash cs_n is also hk_cs_n1
-# flash dq0 is also hk_din
-# flash dq1 is also hk_dout
-# flash_dq2 is hk_clk
-# flash_dq3 is hk_csn_1
+# flash dq0  is also hk_din
+# flash dq1  is also hk_dout
+# flash_dq2  is hk_clk
+# flash_dq3  is hk_csn_0
 #
 # For SPI x4: Connect D02 to the SPI flash quad data bit
 # 2 output (DQ2/W#/WP#/IO2) pin and connect to an
@@ -32,13 +32,12 @@ set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
 # For SPI x4: Connect D03 to the SPI flash quad data bit
 # 3 output (DQ3/HOLD#/IO3) pin and connect to an
 # external 4.7kohm pull-up resistor to VCCO_14.
-#
-# set_property -dict { PACKAGE_PIN "C23"    IOSTANDARD LVCMOS33    SLEW FAST} [get_ports { SPI_CS_N }]     ;              # IO_L6P_T0_FCS_B_14            Sch = FLASH_CS_N
-# set_property -dict { PACKAGE_PIN "B24"    IOSTANDARD LVCMOS33    SLEW FAST} [get_ports { SPI_DQ[0] }]    ;              # IO_L1P_T0_D00_MOSI_14         Sch = FLASH_DQ0
-# set_property -dict { PACKAGE_PIN "A25"    IOSTANDARD LVCMOS33    SLEW FAST} [get_ports { SPI_DQ[1] }]    ;              # IO_L1N_T0_D01_DIN_14          Sch = FLASH_DQ1
-# set_property -dict { PACKAGE_PIN "B22"    IOSTANDARD LVCMOS33    SLEW FAST} [get_ports { SPI_DQ[2] }]    ;              # IO_L2P_T0_D02_14              Sch = FLASH_DQ2
-# set_property -dict { PACKAGE_PIN "A22"    IOSTANDARD LVCMOS33    SLEW FAST} [get_ports { SPI_DQ[3] }]    ;              # IO_L2N_T0_D03_14              Sch = FLASH_DQ3
-# set_property -dict { PACKAGE_PIN "C8"     IOSTANDARD LVCMOS33    SLEW FAST} [get_ports { SPI_SCK }]      ;              # CCLK_0                        Sch = FLASH_SCK
+
+set_property -dict { PACKAGE_PIN "C23"    IOSTANDARD LVCMOS33    SLEW FAST} [get_ports { spi_cs_n }]     ;              # IO_L6P_T0_FCS_B_14            Sch = FLASH_CS_N
+set_property -dict { PACKAGE_PIN "B24"    IOSTANDARD LVCMOS33    SLEW FAST} [get_ports { spi_dq[0] }]    ;              # IO_L1P_T0_D00_MOSI_14         Sch = FLASH_DQ0
+set_property -dict { PACKAGE_PIN "A25"    IOSTANDARD LVCMOS33    SLEW FAST} [get_ports { spi_dq[1] }]    ;              # IO_L1N_T0_D01_DIN_14          Sch = FLASH_DQ1
+set_property -dict { PACKAGE_PIN "B22"    IOSTANDARD LVCMOS33    SLEW FAST} [get_ports { spi_dq[2] }]    ;              # IO_L2P_T0_D02_14              Sch = FLASH_DQ2
+set_property -dict { PACKAGE_PIN "A22"    IOSTANDARD LVCMOS33    SLEW FAST} [get_ports { spi_dq[3] }]    ;              # IO_L2N_T0_D03_14              Sch = FLASH_DQ3
 
 ################################################################################
 # Input Clocks

@@ -90,10 +90,13 @@ entity gaps_mt is
     clk_src_sel  : out std_logic; -- 1 == ext clock
 
     -- housekeeping adcs
-    hk_cs_n : out std_logic_vector(1 downto 0);
-    hk_clk  : out std_logic;
-    hk_dout : in  std_logic; -- master in, slave out
-    hk_din  : out std_logic; -- master out, slave in
+    -- hk_cs_n : out std_logic_vector(1 downto 0);
+    -- hk_clk  : out std_logic;
+    -- hk_dout : in  std_logic; -- master in, slave out
+    -- hk_din  : out std_logic; -- master out, slave in
+
+    spi_cs_n : in std_logic;
+    spi_dq   : in std_logic_vector (3 downto 0);
 
     ext_io  : inout std_logic_vector (13 downto 0);
 
@@ -911,8 +914,13 @@ begin
         probe2(18 downto 14)  => lvs_sync,
         probe2(68 downto 19)  => lt_data_i_pri,
         probe2(69)            => clk_src_sel,
-        probe2(74 downto 70)  => (others => '0'),
-        probe3(7 downto 0)    => (others => '0'),
+        probe2(70)            => spi_cs_n,
+        probe2(71)            => '0',
+        probe2(72)            => '0',
+        probe2(73)            => '0',
+        probe2(74)            => '0',
+        probe3(3 downto 0)    => spi_dq,
+        probe3(7 downto 4)    => (others => '0'),
         probe4(7 downto 0)    => (others => '0'),
         probe5(0)             => lvs_sync_ccb,
         probe6(0)             => hk_ext_clk,
