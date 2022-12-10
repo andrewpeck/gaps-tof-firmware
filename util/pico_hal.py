@@ -9,8 +9,7 @@ PORT = 50001
 
 # Create a UDP socket and bind the socket to the port
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-target_address = (IPADDR, PORT)
-# s.bind(target_address)
+target_address = ("", 0)
 
 READ = 0
 WRITE = 1
@@ -198,16 +197,22 @@ if __name__ == '__main__':
 
     argParser = argparse.ArgumentParser(description = "Argument parser")
 
-    argParser.add_argument('--ucla_trig_en', action='store_true', default=False, help="Enable UCLA trigger")
-    argParser.add_argument('--ssl_trig_en', action='store_true', default=False, help="Enable SSL trigger")
-    argParser.add_argument('--any_trig_en', action='store_true', default=False, help="Enable ANY trigger")
+    argParser.add_argument('--ip',            action='store',      default=False, help="IP Address")
+    argParser.add_argument('--ucla_trig_en',  action='store_true', default=False, help="Enable UCLA trigger")
+    argParser.add_argument('--ssl_trig_en',   action='store_true', default=False, help="Enable SSL trigger")
+    argParser.add_argument('--any_trig_en',   action='store_true', default=False, help="Enable ANY trigger")
     argParser.add_argument('--ucla_trig_dis', action='store_true', default=False, help="Disable UCLA trigger")
-    argParser.add_argument('--ssl_trig_dis', action='store_true', default=False, help="Disable SSL trigger")
-    argParser.add_argument('--any_trig_dis', action='store_true', default=False, help="Disable ANY trigger")
-    argParser.add_argument('--read_adc', action='store_true', default=False, help="Read ADCs")
-    argParser.add_argument('--loopback', action='store_true', default=False, help="Loopback")
+    argParser.add_argument('--ssl_trig_dis',  action='store_true', default=False, help="Disable SSL trigger")
+    argParser.add_argument('--any_trig_dis',  action='store_true', default=False, help="Disable ANY trigger")
+    argParser.add_argument('--read_adc',      action='store_true', default=False, help="Read ADCs")
+    argParser.add_argument('--loopback',      action='store_true', default=False, help="Ethernet Loopback")
 
     args = argParser.parse_args()
+
+    if args.ip:
+        IPADDR = args.ip
+
+    target_address = (IPADDR, PORT)
 
     if args.ucla_trig_en:
         set_ucla_trigger(1)
