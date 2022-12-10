@@ -193,20 +193,27 @@ def read_adcs():
     return([headers]+table)
 
 def set_ucla_trigger(val):
+    bit = 1
+    if val:
+        val = bit
     rd = rReg(0xb)
-    wr = (rd & (0xffffffff ^ 1)) | (val & 0x1)
+    wr = (rd & (0xffffffff ^ bit)) | val
     wReg(0xb, wr, verify=True)
 
 def set_ssl_trigger(val):
     bit = 2
+    if val:
+        val = bit
     rd = rReg(0xb)
-    wr = (rd & (0xffffffff ^ bit)) | (val & bit)
+    wr = (rd & (0xffffffff ^ bit)) | val
     wReg(0xb, wr, verify=True)
 
 def set_any_trigger(val):
     bit = 4
+    if val:
+        val = bit
     rd = rReg(0xb)
-    wr = (rd & (0xffffffff ^ bit)) | (val & bit)
+    wr = (rd & (0xffffffff ^ bit)) | val
     wReg(0xb, wr, verify=True)
 
 def loopback(nreads=10000):
