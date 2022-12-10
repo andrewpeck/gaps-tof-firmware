@@ -142,13 +142,18 @@ def wSpiCtrl(char_len=None, go=None, rx_neg=None, tx_neg=None, lsb=None, ie=None
 def rSpi(channel=0, adc=0):
     wReg(div_addr, 127, verify=False)
     # 0x18 start bit + for single ended
-    wSpiWord((0x18 | (0x7 & channel)) << 15)
+    wSpiWord((0x18 | (0x7 & channel)) << 16)
     wSpiCtrl(go=0)
-    wSpiCtrl(ass=1, tx_neg=1, char_len=28)
+    wSpiCtrl(ass=1, tx_neg=1, char_len=24)
     wSpiCtrl(go=1)
     wSpiCtrl(go=0)
     wSpiSS(0x1 << adc)
     return rReg(d_addr[0])
+
+def read_adc(adc, ch, shift=2):
+    data = rSpi(ch, adc)
+    data = (data >> shift) & 0xfff
+    return data
 
 def read_adcs():
 
@@ -177,16 +182,15 @@ def read_adcs():
 
     for adc in range(2):
         for channel in range(8):
-            data = rSpi(channel, adc)
-            data = (data >> 3) & 0xfff
+            ichn = adc*8 + channel
+            data = sum(read_adc(adc, channel) for _ in range(5)) / 5.0
             value = 2.5 * data / (2**12-1)
 
-            ichn = adc*8 + channel
             table.append([ichn,
-                          "0x%03X" % data,
-                          "%4.2f %s" % (value / channels[ichn]["conversion"], channels[ichn]["unit"]),
-                          channels[ichn]["function"],
-                          ])
+                        "0x%03X" % int(data),
+                        "%4.2f %s" % (value / channels[ichn]["conversion"], channels[ichn]["unit"]),
+                        channels[ichn]["function"],
+                        ])
 
     print(tabulate(table, headers=headers,  tablefmt="simple_outline"))
 
