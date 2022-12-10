@@ -82,6 +82,8 @@ specifies the logic analyzer probe connectivity, respectively:
 [[file:./images/screenshot-08.png]]
 
 Program Device or Boot from Configuration Memory Device
+- If the correct firmware is already on the flash, you can Boot from Configuration Memory Device
+- If you want to load the bitstream you specified directly onto the FPGA, you can click Program Device instead.
 
 [[file:./images/screenshot-06.png]]
 
@@ -150,6 +152,7 @@ Calling ~python3 pico_hal.py --help~ will print a help menu, a snapshot of which
 
 #+begin_src
   -h, --help       show this help message and exit
+  --ip             Set the MT IP address
   --ucla_trig_en   Enable UCLA trigger
   --ssl_trig_en    Enable SSL trigger
   --any_trig_en    Enable ANY trigger
