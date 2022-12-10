@@ -9,8 +9,7 @@ PORT = 50001
 
 # Create a UDP socket and bind the socket to the port
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-target_address = (IPADDR, PORT)
-# s.bind(target_address)
+target_address = ("", 0)
 
 READ = 0
 WRITE = 1
@@ -152,17 +151,46 @@ def rSpi(channel=0, adc=0):
     return rReg(d_addr[0])
 
 def read_adcs():
+
+    from tabulate import tabulate
+
+    channels = [
+        {"function": "NC", "conversion": 1, "unit": "V"},
+        {"function": "DSI1 Current", "conversion": 1, "unit": "A"},
+        {"function": "DSI2 Current", "conversion": 1, "unit": "A"},
+        {"function": "DSI3 Current", "conversion": 1, "unit": "A"},
+        {"function": "DSI4 Current", "conversion": 1, "unit": "A"},
+        {"function": "DSI5 Current", "conversion": 1, "unit": "A"},
+        {"function": "NC", "conversion": 1, "unit": "V"},
+        {"function": "CCB Current", "conversion": 0.1, "unit": "A"},
+        {"function": "12V Voltage", "conversion": 0.1, "unit": "V"},
+        {"function": "3.3V Voltage", "conversion": 0.5, "unit": "V"},
+        {"function": "2.5V Voltage", "conversion": 0.5, "unit": "V"},
+        {"function": "Misc 0", "conversion": 1, "unit": "V"},
+        {"function": "Misc 1", "conversion": 1, "unit": "V"},
+        {"function": "Misc 2", "conversion": 1, "unit": "V"},
+        {"function": "Misc 3", "conversion": 1, "unit": "V"},
+        {"function": "NC", "conversion": 1, "unit": "V"},]
+
+    headers = ["Ch", "Reading", "Value", "Function"]
+    table = []
+
     for adc in range(2):
         for channel in range(8):
             data = rSpi(channel, adc)
-            data = 2.5 * ((data>>3) & 0xfff) / (2**12-1)
+            data = (data >> 3) & 0xfff
+            value = 2.5 * data / (2**12-1)
 
-            if adc== 1 and (channel == 0):
-                data = data*10
-            if adc== 1 and (channel == 1 or channel == 2):
-                data = data*2
+            ichn = adc*8 + channel
+            table.append([ichn,
+                          "0x%03X" % data,
+                          "%4.2f %s" % (value / channels[ichn]["conversion"], channels[ichn]["unit"]),
+                          channels[ichn]["function"],
+                          ])
 
-            print("adc%d ch%d %f" % (adc, channel, data))
+    print(tabulate(table, headers=headers,  tablefmt="simple_outline"))
+
+    return([headers]+table)
 
 def set_ucla_trigger(val):
     rd = rReg(0xb)
@@ -198,16 +226,22 @@ if __name__ == '__main__':
 
     argParser = argparse.ArgumentParser(description = "Argument parser")
 
-    argParser.add_argument('--ucla_trig_en', action='store_true', default=False, help="Enable UCLA trigger")
-    argParser.add_argument('--ssl_trig_en', action='store_true', default=False, help="Enable SSL trigger")
-    argParser.add_argument('--any_trig_en', action='store_true', default=False, help="Enable ANY trigger")
+    argParser.add_argument('--ip',            action='store',      default=False, help="IP Address")
+    argParser.add_argument('--ucla_trig_en',  action='store_true', default=False, help="Enable UCLA trigger")
+    argParser.add_argument('--ssl_trig_en',   action='store_true', default=False, help="Enable SSL trigger")
+    argParser.add_argument('--any_trig_en',   action='store_true', default=False, help="Enable ANY trigger")
     argParser.add_argument('--ucla_trig_dis', action='store_true', default=False, help="Disable UCLA trigger")
-    argParser.add_argument('--ssl_trig_dis', action='store_true', default=False, help="Disable SSL trigger")
-    argParser.add_argument('--any_trig_dis', action='store_true', default=False, help="Disable ANY trigger")
-    argParser.add_argument('--read_adc', action='store_true', default=False, help="Read ADCs")
-    argParser.add_argument('--loopback', action='store_true', default=False, help="Loopback")
+    argParser.add_argument('--ssl_trig_dis',  action='store_true', default=False, help="Disable SSL trigger")
+    argParser.add_argument('--any_trig_dis',  action='store_true', default=False, help="Disable ANY trigger")
+    argParser.add_argument('--read_adc',      action='store_true', default=False, help="Read ADCs")
+    argParser.add_argument('--loopback',      action='store_true', default=False, help="Ethernet Loopback")
 
     args = argParser.parse_args()
+
+    if args.ip:
+        IPADDR = args.ip
+
+    target_address = (IPADDR, PORT)
 
     if args.ucla_trig_en:
         set_ucla_trigger(1)
