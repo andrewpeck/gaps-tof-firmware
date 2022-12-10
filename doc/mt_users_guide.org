@@ -1,0 +1,161 @@
+#+title: Master Trigger Users Guide
+
+** Programming the MTB Firmware
+
+Pre-compiled binary archives can be downloaded from Gitlab.com.
+
+Contained in the archive is a script ~program.sh~. Running this script (with Vivado in your path) will
+program the MTB.
+
+If multiple targets are found on the hardware server, a prompt will show up asking which one to
+program:
+
+#+begin_src
+Multiple hardware targets found
+  > 0 localhost:2542/xilinx_tcf/Xilinx/00001a0571cd01
+      xc7k160t_0
+  > 1 localhost:2542/xilinx_tcf/Xilinx/13724327082d01
+      xc7a100t_0
+  > "all" to program all
+Please select a target:
+#+end_src
+
+We should select ~xc7k160t_0~ (the MTB FPGA) by entering ~0~ at the prompt.
+
+Since the MTB has a integrated flash memory, an option to reprogram the flash is also offered:
+
+#+begin_src
+Master trigger board selected... do you want to program the Flash? y/n
+#+end_src
+
+Programming the flash is persistent across power cycles but rather slow. If you skip flash
+programming (by entering ~n~ at the prompt) the FPGA will be configured directly through JTAG.
+
+
+** Vivado Logic Analyzer Usage
+
+Internals of the MTB firmware can be inspected by using the Vivado Integrated Logic Analyzer.
+
+*** Requirements:
+
+1. A Xilinx programming dongle (e.g. Platform USB-II or a clone) connected to the MTB
+2. A computer with Vivado or Vivado Lab Tools installed and connected to the programming dongle
+
+*** Instructions:
+
+**** Launch Vivado
+
+Make sure that vivado is in your path by sourcing the Vivado settings script, e.g.
+
+#+begin_src  bash
+source /opt/Xilinx/Vivado/2020.1/settings64.sh
+#+end_src
+
+Vivado can they be started with ~vivado~ or ~vivado_lab~ (depending on the installation).
+
+**** Start the hardware manager
+
+[[file:./images/screenshot-01.png]]
+
+**** Connect to the hardware target
+
+If the hardware target is local (i.e. you are running vivado on the machine physically connected to the USB dongle)
+If the hardware target is remote, please see the SSH forwarding instructions below.
+
+[[file:./images/screenshot-02.png]]
+
+Autoconnect:
+
+[[file:./images/screenshot-03.png]]
+
+Open Target
+
+[[file:./images/screenshot-04.png]]
+
+[[file:./images/screenshot-05.png]]
+
+**** Load the bitstream / ltx file
+
+Load the ~.bit~ and ~.ltx~ file which are the bitstream itself and the configuration file which
+specifies the logic analyzer probe connectivity, respectively:
+
+[[file:./images/screenshot-08.png]]
+
+Program Device or Boot from Configuration Memory Device
+
+[[file:./images/screenshot-06.png]]
+
+If the firmware is correctly loaded, you should see something like this:
+
+[[file:./images/screenshot-07.png]]
+
+**** ILA Usage
+
+The Integrated Logic Analyzer (ILA) functions similarly to a real logic analyzer or oscilloscope.
+There are a variety of signals which are probed, and a trigger setup menu which allows you to
+trigger on specified conditions. The conditions are somewhat restricted but good enough for most uses.
+
+[[file:./images/screenshot-09.png]]
+
+- Trigger conditions can be modified by dragging signals from the waveforms into the trigger setup
+  menu and specifying the desired pattern
+- You can zoom and in and out using the buttons at the top of the waveform view or scrolling with
+  Ctrl + mousewheel
+- You can have the scope wait for trigger by pressing the right triangle button (▶).
+- You can have the scope trigger immediate by pressing the double right triangle (⏩).
+- Triggers can be cyclically repeated similar to an oscilloscope's "auto" trigger mode using the
+  triangle with a looping back arrow (one left of the normal trigger button).
+
+Multiple ILAs coexist in the firmware, and are completely independent. It is not possible to setup
+triggers which are correlated across the different ILAs.
+- One ILA is devoted to the trigger block itself, and is likely the thing of the most interest.
+- One ILA is in the top level logic and contains a lot of miscellaneous signals that have been
+  useful in debugging.
+- One ILA is monitoring the input deserialization of one of the LTB RX signals.
+
+The signals monitored by the ILAs evolve frequently as debugging and testing is ongoing, so the
+details of the signals are not documented here.
+
+The names in the waveform viewer match the names in the VHDL source code and hovering over the
+signals with a mouse gives the fully qualified path in the hierarchy to the signal so that it is
+easy to cross-reference in the firmware itself.
+
+*** SSH forwarding the hardware server
+
+For remote debugging, Vivado can efficiently tunnel the hardware server through SSH so that you
+don't need to graphically forward (e.g. through xforwarding or X2GO) the entire client.
+
+To do this, first start the hardware server on the remote machine connected to the MTB.
+
+#+begin_src bash
+hw_server
+#+end_src
+
+Then from your local computer forward port 3121 on the remote machine to e.g. 2542 on the local machine.
+
+#+begin_src
+ssh -C  -L 2542:localhost:3121 tof-gfp-computer-ucla
+#+end_src
+
+Then, in vivado you can connect to a hardware manager on the local machine's port 2542:
+
+ - Open Target -> Open New Target -> Next -> Remote Server / localhost / 2542
+
+** Control Software
+
+The control software is found in ~util/pico_hal.py~. It is a simple python script that can be
+controlled from the command line.
+
+Calling ~python3 pico_hal.py --help~ will print a help menu, a snapshot of which is shown below.
+
+#+begin_src
+  -h, --help       show this help message and exit
+  --ucla_trig_en   Enable UCLA trigger
+  --ssl_trig_en    Enable SSL trigger
+  --any_trig_en    Enable ANY trigger
+  --ucla_trig_dis  Disable UCLA trigger
+  --ssl_trig_dis   Disable SSL trigger
+  --any_trig_dis   Disable ANY trigger
+  --read_adc       Read ADCs
+  --loopback       Loopback
+#+end_src
