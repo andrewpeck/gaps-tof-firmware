@@ -298,7 +298,7 @@ begin
     end if;
   end process;
 
-  clk_src_sel <= '1';
+  clk_src_sel <= '0';
 
   ipb_reset <= reset;
   ipb_clk   <= clock;
