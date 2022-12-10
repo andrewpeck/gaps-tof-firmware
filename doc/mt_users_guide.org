@@ -2,7 +2,10 @@
 
 ** Programming the MTB Firmware
 
-Pre-compiled binary archives can be downloaded from Gitlab.com.
+Pre-compiled binary archives can be downloaded from Gitlab.com, either as:
+- A tagged release: https://gitlab.com/ucla-gaps-tof/firmware/-/tags
+- Directly from the CI pipeline on the relevant merge request:
+  - Merge Requests ⟶ Choose a MR ⟶ Pipelines ⟶ Choose the latest ⟶ GEN:trigger_board -⟶ Job artifacts Download
 
 Contained in the archive is a script ~program.sh~. Running this script (with Vivado in your path) will
 program the MTB.
@@ -20,7 +23,8 @@ Multiple hardware targets found
 Please select a target:
 #+end_src
 
-We should select ~xc7k160t_0~ (the MTB FPGA) by entering ~0~ at the prompt.
+We should select ~xc7k160t_0~ (the MTB FPGA) by entering ~0~ at the prompt. The ordering of multiple
+hardware targets will depend on the particular system and what is connected.
 
 Since the MTB has a integrated flash memory, an option to reprogram the flash is also offered:
 
@@ -139,7 +143,7 @@ ssh -C  -L 2542:localhost:3121 tof-gfp-computer-ucla
 
 Then, in vivado you can connect to a hardware manager on the local machine's port 2542:
 
- - Open Target -> Open New Target -> Next -> Remote Server / localhost / 2542
+ - Open Target ⟶ Open New Target ⟶ Next ⟶ Remote Server / localhost / 2542
 
 ** Control Software
 
