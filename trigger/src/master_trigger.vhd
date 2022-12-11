@@ -539,7 +539,7 @@ begin
     input_rx : entity work.input_rx
       port map (
 
-        reset => reset,
+        reset_i => reset,
 
         -- system clock
         clk   => clk200,                 -- logic clock

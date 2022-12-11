@@ -35,6 +35,9 @@ use work.mt_types.all;
 use work.types_pkg.all;
 use work.components.all;
 
+library xpm;
+use xpm.vcomponents.all;
+
 entity input_rx is
   generic(
     NUM_INPUTS : positive := NUM_LT_MT_PRI;
@@ -42,7 +45,7 @@ entity input_rx is
     );
   port(
 
-    reset : in std_logic;
+    reset_i : in std_logic;
 
     clk   : in std_logic;
     clk90 : in std_logic;
@@ -59,12 +62,35 @@ end input_rx;
 
 architecture rtl of input_rx is
 
+  signal reset : std_logic := '0';
+
   signal data_bytes       : t_std8_array (NUM_INPUTS-1 downto 0);
   signal data_bytes_valid : std_logic_vector (NUM_INPUTS-1 downto 0) := (others => '0');
   signal data_rx          : std_logic_vector (NUM_INPUTS-1 downto 0);
   signal data_valid       : std_logic_vector (NUM_INPUTS-1 downto 0);
 
 begin
+
+  --------------------------------------------------------------------------------
+  -- Reset
+  --------------------------------------------------------------------------------
+
+  xpm_cdc_sync_rst_inst : xpm_cdc_sync_rst
+    generic map (
+      DEST_SYNC_FF   => 4, -- DECIMAL; range: 2-10
+      INIT           => 1, -- DECIMAL; 0=initialize synchronization registers to 0, 1=initialize synchronization registers to 1
+      INIT_SYNC_FF   => 0, -- DECIMAL; 0=disable simulation init values, 1=enable simulation init values
+      SIM_ASSERT_CHK => 0  -- DECIMAL; 0=disable simulation messages, 1=enable simulation messages
+      )
+    port map (
+      dest_rst => reset,  -- 1-bit output: src_rst synchronized to the destination clock domain. This output is registered.
+      dest_clk => clk,    -- 1-bit input: Destination clock.
+      src_rst  => reset_i -- 1-bit input: Source reset signal.
+      );
+
+  --------------------------------------------------------------------------------
+  -- Input Deserializer
+  --------------------------------------------------------------------------------
 
   assert data_bytes(0)'length = NUM_LT_BITS
     report "input rx data width does not match constant" severity error;

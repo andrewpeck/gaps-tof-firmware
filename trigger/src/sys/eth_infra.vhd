@@ -5,6 +5,9 @@ use ieee.numeric_std.all;
 
 use work.ipbus.all;
 
+library xpm;
+use xpm.vcomponents.all;
+
 entity eth_infra is
   generic(
     C_DEBUG : boolean := false
@@ -57,12 +60,12 @@ architecture rtl of eth_infra is
       MIN_FRAME_LENGTH  : integer
       );
     port (
-      gtx_clk   : in  std_logic;
-      gtx_clk90 : in  std_logic;
-      gtx_rst   : in  std_logic;
+      gtx_clk   : in std_logic;
+      gtx_clk90 : in std_logic;
+      gtx_rst   : in std_logic;
 
-      logic_clk :  in  std_logic;
-      logic_rst :  in  std_logic;
+      logic_clk : in std_logic;
+      logic_rst : in std_logic;
 
       -- AXI input
       tx_axis_tdata  : in  std_logic_vector(7 downto 0);
@@ -121,40 +124,23 @@ architecture rtl of eth_infra is
   signal speed              : std_logic_vector(1 downto 0);
   signal ifg_delay          : std_logic_vector (7 downto 0);
 
-  signal reset_ff  : std_logic := '0';
-
-  signal gtx_rst_r0, gtx_rst_r1, gtx_rst_r2 : std_logic := '1';
-  signal gtx_rst                            : std_logic := '1';
-
-  attribute async_reg     : string;
-  attribute shreg_extract : string;
-  attribute shreg_extract of gtx_rst_r0 : signal is "false";
-  attribute shreg_extract of gtx_rst_r1 : signal is "false";
-  attribute shreg_extract of gtx_rst_r2 : signal is "false";
-  attribute shreg_extract of gtx_rst    : signal is "false";
-  attribute async_reg of gtx_rst_r0     : signal is "true";
-  attribute async_reg of gtx_rst_r1     : signal is "true";
-  attribute async_reg of gtx_rst_r2     : signal is "true";
-  attribute async_reg of gtx_rst        : signal is "true";
+  signal gtx_rst  : std_logic := '1';
 
 begin
 
-  process (clock) is
-  begin
-    if (rising_edge(clock)) then
-      reset_ff <= reset;
-    end if;
-  end process;
+  xpm_cdc_sync_rst_inst : xpm_cdc_sync_rst
+    generic map (
+      DEST_SYNC_FF   => 4, -- DECIMAL; range: 2-10
+      INIT           => 1, -- DECIMAL; 0=initialize synchronization registers to 0, 1=initialize synchronization registers to 1
+      INIT_SYNC_FF   => 0, -- DECIMAL; 0=disable simulation init values, 1=enable simulation init values
+      SIM_ASSERT_CHK => 0  -- DECIMAL; 0=disable simulation messages, 1=enable simulation messages
+      )
+    port map (
+      dest_rst => gtx_rst, -- 1-bit output: src_rst synchronized to the destination clock domain. This output is registered.
+      dest_clk => gtx_clk, -- 1-bit input: Destination clock.
+      src_rst  => reset    -- 1-bit input: Source reset signal.
+      );
 
-  process (gtx_clk) is
-  begin
-    if (rising_edge(gtx_clk)) then
-      gtx_rst_r0 <= reset_ff;
-      gtx_rst_r1 <= gtx_rst_r0;
-      gtx_rst_r2 <= gtx_rst_r1;
-      gtx_rst    <= gtx_rst_r2;
-    end if;
-  end process;
   eth_mac_1g_rgmii_inst : eth_mac_1g_rgmii_fifo
     generic map (
       TARGET            => "XILINX",
@@ -205,11 +191,17 @@ begin
 
 
   ipbus_inst : entity work.ipbus_ctrl
+    generic map(
+      IP_CFG => EXTERNAL
+      )
     port map(
       mac_clk    => clock,
       rst_macclk => reset,
       ipb_clk    => clock,
       rst_ipb    => reset,
+
+      enable      => '1',
+      rarp_select => '0',
 
       mac_rx_data  => rx_axis_tdata,
       mac_rx_valid => rx_axis_tvalid,
