@@ -48,12 +48,9 @@ architecture behavioral of trigger is
   -- UCLA trigger
   --------------------------------------------------------------------------------
 
-  signal ucla_trigger : std_logic := '0';
-
-  signal top_1_ab, bottom_1_ab : std_logic;
-  signal top_2_ab, bottom_2_ab : std_logic;
-  signal top_3_ab, bottom_3_ab : std_logic;
-  signal top_4_ab, bottom_4_ab : std_logic;
+  signal ucla_trigger : std_logic                     := '0';
+  signal ucla_bottom  : std_logic_vector (3 downto 0) := (others => '0');
+  signal ucla_top     : std_logic_vector (3 downto 0) := (others => '0');
 
   --------------------------------------------------------------------------------
   -- SSL Trigger
@@ -100,6 +97,19 @@ begin
   end generate;
 
   --------------------------------------------------------------------------------
+  -- ILA
+  --------------------------------------------------------------------------------
+
+  ila_trigger_inst : ila_trigger
+    port map (
+      clk    => clk,
+      probe0 => ssl_top,
+      probe1 => ssl_bot,
+      probe2 => ssl_trigger & global_trigger & dead & ucla_trigger,
+      probe3 => event_cnt_o
+      );
+
+  --------------------------------------------------------------------------------
   -- UCLA trigger
   --
   -- 5 top paddles, 4 bottom paddles
@@ -120,39 +130,29 @@ begin
   --
   --------------------------------------------------------------------------------
 
-  ila_trigger_inst : ila_trigger
-    port map (
-      clk    => clk,
-      probe0 => ssl_top,
-      probe1 => ssl_bot,
-      probe2 => ssl_trigger & global_trigger & dead & ucla_trigger,
-      probe3 => event_cnt_o
-      );
+  ucla_bottom(0) <= hitmask(0);
+  ucla_bottom(1) <= hitmask(1);
+  ucla_bottom(2) <= hitmask(2);
+  ucla_bottom(3) <= hitmask(3);
 
-  --------------------------------------------------------------------------------
-  -- UCLA Cosmic Trigger
-  --------------------------------------------------------------------------------
-
-  bottom_1_ab <= hitmask(0);
-  bottom_2_ab <= hitmask(1);
-  bottom_3_ab <= hitmask(2);
-  bottom_4_ab <= hitmask(3);
-
-  top_1_ab <= hitmask(4);
-  top_2_ab <= hitmask(5);
-  top_3_ab <= hitmask(6);
-  top_4_ab <= hitmask(7);
+  ucla_top(0) <= hitmask(4);
+  ucla_top(1) <= hitmask(5);
+  ucla_top(2) <= hitmask(6);
+  ucla_top(3) <= hitmask(7);
 
   process (clk) is
   begin
     if (rising_edge(clk)) then
       -- trigger on bottom paddle 1 (ch0 and ch1 on LTB) and top paddle 1 (ch7 and ch8 on LTB).
-      ucla_trigger <= (bottom_1_ab and top_1_ab);
+      ucla_trigger <= ucla_bottom(1) and ucla_top(1);
     end if;
   end process;
 
   --------------------------------------------------------------------------------
   -- SSL Cosmic Trigger
+  --
+  -- One LTB has all top paddles, one LTB has all bottom paddles
+  -- Expect top on LTB0, bottom on LTB1
   --------------------------------------------------------------------------------
 
   ssl_top <= hitmask(7 downto 0);
