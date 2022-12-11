@@ -494,11 +494,16 @@ begin
   --------------------------------------------------------------------------------
 
   -- automatically disable dsi links which have bad feedback clocks
-  dsi_link_en <= repeat(fb_clk_ok(4), NUM_LT_MT_PRI/NUM_DSI) &
-                 repeat(fb_clk_ok(3), NUM_LT_MT_PRI/NUM_DSI) &
-                 repeat(fb_clk_ok(2), NUM_LT_MT_PRI/NUM_DSI) &
-                 repeat(fb_clk_ok(1), NUM_LT_MT_PRI/NUM_DSI) &
-                 repeat(fb_clk_ok(0), NUM_LT_MT_PRI/NUM_DSI);
+  process (clk200) is
+  begin
+    if (rising_edge(clk200)) then
+      dsi_link_en <= repeat(fb_clk_ok(4), NUM_LT_MT_PRI/NUM_DSI) &
+                     repeat(fb_clk_ok(3), NUM_LT_MT_PRI/NUM_DSI) &
+                     repeat(fb_clk_ok(2), NUM_LT_MT_PRI/NUM_DSI) &
+                     repeat(fb_clk_ok(1), NUM_LT_MT_PRI/NUM_DSI) &
+                     repeat(fb_clk_ok(0), NUM_LT_MT_PRI/NUM_DSI);
+    end if;
+  end process;
 
   -- dole out all 75 lt data inputs into 50 primary inputs,
   -- and 25 auxillary inputs
