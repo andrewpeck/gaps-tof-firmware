@@ -68,6 +68,7 @@ architecture rtl of input_rx is
   signal data_bytes_valid : std_logic_vector (NUM_INPUTS-1 downto 0) := (others => '0');
   signal data_rx          : std_logic_vector (NUM_INPUTS-1 downto 0);
   signal data_valid       : std_logic_vector (NUM_INPUTS-1 downto 0);
+  signal coarse_delays    : lt_coarse_delays_array_t;
 
 begin
 
@@ -87,6 +88,17 @@ begin
       dest_clk => clk,    -- 1-bit input: Destination clock.
       src_rst  => reset_i -- 1-bit input: Source reset signal.
       );
+
+  --------------------------------------------------------------------------------
+  -- Input registers
+  --------------------------------------------------------------------------------
+
+  process (clk) is
+  begin
+    if (rising_edge(clk)) then
+      coarse_delays <= coarse_delays_i;
+    end if;
+  end process;
 
   --------------------------------------------------------------------------------
   -- Input Deserializer
@@ -137,7 +149,7 @@ begin
         clk   => clk,
         clk90 => clk90,
 
-        coarse_delay => coarse_delays_i(I),
+        coarse_delay => coarse_delays(I),
 
         en     => link_en(I),
         data_i => data_i(I),
