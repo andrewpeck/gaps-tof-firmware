@@ -76,6 +76,8 @@ Open Target
 
 [[file:./images/screenshot-04.png]]
 
+With the target opened, you should see something like this:
+
 [[file:./images/screenshot-05.png]]
 
 **** Load the bitstream / ltx file
@@ -86,8 +88,8 @@ specifies the logic analyzer probe connectivity, respectively:
 [[file:./images/screenshot-08.png]]
 
 Program Device or Boot from Configuration Memory Device
-- If the correct firmware is already on the flash, you can Boot from Configuration Memory Device
-- If you want to load the bitstream you specified directly onto the FPGA, you can click Program Device instead.
+- If the correct firmware is already on the flash, you can *Boot from Configuration Memory Device*
+- If you want to load the bitstream you specified directly onto the FPGA, you can click *Program Device* instead.
 
 [[file:./images/screenshot-06.png]]
 
