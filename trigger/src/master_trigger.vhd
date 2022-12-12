@@ -172,6 +172,9 @@ architecture structural of gaps_mt is
 
   signal ext_trigger_holdoff : integer range 0 to 31 := 0;
 
+  signal tiu_timecode_i    : std_logic                     := '0';
+  signal tiu_timecode_sr   : std_logic_vector (2 downto 0) := (others => '0');
+  signal tiu_falling       : std_logic                     := '0';
 
   signal tiu_trigger_o    : std_logic;
   signal tiu_serial_o     : std_logic;
@@ -727,10 +730,6 @@ begin
 
   noloop_tiu : if (not LOOPBACK_MODE) generate
 
-    signal tiu_timecode_i    : std_logic                     := '0';
-    signal tiu_timecode_sr   : std_logic_vector (2 downto 0) := (others => '0');
-    signal tiu_falling       : std_logic                     := '0';
-
     constant TIU_CNT_MAX   : natural := 2**20-1;
     signal tiu_falling_cnt : natural := TIU_CNT_MAX;
 
@@ -907,39 +906,32 @@ begin
 
     ila_mt_inst : ila_mt
       port map (
-        clk                   => clock,
-        probe0(0)             => rb_data_o(0),
-        probe1(0)             => global_trigger,
-        probe2(4 downto 0)    => fb_clk_ok,
-        probe2(9 downto 5)    => dsi_on,
-        probe2(10)            => tiu_trigger_o,
-        probe2(11)            => tiu_serial_o,
-        probe2(12)            => ext_trigger,
-        probe2(13)            => ext_trigger_r2,
-        probe2(18 downto 14)  => lvs_sync,
-        probe2(68 downto 19)  => lt_data_i_pri,
-        probe2(69)            => clk_src_sel,
-        probe2(70)            => spi_cs_n,
-        probe2(71)            => '0',
-        probe2(72)            => '0',
-        probe2(73)            => '0',
-        probe2(74)            => '0',
-        probe3(3 downto 0)    => spi_dq,
-        probe3(7 downto 4)    => (others => '0'),
-        probe4(7 downto 0)    => (others => '0'),
-        probe5(0)             => lvs_sync_ccb,
-        probe6(0)             => hk_ext_clk,
-        probe7(0)             => hk_ext_mosi,
-        probe8(0)             => hk_ext_miso,
-        probe9                => hk_ext_cs_n,
-        probe10               => fb_clock_rates(0),
-        probe11               => fb_clock_rates(1),
-        probe12(24 downto 0)  => rb_triggers(24 downto 0),
-        probe12(26 downto 25) => discrim(0),
-        probe12(28 downto 27) => discrim_masked(0),
-        probe12(31 downto 29) => (others => '0'),
-        probe13               => clock_rate,
-        probe14               => event_cnt
+        clk                  => clock,
+        probe0(0)            => rb_data_o(0),
+        probe1(0)            => global_trigger,
+        probe2(47 downto 0)  => tiu_timeword,
+        probe2(52 downto 48) => fb_clk_ok,
+        probe2(57 downto 53) => dsi_on,
+        probe2(74 downto 58) => (others => '0'),
+        probe3(3 downto 0)   => spi_dq,
+        probe3(4)            => tiu_busy,
+        probe3(5)            => tiu_timecode_i,
+        probe3(6)            => spi_cs_n,
+        probe3(7)            => tiu_serial_o,
+        probe4(4 downto 0)   => lvs_sync,
+        probe4(5)            => '0',
+        probe4(6)            => ext_trigger,
+        probe4(7)            => tiu_trigger_o,
+        probe5(0)            => lvs_sync_ccb,
+        probe6(0)            => hk_ext_clk,
+        probe7(0)            => hk_ext_mosi,
+        probe8(0)            => hk_ext_miso,
+        probe9               => hk_ext_cs_n,
+        probe10              => fb_clock_rates(0),
+        probe11              => lt_data_i_pri(31 downto 0),
+        probe12(31 downto 0) => std_logic_vector(timestamp_latch),
+        probe13              => clock_rate,
+        probe14              => event_cnt
         );
   end generate;
 
