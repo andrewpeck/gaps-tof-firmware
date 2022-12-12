@@ -121,8 +121,8 @@ architecture structural of gaps_mt is
   signal lt_data_i_aux_n : std_logic_vector (NUM_LT_MT_AUX-1 downto 0) := (others => '0');
   signal lt_data_i_aux   : std_logic_vector (NUM_LT_MT_AUX-1 downto 0) := (others => '0');
 
-  signal timestamp       : unsigned (47 downto 0) := (others => '0');
-  signal timestamp_latch : unsigned (47 downto 0) := (others => '0');
+  signal timestamp       : unsigned (31 downto 0) := (others => '0');
+  signal timestamp_latch : unsigned (31 downto 0) := (others => '0');
 
   signal dsi_on_ipb  : std_logic_vector (dsi_on'range);
   signal trigger_ipb : std_logic := '0';
