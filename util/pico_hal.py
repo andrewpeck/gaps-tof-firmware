@@ -260,6 +260,12 @@ def loopback(nreads=10000):
         # if (i % 100 == 0):
         #     print(f"{i} reads, %f Mb" % ((i*32.0)/1000000.0))
 
+def fw_info():
+    print(" > FW_DATE = %08X" % rReg(0x200))
+    print(" > FW_TIME = %08X" % rReg(0x201))
+    print(" > FW_VER  = %08X" % rReg(0x202))
+    print(" > FW_SHA  =  %07X" % rReg(0x203))
+
 if __name__ == '__main__':
 
     import argparse
@@ -275,6 +281,7 @@ if __name__ == '__main__':
     argParser.add_argument('--any_trig_dis',  action='store_true', default=False, help="Disable ANY trigger")
     argParser.add_argument('--read_adc',      action='store_true', default=False, help="Read ADCs")
     argParser.add_argument('--loopback',      action='store_true', default=False, help="Ethernet Loopback")
+    argParser.add_argument('--fw_info',       action='store_true', default=False, help="Firmware Info")
 
     args = argParser.parse_args()
 
@@ -297,5 +304,7 @@ if __name__ == '__main__':
         set_any_trigger(0)
     if args.read_adc:
         read_adcs()
+    if args.fw_info:
+        fw_info()
     if args.loopback:
         loopback()

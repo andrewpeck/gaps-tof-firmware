@@ -166,6 +166,7 @@ Calling ~python3 pico_hal.py --help~ will print a help menu, a snapshot of which
   --ssl_trig_dis   Disable SSL trigger
   --any_trig_dis   Disable ANY trigger
   --read_adc       Read ADCs
+  --fw_info        Firmware Info
   --loopback       Loopback
 #+end_src
 
