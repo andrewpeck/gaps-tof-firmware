@@ -160,22 +160,22 @@ def read_adcs():
     from tabulate import tabulate
 
     channels = [
-        {"function": "NC", "conversion": 1, "unit": "V"},
-        {"function": "DSI1 Current", "conversion": 1, "unit": "A"},
-        {"function": "DSI2 Current", "conversion": 1, "unit": "A"},
-        {"function": "DSI3 Current", "conversion": 1, "unit": "A"},
-        {"function": "DSI4 Current", "conversion": 1, "unit": "A"},
-        {"function": "DSI5 Current", "conversion": 1, "unit": "A"},
-        {"function": "NC", "conversion": 1, "unit": "V"},
-        {"function": "CCB Current", "conversion": 0.1, "unit": "A"},
-        {"function": "12V Voltage", "conversion": 0.1, "unit": "V"},
-        {"function": "3.3V Voltage", "conversion": 0.5, "unit": "V"},
-        {"function": "2.5V Voltage", "conversion": 0.5, "unit": "V"},
-        {"function": "Misc 0", "conversion": 1, "unit": "V"},
-        {"function": "Misc 1", "conversion": 1, "unit": "V"},
-        {"function": "Misc 2", "conversion": 1, "unit": "V"},
-        {"function": "Misc 3", "conversion": 1, "unit": "V"},
-        {"function": "NC", "conversion": 1, "unit": "V"},]
+        {"function": "NC"           , "conversion": 1,   "unit": "V"},
+        {"function": "DSI1 Current" , "conversion": 1,   "unit": "A"},
+        {"function": "DSI2 Current" , "conversion": 1,   "unit": "A"},
+        {"function": "DSI3 Current" , "conversion": 1,   "unit": "A"},
+        {"function": "DSI4 Current" , "conversion": 1,   "unit": "A"},
+        {"function": "DSI5 Current" , "conversion": 1,   "unit": "A"},
+        {"function": "NC"           , "conversion": 1,   "unit": "V"},
+        {"function": "CCB Current"  , "conversion": 1,   "unit": "A"},
+        {"function": "12V Voltage"  , "conversion": 0.1, "unit": "V"},
+        {"function": "3.3V Voltage" , "conversion": 0.5, "unit": "V"},
+        {"function": "2.5V Voltage" , "conversion": 0.5, "unit": "V"},
+        {"function": "Misc 0"       , "conversion": 1,   "unit": "V"},
+        {"function": "Misc 1"       , "conversion": 1,   "unit": "V"},
+        {"function": "Misc 2"       , "conversion": 1,   "unit": "V"},
+        {"function": "Misc 3"       , "conversion": 1,   "unit": "V"},
+        {"function": "NC"           , "conversion": 1,   "unit": "V"},]
 
     headers = ["Ch", "Reading", "Value", "Function"]
     table = []
