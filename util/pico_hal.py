@@ -192,6 +192,35 @@ def read_adcs():
                         channels[ichn]["function"],
                         ])
 
+    channels = [
+        {"function": "FPGA TEMP"    , "conversion": 1,   "unit": "C", "address": 0x122, "mask": 0x0000fff},
+        {"function": "FPGA VCCINT"  , "conversion": 3,   "unit": "V", "address": 0x122, "mask": 0xfff0000},
+        {"function": "FPGA VCCAUX"  , "conversion": 3,   "unit": "V", "address": 0x123, "mask": 0x0000fff},
+        {"function": "FPGA VCCBRAM" , "conversion": 3,   "unit": "V", "address": 0x123, "mask": 0xfff0000},
+        ]
+
+    for (ichn,channel) in enumerate(channels):
+        data = rReg(channel["address"])
+        mask = channel["mask"]
+
+        data = data & mask
+
+        while mask & 1 == 0:
+            mask = mask >> 1
+            data = data >> 1
+
+
+        if (channel["function"] == "FPGA TEMP"):
+            value = data * 503.975 / 4096 - 273.15
+        else:
+            value = channel["conversion"] * data / (2**12-1)
+
+        table.append([ichn,
+                    "0x%03X" % int(data),
+                    "%4.2f %s" % (value, channels[ichn]["unit"]),
+                    channels[ichn]["function"],
+                    ])
+
     print(tabulate(table, headers=headers,  tablefmt="simple_outline"))
 
     return([headers]+table)

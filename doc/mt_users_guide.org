@@ -175,21 +175,25 @@ Calling ~python3 pico_hal.py --help~ will print a help menu, a snapshot of which
 ┌──────┬───────────┬─────────┬──────────────┐
 │   Ch │ Reading   │ Value   │ Function     │
 ├──────┼───────────┼─────────┼──────────────┤
-│    0 │ 0x79C     │ 1.19 V  │ NC           │
-│    1 │ 0x114     │ 0.17 A  │ DSI1 Current │
+│    0 │ 0x79D     │ 1.19 V  │ NC           │
+│    1 │ 0x115     │ 0.17 A  │ DSI1 Current │
 │    2 │ 0x000     │ 0.00 A  │ DSI2 Current │
 │    3 │ 0x002     │ 0.00 A  │ DSI3 Current │
 │    4 │ 0x001     │ 0.00 A  │ DSI4 Current │
-│    5 │ 0x003     │ 0.00 A  │ DSI5 Current │
-│    6 │ 0x010     │ 0.01 V  │ NC           │
-│    7 │ 0x37D     │ 5.45 A  │ CCB Current  │
-│    8 │ 0x010     │ 0.10 V  │ 12V Voltage  │
+│    5 │ 0x002     │ 0.00 A  │ DSI5 Current │
+│    6 │ 0x00F     │ 0.01 V  │ NC           │
+│    7 │ 0x377     │ 0.54 A  │ CCB Current  │
+│    8 │ 0x00F     │ 0.09 V  │ 12V Voltage  │
 │    9 │ 0xA84     │ 3.29 V  │ 3.3V Voltage │
 │   10 │ 0x7F9     │ 2.49 V  │ 2.5V Voltage │
-│   11 │ 0x9E5     │ 1.55 V  │ Misc 0       │
-│   12 │ 0xA31     │ 1.59 V  │ Misc 1       │
-│   13 │ 0xA26     │ 1.59 V  │ Misc 2       │
-│   14 │ 0x9AA     │ 1.51 V  │ Misc 3       │
+│   11 │ 0x9E8     │ 1.55 V  │ Misc 0       │
+│   12 │ 0xA32     │ 1.59 V  │ Misc 1       │
+│   13 │ 0xA2A     │ 1.59 V  │ Misc 2       │
+│   14 │ 0x9AD     │ 1.51 V  │ Misc 3       │
 │   15 │ 0x00A     │ 0.01 V  │ NC           │
+│    0 │ 0xA24     │ 46.26 C │ FPGA TEMP    │
+│    1 │ 0x528     │ 0.97 V  │ FPGA VCCINT  │
+│    2 │ 0x9E6     │ 1.86 V  │ FPGA VCCAUX  │
+│    3 │ 0x528     │ 0.97 V  │ FPGA VCCBRAM │
 └──────┴───────────┴─────────┴──────────────┘
 #+end_src
