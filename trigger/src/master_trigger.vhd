@@ -18,6 +18,9 @@ use work.ipbus.all;
 library unisim;
 use unisim.vcomponents.all;
 
+library xpm;
+use xpm.vcomponents.all;
+
 -- CCB Schematics: http://ohm.bu.edu/~apeck/20220516_gaps_mt_data_package/20220516_GAPS_CCBv1/GAPS_CCBv1_docs/CCB_Schematics.pdf
 -- DSI Schematics: http://ohm.bu.edu/~apeck/20220516_gaps_mt_data_package/20220516_GAPS_DSIv1/GAPS_DSIv1_docs/Schematics%20DAQ%20Stack%20Interface.pdf
 -- LTB Schematics: http://weber.bu.edu/~apeck/schematics/GAPS/GAPSLocalTriggerV6/GAPSLocalTriggerV6.pdf
@@ -128,6 +131,7 @@ architecture structural of gaps_mt is
 
   signal timestamp       : unsigned (31 downto 0) := (others => '0');
   signal timestamp_latch : unsigned (31 downto 0) := (others => '0');
+  signal timestamp_valid : std_logic := '0';
 
   signal dsi_on_ipb  : std_logic_vector (dsi_on'range);
   signal trigger_ipb : std_logic := '0';
@@ -188,9 +192,10 @@ architecture structural of gaps_mt is
 
   signal tiu_timebyte     : std_logic_vector (7 downto 0)     := (others => '0');
   signal tiu_timebyte_dav : std_logic                         := '0';
-  signal tiu_timeword     : std_logic_vector (8*6-1 downto 0) := (others => '0');
-  signal tiu_timeword_buf : std_logic_vector (8*5-1 downto 0) := (others => '0');
-  signal tiu_byte_cnt     : integer range 0 to tiu_timeword'length/8;
+  signal tiu_timeword_valid : std_logic                         := '0';
+  signal tiu_timeword       : std_logic_vector (8*6-1 downto 0) := (others => '0');
+  signal tiu_timeword_buf   : std_logic_vector (8*5-1 downto 0) := (others => '0');
+  signal tiu_byte_cnt       : integer range 0 to tiu_timeword'length/8;
 
 
   -- 1 bit trigger for rb; this is just the OR of the channel_select
@@ -217,6 +222,15 @@ architecture structural of gaps_mt is
   signal vccint      : std_logic_vector(11 downto 0);
   signal vccaux      : std_logic_vector(11 downto 0);
   signal vccbram     : std_logic_vector(11 downto 0);
+
+  --------------------------------------------------------------------------------
+  -- DAQ
+  --------------------------------------------------------------------------------
+
+  signal daq_data        : std_logic_vector (15 downto 0) := (others => '0');
+  signal daq_data_xfifo  : std_logic_vector (31 downto 0) := (others => '0');
+  signal daq_data_valid  : std_logic                      := '0';
+  signal daq_valid_xfifo : std_logic                      := '0';
 
   --------------------------------------------------------------------------------
   -- IPbus / wishbone
@@ -811,6 +825,8 @@ begin
     begin
       if (rising_edge(clock)) then
 
+        tiu_timeword_valid <= '0';
+
         -- synchronize the byte counter to the falling edge of the pulse
         if (tiu_falling = '1') then
 
@@ -823,8 +839,9 @@ begin
             tiu_timeword_buf(8*(tiu_byte_cnt+1)-1 downto 8*tiu_byte_cnt)
               <= tiu_timebyte;
           else
-            tiu_byte_cnt <= 0;
-            tiu_timeword <= tiu_timebyte & tiu_timeword_buf;
+            tiu_byte_cnt       <= 0;
+            tiu_timeword       <= tiu_timebyte & tiu_timeword_buf;
+            tiu_timeword_valid <= '1';
           end if;
         end if;
 
@@ -832,7 +849,7 @@ begin
     end process;
 
 
-    -- on the falling edge of the tiu signal, latch the timecode
+    -- on the falling edge of the tiu signal, latch the timestamp
     process (clock) is
     begin
       if (rising_edge(clock)) then
@@ -852,8 +869,10 @@ begin
           tiu_falling_cnt <= tiu_falling_cnt - 1;
         end if;
 
+          timestamp_valid <= '0';
         if (tiu_falling = '1') then
           timestamp_latch <= timestamp;
+          timestamp_valid <= '1';
         end if;
 
       end if;
@@ -905,6 +924,43 @@ begin
   ext_io(9) <= hk_ext_cs_n(1);
 
   --------------------------------------------------------------------------------
+  -- MTB DAQ
+  --------------------------------------------------------------------------------
+
+  mtb_daq_inst : entity work.mtb_daq
+    port map (
+      clock             => clock,
+      reset_i           => reset,
+      trigger_i         => global_trigger,
+      event_cnt_i       => event_cnt,
+      timestamp_i       => std_logic_vector(timestamp_latch),
+      timestamp_valid_i => timestamp_valid,
+      timecode_i        => tiu_timeword,
+      timecode_valid_i  => tiu_timeword_valid,
+      hits_i            => discrim_masked,
+      data_o            => daq_data,
+      data_valid_o      => daq_data_valid
+      );
+
+  mtb_fifo_inst : entity work.fifo_sync
+    generic map (
+      DEPTH     => 32,
+      WR_WIDTH  => 16,
+      RD_WIDTH  => 32
+      )
+    port map (
+      rst    => reset,
+      clk    => clock,
+      wr_en  => daq_data_valid,
+      rd_en  => '1',
+      din    => daq_data,
+      dout   => daq_data_xfifo,
+      valid  => daq_valid_xfifo,
+      full   => open,
+      empty  => open
+      );
+
+  --------------------------------------------------------------------------------
   -- Signal Sump
   --------------------------------------------------------------------------------
 
@@ -931,7 +987,7 @@ begin
         probe3(6)            => spi_cs_n,
         probe3(7)            => tiu_serial_o,
         probe4(4 downto 0)   => lvs_sync,
-        probe4(5)            => '0',
+        probe4(5)            => daq_valid_xfifo,
         probe4(6)            => ext_trigger,
         probe4(7)            => tiu_trigger_o,
         probe5(0)            => lvs_sync_ccb,
@@ -942,7 +998,7 @@ begin
         probe10              => fb_clock_rates(0),
         probe11              => lt_data_i_pri(31 downto 0),
         probe12(31 downto 0) => std_logic_vector(timestamp_latch),
-        probe13              => clock_rate,
+        probe13              => daq_data_xfifo,
         probe14              => event_cnt
         );
   end generate;

@@ -22,6 +22,7 @@ common/src/prbs_any.vhd
 common/src/adc.vhd
 common/src/sem.vhd
 common/src/crc8.vhd
+common/src/crc32.vhd
 common/src/idelay.vhd
 common/src/trig_gen.vhd
 common/src/urand_inf.vhd
@@ -41,7 +42,5 @@ drs/src/spi_rx.vhd
 drs/src/trigger_mux.vhd
 drs/src/mt_rx.vhd
 drs/src/drs.v
-drs/src/crc32.vhd
 drs/src/dna.v
 drs/src/daq.vhd
-
