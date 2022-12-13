@@ -63,10 +63,14 @@ proc select_hw_targets {} {
     if {$num_targets == 0} {
         error "No hardware targets found"
     } elseif {[llength $targets] == 1} {
-        set target [lindex 0 $targets]
-        puts "Target $target [dict get $devices $target] found, press any key to continue."
-        puts "   > Device: "
+        set target $targets
+        puts "Target $target [dict get $devices $target] found, press y key to continue."
         gets stdin select
+        if {[string equal $select "y"]} {
+            set targets $target
+        } else {
+            error "No target selected"
+        }
     } elseif {[llength $targets] > 1} {
         puts "Multiple hardware targets found"
         for {set i 0} {$i < $num_targets} {incr i} {
