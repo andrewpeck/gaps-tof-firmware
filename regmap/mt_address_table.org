@@ -45,6 +45,10 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |ANY_TRIG_EN | ~0xb~ | ~0x2c~ | ~2~ | rw | ~0x0~ | 1 to enable the ucla trigger | 
 |------------+---+---+---------+-----+-----+----------------------------|
+|EVENT_CNT_RESET | ~0xc~ | ~0x30~ | ~0~ | w | Pulse | Write 1 to reset the event counter | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|EVENT_CNT | ~0xd~ | ~0x34~ | ~[31:0]~ | r |  | Event Counter | 
+|------------+---+---+---------+-----+-----+----------------------------|
 
 *MT.HIT_COUNTERS*
 

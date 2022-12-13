@@ -15,6 +15,8 @@ entity trigger is
 
     reset : in std_logic;
 
+    event_cnt_reset  : in std_logic;
+
     single_hit_en_i : in std_logic := '0';
     ucla_trig_en_i  : in std_logic := '0';
     ssl_trig_en_i   : in std_logic := '0';
@@ -212,7 +214,7 @@ begin
   event_counter : entity work.event_counter
     port map (
       clk              => clk,
-      rst_i            => reset,
+      rst_i            => reset or event_cnt_reset,
       global_trigger_i => global_trigger_r,
       event_count_o    => event_cnt_o
       );
