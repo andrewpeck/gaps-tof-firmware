@@ -219,7 +219,7 @@ set_property DRIVE 4 [get_ports ext_io*]
 set_property PULLUP true [get_ports lt_data_i_p*]
 set_property PULLDOWN true [get_ports lt_data_i_n*]
 
-set_property PULLDOWN true [get_ports ext_io[0]]
+set_property PULLDOWN true [get_ports ext_io*]
 
 # set_property SLEW SLOW [get_ports hk_clk]
 # set_property SLEW SLOW [get_ports hk_cs_n]

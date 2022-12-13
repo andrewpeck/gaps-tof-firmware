@@ -29,8 +29,6 @@ entity gaps_mt is
     EN_TMR_IPB_SLAVE_MT : integer range 0 to 1 := 0;
 
     MAC_ADDR : std_logic_vector (47 downto 0) := x"00_08_20_83_53_00";
-  --IP_ADDR  : ip_addr_t                      := (10, 97, 108, 15);
-    IP_ADDR  : ip_addr_t                      := (192, 168, 36, 121);
 
     LOOPBACK_MODE : boolean := false;
 
@@ -111,6 +109,11 @@ entity gaps_mt is
 end gaps_mt;
 
 architecture structural of gaps_mt is
+
+  constant UCLA_IP_ADDR : ip_addr_t := (10, 97, 108, 15);
+  constant SSL_IP_ADDR  : ip_addr_t := (192, 168, 36, 121);
+  signal ip_addr        : ip_addr_t;
+  signal mtb_is_ucla    : std_logic := '0';
 
   signal lt_data_i_pri_p : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '0');
   signal lt_data_i_pri_n : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '0');
@@ -346,6 +349,10 @@ begin
       din   => rgmii_rx_clk,
       dout  => rgmii_rx_clk_dly
       );
+
+  ext_io(3)   <= '1';
+  mtb_is_ucla <= ext_io(2);
+  ip_addr     <= UCLA_IP_ADDR when mtb_is_ucla = '1' else SSL_IP_ADDR;
 
   eth_infra_inst : entity work.eth_infra
     port map (
