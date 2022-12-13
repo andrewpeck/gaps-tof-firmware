@@ -105,6 +105,8 @@ foreach target $targets {
     set device [get_hw_devices]
     if {[llength $device] > 0} {
 
+        set programmed "False"
+
         if {[string equal $device "xc7k160t_0"]} {
             puts "Master trigger board selected... do you want to program the Flash? y/n"
             gets stdin select
