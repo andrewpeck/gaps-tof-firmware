@@ -157,17 +157,24 @@ controlled from the command line.
 Calling ~python3 pico_hal.py --help~ will print a help menu, a snapshot of which is shown below.
 
 #+begin_src
-  -h, --help       show this help message and exit
-  --ip             Set the MT IP address
-  --ucla_trig_en   Enable UCLA trigger
-  --ssl_trig_en    Enable SSL trigger
-  --any_trig_en    Enable ANY trigger
-  --ucla_trig_dis  Disable UCLA trigger
-  --ssl_trig_dis   Disable SSL trigger
-  --any_trig_dis   Disable ANY trigger
-  --read_adc       Read ADCs
-  --fw_info        Firmware Info
-  --loopback       Loopback
+usage: pico_hal.py [-h] [--ip IP] [--ucla_trig_en] [--ssl_trig_en] [--any_trig_en] [--ucla_trig_dis] [--ssl_trig_dis] [--any_trig_dis] [--read_adc] [--loopback] [--fw_info] [--reset_event_cnt] [--read_event_cnt]
+
+Argument parser
+
+options:
+  -h, --help         show this help message and exit
+  --ip IP            IP Address
+  --ucla_trig_en     Enable UCLA trigger
+  --ssl_trig_en      Enable SSL trigger
+  --any_trig_en      Enable ANY trigger
+  --ucla_trig_dis    Disable UCLA trigger
+  --ssl_trig_dis     Disable SSL trigger
+  --any_trig_dis     Disable ANY trigger
+  --read_adc         Read ADCs
+  --loopback         Ethernet Loopback
+  --fw_info          Firmware Info
+  --reset_event_cnt  Reset Event Counter
+  --read_event_cnt   Read Event Counter
 #+end_src
 
 *** ADC Reading
