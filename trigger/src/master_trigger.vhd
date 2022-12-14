@@ -948,18 +948,24 @@ begin
 
   mtb_fifo_inst : entity work.fifo_sync
     generic map (
-      DEPTH     => 32,
+      DEPTH     => 16384,
       WR_WIDTH  => 16,
       RD_WIDTH  => 32
       )
     port map (
       rst    => reset or daq_reset,
       clk    => clock,
+
+      -- in
       wr_en  => daq_data_valid,
-      rd_en  => daq_rd_en,
       din    => daq_data,
+
+      -- out
+      rd_en  => daq_rd_en,
       dout   => daq_data_xfifo,
       valid  => daq_valid_xfifo,
+
+      -- status
       full   => daq_full,
       empty  => daq_empty
       );
