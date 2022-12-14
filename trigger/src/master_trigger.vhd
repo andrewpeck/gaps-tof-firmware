@@ -190,6 +190,8 @@ architecture structural of gaps_mt is
   signal tiu_serial_o     : std_logic;
   signal tiu_busy         : std_logic                         := '0';
 
+  signal tiu_trigger_cnt : integer range 0 to 100 := 0;
+
   signal tiu_timebyte     : std_logic_vector (7 downto 0)     := (others => '0');
   signal tiu_timebyte_dav : std_logic                         := '0';
   signal tiu_timeword_valid : std_logic                         := '0';
@@ -773,19 +775,15 @@ begin
     process (clock) is
     begin
       if (rising_edge(clock)) then
-
-        tiu_trigger_o <= global_trigger;
-
-        -- if (global_trigger='1') then
-        --   tiu_trigger_o <= '1';
-        -- -- elsif (tiu_busy = '1') then
-        -- --   tiu_trigger_o <= '0';
-        -- end if;
-
-        -- if (reset = '1') then
-        --   tiu_trigger_o <= '0';
-        -- end if;
-
+        if (tiu_trigger_cnt = 0 and global_trigger = '1') then
+          tiu_trigger_cnt <= 100;
+          tiu_trigger_o   <= '1';
+        elsif (tiu_trigger_cnt > 0) then
+          tiu_trigger_cnt <= tiu_trigger_cnt - 1;
+          tiu_trigger_o   <= '1';
+        else
+          tiu_trigger_o <= '0';
+        end if;
       end if;
     end process;
 
