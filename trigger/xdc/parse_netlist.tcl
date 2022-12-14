@@ -29,12 +29,12 @@ proc translate_name {name} {
         # puts $name
     }
 
-    # lt_data_X_Y_Z --> lt_data_i[Q]
+    # lt_data_[ltb]_[link]_[dsi] --> lt_data_i[Q]
     if {[string range $name 0 7] eq "lt_data_"} {
         set args [split $name "_"]
-        set lt   [expr [lindex $args 2] - 1]
-        set dsi  [lindex $args 4]
+        set lt   [lindex $args 2]
         set pair [lindex $args 3]
+        set dsi  [expr [lindex $args 4] - 1]
         set pol  [lindex $args 5]
         set pin [expr $dsi * 15 + $lt * 3 + $pair]
         #puts "DSI = $dsi lt = $lt pair=$pair"
