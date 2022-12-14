@@ -256,6 +256,61 @@ def set_any_trigger(val):
     wr = (rd & (0xffffffff ^ bit)) | val
     wReg(0xb, wr, verify=True)
 
+
+def read_daq():
+
+    def read_daq_word():
+        while (True):
+            if 0 == (rReg(0x12) & 0x2):
+                return rReg(0x11)
+
+    def count_ones(n):
+        count = 0
+        while (n):
+            count += n & 1
+            n >>= 1
+        return count
+
+    state = "Idle"
+
+    wReg(0x10, 1)
+    while (True):
+        rd = read_daq_word()
+        note = ""
+
+        if (state=="Idle" and rd==0xAAAAAAAA):
+            state = "Header"
+            hit_paddles = 0
+            paddles_rxd = 1
+
+        if (state=="Mask"):
+            hit_paddles = count_ones(rd)
+
+        if (state=="Hits"):
+            paddles_rxd += 1
+
+        print("%08X (%s)" % (rd, state))
+
+        if (state=="Header"):
+            state="Event cnt"
+        elif (state=="Event cnt"):
+            state="Timestamp"
+        elif (state=="Timestamp"):
+            state="Timecode 32 bits"
+        elif (state=="Timecode 32 bits"):
+            state="Timecode 16 bits"
+        elif (state=="Timecode 16 bits"):
+            state="Mask"
+        elif (state=="Mask"):
+            state="Hits"
+        elif (state=="Hits" and paddles_rxd >= hit_paddles):
+            state="CRC"
+        elif (state=="CRC"):
+            state="Trailer"
+        elif (state=="Trailer"):
+            state="Idle"
+
+
 def loopback(nreads=10000):
     print(" > Running loopback test")
     from tqdm import tqdm
@@ -291,6 +346,7 @@ if __name__ == '__main__':
     argParser.add_argument('--fw_info',         action='store_true', default=False, help="Firmware Info")
     argParser.add_argument('--reset_event_cnt', action='store_true', default=False, help="Reset Event Counter")
     argParser.add_argument('--read_event_cnt',  action='store_true', default=False, help="Read Event Counter")
+    argParser.add_argument('--read_daq',        action='store_true', default=False, help="Read DAQ")
 
     args = argParser.parse_args()
 
@@ -321,3 +377,5 @@ if __name__ == '__main__':
         fw_info()
     if args.loopback:
         loopback()
+    if args.read_daq:
+        read_daq()
