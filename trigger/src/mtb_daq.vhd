@@ -387,8 +387,8 @@ begin
           else
 
             -- transmit a header, calculate the hitmask
-            data_o <= hits(ltb_sel+7) & hits(ltb_sel+6) & hits(ltb_sel+5) & hits(ltb_sel+4) &
-                      hits(ltb_sel+3) & hits(ltb_sel+2) & hits(ltb_sel+1) & hits(ltb_sel);
+            data_o <= hits(ltb_sel*8+7) & hits(ltb_sel*8+6) & hits(ltb_sel*8+5) & hits(ltb_sel*8+4) &
+                      hits(ltb_sel*8+3) & hits(ltb_sel*8+2) & hits(ltb_sel*8+1) & hits(ltb_sel*8);
             data_valid_o <= '1';
             crc_en       <= '1';
 
