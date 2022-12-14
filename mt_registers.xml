@@ -100,7 +100,14 @@
           description="Event Counter"
           fw_signal="event_cnt"/>
 
-    <node id="HIT_COUNTERS" address="0x10" description="Counters">
+    <node id="EVENT_QUEUE" address="0x10" description = "DAQ Buffer">
+      <node id="RESET" permission="w" address="0x0" mask="0x00000001" description="DAQ Buffer Reset" fw_write_pulse_signal="daq_reset"/>
+      <node id="DATA"  permission="r" address="0x1" mask="0xFFFFFFFF" description="DAQ Read Data"    fw_signal="daq_data_xfifo" fw_read_pulse_signal="daq_rd_en" fw_read_ready_signal="daq_valid_xfifo"/>
+      <node id="FULL"  permission="r" address="0x2" mask="0x00000001" description="DAQ Buffer Full"  fw_signal="daq_full"/>
+      <node id="EMPTY" permission="r" address="0x2" mask="0x00000002" description="DAQ Buffer Empty" fw_signal="daq_empty"/>
+    </node>
+
+    <node id="HIT_COUNTERS" address="0x20" description="Counters">
       <node id="RB${RB_IDX}" address="0x0"
             generate="true"
             generate_size="25"

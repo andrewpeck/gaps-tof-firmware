@@ -72,6 +72,27 @@
 
 
     \noindent
+    \subsection*{\textcolor{parentcolor}{\textbf{MT.EVENT\_QUEUE}}}
+
+    \vspace{4mm}
+    \noindent
+    DAQ Buffer
+    \noindent
+
+    \keepXColumns
+    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
+    \hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
+    \nopagebreak
+    RESET & \texttt{0x10} & \texttt{[0:0]} & w & Pulse & DAQ Buffer Reset \\\hline
+    DATA & \texttt{0x11} & \texttt{[31:0]} & r & \texttt{} & DAQ Read Data \\\hline
+    FULL & \texttt{0x12} & \texttt{[0:0]} & r & \texttt{} & DAQ Buffer Full \\\hline
+    EMPTY & \texttt{0x12} & \texttt{[1:1]} & r & \texttt{} & DAQ Buffer Empty \\\hline
+    \end{tabularx}
+    \vspace{5mm}
+
+
+    \noindent
     \subsection*{\textcolor{parentcolor}{\textbf{MT.HIT\_COUNTERS}}}
 
     \vspace{4mm}
@@ -84,31 +105,31 @@
     \hline
     \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
     \nopagebreak
-    RB0 & \texttt{0x10} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=0 \\\hline
-    RB1 & \texttt{0x11} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=1 \\\hline
-    RB2 & \texttt{0x12} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=2 \\\hline
-    RB3 & \texttt{0x13} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=3 \\\hline
-    RB4 & \texttt{0x14} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=4 \\\hline
-    RB5 & \texttt{0x15} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=5 \\\hline
-    RB6 & \texttt{0x16} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=6 \\\hline
-    RB7 & \texttt{0x17} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=7 \\\hline
-    RB8 & \texttt{0x18} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=8 \\\hline
-    RB9 & \texttt{0x19} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=9 \\\hline
-    RB10 & \texttt{0x1a} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=10 \\\hline
-    RB11 & \texttt{0x1b} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=11 \\\hline
-    RB12 & \texttt{0x1c} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=12 \\\hline
-    RB13 & \texttt{0x1d} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=13 \\\hline
-    RB14 & \texttt{0x1e} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=14 \\\hline
-    RB15 & \texttt{0x1f} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=15 \\\hline
-    RB16 & \texttt{0x20} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=16 \\\hline
-    RB17 & \texttt{0x21} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=17 \\\hline
-    RB18 & \texttt{0x22} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=18 \\\hline
-    RB19 & \texttt{0x23} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=19 \\\hline
-    RB20 & \texttt{0x24} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=20 \\\hline
-    RB21 & \texttt{0x25} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=21 \\\hline
-    RB22 & \texttt{0x26} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=22 \\\hline
-    RB23 & \texttt{0x27} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=23 \\\hline
-    RB24 & \texttt{0x28} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=24 \\\hline
+    RB0 & \texttt{0x20} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=0 \\\hline
+    RB1 & \texttt{0x21} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=1 \\\hline
+    RB2 & \texttt{0x22} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=2 \\\hline
+    RB3 & \texttt{0x23} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=3 \\\hline
+    RB4 & \texttt{0x24} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=4 \\\hline
+    RB5 & \texttt{0x25} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=5 \\\hline
+    RB6 & \texttt{0x26} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=6 \\\hline
+    RB7 & \texttt{0x27} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=7 \\\hline
+    RB8 & \texttt{0x28} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=8 \\\hline
+    RB9 & \texttt{0x29} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=9 \\\hline
+    RB10 & \texttt{0x2a} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=10 \\\hline
+    RB11 & \texttt{0x2b} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=11 \\\hline
+    RB12 & \texttt{0x2c} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=12 \\\hline
+    RB13 & \texttt{0x2d} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=13 \\\hline
+    RB14 & \texttt{0x2e} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=14 \\\hline
+    RB15 & \texttt{0x2f} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=15 \\\hline
+    RB16 & \texttt{0x30} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=16 \\\hline
+    RB17 & \texttt{0x31} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=17 \\\hline
+    RB18 & \texttt{0x32} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=18 \\\hline
+    RB19 & \texttt{0x33} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=19 \\\hline
+    RB20 & \texttt{0x34} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=20 \\\hline
+    RB21 & \texttt{0x35} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=21 \\\hline
+    RB22 & \texttt{0x36} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=22 \\\hline
+    RB23 & \texttt{0x37} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=23 \\\hline
+    RB24 & \texttt{0x38} & \texttt{[15:0]} & r & \texttt{} & hit count on LT=24 \\\hline
     \end{tabularx}
     \vspace{5mm}
 
