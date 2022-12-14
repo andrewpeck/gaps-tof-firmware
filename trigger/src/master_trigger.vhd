@@ -773,15 +773,18 @@ begin
     process (clock) is
     begin
       if (rising_edge(clock)) then
-        if (global_trigger='1') then
-          tiu_trigger_o <= '1';
-        elsif (tiu_busy = '1') then
-          tiu_trigger_o <= '0';
-        end if;
 
-        if (reset = '1') then
-          tiu_trigger_o <= '0';
-        end if;
+        tiu_trigger_o <= global_trigger;
+
+        -- if (global_trigger='1') then
+        --   tiu_trigger_o <= '1';
+        -- -- elsif (tiu_busy = '1') then
+        -- --   tiu_trigger_o <= '0';
+        -- end if;
+
+        -- if (reset = '1') then
+        --   tiu_trigger_o <= '0';
+        -- end if;
 
       end if;
     end process;
