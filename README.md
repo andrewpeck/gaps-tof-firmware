@@ -127,7 +127,7 @@ no files are missing, the build directory is clean, and so on.
 
 ![data-flow](./drs/data-flow.svg)
 
-## Dataformat
+## RB Dataformat
 
   | Field      | Len             | Description                                                                                                                                                                                   |
   |:-----------|:----------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -151,7 +151,7 @@ no files are missing, the build directory is clean, and so on.
   | CRC32      | `[31:0]`        | Packet CRC (excluding Trailer)                                                                                                                                                                |
   | TAIL       | `[15:0]`        | 0x5555                                                                                                                                                                                        |
 
-## Master Trigger Data Format
+## Master Trigger to RB Data Format
 
   | Field     | Len      | Description                                        |
   |:----------|:---------|:---------------------------------------------------|
@@ -166,6 +166,20 @@ no files are missing, the build directory is clean, and so on.
 
 https://gaps1.astro.ucla.edu/wiki/gaps/index.php?title=Local_Trigger_Board_Operation
 
+The LT to MT link consists of 2 LVDS pairs per MT.
+
+This can be optionally expanded to 3 pairs with an unstuffed isolator, in case of bandwidth
+requirements.
+
+Each MT pair transmits at 200 Mbps, on an *asynchronous* clock.
+
+The data format on each pair consists of a start bit, followed by the data payload.
+
+The entire data packet consists of 16 bits of payload (8 channels of low, medium, and high
+threshold).
+
+Since it is divided into 2 links, this means 8 bits / link + 2 start bits per trigger.
+
 ``` example
   //      | no hit| thr0 | thr1 | thr2
   //----------------------------------
@@ -176,6 +190,9 @@ https://gaps1.astro.ucla.edu/wiki/gaps/index.php?title=Local_Trigger_Board_Opera
   //LINK1 = START bit +paddles bit 1 (9 bits total)
 ```
 
+## Master Trigger DAQ Data Format
+
+
 ## Master Trigger External IO
 
   | Signal       | Assignment | Description                                                                                                                                 |
@@ -184,6 +201,7 @@ https://gaps1.astro.ucla.edu/wiki/gaps/index.php?title=Local_Trigger_Board_Opera
   | TIU Timecode | EXT_IN1    | LVDS IN: Asynchronous serial input containing the GPS timestamp.                                                                            |
   | TIU Event ID | EXT_OUT0   | LVDS OUT: Asynchronous serial output containing the event ID                                                                                |
   | TIU Trigger  | EXT_OUT1   | LVDS OUT: Trigger output from the MT to TIU. Asynchronous level which should not be deasserted until the BUSY is received back from the TIU |
+
 
 ## Gitlab runner registration
 
