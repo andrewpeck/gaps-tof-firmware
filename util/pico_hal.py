@@ -296,10 +296,12 @@ def read_daq():
         elif (state=="Event cnt"):
             state="Timestamp"
         elif (state=="Timestamp"):
-            state="Timecode 32 bits"
-        elif (state=="Timecode 32 bits"):
-            state="Timecode 16 bits"
-        elif (state=="Timecode 16 bits"):
+            state="TIU Timestamp"
+        elif (state=="TIU Timestamp"):
+            state="GPS 32 bits"
+        elif (state=="GPS 32 bits"):
+            state="GPS 16 bits"
+        elif (state=="GPS 16 bits"):
             state="Mask"
         elif (state=="Mask"):
             state="Hits"

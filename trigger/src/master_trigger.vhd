@@ -829,17 +829,16 @@ begin
 
   mtb_daq_inst : entity work.mtb_daq
     port map (
-      clock             => clock,
-      reset_i           => reset,
-      trigger_i         => global_trigger,
-      event_cnt_i       => event_cnt,
-      timestamp_i       => timestamp_latch,
-      timestamp_valid_i => timestamp_valid,
-      tiu_gps_i         => tiu_gps,
-      tiu_gps_valid_i   => tiu_gps_valid,
-      hits_i            => discrim_masked,
-      data_o            => daq_data,
-      data_valid_o      => daq_data_valid
+      clock           => clock,
+      reset_i         => reset,
+      trigger_i       => global_trigger,
+      event_cnt_i     => event_cnt,
+      timestamp_i     => std_logic_vector(timestamp),
+      tiu_timestamp_i => timestamp_latch,
+      tiu_gps_i       => tiu_gps,
+      hits_i          => discrim_masked,
+      data_o          => daq_data,
+      data_valid_o    => daq_data_valid
       );
 
   mtb_fifo_inst : entity work.fifo_sync

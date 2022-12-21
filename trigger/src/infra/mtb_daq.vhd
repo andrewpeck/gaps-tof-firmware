@@ -24,16 +24,14 @@ entity mtb_daq is
     hits_i : in threshold_array_t;
 
     -- trigger + metadata
-    trigger_i         : in std_logic;
-    event_cnt_i       : in std_logic_vector (31 downto 0);
+    trigger_i   : in std_logic;
+    event_cnt_i : in std_logic_vector (31 downto 0);
 
-    tiu_gps_i         : in std_logic_vector (47 downto 0);
-    tiu_gps_valid_i   : in std_logic;
+    tiu_gps_i       : in std_logic_vector (47 downto 0);
+    tiu_timestamp_i : in std_logic_vector (31 downto 0);
+    timestamp_i     : in std_logic_vector (31 downto 0);
 
-    timestamp_i       : in std_logic_vector (31 downto 0);
-    timestamp_valid_i : in std_logic;
-
-    ignore_tiu_i      : in std_logic := '1';
+    ignore_tiu_i : in std_logic := '1';
 
     -- daq outputs
     data_o       : out std_logic_vector (15 downto 0);
@@ -44,7 +42,8 @@ end mtb_daq;
 
 architecture behavioral of mtb_daq is
 
-  type state_t is (IDLE_state, HEADER_state, EVENT_CNT_state, TIMESTAMP_state, TIU_GPS_state,
+  type state_t is (IDLE_state, HEADER_state, EVENT_CNT_state,
+                   TIU_TIMESTAMP_state, TIMESTAMP_state, TIU_GPS_state,
                    RSVD_state, BOARD_MASK_state, HITS_state, PAD_state, CRC_CALC_state,
                    CRC_state, TRAILER_state);
 
@@ -56,9 +55,8 @@ architecture behavioral of mtb_daq is
   -- Stable copies of inputs
   --------------------------------------------------------------------------------
 
-  signal tiu_gps_valid   : std_logic;
-  signal timestamp_valid : std_logic;
   signal timestamp       : std_logic_vector (timestamp_i'range) := (others => '0');
+  signal tiu_timestamp   : std_logic_vector (timestamp_i'range) := (others => '0');
   signal tiu_gps         : std_logic_vector (tiu_gps_i'range)   := (others => '0');
   signal event_cnt       : std_logic_vector (event_cnt_i'range) := (others => '0');
 
@@ -252,32 +250,23 @@ begin
       data_valid_o <= '0';
       data_o       <= (others => '0');
 
-      if (state /= IDLE_state and (tiu_gps_valid_i = '1' or ignore_tiu_i = '1')) then
-        tiu_gps_valid <= '1';
-        tiu_gps       <= tiu_gps_i;
-      end if;
-
-      if (state /= IDLE_state and (timestamp_valid_i = '1' or ignore_tiu_i = '1')) then
-        timestamp_valid <= '1';
-        timestamp       <= timestamp_i;
-      end if;
-
       case state is
 
         when IDLE_state =>
 
-          tiu_gps_valid   <= '0';
-          timestamp_valid <= '0';
           crc_rst         <= '1';
 
           -- freeze the hitmask, timestamp, tiu_gps, hitmask
           if (trigger_i = '1') then
-            state        <= HEADER_state;
-            event_cnt    <= event_cnt_i;
-            hits         <= hits_dly;
-            data_o       <= x"AAAA";
-            data_valid_o <= '1';
-            crc_en       <= '1';
+            state         <= HEADER_state;
+            event_cnt     <= event_cnt_i;
+            hits          <= hits_dly;
+            data_o        <= x"AAAA";
+            data_valid_o  <= '1';
+            crc_en        <= '1';
+            tiu_gps       <= tiu_gps_i;
+            timestamp     <= timestamp_i;
+            tiu_timestamp <= tiu_timestamp_i;
           end if;
 
         when HEADER_state =>
@@ -317,20 +306,33 @@ begin
 
         when TIMESTAMP_state =>
 
-          -- TODO: add a timeout
-
-          if (timestamp_valid = '1') then
-            if (state_word_cnt = timestamp'length / g_WORD_SIZE - 1) then
-              state          <= TIU_GPS_state;
-              state_word_cnt <= 0;
-            else
-              state_word_cnt <= state_word_cnt + 1;
-            end if;
-
-            data_o       <= data_sel(g_MSB_FIRST, g_WORD_SIZE, timestamp'length/g_WORD_SIZE, state_word_cnt, timestamp);
-            data_valid_o <= '1';
-            crc_en       <= '1';
+          if (state_word_cnt = timestamp'length / g_WORD_SIZE - 1) then
+            state          <= TIU_TIMESTAMP_state;
+            state_word_cnt <= 0;
+          else
+            state_word_cnt <= state_word_cnt + 1;
           end if;
+
+          data_o       <= data_sel(g_MSB_FIRST, g_WORD_SIZE, timestamp'length/g_WORD_SIZE, state_word_cnt, timestamp);
+          data_valid_o <= '1';
+          crc_en       <= '1';
+
+          -- pre-calculate the next_board_mask
+          next_board_mask  <= calc_next_mask(board_mask);
+          odd_num_channels <= xor_reduce(board_mask);
+
+        when TIU_TIMESTAMP_state =>
+
+          if (state_word_cnt = tiu_timestamp'length / g_WORD_SIZE - 1) then
+            state          <= TIU_GPS_state;
+            state_word_cnt <= 0;
+          else
+            state_word_cnt <= state_word_cnt + 1;
+          end if;
+
+          data_o       <= data_sel(g_MSB_FIRST, g_WORD_SIZE, tiu_timestamp'length/g_WORD_SIZE, state_word_cnt, tiu_timestamp);
+          data_valid_o <= '1';
+          crc_en       <= '1';
 
           -- pre-calculate the next_board_mask
           next_board_mask  <= calc_next_mask(board_mask);
@@ -338,20 +340,16 @@ begin
 
         when TIU_GPS_state =>
 
-          -- TODO: add a timeout
-
-          if (tiu_gps_valid = '1') then
-            if (state_word_cnt = tiu_gps'length / g_WORD_SIZE - 1) then
-              state          <= RSVD_state;
-              state_word_cnt <= 0;
-            else
-              state_word_cnt <= state_word_cnt + 1;
-            end if;
-
-            data_o       <= data_sel(g_MSB_FIRST, g_WORD_SIZE, tiu_gps'length/g_WORD_SIZE, state_word_cnt, tiu_gps);
-            data_valid_o <= '1';
-            crc_en       <= '1';
+          if (state_word_cnt = tiu_gps'length / g_WORD_SIZE - 1) then
+            state          <= RSVD_state;
+            state_word_cnt <= 0;
+          else
+            state_word_cnt <= state_word_cnt + 1;
           end if;
+
+          data_o       <= data_sel(g_MSB_FIRST, g_WORD_SIZE, tiu_gps'length/g_WORD_SIZE, state_word_cnt, tiu_gps);
+          data_valid_o <= '1';
+          crc_en       <= '1';
 
           -- pre-calculate the first ltb to read out
           ltb_sel <= calc_ltb_sel(board_mask);
