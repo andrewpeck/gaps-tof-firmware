@@ -24,6 +24,7 @@ entity tiu_tx is
     clock    : in  std_logic;
     reset    : in  std_logic;
     serial_o : out std_logic;
+    busy_o   : out std_logic;
 
     trg_i       : in std_logic;
     event_cnt_i : in std_logic_vector (EVENTCNTB-1 downto 0)
@@ -65,6 +66,8 @@ begin
   norev : if (not MSB_FIRST) generate
     event_cnt <= event_cnt_i;
   end generate;
+
+  busy_o <= '1' when STATE /= IDLE_state else '0';
 
   process (clock, reset)
   begin
