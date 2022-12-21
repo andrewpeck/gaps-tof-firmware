@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 use ieee.math_real.all;
 
 
-entity rx_deserializer is
+entity lt_deserializer is
   generic(
     WORD_SIZE : positive := 8
     );
@@ -17,9 +17,9 @@ entity rx_deserializer is
     valid_o : out std_logic;
     err_o   : out std_logic
     );
-end rx_deserializer;
+end lt_deserializer;
 
-architecture behavioral of rx_deserializer is
+architecture behavioral of lt_deserializer is
 
   signal data_buf : std_logic_vector (WORD_SIZE-1 downto 0) := (others => '0');
 
@@ -64,8 +64,7 @@ begin
         when ERR_CHECK =>
 
           if (data_i = '1') then
-            err_o  <= '1';
-            data_o <= (others => '0');
+            err_o <= '1';
           end if;
 
           if (state_bit_cnt = DEAD_TIME - 1) then

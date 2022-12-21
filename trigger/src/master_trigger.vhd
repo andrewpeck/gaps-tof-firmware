@@ -555,7 +555,7 @@ begin
   end generate;
 
   noloop_r : if (not LOOPBACK_MODE) generate
-    input_rx : entity work.input_rx
+    lt_rx : entity work.lt_rx
       port map (
 
         reset_i => reset,
