@@ -130,7 +130,7 @@ architecture structural of gaps_mt is
   signal lt_data_i_aux   : std_logic_vector (NUM_LT_MT_AUX-1 downto 0) := (others => '0');
 
   signal timestamp       : unsigned (31 downto 0) := (others => '0');
-  signal timestamp_latch : unsigned (31 downto 0) := (others => '0');
+  signal timestamp_latch : std_logic_vector (31 downto 0) := (others => '0');
   signal timestamp_valid : std_logic := '0';
 
   signal dsi_on_ipb  : std_logic_vector (dsi_on'range);
@@ -168,6 +168,7 @@ architecture structural of gaps_mt is
   signal discrim_1bit : t_std8_array (NUM_LTS-1 downto 0);
 
   signal global_trigger : std_logic;  -- single bit == the baloon triggered somewhere
+  signal global_busy    : std_logic;
 
   signal trig_gen_rate   : std_logic_vector (31 downto 0) := (others => '0');
   signal trig_gen        : std_logic                      := '0';
@@ -182,23 +183,8 @@ architecture structural of gaps_mt is
 
   signal ext_trigger_holdoff : integer range 0 to 31 := 0;
 
-  signal tiu_timecode_i    : std_logic                     := '0';
-  signal tiu_timecode_sr   : std_logic_vector (2 downto 0) := (others => '0');
-  signal tiu_falling       : std_logic                     := '0';
-
-  signal tiu_trigger_o    : std_logic;
-  signal tiu_serial_o     : std_logic;
-  signal tiu_busy         : std_logic                         := '0';
-
-  signal tiu_trigger_cnt : integer range 0 to 100 := 0;
-
-  signal tiu_timebyte     : std_logic_vector (7 downto 0)     := (others => '0');
-  signal tiu_timebyte_dav : std_logic                         := '0';
-  signal tiu_timeword_valid : std_logic                         := '0';
   signal tiu_timeword       : std_logic_vector (8*6-1 downto 0) := (others => '0');
-  signal tiu_timeword_buf   : std_logic_vector (8*5-1 downto 0) := (others => '0');
-  signal tiu_byte_cnt       : integer range 0 to tiu_timeword'length/8;
-
+  signal tiu_timeword_valid : std_logic                         := '0';
 
   -- 1 bit trigger for rb; this is just the OR of the channel_select
   signal rb_triggers    : std_logic_vector (NUM_RBS-1 downto 0);
@@ -641,9 +627,8 @@ begin
       -- discrim from input stage (20x16 array of discrim)
       hits_i => discrim_masked,
 
-      busy_i    => tiu_busy,
+      busy_i    => global_busy,
       rb_busy_i => (others => '0'),
-
 
       all_triggers_are_global => '1',
 
@@ -760,130 +745,27 @@ begin
   -- TIU Interface
   --------------------------------------------------------------------------------
 
-  noloop_tiu : if (not LOOPBACK_MODE) generate
-
-    constant TIU_CNT_MAX   : natural := 2**20-1;
-    signal tiu_falling_cnt : natural := TIU_CNT_MAX;
-
-  begin
-
-    tiu_busy       <= ext_in(0);
-    tiu_timecode_i <= ext_in(1);
-    ext_out(0)     <= tiu_serial_o;
-    ext_out(1)     <= tiu_trigger_o;
-
-    process (clock) is
-    begin
-      if (rising_edge(clock)) then
-        if (tiu_trigger_cnt = 0 and global_trigger = '1') then
-          tiu_trigger_cnt <= 100;
-          tiu_trigger_o   <= '1';
-        elsif (tiu_trigger_cnt > 0) then
-          tiu_trigger_cnt <= tiu_trigger_cnt - 1;
-          tiu_trigger_o   <= '1';
-        else
-          tiu_trigger_o <= '0';
-        end if;
-      end if;
-    end process;
-
-    tiu_tx_inst : entity work.tiu_tx
-      generic map (
-        EVENTCNTB => 32,
-        DIV       => 100
-        )
-      port map (
-        clock       => clock,
-        reset       => reset,
-        serial_o    => tiu_serial_o,
-        trg_i       => global_trigger,
-        event_cnt_i => event_cnt
-        );
-
-    timecode_uart_inst : entity work.tiny_uart
-      generic map (
-        WLS    => 8,            --! word length select; number of data bits     [ integer ]
-        CLK    => 100_000_000,  --! master clock frequency in Hz                [ integer ]
-        BPS    => 9600,         --! transceive baud rate in Bps                 [ integer ]
-        SBS    => 1,            --! Stop bit select, only one/two stopbit       [ integer ]
-        PI     => true,         --! Parity inhibit, true: inhibit               [ boolean ]
-        EPE    => true,         --! Even parity enable, true: even, false: odd  [ boolean ]
-        DEBU   => 3,            --! Number of debouncer stages                  [ integer ]
-        TXIMPL => false,        --! implement UART TX path                      [ boolean ]
-        RXIMPL => true  )       --! implement UART RX path                      [ boolean ]
-      port map (
-        R    => reset,
-        C    => clock,
-        TXD  => open,
-        RXD  => tiu_timecode_i,
-        RR   => tiu_timebyte,
-        PE   => open,
-        FE   => open,
-        DR   => tiu_timebyte_dav,
-        TR   => (others => '0'),
-        THRE => open,
-        THRL => '0',
-        TRE  => open
-        );
-
-    process (clock) is
-    begin
-      if (rising_edge(clock)) then
-
-        tiu_timeword_valid <= '0';
-
-        -- synchronize the byte counter to the falling edge of the pulse
-        if (tiu_falling = '1') then
-
-          tiu_byte_cnt <= 0;
-
-        elsif (tiu_timebyte_dav = '1') then
-
-          if (tiu_byte_cnt < 5) then
-            tiu_byte_cnt <= tiu_byte_cnt + 1;
-            tiu_timeword_buf(8*(tiu_byte_cnt+1)-1 downto 8*tiu_byte_cnt)
-              <= tiu_timebyte;
-          else
-            tiu_byte_cnt       <= 0;
-            tiu_timeword       <= tiu_timebyte & tiu_timeword_buf;
-            tiu_timeword_valid <= '1';
-          end if;
-        end if;
-
-      end if;
-    end process;
-
-
-    -- on the falling edge of the tiu signal, latch the timestamp
-    process (clock) is
-    begin
-      if (rising_edge(clock)) then
-
-        tiu_timecode_sr(0) <= tiu_timecode_i;
-
-        for I in 1 to tiu_timecode_sr'length-1 loop
-          tiu_timecode_sr(I) <= tiu_timecode_sr(I-1);
-        end loop;
-
-        tiu_falling <= '0';
-
-        if (tiu_falling_cnt = 0 and tiu_timecode_sr(2) = '1' and tiu_timecode_sr(1) = '0') then
-          tiu_falling <= '1';
-          tiu_falling_cnt <= TIU_CNT_MAX;
-        elsif (tiu_falling_cnt > 0) then
-          tiu_falling_cnt <= tiu_falling_cnt - 1;
-        end if;
-
-          timestamp_valid <= '0';
-        if (tiu_falling = '1') then
-          timestamp_latch <= timestamp;
-          timestamp_valid <= '1';
-        end if;
-
-      end if;
-    end process;
-
-  end generate;
+  tiu_inst : entity work.tiu
+    generic map (
+      TIMESTAMPB => timestamp'length,
+      TIMEWORDB  => tiu_timeword'length,
+      EVENTCNTB  => event_cnt'length)
+    port map (
+      clock                => clock,
+      reset                => reset,
+      event_cnt_i          => event_cnt,
+      global_busy_o        => global_busy,
+      trigger_i            => global_trigger,
+      tiu_timecode_i       => ext_in(1),
+      tiu_busy_i           => ext_in(0),
+      tiu_serial_o         => ext_out(0),
+      tiu_trigger_o        => ext_out(1),
+      tiu_timeword_valid_o => tiu_timeword_valid,
+      tiu_timeword_o       => tiu_timeword,
+      timestamp_i          => std_logic_vector(timestamp),
+      timestamp_o          => timestamp_latch,
+      timestamp_valid_o    => timestamp_valid
+      );
 
   -------------------------------------------------------------------------------
   -- Timestamp
@@ -938,7 +820,7 @@ begin
       reset_i           => reset,
       trigger_i         => global_trigger,
       event_cnt_i       => event_cnt,
-      timestamp_i       => std_logic_vector(timestamp_latch),
+      timestamp_i       => timestamp_latch,
       timestamp_valid_i => timestamp_valid,
       timecode_i        => tiu_timeword,
       timecode_valid_i  => tiu_timeword_valid,
@@ -993,14 +875,14 @@ begin
         probe2(57 downto 53) => dsi_on,
         probe2(74 downto 58) => (others => '0'),
         probe3(3 downto 0)   => spi_dq,
-        probe3(4)            => tiu_busy,
-        probe3(5)            => tiu_timecode_i,
+        probe3(4)            => ext_in(0),
+        probe3(5)            => ext_in(1),
         probe3(6)            => spi_cs_n,
-        probe3(7)            => tiu_serial_o,
+        probe3(7)            => ext_out(0),
         probe4(4 downto 0)   => lvs_sync,
         probe4(5)            => daq_data_valid,
         probe4(6)            => ext_trigger,
-        probe4(7)            => tiu_trigger_o,
+        probe4(7)            => ext_out(1),
         probe5(0)            => lvs_sync_ccb,
         probe6(0)            => hk_ext_clk,
         probe7(0)            => hk_ext_mosi,
@@ -1008,7 +890,7 @@ begin
         probe9               => hk_ext_cs_n,
         probe10              => fb_clock_rates(0),
         probe11              => lt_data_i_pri(31 downto 0),
-        probe12(31 downto 0) => std_logic_vector(timestamp_latch),
+        probe12(31 downto 0) => timestamp_latch,
         probe13              => x"0000" & daq_data,
         probe14              => event_cnt
         );
