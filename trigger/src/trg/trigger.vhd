@@ -108,7 +108,8 @@ begin
       probe0 => ssl_top,
       probe1 => ssl_bot,
       probe2 => ssl_trigger & global_trigger & dead & ucla_trigger,
-      probe3 => event_cnt_o
+      probe3 => event_cnt_o,
+      probe4 => hitmask
       );
 
   --------------------------------------------------------------------------------
@@ -202,11 +203,11 @@ begin
   process (clk) is
   begin
     if (rising_edge(clk)) then
-      global_trigger_r <= not dead and global_trigger;
+      global_trigger_r <= not busy_i and not dead and global_trigger;
       rb_triggers_r    <= rb_triggers;
 
       channel_select_o <= per_channel_triggers;
-      rb_triggers_o    <= rb_triggers_r or repeat(global_trigger_r and all_triggers_are_global, rb_triggers_o'length);
+      rb_triggers_o    <= repeat (not busy_i, rb_triggers_o'length) and (rb_triggers_r or repeat(global_trigger_r and all_triggers_are_global, rb_triggers_o'length));
       global_trigger_o <= global_trigger_r;
     end if;
   end process;
