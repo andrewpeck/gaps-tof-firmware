@@ -1,5 +1,4 @@
 trigger/src/master_trigger.vhd top=gaps_mt
-#ipbus-firmware/components/ipbus_core/firmware/hdl/ipbus_package.vhd
 
 trigger/src/constants.vhd
 trigger/src/event_counter.vhd
@@ -17,6 +16,10 @@ common/src/uart/tiny_uart_inp_filter.vhd
 
 ip/master_trigger/*/*.xci
 
+# Eth Infrastructure
+trigger/src/sys/eth_infra.vhd
+
+# Verilog Ethernet
 verilog-ethernet/rtl/eth_mac_1g_rgmii.v
 verilog-ethernet/rtl/eth_mac_1g_rgmii_fifo.v
 verilog-ethernet/rtl/eth_mac_1g.v
@@ -31,8 +34,6 @@ verilog-ethernet/rtl/oddr.v
 verilog-ethernet/rtl/iddr.v
 verilog-ethernet/rtl/lfsr.v
 
-# ipbus-firmware/components/opencores_i2c/firmware/hdl/i2c_master_top.vhd
-
 # SPI Slave
 ipbus-firmware/components/opencores_spi/firmware/hdl/ipbus_spi.vhd
 ipbus-firmware/components/opencores_spi/firmware/hdl/spi_clgen.v
@@ -41,9 +42,7 @@ ipbus-firmware/components/opencores_spi/firmware/hdl/spi_shift.v
 ipbus-firmware/components/opencores_spi/firmware/hdl/spi_top.v
 ipbus-firmware/components/opencores_spi/firmware/hdl/timescale.v
 
-
-trigger/src/sys/eth_infra.vhd
-
+# IPbus
 ipbus-firmware/components/ipbus_core/firmware/hdl/ipbus_arb.vhd
 ipbus-firmware/components/ipbus_core/firmware/hdl/ipbus_fabric_sel.vhd
 ipbus-firmware/components/ipbus_core/firmware/hdl/ipbus_trans_decl.vhd
