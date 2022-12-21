@@ -6,7 +6,7 @@ use ieee.numeric_std.all;
 entity tiu is
   generic (
     TIMESTAMPB : integer := 32;
-    TIMEWORDB  : integer := 48;
+    GPSB       : integer := 48;
     EVENTCNTB  : integer := 32
     );
   port(
@@ -15,10 +15,10 @@ entity tiu is
     reset : in std_logic;
 
     -- tiu physical signals
-    tiu_busy_i     : in  std_logic;
-    tiu_serial_o   : out std_logic;
-    tiu_timecode_i : in  std_logic;
-    tiu_trigger_o  : out std_logic;
+    tiu_busy_i    : in  std_logic;
+    tiu_serial_o  : out std_logic;
+    tiu_gps_i     : in  std_logic;
+    tiu_trigger_o : out std_logic;
 
     -- config
     send_event_cnt_on_timeout : in std_logic := '1';
@@ -28,13 +28,12 @@ entity tiu is
     event_cnt_i : in std_logic_vector (EVENTCNTB-1 downto 0);
     timestamp_i : in std_logic_vector (TIMESTAMPB-1 downto 0);
 
-
     -- outputs
 
     global_busy_o : out std_logic;
 
-    tiu_timeword_valid_o : out std_logic;
-    tiu_timeword_o       : out std_logic_vector (TIMEWORDB-1 downto 0);
+    tiu_gps_valid_o : out std_logic;
+    tiu_gps_o       : out std_logic_vector (GPSB-1 downto 0);
 
     timestamp_o       : out std_logic_vector (TIMESTAMPB-1 downto 0);
     timestamp_valid_o : out std_logic
@@ -57,20 +56,18 @@ architecture behavioral of tiu is
   signal tiu_timeout           : std_logic                              := '0';
 
   --------------------------------------------------------------------------------
-  -- Timecode handling
+  -- GPS handling
   --------------------------------------------------------------------------------
 
   constant TIU_HOLDOFF_CNT_MAX : natural                       := 2**20-1;
   signal tiu_falling_cnt       : natural                       := TIU_HOLDOFF_CNT_MAX;
-  signal tiu_timecode_sr       : std_logic_vector (2 downto 0) := (others => '0');
+  signal tiu_gps_sr            : std_logic_vector (2 downto 0) := (others => '0');
   signal tiu_falling           : std_logic                     := '0';
 
-  signal tiu_timebyte       : std_logic_vector (7 downto 0)             := (others => '0');
-  signal tiu_timebyte_dav   : std_logic                                 := '0';
-  signal tiu_timeword_valid : std_logic                                 := '0';
-  signal tiu_timeword       : std_logic_vector (TIMEWORDB-1 downto 0)   := (others => '0');
-  signal tiu_timeword_buf   : std_logic_vector (TIMEWORDB-8-1 downto 0) := (others => '0');
-  signal tiu_byte_cnt       : integer range 0 to tiu_timeword'length/8;
+  signal tiu_timebyte     : std_logic_vector (7 downto 0)        := (others => '0');
+  signal tiu_timebyte_dav : std_logic                            := '0';
+  signal tiu_gps_buf      : std_logic_vector (GPSB-8-1 downto 0) := (others => '0');
+  signal tiu_byte_cnt     : integer range 0 to tiu_gps_o'length/8;
 
 begin
 
@@ -162,7 +159,7 @@ begin
   -- Timestamp In
   --------------------------------------------------------------------------------
 
-  timecode_uart_inst : entity work.tiny_uart
+  gps_uart_inst : entity work.tiny_uart
     generic map (
       WLS    => 8,           -- word length select; number of data bits     [ integer ]
       CLK    => 100_000_000, -- master clock frequency in Hz                [ integer ]
@@ -177,7 +174,7 @@ begin
       R    => reset,
       C    => clock,
       TXD  => open,
-      RXD  => tiu_timecode_i,
+      RXD  => tiu_gps_i,
       RR   => tiu_timebyte,
       PE   => open,
       FE   => open,
@@ -196,7 +193,7 @@ begin
   begin
     if (rising_edge(clock)) then
 
-      tiu_timeword_valid <= '0';
+      tiu_gps_valid_o <= '0';
 
       -- synchronize the byte counter to the falling edge of the pulse
       if (tiu_falling = '1') then
@@ -207,12 +204,12 @@ begin
 
         if (tiu_byte_cnt < 5) then
           tiu_byte_cnt <= tiu_byte_cnt + 1;
-          tiu_timeword_buf(8*(tiu_byte_cnt+1)-1 downto 8*tiu_byte_cnt)
+          tiu_gps_buf(8*(tiu_byte_cnt+1)-1 downto 8*tiu_byte_cnt)
             <= tiu_timebyte;
         else
-          tiu_byte_cnt       <= 0;
-          tiu_timeword       <= tiu_timebyte & tiu_timeword_buf;
-          tiu_timeword_valid <= '1';
+          tiu_byte_cnt    <= 0;
+          tiu_gps_o       <= tiu_timebyte & tiu_gps_buf;
+          tiu_gps_valid_o <= '1';
         end if;
       end if;
 
@@ -220,20 +217,20 @@ begin
   end process;
 
 
-  -- on the falling edge of the tiu timestamp signal, latch the timestamp
+  -- on the falling edge of the tiu GPS signal, latch the timestamp
   process (clock) is
   begin
     if (rising_edge(clock)) then
 
-      tiu_timecode_sr(0) <= tiu_timecode_i;
+      tiu_gps_sr(0) <= tiu_gps_i;
 
-      for I in 1 to tiu_timecode_sr'length-1 loop
-        tiu_timecode_sr(I) <= tiu_timecode_sr(I-1);
+      for I in 1 to tiu_gps_sr'length-1 loop
+        tiu_gps_sr(I) <= tiu_gps_sr(I-1);
       end loop;
 
       tiu_falling <= '0';
 
-      if (tiu_falling_cnt = 0 and tiu_timecode_sr(2) = '1' and tiu_timecode_sr(1) = '0') then
+      if (tiu_falling_cnt = 0 and tiu_gps_sr(2) = '1' and tiu_gps_sr(1) = '0') then
         tiu_falling     <= '1';
         tiu_falling_cnt <= TIU_HOLDOFF_CNT_MAX;
       elsif (tiu_falling_cnt > 0) then

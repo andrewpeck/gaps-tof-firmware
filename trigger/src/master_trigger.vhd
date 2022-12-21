@@ -183,8 +183,8 @@ architecture structural of gaps_mt is
 
   signal ext_trigger_holdoff : integer range 0 to 31 := 0;
 
-  signal tiu_timeword       : std_logic_vector (8*6-1 downto 0) := (others => '0');
-  signal tiu_timeword_valid : std_logic                         := '0';
+  signal tiu_gps       : std_logic_vector (8*6-1 downto 0) := (others => '0');
+  signal tiu_gps_valid : std_logic                         := '0';
 
   -- 1 bit trigger for rb; this is just the OR of the channel_select
   signal rb_triggers    : std_logic_vector (NUM_RBS-1 downto 0);
@@ -681,9 +681,8 @@ begin
 
   --------------------------------------------------------------------------------
   -- trigger tx
-  --------------------------------------------------------------------------------
   --
-  -- takes in triggers, returns a serialized packet to send to the readout board
+  -- takes in triggers, outputs a serialized packet to send to the readout board
   --
   --------------------------------------------------------------------------------
 
@@ -748,23 +747,35 @@ begin
   tiu_inst : entity work.tiu
     generic map (
       TIMESTAMPB => timestamp'length,
-      TIMEWORDB  => tiu_timeword'length,
+      GPSB       => tiu_gps'length,
       EVENTCNTB  => event_cnt'length)
     port map (
-      clock                => clock,
-      reset                => reset,
-      event_cnt_i          => event_cnt,
-      global_busy_o        => global_busy,
-      trigger_i            => global_trigger,
-      tiu_timecode_i       => ext_in(1),
-      tiu_busy_i           => ext_in(0),
-      tiu_serial_o         => ext_out(0),
-      tiu_trigger_o        => ext_out(1),
-      tiu_timeword_valid_o => tiu_timeword_valid,
-      tiu_timeword_o       => tiu_timeword,
-      timestamp_i          => std_logic_vector(timestamp),
-      timestamp_o          => timestamp_latch,
-      timestamp_valid_o    => timestamp_valid
+      clock             => clock,
+      reset             => reset,
+
+      -- tiu physical signals
+      tiu_busy_i        => ext_in(0),
+      tiu_serial_o      => ext_out(0),
+      tiu_gps_i         => ext_in(1),
+      tiu_trigger_o     => ext_out(1),
+
+      -- config
+      send_event_cnt_on_timeout => '1',
+
+      -- mt trigger signals
+      trigger_i         => global_trigger,
+      event_cnt_i       => event_cnt,
+      timestamp_i       => std_logic_vector(timestamp),
+
+      -- outputs
+
+      global_busy_o     => global_busy,
+
+      tiu_gps_valid_o   => tiu_gps_valid,
+      tiu_gps_o         => tiu_gps,
+
+      timestamp_o       => timestamp_latch,
+      timestamp_valid_o => timestamp_valid
       );
 
   -------------------------------------------------------------------------------
@@ -784,11 +795,13 @@ begin
 
   --------------------------------------------------------------------------------
   -- SPI master
-  --------------------------------------------------------------------------------
   --
   -- MCP3208-BI/SL
   -- https://ww1.microchip.com/downloads/en/DeviceDoc/21298e.pdf
   -- https://opencores.org/websvn/filedetails?repname=spi&path=%2Fspi%2Ftrunk%2Fdoc%2Fspi.pdf
+  --
+  --------------------------------------------------------------------------------
+
   ipbus_spi_inst : entity work.ipbus_spi
     generic map (
       N_SS => hk_ext_cs_n'length
@@ -822,8 +835,8 @@ begin
       event_cnt_i       => event_cnt,
       timestamp_i       => timestamp_latch,
       timestamp_valid_i => timestamp_valid,
-      timecode_i        => tiu_timeword,
-      timecode_valid_i  => tiu_timeword_valid,
+      tiu_gps_i         => tiu_gps,
+      tiu_gps_valid_i   => tiu_gps_valid,
       hits_i            => discrim_masked,
       data_o            => daq_data,
       data_valid_o      => daq_data_valid
@@ -870,7 +883,7 @@ begin
         clk                  => clock,
         probe0(0)            => rb_data_o(0),
         probe1(0)            => global_trigger,
-        probe2(47 downto 0)  => tiu_timeword,
+        probe2(47 downto 0)  => tiu_gps,
         probe2(52 downto 48) => fb_clk_ok,
         probe2(57 downto 53) => dsi_on,
         probe2(74 downto 58) => (others => '0'),

@@ -26,11 +26,14 @@ entity mtb_daq is
     -- trigger + metadata
     trigger_i         : in std_logic;
     event_cnt_i       : in std_logic_vector (31 downto 0);
+
+    tiu_gps_i         : in std_logic_vector (47 downto 0);
+    tiu_gps_valid_i   : in std_logic;
+
     timestamp_i       : in std_logic_vector (31 downto 0);
-    timecode_i        : in std_logic_vector (47 downto 0);
     timestamp_valid_i : in std_logic;
-    timecode_valid_i  : in std_logic;
-    ignore_tiu_i      :    std_logic := '1';
+
+    ignore_tiu_i      : in std_logic := '1';
 
     -- daq outputs
     data_o       : out std_logic_vector (15 downto 0);
@@ -41,7 +44,7 @@ end mtb_daq;
 
 architecture behavioral of mtb_daq is
 
-  type state_t is (IDLE_state, HEADER_state, EVENT_CNT_state, TIMESTAMP_state, TIMECODE_state,
+  type state_t is (IDLE_state, HEADER_state, EVENT_CNT_state, TIMESTAMP_state, TIU_GPS_state,
                    RSVD_state, BOARD_MASK_state, HITS_state, PAD_state, CRC_CALC_state,
                    CRC_state, TRAILER_state);
 
@@ -53,10 +56,10 @@ architecture behavioral of mtb_daq is
   -- Stable copies of inputs
   --------------------------------------------------------------------------------
 
-  signal timecode_valid  : std_logic;
+  signal tiu_gps_valid   : std_logic;
   signal timestamp_valid : std_logic;
   signal timestamp       : std_logic_vector (timestamp_i'range) := (others => '0');
-  signal timecode        : std_logic_vector (timecode_i'range)  := (others => '0');
+  signal tiu_gps         : std_logic_vector (tiu_gps_i'range)   := (others => '0');
   signal event_cnt       : std_logic_vector (event_cnt_i'range) := (others => '0');
 
   --------------------------------------------------------------------------------
@@ -249,9 +252,9 @@ begin
       data_valid_o <= '0';
       data_o       <= (others => '0');
 
-      if (state /= IDLE_state and (timecode_valid_i = '1' or ignore_tiu_i = '1')) then
-        timecode_valid <= '1';
-        timecode       <= timecode_i;
+      if (state /= IDLE_state and (tiu_gps_valid_i = '1' or ignore_tiu_i = '1')) then
+        tiu_gps_valid <= '1';
+        tiu_gps       <= tiu_gps_i;
       end if;
 
       if (state /= IDLE_state and (timestamp_valid_i = '1' or ignore_tiu_i = '1')) then
@@ -263,11 +266,11 @@ begin
 
         when IDLE_state =>
 
-          timecode_valid  <= '0';
+          tiu_gps_valid   <= '0';
           timestamp_valid <= '0';
           crc_rst         <= '1';
 
-          -- freeze the hitmask, timestamp, timecode, hitmask
+          -- freeze the hitmask, timestamp, tiu_gps, hitmask
           if (trigger_i = '1') then
             state        <= HEADER_state;
             event_cnt    <= event_cnt_i;
@@ -318,7 +321,7 @@ begin
 
           if (timestamp_valid = '1') then
             if (state_word_cnt = timestamp'length / g_WORD_SIZE - 1) then
-              state          <= TIMECODE_state;
+              state          <= TIU_GPS_state;
               state_word_cnt <= 0;
             else
               state_word_cnt <= state_word_cnt + 1;
@@ -333,19 +336,19 @@ begin
           next_board_mask  <= calc_next_mask(board_mask);
           odd_num_channels <= xor_reduce(board_mask);
 
-        when TIMECODE_state =>
+        when TIU_GPS_state =>
 
           -- TODO: add a timeout
 
-          if (timecode_valid = '1') then
-            if (state_word_cnt = timecode'length / g_WORD_SIZE - 1) then
+          if (tiu_gps_valid = '1') then
+            if (state_word_cnt = tiu_gps'length / g_WORD_SIZE - 1) then
               state          <= RSVD_state;
               state_word_cnt <= 0;
             else
               state_word_cnt <= state_word_cnt + 1;
             end if;
 
-            data_o       <= data_sel(g_MSB_FIRST, g_WORD_SIZE, timecode'length/g_WORD_SIZE, state_word_cnt, timecode);
+            data_o       <= data_sel(g_MSB_FIRST, g_WORD_SIZE, tiu_gps'length/g_WORD_SIZE, state_word_cnt, tiu_gps);
             data_valid_o <= '1';
             crc_en       <= '1';
           end if;
@@ -355,7 +358,7 @@ begin
 
         when RSVD_state =>
 
-          -- add a reserved state to make the timecode round up to 64 bits so
+          -- add a reserved state to make the tiu_gps round up to 64 bits so
           -- it goes nicely into the 32 bit fifo
           data_o       <= (others => '0');
           data_valid_o <= '1';
