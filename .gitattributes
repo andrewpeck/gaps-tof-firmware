@@ -1,3 +1,8 @@
 ip/readout_board/*/*.xci filter=reset_xci
 daq_board_top.vhd filter=emio_filter
 ps_interface.vhd filter=emio_filter
+
+*.xci linguist-detectable=false
+plnx/** linguist-detectable=false
+regmap/*.org linguist-generated=true
+regmap/*.tex linguist-generated=true
