@@ -115,7 +115,7 @@ end gaps_mt;
 
 architecture structural of gaps_mt is
 
-  constant UCLA_IP_ADDR : ip_addr_t := (10, 97, 108, 15);
+  constant UCLA_IP_ADDR : ip_addr_t := (10, 0, 1, 10);
   constant SSL_IP_ADDR  : ip_addr_t := (192, 168, 36, 121);
   signal ip_addr        : ip_addr_t;
   signal mtb_is_ucla    : std_logic := '0';
