@@ -192,6 +192,19 @@ Since it is divided into 2 links, this means 8 bits / link + 2 start bits per tr
 
 ## Master Trigger DAQ Data Format
 
+| Field         | Len      | Description                                                |
+| :------------ | :------- | :--------------------------------------------------------- |
+| HEADER        | `[15:0]` | 0xAAAA                                                     |
+| EVENT_CNT     | `[31:0]` | Event counter                                              |
+| TIMESTAMP     | `[31:0]` | Internal timestamp at the time of trigger (1 unit = 10 ns) |
+| TIU_TIMESTAMP | `[31:0]` | Timestamp at the edge of the TIU GPS (1 unit = 10 ns)      |
+| TIU_GPS       | `[47:0]` | Second received from the TIU (format?)                     |
+| RESERVED      | `[15:0]` | Reserved                                                   |
+| BOARD_MASK    | `[31:0]` | 25 bits indicating boards which are read out               |
+| HITS          | --       | Variable sized, 16 bits / board \* n_boards                |
+| PAD           | `[15:0]` | Optional, only here if the # of boards read is odd         |
+| CRC           | `[31:0]` | CRC32, same polynomial as the RB                           |
+| TRAILER       | `[15:0]` | 0x5555                                                     |
 
 ## Master Trigger External IO
 
