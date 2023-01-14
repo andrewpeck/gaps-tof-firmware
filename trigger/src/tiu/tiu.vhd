@@ -2,6 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_misc.all;
 use ieee.numeric_std.all;
+use ieee.math_real.all;
 
 entity tiu is
   generic (
@@ -23,7 +24,7 @@ entity tiu is
 
     -- config
     send_event_cnt_on_timeout : in std_logic := '1';
-    tiu_emulation_mode : in std_logic;
+    tiu_emulation_mode        : in std_logic;
 
     -- mt trigger signals
     trigger_i   : in std_logic;
@@ -45,20 +46,23 @@ end tiu;
 
 architecture behavioral of tiu is
 
+  constant CLK_PERIOD          : real    := 1000000.0/real(FREQ);
+  constant tiu_trigger_cnt_max : integer := integer(1.05 / CLK_PERIOD);
+  constant tiu_busy_cnt_max    : integer := integer(20.0 / CLK_PERIOD);
+
   signal tiu_busy : std_logic := '0';
-  signal tiu_gps : std_logic := '0';
+  signal tiu_gps  : std_logic := '0';
 
   --------------------------------------------------------------------------------
   -- Trigger Logic
   --------------------------------------------------------------------------------
 
-  signal event_cnt             : std_logic_vector (event_cnt_i'range)   := (others => '0');
-  constant tiu_trigger_cnt_max : integer                                := 105;
-  signal tiu_trigger_cnt       : integer range 0 to tiu_trigger_cnt_max := 0;
-  signal ready_for_trigger     : boolean;
-  signal tiu_tx_busy           : std_logic                              := '0';
-  signal tiu_init_tx           : std_logic                              := '0';
-  signal tiu_timeout           : std_logic                              := '0';
+  signal event_cnt         : std_logic_vector (event_cnt_i'range)   := (others => '0');
+  signal tiu_trigger_cnt   : integer range 0 to tiu_trigger_cnt_max := 0;
+  signal ready_for_trigger : std_logic;
+  signal tiu_tx_busy       : std_logic                              := '0';
+  signal tiu_init_tx       : std_logic                              := '0';
+  signal tiu_timeout       : std_logic                              := '0';
 
   --------------------------------------------------------------------------------
   -- GPS handling
@@ -78,17 +82,20 @@ architecture behavioral of tiu is
   -- Emulation
   --------------------------------------------------------------------------------
 
-  signal tiu_auto_ack       : std_logic := '0';
-
-  signal tiu_emu_byte     : std_logic_vector (7 downto 0)      := (others => '0');
+  signal tiu_emu_busy_cnt : integer range 0 to tiu_busy_cnt_max := 0;
+  signal tiu_emu_busy     : std_logic                           := '0';
+  signal tiu_emu_byte     : std_logic_vector (7 downto 0)       := (others => '0');
   signal tiu_emu_dav      : std_logic;
   signal tiu_emu_empty    : std_logic;
   signal tiu_emu_gps      : std_logic;
-  signal tiu_emu_word     : std_logic_vector (GPSB-1 downto 0) := (others => '0');
-  signal tiu_emu_byte_cnt : integer range 0 to GPSB/8-1        := 0;
+  signal tiu_emu_word     : std_logic_vector (GPSB-1 downto 0)  := (others => '0');
+  signal tiu_emu_byte_cnt : integer range 0 to GPSB/8-1         := 0;
 
-  type state_t is (IDLE, DATA, LOAD);
-  signal state : state_t := IDLE;
+  type busy_state_t is (IDLE, WAITING_FOR_BUSY, BUSY);
+  signal tiu_busy_state : busy_state_t := IDLE;
+
+  type gps_rx_state_t is (IDLE, DATA, LOAD);
+  signal gps_rx_state : gps_rx_state_t := IDLE;
 
   signal pps            : std_logic := '0';
   signal second_cnt     : unsigned (31 downto 0);
@@ -96,9 +103,9 @@ architecture behavioral of tiu is
 
 begin
 
-  global_busy_o <= '0' when ready_for_trigger else '1';
+  global_busy_o <= '0' when ready_for_trigger = '1' else '1';
 
-  tiu_busy <= tiu_auto_ack when tiu_emulation_mode = '1' else tiu_busy_i;
+  tiu_busy <= tiu_emu_busy when tiu_emulation_mode = '1' else tiu_busy_i;
   tiu_gps  <= tiu_emu_gps  when tiu_emulation_mode = '1' else tiu_gps_i;
 
   --------------------------------------------------------------------------------
@@ -112,11 +119,11 @@ begin
   --  3) When ACK is received, send the event counter
   --  4) When ACK is deasserted, ready for the next trigger
 
-  ready_for_trigger <= tiu_tx_busy = '0' and
+  ready_for_trigger <= '1' when tiu_tx_busy = '0' and
                        tiu_busy = '0' and
                        tiu_trigger_o = '0' and
                        tiu_timeout = '0' and
-                       tiu_trigger_cnt = 0;
+                       tiu_trigger_cnt = 0 else '0';
 
   process (clock) is
   begin
@@ -127,7 +134,7 @@ begin
       tiu_timeout   <= '0';
 
       -- start a trigger
-      if (ready_for_trigger and trigger_i = '1') then
+      if (ready_for_trigger = '1' and trigger_i = '1') then
         tiu_trigger_o   <= '1';
         tiu_trigger_cnt <= tiu_trigger_cnt_max;
         event_cnt       <= event_cnt_i;
@@ -269,7 +276,7 @@ begin
 
       timestamp_valid_o <= '0';
 
-      if (tiu_falling = '1' or (pps='1' and tiu_emulation_mode='1')) then
+      if (tiu_falling = '1' or (pps = '1' and tiu_emulation_mode = '1')) then
         timestamp_o       <= timestamp_i;
         timestamp_valid_o <= '1';
       end if;
@@ -281,14 +288,52 @@ begin
   -- TIU Emulator
   --------------------------------------------------------------------------------
 
-  process (clock) is
+  process (clock)
   begin
     if (rising_edge(clock)) then
-      if (tiu_emulation_mode='0') then
-        tiu_auto_ack <= '0';
-      elsif (tiu_emulation_mode='1') then
-        tiu_auto_ack <= tiu_trigger_o;
+
+      case tiu_busy_state is
+
+        when IDLE =>
+
+          tiu_emu_busy <= '0';
+
+          if (tiu_trigger_o = '1') then
+            tiu_busy_state   <= WAITING_FOR_BUSY;
+            tiu_emu_busy_cnt <= 100;
+          end if;
+
+        when WAITING_FOR_BUSY =>
+
+          tiu_emu_busy <= '0';
+
+          if (tiu_emu_busy_cnt > 0) then
+            tiu_emu_busy_cnt <= tiu_emu_busy_cnt - 1;
+          elsif (tiu_emu_busy_cnt = 0) then
+            tiu_busy_state   <= BUSY;
+            tiu_emu_busy_cnt <= 2000;
+          end if;
+
+        when BUSY =>
+
+          tiu_emu_busy <= '1';
+
+          if (tiu_emu_busy_cnt > 0) then
+            tiu_emu_busy_cnt <= tiu_emu_busy_cnt - 1;
+          elsif (tiu_emu_busy_cnt = 0) then
+            tiu_busy_state <= IDLE;
+          end if;
+
+        when others =>
+
+          tiu_busy_state <= IDLE;
+
+      end case;
+
+      if (reset = '1') then
+        tiu_busy_state <= IDLE;
       end if;
+
     end if;
   end process;
 
@@ -320,12 +365,12 @@ begin
       tiu_emu_byte <= (others => '0');
       tiu_emu_dav  <= '0';
 
-      case state is
+      case gps_rx_state is
 
         when IDLE =>
 
-          if (pps='1') then
-            state            <= LOAD;
+          if (pps = '1') then
+            gps_rx_state     <= LOAD;
             tiu_emu_byte_cnt <= GPSB/8-1;
           end if;
 
@@ -339,9 +384,9 @@ begin
 
           if (tiu_emu_empty = '1') then
             if (tiu_emu_byte_cnt = 0) then
-              state <= IDLE;
+              gps_rx_state <= IDLE;
             else
-              state            <= LOAD;
+              gps_rx_state     <= LOAD;
               tiu_emu_byte_cnt <= tiu_emu_byte_cnt - 1;
             end if;
           end if;
@@ -349,7 +394,7 @@ begin
       end case;
 
       if (reset = '1') then
-        state <= IDLE;
+        gps_rx_state <= IDLE;
       end if;
 
     end if;

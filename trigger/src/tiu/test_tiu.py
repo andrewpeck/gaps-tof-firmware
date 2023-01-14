@@ -20,7 +20,7 @@ async def tiu_test_comms(dut):
 
     dut.reset.value = 0
     dut.tiu_busy_i.value = 0
-    dut.tiu_timecode_i.value = 0
+    dut.tiu_gps_i.value = 0
     dut.trigger_i.value = 0
     dut.timestamp_i.value = 0x12345678
     dut.event_cnt_i.value = 0xabcd0123
