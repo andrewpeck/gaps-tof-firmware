@@ -13,6 +13,7 @@
 -- Outputs a collection of low threshold, medium threshold, and high threshold hits
 --
 ----------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_misc.all;
@@ -52,11 +53,9 @@ architecture rtl of lt_rx is
 
   signal reset : std_logic := '0';
 
-  signal data_bytes       : t_std8_array (NUM_INPUTS-1 downto 0);
-  signal data_bytes_valid : std_logic_vector (NUM_INPUTS-1 downto 0) := (others => '0');
-  signal data_rx          : std_logic_vector (NUM_INPUTS-1 downto 0);
-  signal data_valid       : std_logic_vector (NUM_INPUTS-1 downto 0);
-  signal coarse_delays    : lt_coarse_delays_array_t;
+  signal data_bytes    : t_std8_array (NUM_INPUTS-1 downto 0);
+  signal data_valid    : std_logic_vector (NUM_INPUTS-1 downto 0);
+  signal coarse_delays : lt_coarse_delays_array_t;
 
 begin
 
@@ -66,15 +65,15 @@ begin
 
   xpm_cdc_sync_rst_inst : xpm_cdc_sync_rst
     generic map (
-      DEST_SYNC_FF   => 4,              -- DECIMAL; range: 2-10
-      INIT           => 1,  -- DECIMAL; 0=initialize synchronization registers to 0, 1=initialize synchronization registers to 1
-      INIT_SYNC_FF   => 0,  -- DECIMAL; 0=disable simulation init values, 1=enable simulation init values
+      DEST_SYNC_FF   => 4, -- DECIMAL; range: 2-10
+      INIT           => 1, -- DECIMAL; 0=initialize synchronization registers to 0, 1=initialize synchronization registers to 1
+      INIT_SYNC_FF   => 0, -- DECIMAL; 0=disable simulation init values, 1=enable simulation init values
       SIM_ASSERT_CHK => 0  -- DECIMAL; 0=disable simulation messages, 1=enable simulation messages
       )
     port map (
-      dest_rst => reset,  -- 1-bit output: src_rst synchronized to the destination clock domain. This output is registered.
-      dest_clk => clk,                  -- 1-bit input: Destination clock.
-      src_rst  => reset_i               -- 1-bit input: Source reset signal.
+      dest_rst => reset,    -- 1-bit output: src_rst synchronized to the destination clock domain. This output is registered.
+      dest_clk => clk,      -- 1-bit input: Destination clock.
+      src_rst  => reset_i   -- 1-bit input: Source reset signal.
       );
 
   --------------------------------------------------------------------------------
@@ -97,37 +96,11 @@ begin
 
   genloop : for I in 0 to NUM_INPUTS-1 generate
     signal data_serial : std_logic;
-    signal sel         : std_logic_vector (1 downto 0) := (others => '0');
   begin
-
-    ilagen : if (I = 2) generate
-      ila_200_inst : ila_200
-        port map (
-          clk                => clk,
-          probe0(0)          => data_rx(I),
-          probe1(0)          => data_rx(I+1),
-          probe2(0)          => data_valid(I),
-          probe2(1)          => data_valid(I+1),
-          probe2(2)          => link_en(I),
-          probe2(3)          => link_en(I+1),
-          -- probe2(2)          => data_bytes_valid(I),
-          -- probe2(3)          => data_bytes_valid(I+1),
-          probe2(4)          => '1',
-          probe2(5)          => '1',
-          probe2(7 downto 6) => sel,
-          probe3             => hits_o(0),
-          probe4             => hits_o(1),
-          probe5             => hits_o(2),
-          probe6             => hits_o(3),
-          probe7             => hits_o(4),
-          probe8             => hits_o(5),
-          probe9             => hits_o(6),
-          probe10            => hits_o(7)
-          );
-    end generate;
 
     -- input delays + ffs for single LT board
     lt_input_processor_inst : entity work.lt_input_processor
+      generic map (INST => I)
       port map (
         clk   => clk,
         clk90 => clk90,
@@ -138,8 +111,7 @@ begin
         en      => link_en(I),
         data_i  => data_i(I),
         data_o  => data_bytes(I),
-        valid_o => data_valid(I),
-        sel_o   => sel
+        valid_o => data_valid(I)
         );
 
   end generate;
@@ -153,8 +125,8 @@ begin
     signal valid_b : std_logic := '0';
   begin
 
-    valid_a <= data_bytes_valid(I*2);
-    valid_b <= data_bytes_valid((I+1)*2-1);
+    valid_a <= data_valid(I*2);
+    valid_b <= data_valid((I+1)*2-1);
 
     --
     -- https://gaps1.astro.ucla.edu/wiki/gaps/index.php?title=Local_Trigger_Board_Operation

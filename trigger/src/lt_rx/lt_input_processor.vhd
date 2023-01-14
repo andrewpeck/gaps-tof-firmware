@@ -15,9 +15,11 @@ use ieee.numeric_std.all;
 
 use work.constants.all;
 use work.mt_types.all;
+use work.components.all;
 
 entity lt_input_processor is
   generic(
+    INST    : natural  := 0;
     STRETCH : positive := 16
     );
   port(
@@ -32,10 +34,7 @@ entity lt_input_processor is
 
     data_i  : in  std_logic;
     data_o  : out std_logic_vector (7 downto 0) := (others => '0');
-    valid_o : out std_logic;
-
-
-    sel_o : out std_logic_vector(1 downto 0)
+    valid_o : out std_logic
 
     );
 end lt_input_processor;
@@ -66,7 +65,29 @@ architecture behavioral of lt_input_processor is
   signal valid    : std_logic                             := '0';
   signal valid_sr : std_logic_vector (STRETCH-1 downto 0) := (others => '0');
 
+  signal sel : std_logic_vector (1 downto 0) := (others => '0');
+
 begin
+
+    ilagen : if (INST = 0) generate
+      ila_200_inst : ila_200
+        port map (
+          clk                => clk,
+          probe0(0)          => data_i,
+          probe1(0)          => valid_o,
+          probe2(7 downto 0) => data_o,
+          probe3(1 downto 0) => sel,
+          probe4(0)          => rdy,
+          probe4(1)          => err,
+          probe5(0)          => data_dly,
+          probe5(1)          => data_oversample,
+          probe6             => (others => '0'),
+          probe7             => (others => '0'),
+          probe8             => (others => '0'),
+          probe9             => (others => '0'),
+          probe10            => (others => '0')
+          );
+    end generate;
 
   --------------------------------------------------------------------------------
   -- Oversampler
@@ -82,7 +103,7 @@ begin
       clk90  => clk90,
       data_i => data_i,
       data_o => data_oversample,
-      sel_o  => sel_o
+      sel_o  => sel
       );
 
   --------------------------------------------------------------------------------
