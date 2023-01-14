@@ -39,6 +39,8 @@ entity gaps_mt is
 
     MANCHESTER_LOOPBACK : boolean := true;
 
+    CLK_FREQ : integer := 100_000_000;
+
     -- these generics get set by hog at synthesis
     GLOBAL_DATE : std_logic_vector (31 downto 0) := x"00000000";
     GLOBAL_TIME : std_logic_vector (31 downto 0) := x"00000000";
@@ -478,7 +480,7 @@ begin
   begin
     frequency_counter_inst : entity work.frequency_counter
       generic map (
-        clk_a_freq => 100000000
+        clk_a_freq => CLK_FREQ
         )
       port map (
         reset => reset,
@@ -504,7 +506,7 @@ begin
 
   frequency_counter_inst : entity work.frequency_counter
     generic map (
-      clk_a_freq => 100000000
+      clk_a_freq => CLK_FREQ
       )
     port map (
       reset => reset,
@@ -760,6 +762,7 @@ begin
 
   tiu_inst : entity work.tiu
     generic map (
+      FREQ       => CLK_FREQ,
       TIMESTAMPB => timestamp'length,
       GPSB       => tiu_gps'length,
       EVENTCNTB  => event_cnt'length)
