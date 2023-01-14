@@ -432,6 +432,8 @@ begin
           tiu_emu_byte <= tiu_emu_word(8*(1+tiu_emu_byte_cnt)-1 downto
                                        8*tiu_emu_byte_cnt);
 
+          gps_rx_state <= DATA;
+
         when DATA =>
 
           if (tiu_emu_empty = '1') then
