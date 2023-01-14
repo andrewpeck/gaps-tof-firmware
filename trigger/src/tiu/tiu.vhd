@@ -4,6 +4,8 @@ use ieee.std_logic_misc.all;
 use ieee.numeric_std.all;
 use ieee.math_real.all;
 
+use work.components.all;
+
 entity tiu is
   generic (
     TIMESTAMPB : integer := 32;
@@ -102,6 +104,56 @@ architecture behavioral of tiu is
   signal sub_second_cnt : integer range 0 to FREQ - 1;
 
 begin
+
+  ila_mt_inst : ila_mt
+    port map (
+      clk                   => clock,
+      probe0(0)             => tiu_busy,
+      probe1(0)             => tiu_gps,
+      probe2(0)             => tiu_busy_i,
+      probe2(1)             => tiu_serial_o,
+      probe2(2)             => tiu_gps_i,
+      probe2(3)             => tiu_trigger_o,
+      probe2(4)             => trigger_i,
+      probe2(5)             => global_busy_o,
+      probe2(6)             => timestamp_valid_o,
+      probe2(7)             => tiu_gps_valid_o,
+      probe2(55 downto 8)   => tiu_gps_o,
+      probe2(74 downto 56)  => (others => '0'),
+      probe3(3 downto 0)    => (others => '0'),
+      probe3(4)             => pps,
+      probe3(5)             => '0',
+      probe3(6)             => '0',
+      probe3(7)             => '0',
+      probe4(4 downto 0)    => (others => '0'),
+      probe4(5)             => tiu_emulation_mode,
+      probe4(6)             => tiu_busy,
+      probe4(7)             => tiu_gps,
+      probe5(0)             => '0',
+      probe6(0)             => '0',
+      probe7(0)             => '0',
+      probe8(0)             => '0',
+      probe9(1 downto 0)    => (others => '0'),
+      probe10(31 downto 0)  => event_cnt,
+      probe11(31 downto 0)  => timestamp_o,
+      probe12(31 downto 0)  => timestamp_i,
+      probe13(0)            => tiu_tx_busy,
+      probe13(1)            => tiu_init_tx,
+      probe13(2)            => tiu_timeout,
+      probe13(3)            => ready_for_trigger,
+      probe13(4)            => tiu_tx_busy,
+      probe13(5)            => tiu_init_tx,
+      probe13(6)            => tiu_timeout,
+      probe13(7)            => tiu_falling,
+      probe13(15 downto 8)  => tiu_timebyte,
+      probe13(19 downto 16) => std_logic_vector(to_unsigned(tiu_byte_cnt, 4)),
+      probe13(20)           => tiu_emu_busy,
+      probe13(28 downto 21) => tiu_emu_byte,
+      probe13(29)           => tiu_emu_dav,
+      probe13(30)           => tiu_emu_empty,
+      probe13(31)           => tiu_emu_gps,
+      probe14               => event_cnt
+      );
 
   global_busy_o <= '0' when ready_for_trigger = '1' else '1';
 
