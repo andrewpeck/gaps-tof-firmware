@@ -778,7 +778,7 @@ begin
 
       -- config
       send_event_cnt_on_timeout => '1',
-      tiu_emulation_mode        => tiu_emulation_mode,
+      tiu_emulation_mode        => mtb_is_ucla or tiu_emulation_mode,
 
       -- mt trigger signals
       trigger_i         => global_trigger,
