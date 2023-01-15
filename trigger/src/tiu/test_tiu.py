@@ -22,6 +22,7 @@ async def tiu_test_comms(dut):
     dut.tiu_busy_i.value = 0
     dut.tiu_gps_i.value = 0
     dut.trigger_i.value = 0
+    dut.tiu_emulation_mode.value = 1
     dut.timestamp_i.value = 0x12345678
     dut.event_cnt_i.value = 0xabcd0123
 
@@ -43,6 +44,9 @@ async def tiu_test_comms(dut):
             dut.tiu_busy_i.value = 1
         if i==200:
             dut.tiu_busy_i.value = 0
+        await RisingEdge(dut.clock)
+
+    while True:
         await RisingEdge(dut.clock)
 
 def test_tiu():
