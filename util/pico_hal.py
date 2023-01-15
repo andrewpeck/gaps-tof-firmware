@@ -97,12 +97,14 @@ def wReg(address, data, verify=False):
     ready = select.select([s], [], [], 1)
     if ready[0]:
         data = s.recvfrom(4096)
-        rdback = rReg(address)
-        if (verify and rdback != data):
-            print("Readback error in wReg!")
-        return rdback
+        if verify:
+            rdback = rReg(address)
+            if rdback != data:
+                print("Readback error in wReg!")
+            return rdback
+        return data
     else:
-        print("timeout in wreg")
+        print("timeout in wreg 0x%08X" % data)
         return wReg(address, data, verify)
 
 def rReg(address):
