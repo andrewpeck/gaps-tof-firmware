@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 import socket
 import random
+import select
+import time
 from enum import Enum
 
 PACKET_ID = 0
-IPADDR = "192.168.36.121"
+#IPADDR = "192.168.36.121"
 #IPADDR = "10.97.108.15"
+IPADDR = "10.0.1.10"
 PORT = 50001
 
 # Create a UDP socket and bind the socket to the port
@@ -91,15 +94,26 @@ def encode_ipbus(addr, packet_type, data):
 
 def wReg(address, data, verify=False):
     s.sendto(encode_ipbus(addr=address, packet_type=WRITE, data=[data]), target_address)
-    s.recvfrom(4096)
-    rdback = rReg(address)
-    if (verify and rdback != data):
-        print("Error!")
+    ready = select.select([s], [], [], 1)
+    if ready[0]:
+        data = s.recvfrom(4096)
+        rdback = rReg(address)
+        if (verify and rdback != data):
+            print("Readback error in wReg!")
+        return rdback
+    else:
+        print("timeout in wreg")
+        return wReg(address, data, verify)
 
 def rReg(address):
     s.sendto(encode_ipbus(addr=address, packet_type=READ, data=[0x0]), target_address)
-    data, address = s.recvfrom(4096)
-    return decode_ipbus(data,False)[0]
+    ready = select.select([s], [], [], 1)
+    if ready[0]:
+        data, address = s.recvfrom(4096)
+        return decode_ipbus(data,False)[0]
+    else:
+        print("timeout in rreg")
+        return rReg(address)
 
 c_addr = 0x1004
 div_addr = 0x1005
@@ -254,7 +268,7 @@ def set_any_trigger(val):
         val = bit
     rd = rReg(0xb)
     wr = (rd & (0xffffffff ^ bit)) | val
-    wReg(0xb, wr, verify=True)
+    wReg(0xb, wr)
 
 
 def read_daq():
@@ -313,14 +327,14 @@ def read_daq():
             state="Idle"
 
 
-def loopback(nreads=10000):
+def loopback(nreads=1000000):
     print(" > Running loopback test")
     from tqdm import tqdm
     for i in tqdm(range(nreads), colour='green'):
         write = random.randint(0, 0xffffffff)
         wReg(0,write)
         read = rReg(0)
-        assert write==read
+        assert write==read, print("wr=0x%08X  rd=0x%08X" % (write, read))
         # if (i % 100 == 0):
         #     print(f"{i} reads, %f Mb" % ((i*32.0)/1000000.0))
 
