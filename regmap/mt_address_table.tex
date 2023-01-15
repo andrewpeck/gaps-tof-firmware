@@ -136,6 +136,25 @@
 
 
     \noindent
+    \subsection*{\textcolor{parentcolor}{\textbf{MT}}}
+
+    \vspace{4mm}
+    \noindent
+    Implements various control and monitoring functions of the DRS Logic
+    \noindent
+
+    \keepXColumns
+    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
+    \hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
+    \nopagebreak
+    ETH\_RX\_BAD\_FRAME\_CNT & \texttt{0x3d} & \texttt{[15:0]} & r & \texttt{} & Ethernet MAC bad frame error \\\hline
+    ETH\_RX\_BAD\_FCS\_CNT & \texttt{0x3d} & \texttt{[31:16]} & r & \texttt{} & Ethernet MAC bad fcs \\\hline
+    \end{tabularx}
+    \vspace{5mm}
+
+
+    \noindent
     \subsection*{\textcolor{parentcolor}{\textbf{MT.CHANNEL\_MASK}}}
 
     \vspace{4mm}

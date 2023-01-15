@@ -126,6 +126,18 @@ Counters
 |RB24 | ~0x38~ | ~0xe0~ | ~[15:0]~ | r |  | hit count on LT=24 | 
 |------------+---+---+---------+-----+-----+----------------------------|
 
+*MT*
+
+Implements various control and monitoring functions of the DRS Logic
+
+|------------+-------+-------+---------+------+-----+----------------------------|
+| Node       |  Adr  | Adr8  | Bits    | Perm | Def | Description                |
+|------------+-------+-------+---------+------+-----+----------------------------|
+|ETH_RX_BAD_FRAME_CNT | ~0x3d~ | ~0xf4~ | ~[15:0]~ | r |  | Ethernet MAC bad frame error | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|ETH_RX_BAD_FCS_CNT | ~0x3d~ | ~0xf4~ | ~[31:16]~ | r |  | Ethernet MAC bad fcs | 
+|------------+---+---+---------+-----+-----+----------------------------|
+
 *MT.CHANNEL_MASK*
 
 1 to mask a channel

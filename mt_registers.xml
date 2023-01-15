@@ -159,6 +159,22 @@
       </node>
     </node>
 
+    <node id="ETH_RX_BAD_FRAME_CNT" address="0x3d"
+          permission="r"
+          mask="0x0000ffff"
+          description="Ethernet MAC bad frame error"
+          fw_make_signal="true"
+          fw_signal="eth_bad_frame_cnt"
+          fw_cnt_en_signal="eth_bad_frame"/>
+
+    <node id="ETH_RX_BAD_FCS_CNT" address="0x3d"
+          permission="r"
+          mask="0xffff0000"
+          description="Ethernet MAC bad fcs"
+          fw_make_signal="true"
+          fw_signal="eth_bad_fcs_cnt"
+          fw_cnt_en_signal="eth_bad_fcs"/>
+
     <node id="XADC" address="0x120"
           description="Zynq XADC">
         <node id="CALIBRATION" address="0x0" permission="r"

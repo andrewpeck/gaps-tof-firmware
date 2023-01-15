@@ -28,6 +28,9 @@ entity eth_infra is
     rgmii_txd    : out std_logic_vector(3 downto 0);
     rgmii_tx_ctl : out std_logic;
 
+    rx_bad_frame_o : out std_logic;
+    rx_bad_fcs_o   : out std_logic;
+
     mac_addr : in std_logic_vector(47 downto 0);  -- MAC address
     ip_addr  : in std_logic_vector(31 downto 0);  -- IP address
 
@@ -102,12 +105,6 @@ architecture rtl of eth_infra is
       );
   end component;
 
-  signal rx_clk : std_logic;
-  signal rx_rst : std_logic;
-
-  signal tx_clk : std_logic;
-  signal tx_rst : std_logic;
-
   signal tx_axis_tdata  : std_logic_vector(7 downto 0);
   signal tx_axis_tvalid : std_logic;
   signal tx_axis_tready : std_logic;
@@ -159,7 +156,6 @@ begin
       logic_clk => clock,
       logic_rst => reset,
 
-      -- tx_axis_tkeep  => (others => '0'),
       tx_axis_tdata  => tx_axis_tdata,
       tx_axis_tvalid => tx_axis_tvalid,
       tx_axis_tready => tx_axis_tready,
@@ -183,12 +179,14 @@ begin
       rgmii_tx_ctl => rgmii_tx_ctl,
 
       tx_error_underflow => open,
-      rx_error_bad_frame => open,
-      rx_error_bad_fcs   => open,
+      rx_error_bad_frame => rx_error_bad_frame,
+      rx_error_bad_fcs   => rx_error_bad_fcs,
       speed              => open,
       ifg_delay          => std_logic_vector(to_unsigned(12, 8))
       );
 
+  rx_bad_frame_o <= rx_error_bad_frame;
+  rx_bad_fcs_o   <= rx_error_bad_fcs;
 
   ipbus_inst : entity work.ipbus_ctrl
     generic map(
