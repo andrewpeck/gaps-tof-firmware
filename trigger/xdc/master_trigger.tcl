@@ -39,9 +39,9 @@ set_property PACKAGE_PIN "A25" [get_ports spi_dq[1]] ; # IO_L1N_T0_D01_DIN_14   
 set_property PACKAGE_PIN "B22" [get_ports spi_dq[2]] ; # IO_L2P_T0_D02_14              Sch = FLASH_DQ2
 set_property PACKAGE_PIN "A22" [get_ports spi_dq[3]] ; # IO_L2N_T0_D03_14              Sch = FLASH_DQ3
 
-set_property SLEW       FAST     [get_ports spi_*]
-set_property IOSTANDARD LVCMOS33 [get_ports spi_*]
-set_property PULLUP     true     [get_ports spi_*]
+# set_property SLEW       FAST     [get_ports spi_*]
+# set_property IOSTANDARD LVCMOS33 [get_ports spi_*]
+# set_property PULLUP     true     [get_ports spi_*]
 
 ################################################################################
 # Input Clocks
@@ -237,10 +237,10 @@ set_property IOSTANDARD LVCMOS15 [get_ports lvs_sync_ccb]
 set_property IOSTANDARD LVCMOS15 [get_ports dsi_on]
 set_property IOSTANDARD LVCMOS15 [get_ports clk_src_sel]
 
-set_property IOSTANDARD LVCMOS33 [get_ports hk_cs_n*]
-set_property IOSTANDARD LVCMOS33 [get_ports hk_clk]
-set_property IOSTANDARD LVCMOS33 [get_ports hk_dout]
-set_property IOSTANDARD LVCMOS33 [get_ports hk_din]
+# set_property IOSTANDARD LVCMOS33 [get_ports hk_cs_n*]
+# set_property IOSTANDARD LVCMOS33 [get_ports hk_clk]
+# set_property IOSTANDARD LVCMOS33 [get_ports hk_dout]
+# set_property IOSTANDARD LVCMOS33 [get_ports hk_din]
 
 set_property IOSTANDARD LVCMOS15 [get_ports ext_io*]
 set_property IOSTANDARD LVCMOS15 [get_ports ext_out*]

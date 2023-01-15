@@ -102,10 +102,10 @@ entity gaps_mt is
     -- hk_dout : in  std_logic; -- master in, slave out
     -- hk_din  : out std_logic; -- master out, slave in
 
-    spi_cs_n : in std_logic;
-    spi_dq   : in std_logic_vector (3 downto 0);
+    -- spi_cs_n : in std_logic;
+    -- spi_dq   : in std_logic_vector (3 downto 0);
 
-    ext_io  : inout std_logic_vector (13 downto 0);
+    ext_io  : inout std_logic_vector (13 downto 0) := (others => '0');
 
     ext_out : out std_logic_vector (3 downto 0);
     ext_in  : in  std_logic_vector (3 downto 0);
