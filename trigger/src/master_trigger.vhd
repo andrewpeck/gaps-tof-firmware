@@ -367,6 +367,8 @@ begin
       dout  => rgmii_rx_clk_dly
       );
 
+  -- mtb can detect if it is at UCLA through looping a 1 out from EXT_IO3
+  -- and into EXT_IO2.. a jumper should be placed across these two pins
   ext_io(3)   <= '1';
   mtb_is_ucla <= ext_io(2);
   ip_addr     <= UCLA_IP_ADDR when mtb_is_ucla = '1' else SSL_IP_ADDR;
