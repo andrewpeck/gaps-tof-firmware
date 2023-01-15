@@ -147,7 +147,7 @@ architecture structural of gaps_mt is
   signal sys_clk : std_logic := '0';
 
   constant RGMII_RXD_DELAY : integer   := 0;
-  constant RGMII_RXC_DELAY : integer   := 0;
+  constant RGMII_RXC_DELAY : integer   := 12;
 
   signal reset  : std_logic;
   signal locked : std_logic;
