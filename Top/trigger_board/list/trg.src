@@ -20,6 +20,7 @@ ip/master_trigger/*/*.xci
 
 # Verilog Ethernet
 verilog-ethernet/rtl/eth_mac_1g_rgmii_fifo.v
+verilog-ethernet/rtl/eth_mac_1g_rgmii.v
 verilog-ethernet/rtl/eth_mac_1g.v
 verilog-ethernet/rtl/rgmii_phy_if.v
 verilog-ethernet/rtl/axis_gmii_rx.v
