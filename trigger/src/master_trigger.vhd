@@ -35,6 +35,8 @@ entity gaps_mt is
 
     MAC_ADDR : std_logic_vector (47 downto 0) := x"00_08_20_83_53_00";
 
+    LOOPBACK_MODE : boolean := false;
+
     MANCHESTER_LOOPBACK : boolean := true;
 
     CLK_FREQ : integer := 100_000_000;

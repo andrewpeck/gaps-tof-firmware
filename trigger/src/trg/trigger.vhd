@@ -121,7 +121,7 @@ begin
       for I in 0 to per_channel_triggers'length-1 loop
         per_channel_triggers(I) <= not dead and (force_trigger_i or
                                                  (hitmask(I) and single_hit_en_i) or
-                                                 programmable_trigger;
+                                                 programmable_trigger);
       end loop;
     end if;
   end process;
