@@ -1,7 +1,7 @@
 include:
     - project: 'hog-cern/hog'
       file: '/hog.yml'
-      ref: 'Hog2022.2-8'
+      ref: '0fe877e'
     - local: '/Top/readout_board_zx3/gitlab-ci.yml'
     - local: '/Top/readout_board_zx2/gitlab-ci.yml'
     - local: '/Top/trigger_board/gitlab-ci.yml'
