@@ -18,8 +18,6 @@ entity trigger is
     event_cnt_reset  : in std_logic;
 
     single_hit_en_i : in std_logic := '0';
-    ucla_trig_en_i  : in std_logic := '0';
-    ssl_trig_en_i   : in std_logic := '0';
 
     trig_mask_a : in  std_logic_vector (31 downto 0);
 
@@ -50,23 +48,7 @@ architecture behavioral of trigger is
   constant deadcnt_max : integer                        := 31;
   signal deadcnt       : integer range 0 to deadcnt_max := 0;
 
-  --------------------------------------------------------------------------------
-  -- UCLA trigger
-  --------------------------------------------------------------------------------
-
   signal programmable_trigger : std_logic                     := '0';
-  signal ucla_trigger         : std_logic                     := '0';
-  signal ucla_bottom          : std_logic_vector (3 downto 0) := (others => '0');
-  signal ucla_top             : std_logic_vector (3 downto 0) := (others => '0');
-
-  --------------------------------------------------------------------------------
-  -- SSL Trigger
-  --------------------------------------------------------------------------------
-
-  signal ssl_trigger : std_logic := '0';
-  signal ssl_top     : std_logic_vector(7 downto 0);
-  signal ssl_bot     : std_logic_vector(7 downto 0);
-
   --------------------------------------------------------------------------------
   -- Global trigger
   --------------------------------------------------------------------------------
@@ -110,68 +92,12 @@ begin
   ila_trigger_inst : ila_trigger
     port map (
       clk    => clk,
-      probe0 => ssl_top,
-      probe1 => ssl_bot,
-      probe2 => ssl_trigger & global_trigger & dead & ucla_trigger,
+      probe0 => (others => '0'),
+      probe1 => (others => '0'),
+      probe2 => '0' & global_trigger & dead & programmable_trigger,
       probe3 => event_cnt_o,
       probe4 => hitmask
       );
-
-  --------------------------------------------------------------------------------
-  -- UCLA trigger
-  --
-  -- 5 top paddles, 4 bottom paddles
-  --
-  -- RB1 (tof-rb51) is connected to the bottom paddles (ch0 to bottom
-  -- paddle 1 side A, ch1 to bottom paddle 1 side B, ch2 to bottom
-  -- paddle 2 side A, ch3 to bottom paddle 2 side B and so on).
-  --
-  -- RB2 (tof-rb52) is connected to the top paddles (ch0 to top paddle
-  -- 1 side A, ch1 to top paddle 1 side B, ch2 to top paddle 2 side A,
-  -- ch3 to top paddle 2 side B and so on).
-  --
-  -- LTB is connected to the low gains:
-  -- ch0 to bottom paddle 1 A side,
-  -- ch1 to bottom paddle 1 B side,
-  -- ch7 to top paddle 1 side A,
-  -- ch8 to top paddle 1 side B, and so on
-  --
-  --------------------------------------------------------------------------------
-
-  ucla_bottom(0) <= hitmask(0);
-  ucla_bottom(1) <= hitmask(1);
-  ucla_bottom(2) <= hitmask(2);
-  ucla_bottom(3) <= hitmask(3);
-
-  ucla_top(0) <= hitmask(4);
-  ucla_top(1) <= hitmask(5);
-  ucla_top(2) <= hitmask(6);
-  ucla_top(3) <= hitmask(7);
-
-  process (clk) is
-  begin
-    if (rising_edge(clk)) then
-      -- trigger on bottom paddle 1 (ch0 and ch1 on LTB) and top paddle 1 (ch7 and ch8 on LTB).
-      ucla_trigger <= ucla_bottom(1) and ucla_top(1);
-    end if;
-  end process;
-
-  --------------------------------------------------------------------------------
-  -- SSL Cosmic Trigger
-  --
-  -- One LTB has all top paddles, one LTB has all bottom paddles
-  -- Expect top on LTB0, bottom on LTB1
-  --------------------------------------------------------------------------------
-
-  ssl_top <= hitmask(7 downto 0);
-  ssl_bot <= hitmask(15 downto 8);
-
-  process (clk) is
-  begin
-    if (rising_edge(clk)) then
-      ssl_trigger <= or_reduce(ssl_top) and or_reduce(ssl_bot);
-    end if;
-  end process;
 
   --------------------------------------------------------------------------------
   -- Programmable Trigger
@@ -195,9 +121,7 @@ begin
       for I in 0 to per_channel_triggers'length-1 loop
         per_channel_triggers(I) <= not dead and (force_trigger_i or
                                                  (hitmask(I) and single_hit_en_i) or
-                                                 (ucla_trigger and ucla_trig_en_i) or
-                                                 programmable_trigger or
-                                                 (ssl_trigger and ssl_trig_en_i));
+                                                 programmable_trigger;
       end loop;
     end if;
   end process;

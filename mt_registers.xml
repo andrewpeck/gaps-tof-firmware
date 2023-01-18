@@ -68,21 +68,9 @@
           description="Write 1 to resync"
           fw_write_pulse_signal="rb_resync"/>
 
-    <node id="UCLA_TRIG_EN" address="0xb" permission="rw"
-          mask="0x1"
-          description="1 to enable the ucla trigger"
-          fw_default="0x0"
-          fw_signal="ucla_trig_en"/>
-
-    <node id="SSL_TRIG_EN" address="0xb" permission="rw"
-          mask="0x2"
-          description="1 to enable the ucla trigger"
-          fw_default="0x0"
-          fw_signal="ssl_trig_en"/>
-
     <node id="ANY_TRIG_EN" address="0xb" permission="rw"
           mask="0x4"
-          description="1 to enable the ucla trigger"
+          description="1 to enable the ANY trigger"
           fw_default="0x0"
           fw_signal="any_trig_en"/>
 

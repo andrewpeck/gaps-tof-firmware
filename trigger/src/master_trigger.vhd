@@ -35,8 +35,6 @@ entity gaps_mt is
 
     MAC_ADDR : std_logic_vector (47 downto 0) := x"00_08_20_83_53_00";
 
-    LOOPBACK_MODE : boolean := false;
-
     MANCHESTER_LOOPBACK : boolean := true;
 
     CLK_FREQ : integer := 100_000_000;
@@ -186,8 +184,6 @@ architecture structural of gaps_mt is
 
   signal trig_mask_a  : std_logic_vector (31 downto 0) := (others => '0');
   signal trig_mask_b  : std_logic_vector (31 downto 0) := (others => '0');
-  signal ucla_trig_en : std_logic;
-  signal ssl_trig_en  : std_logic;
   signal any_trig_en  : std_logic;
 
   signal ext_trigger_holdoff : integer range 0 to 31 := 0;
@@ -656,8 +652,6 @@ begin
       all_triggers_are_global => '1',
 
       single_hit_en_i => any_trig_en,
-      ucla_trig_en_i  => ucla_trig_en,
-      ssl_trig_en_i   => ssl_trig_en,
       trig_mask_a     => trig_mask_a,
       trig_mask_b     => trig_mask_b,
 
@@ -1573,8 +1567,6 @@ begin
   regs_read_arr(6)(REG_MT_FB_CLOCK_RATE_4_MSB downto REG_MT_FB_CLOCK_RATE_4_LSB) <= fb_clock_rates(4);
   regs_read_arr(7)(REG_MT_DSI_ON_MSB downto REG_MT_DSI_ON_LSB) <= dsi_on_ipb;
   regs_read_arr(9)(REG_MT_TRIG_GEN_RATE_MSB downto REG_MT_TRIG_GEN_RATE_LSB) <= trig_gen_rate;
-  regs_read_arr(11)(REG_MT_UCLA_TRIG_EN_BIT) <= ucla_trig_en;
-  regs_read_arr(11)(REG_MT_SSL_TRIG_EN_BIT) <= ssl_trig_en;
   regs_read_arr(11)(REG_MT_ANY_TRIG_EN_BIT) <= any_trig_en;
   regs_read_arr(13)(REG_MT_EVENT_CNT_MSB downto REG_MT_EVENT_CNT_LSB) <= event_cnt;
   regs_read_arr(14)(REG_MT_TIU_EMULATION_MODE_BIT) <= tiu_emulation_mode;
@@ -1706,8 +1698,6 @@ begin
   loopback <= regs_write_arr(0)(REG_MT_LOOPBACK_MSB downto REG_MT_LOOPBACK_LSB);
   dsi_on_ipb <= regs_write_arr(7)(REG_MT_DSI_ON_MSB downto REG_MT_DSI_ON_LSB);
   trig_gen_rate <= regs_write_arr(9)(REG_MT_TRIG_GEN_RATE_MSB downto REG_MT_TRIG_GEN_RATE_LSB);
-  ucla_trig_en <= regs_write_arr(11)(REG_MT_UCLA_TRIG_EN_BIT);
-  ssl_trig_en <= regs_write_arr(11)(REG_MT_SSL_TRIG_EN_BIT);
   any_trig_en <= regs_write_arr(11)(REG_MT_ANY_TRIG_EN_BIT);
   tiu_emulation_mode <= regs_write_arr(14)(REG_MT_TIU_EMULATION_MODE_BIT);
   trig_mask_a <= regs_write_arr(18)(REG_MT_TRIG_MASK_A_MSB downto REG_MT_TRIG_MASK_A_LSB);
@@ -2161,8 +2151,6 @@ begin
   regs_defaults(0)(REG_MT_LOOPBACK_MSB downto REG_MT_LOOPBACK_LSB) <= REG_MT_LOOPBACK_DEFAULT;
   regs_defaults(7)(REG_MT_DSI_ON_MSB downto REG_MT_DSI_ON_LSB) <= REG_MT_DSI_ON_DEFAULT;
   regs_defaults(9)(REG_MT_TRIG_GEN_RATE_MSB downto REG_MT_TRIG_GEN_RATE_LSB) <= REG_MT_TRIG_GEN_RATE_DEFAULT;
-  regs_defaults(11)(REG_MT_UCLA_TRIG_EN_BIT) <= REG_MT_UCLA_TRIG_EN_DEFAULT;
-  regs_defaults(11)(REG_MT_SSL_TRIG_EN_BIT) <= REG_MT_SSL_TRIG_EN_DEFAULT;
   regs_defaults(11)(REG_MT_ANY_TRIG_EN_BIT) <= REG_MT_ANY_TRIG_EN_DEFAULT;
   regs_defaults(14)(REG_MT_TIU_EMULATION_MODE_BIT) <= REG_MT_TIU_EMULATION_MODE_DEFAULT;
   regs_defaults(18)(REG_MT_TRIG_MASK_A_MSB downto REG_MT_TRIG_MASK_A_LSB) <= REG_MT_TRIG_MASK_A_DEFAULT;

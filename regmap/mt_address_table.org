@@ -39,11 +39,7 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |RESYNC | ~0xa~ | ~0x28~ | ~0~ | w | Pulse | Write 1 to resync | 
 |------------+---+---+---------+-----+-----+----------------------------|
-|UCLA_TRIG_EN | ~0xb~ | ~0x2c~ | ~0~ | rw | ~0x0~ | 1 to enable the ucla trigger | 
-|------------+---+---+---------+-----+-----+----------------------------|
-|SSL_TRIG_EN | ~0xb~ | ~0x2c~ | ~1~ | rw | ~0x0~ | 1 to enable the ucla trigger | 
-|------------+---+---+---------+-----+-----+----------------------------|
-|ANY_TRIG_EN | ~0xb~ | ~0x2c~ | ~2~ | rw | ~0x0~ | 1 to enable the ucla trigger | 
+|ANY_TRIG_EN | ~0xb~ | ~0x2c~ | ~2~ | rw | ~0x0~ | 1 to enable the ANY trigger | 
 |------------+---+---+---------+-----+-----+----------------------------|
 |EVENT_CNT_RESET | ~0xc~ | ~0x30~ | ~0~ | w | Pulse | Write 1 to reset the event counter | 
 |------------+---+---+---------+-----+-----+----------------------------|
