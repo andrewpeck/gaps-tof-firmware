@@ -7,8 +7,8 @@ from enum import Enum
 
 PACKET_ID = 0
 #IPADDR = "192.168.36.121"
-#IPADDR = "10.97.108.15"
-IPADDR = "10.0.1.10"
+IPADDR = "10.97.108.15"
+#IPADDR = "10.0.1.10"
 PORT = 50001
 
 # Create a UDP socket and bind the socket to the port
@@ -267,8 +267,7 @@ def set_trig(which, val):
     if (isinstance(val, str)):
         val = int(val, 16)
 
-    print ("wReg(0x%x, 0x%x)" % (adr, val))
-    #wReg(adr, val)
+    wReg(adr, val)
 
 def read_daq():
 
