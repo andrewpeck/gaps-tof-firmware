@@ -4,9 +4,3 @@ GEN:trigger_board:
       extends: .vars
       PROJECT_NAME: trigger_board
       INTERMEDIATE_BUILD: "1"
-
-GEN:trigger_board_master:
-    extends: .generate_project
-    variables:
-      extends: .vars
-      PROJECT_NAME: trigger_board
