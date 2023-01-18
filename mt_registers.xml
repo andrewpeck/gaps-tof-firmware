@@ -77,7 +77,7 @@
     <node id="SSL_TRIG_EN" address="0xb" permission="rw"
           mask="0x2"
           description="1 to enable the ucla trigger"
-          fw_default="0x1"
+          fw_default="0x0"
           fw_signal="ssl_trig_en"/>
 
     <node id="ANY_TRIG_EN" address="0xb" permission="rw"

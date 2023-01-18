@@ -41,7 +41,7 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |UCLA_TRIG_EN | ~0xb~ | ~0x2c~ | ~0~ | rw | ~0x0~ | 1 to enable the ucla trigger | 
 |------------+---+---+---------+-----+-----+----------------------------|
-|SSL_TRIG_EN | ~0xb~ | ~0x2c~ | ~1~ | rw | ~0x1~ | 1 to enable the ucla trigger | 
+|SSL_TRIG_EN | ~0xb~ | ~0x2c~ | ~1~ | rw | ~0x0~ | 1 to enable the ucla trigger | 
 |------------+---+---+---------+-----+-----+----------------------------|
 |ANY_TRIG_EN | ~0xb~ | ~0x2c~ | ~2~ | rw | ~0x0~ | 1 to enable the ucla trigger | 
 |------------+---+---+---------+-----+-----+----------------------------|
