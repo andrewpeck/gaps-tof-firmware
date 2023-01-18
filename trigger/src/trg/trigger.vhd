@@ -21,6 +21,10 @@ entity trigger is
     ucla_trig_en_i  : in std_logic := '0';
     ssl_trig_en_i   : in std_logic := '0';
 
+    trig_mask_a : in  std_logic_vector (31 downto 0);
+
+    trig_mask_b : in  std_logic_vector (31 downto 0);
+
     all_triggers_are_global : in std_logic := '1';
 
     -- this is an array of 25*8 = 200 thresholds, where each threshold is a 2
@@ -50,9 +54,10 @@ architecture behavioral of trigger is
   -- UCLA trigger
   --------------------------------------------------------------------------------
 
-  signal ucla_trigger : std_logic                     := '0';
-  signal ucla_bottom  : std_logic_vector (3 downto 0) := (others => '0');
-  signal ucla_top     : std_logic_vector (3 downto 0) := (others => '0');
+  signal programmable_trigger : std_logic                     := '0';
+  signal ucla_trigger         : std_logic                     := '0';
+  signal ucla_bottom          : std_logic_vector (3 downto 0) := (others => '0');
+  signal ucla_top             : std_logic_vector (3 downto 0) := (others => '0');
 
   --------------------------------------------------------------------------------
   -- SSL Trigger
@@ -169,6 +174,18 @@ begin
   end process;
 
   --------------------------------------------------------------------------------
+  -- Programmable Trigger
+  --------------------------------------------------------------------------------
+
+  process (clk) is
+  begin
+    if (rising_edge(clk)) then
+      programmable_trigger <= or_reduce(hitmask(31 downto 0) and trig_mask_a) and
+                              or_reduce(hitmask(31 downto 0) and trig_mask_b);
+    end if;
+  end process;
+
+  --------------------------------------------------------------------------------
   -- Trigger Source OR
   --------------------------------------------------------------------------------
 
@@ -179,6 +196,7 @@ begin
         per_channel_triggers(I) <= not dead and (force_trigger_i or
                                                  (hitmask(I) and single_hit_en_i) or
                                                  (ucla_trigger and ucla_trig_en_i) or
+                                                 programmable_trigger or
                                                  (ssl_trigger and ssl_trig_en_i));
       end loop;
     end if;

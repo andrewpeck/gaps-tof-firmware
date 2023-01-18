@@ -115,6 +115,18 @@
       <node id="EMPTY" permission="r" address="0x2" mask="0x00000002" description="DAQ Buffer Empty" fw_signal="daq_empty"/>
     </node>
 
+    <node id="TRIG_MASK_A" address="0x15" permission="rw"
+          mask="0xffffffff"
+          description="Bitmask for the A trigger"
+          fw_default="0x0"
+          fw_signal="trig_mask_a"/>
+
+    <node id="TRIG_MASK_B" address="0x16" permission="rw"
+          mask="0xffffffff"
+          description="Bitmask for the B trigger"
+          fw_default="0x0"
+          fw_signal="trig_mask_b"/>
+
     <node id="HIT_COUNTERS" address="0x20" description="Counters">
       <node id="RB${RB_IDX}" address="0x0"
             generate="true"
