@@ -40,8 +40,9 @@ proc select_hw_targets {} {
 
     # find a port with hardware targets on it
     foreach port [list 2542 3121] {
-        connect_hw_server -url localhost:$port -allow_non_jtag
-        set targets [get_hw_targets]
+        puts "Probing port $port for targets..."
+        connect_hw_server -quiet -url localhost:$port -allow_non_jtag
+        set targets [get_hw_targets -quiet]
         set num_targets [llength $targets]
         if {$num_targets > 0} {
             break
