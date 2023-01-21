@@ -8,6 +8,8 @@ use work.mt_types.all;
 use work.constants.all;
 use work.components.all;
 
+-- Panel mapping: https://docs.google.com/spreadsheets/d/1i41fsmLf7IjfYbr1coTo9V4uk3t1GXAGgt0aOeCkeeA/edit#gid=0
+
 entity trigger is
   port(
 
@@ -15,13 +17,13 @@ entity trigger is
 
     reset : in std_logic;
 
-    event_cnt_reset  : in std_logic;
+    event_cnt_reset : in std_logic;
 
     single_hit_en_i : in std_logic := '0';
 
-    trig_mask_a : in  std_logic_vector (31 downto 0);
+    trig_mask_a : in std_logic_vector (31 downto 0);
 
-    trig_mask_b : in  std_logic_vector (31 downto 0);
+    trig_mask_b : in std_logic_vector (31 downto 0);
 
     all_triggers_are_global : in std_logic := '1';
 
@@ -44,11 +46,12 @@ end trigger;
 
 architecture behavioral of trigger is
 
+  constant DEADCNT_MAX : integer                        := 31;
   signal dead          : std_logic                      := '0';
-  constant deadcnt_max : integer                        := 31;
-  signal deadcnt       : integer range 0 to deadcnt_max := 0;
+  signal deadcnt       : integer range 0 to DEADCNT_MAX := 0;
 
-  signal programmable_trigger : std_logic                     := '0';
+  signal programmable_trigger : std_logic := '0';
+
   --------------------------------------------------------------------------------
   -- Global trigger
   --------------------------------------------------------------------------------
@@ -174,7 +177,7 @@ begin
   begin
     if (rising_edge(clk)) then
       if (dead = '0' and global_trigger = '1') then
-        deadcnt <= deadcnt_max;
+        deadcnt <= DEADCNT_MAX;
         dead    <= '1';
       elsif (deadcnt > 0) then
         deadcnt <= deadcnt - 1;
