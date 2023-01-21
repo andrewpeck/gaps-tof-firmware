@@ -122,14 +122,10 @@ begin
         data_srl(SR) <= data_srl(SR-1);
       end loop;
 
-      if (en = '1') then
-        if (to_integer(unsigned(coarse_delay)) = 0) then
-          data_dly <= data_oversample;
-        else
-          data_dly <= data_srl (to_integer(unsigned(coarse_delay)-1));
-        end if;
+      if (to_integer(unsigned(coarse_delay)) = 0) then
+        data_dly <= data_oversample;
       else
-        data_dly <= '0';
+        data_dly <= data_srl (to_integer(unsigned(coarse_delay)-1));
       end if;
 
     end if;
@@ -153,7 +149,7 @@ begin
       )
     port map (
       clock   => clk,
-      reset   => reset or not rdy,
+      reset   => reset or not rdy or not en,
       data_i  => data_dly,
       valid_o => valid,
       data_o  => data_o,
