@@ -71,7 +71,7 @@ package registers is
 
     constant REG_MT_TIU_EMULATION_MODE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"0e";
     constant REG_MT_TIU_EMULATION_MODE_BIT    : integer := 0;
-    constant REG_MT_TIU_EMULATION_MODE_DEFAULT : std_logic := '1';
+    constant REG_MT_TIU_EMULATION_MODE_DEFAULT : std_logic := '0';
 
     constant REG_MT_EVENT_QUEUE_RESET_ADDR    : std_logic_vector(9 downto 0) := "00" & x"10";
     constant REG_MT_EVENT_QUEUE_RESET_BIT    : integer := 0;

@@ -45,7 +45,7 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |EVENT_CNT | ~0xd~ | ~0x34~ | ~[31:0]~ | r |  | Event Counter | 
 |------------+---+---+---------+-----+-----+----------------------------|
-|TIU_EMULATION_MODE | ~0xe~ | ~0x38~ | ~0~ | rw | ~0x1~ | 1 to emulate the TIU | 
+|TIU_EMULATION_MODE | ~0xe~ | ~0x38~ | ~0~ | rw | ~0x0~ | 1 to emulate the TIU | 
 |------------+---+---+---------+-----+-----+----------------------------|
 
 *MT.EVENT_QUEUE*

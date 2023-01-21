@@ -93,7 +93,7 @@
           permission="rw"
           mask="0x1"
           description="1 to emulate the TIU"
-          fw_default="0x1"
+          fw_default="0x0"
           fw_signal="tiu_emulation_mode"/>
 
     <node id="EVENT_QUEUE" address="0x10" description = "DAQ Buffer">
