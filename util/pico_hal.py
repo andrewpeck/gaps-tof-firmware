@@ -328,7 +328,7 @@ def read_daq():
             state="Idle"
 
 
-def loopback(nreads=10000000):
+def loopback(nreads=100000):
     print(" > Running loopback test")
     from tqdm import tqdm
     for i in tqdm(range(nreads), colour='green'):
