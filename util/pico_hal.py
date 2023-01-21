@@ -7,8 +7,7 @@ from enum import Enum
 
 PACKET_ID = 0
 #IPADDR = "192.168.36.121"
-IPADDR = "10.97.108.15"
-#IPADDR = "10.0.1.10"
+IPADDR = "10.0.1.10"
 PORT = 50001
 
 # Create a UDP socket and bind the socket to the port
@@ -248,6 +247,23 @@ def read_adcs():
 
     return([headers]+table)
 
+def check_clocks():
+
+    def check_clock(freq, spec):
+        if (spec < freq*1.01 and spec > freq*0.99):
+            stat = "OK"
+        else:
+            stat = "BAD"
+        print ("% 10d (%s)" % (freq, stat))
+
+    for adr, spec in ((0x1, 100000000),
+                     (0x2, 20000000),
+                     (0x3, 20000000),
+                     (0x4, 20000000),
+                     (0x5, 20000000),
+                     (0x6, 20000000)):
+        check_clock(rReg(adr), spec)
+
 def force_trigger():
     wReg(0x8, 1)
 
@@ -364,6 +380,7 @@ if __name__ == '__main__':
     argParser.add_argument('--read_event_cnt',  action='store_true', default=False, help="Read Event Counter")
     argParser.add_argument('--read_daq',        action='store_true', default=False, help="Read DAQ")
     argParser.add_argument('--force_trig',      action='store_true', default=False, help="Force an MTB Trigger")
+    argParser.add_argument('--check_clocks',    action='store_true', default=False, help="Check clock frequencies")
 
     args = argParser.parse_args()
 
@@ -372,6 +389,8 @@ if __name__ == '__main__':
 
     target_address = (IPADDR, PORT)
 
+    if args.check_clocks:
+        check_clocks()
     if args.ucla_trig_en:
         en_ucla_trigger()
     if args.force_trig:
