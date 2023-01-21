@@ -248,6 +248,9 @@ def read_adcs():
 
     return([headers]+table)
 
+def force_trigger():
+    wReg(0x8, 1)
+
 def en_ucla_trigger():
     set_trig("a", 0x000000f0)
     set_trig("b", 0x0000000f)
@@ -360,6 +363,7 @@ if __name__ == '__main__':
     argParser.add_argument('--reset_event_cnt', action='store_true', default=False, help="Reset Event Counter")
     argParser.add_argument('--read_event_cnt',  action='store_true', default=False, help="Read Event Counter")
     argParser.add_argument('--read_daq',        action='store_true', default=False, help="Read DAQ")
+    argParser.add_argument('--force_trig',      action='store_true', default=False, help="Force an MTB Trigger")
 
     args = argParser.parse_args()
 
@@ -370,6 +374,8 @@ if __name__ == '__main__':
 
     if args.ucla_trig_en:
         en_ucla_trigger()
+    if args.force_trig:
+        force_trigger()
     if args.ssl_trig_en:
         en_ssl_trigger()
     if args.any_trig_en:
