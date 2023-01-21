@@ -1,4 +1,4 @@
-SHELL := /bin/bash
+SHELL := /usr/bin/env bash
 
 .PHONY: create synth impl reg init
 
@@ -25,7 +25,7 @@ init:
 	git submodule update --init
 
 reg:
-	cd regmap && make
+	$(TIMECMD) cd regmap && make
 
 ################################################################################
 # Project creation / compilation
