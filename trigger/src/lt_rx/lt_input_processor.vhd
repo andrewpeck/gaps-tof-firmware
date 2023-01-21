@@ -69,25 +69,27 @@ architecture behavioral of lt_input_processor is
 
 begin
 
-    ilagen : if (INST = 0) generate
-      ila_200_inst : ila_200
-        port map (
-          clk                => clk,
-          probe0(0)          => data_i,
-          probe1(0)          => valid_o,
-          probe2(7 downto 0) => data_o,
-          probe3(1 downto 0) => sel,
-          probe4(0)          => rdy,
-          probe4(1)          => err,
-          probe5(0)          => data_dly,
-          probe5(1)          => data_oversample,
-          probe6             => (others => '0'),
-          probe7             => (others => '0'),
-          probe8             => (others => '0'),
-          probe9             => (others => '0'),
-          probe10            => (others => '0')
-          );
-    end generate;
+  ilagen : if (INST < 4) generate
+    ila_200_inst : ila_200
+      port map (
+        clk                => clk,
+        probe0(0)          => data_i,
+        probe1(0)          => valid_o,
+        probe2(7 downto 0) => data_o,
+        probe3(1 downto 0) => sel,
+        probe4(0)          => rdy,
+        probe4(1)          => err,
+        probe5(0)          => data_dly,
+        probe5(1)          => data_oversample,
+        probe6(0)          => en,
+        probe6(1)          => '0',
+        probe6             => (others => '0'),
+        probe7             => (others => '0'),
+        probe8             => (others => '0'),
+        probe9             => (others => '0'),
+        probe10            => (others => '0')
+        );
+  end generate;
 
   --------------------------------------------------------------------------------
   -- Oversampler
