@@ -33,11 +33,11 @@ set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
 # 3 output (DQ3/HOLD#/IO3) pin and connect to an
 # external 4.7kohm pull-up resistor to VCCO_14.
 
-set_property PACKAGE_PIN "C23" [get_ports spi_cs_n ] ; # IO_L6P_T0_FCS_B_14            Sch = FLASH_CS_N
-set_property PACKAGE_PIN "B24" [get_ports spi_dq[0]] ; # IO_L1P_T0_D00_MOSI_14         Sch = FLASH_DQ0
-set_property PACKAGE_PIN "A25" [get_ports spi_dq[1]] ; # IO_L1N_T0_D01_DIN_14          Sch = FLASH_DQ1
-set_property PACKAGE_PIN "B22" [get_ports spi_dq[2]] ; # IO_L2P_T0_D02_14              Sch = FLASH_DQ2
-set_property PACKAGE_PIN "A22" [get_ports spi_dq[3]] ; # IO_L2N_T0_D03_14              Sch = FLASH_DQ3
+# set_property PACKAGE_PIN "C23" [get_ports spi_cs_n ] ; # IO_L6P_T0_FCS_B_14            Sch = FLASH_CS_N
+# set_property PACKAGE_PIN "B24" [get_ports spi_dq[0]] ; # IO_L1P_T0_D00_MOSI_14         Sch = FLASH_DQ0
+# set_property PACKAGE_PIN "A25" [get_ports spi_dq[1]] ; # IO_L1N_T0_D01_DIN_14          Sch = FLASH_DQ1
+# set_property PACKAGE_PIN "B22" [get_ports spi_dq[2]] ; # IO_L2P_T0_D02_14              Sch = FLASH_DQ2
+# set_property PACKAGE_PIN "A22" [get_ports spi_dq[3]] ; # IO_L2N_T0_D03_14              Sch = FLASH_DQ3
 
 # set_property SLEW       FAST     [get_ports spi_*]
 # set_property IOSTANDARD LVCMOS33 [get_ports spi_*]
