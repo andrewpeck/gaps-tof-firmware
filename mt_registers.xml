@@ -68,7 +68,9 @@
           description="Write 1 to resync"
           fw_write_pulse_signal="rb_resync"/>
 
-    <node id="ANY_TRIG_EN" address="0xb" permission="rw"
+    <node id="ANY_TRIG_EN"
+          address="0xb"
+          permission="rw"
           mask="0x4"
           description="1 to enable the ANY trigger"
           fw_default="0x0"
@@ -114,6 +116,16 @@
           description="Bitmask for the B trigger"
           fw_default="0x0"
           fw_signal="trig_mask_b"/>
+
+    <node id="TRIGGER_RATE" address="0x17" permission="r"
+          description="Rate of triggers in Hz"
+          mask="0x00ffffff"
+          fw_signal="trig_rate"/>
+
+    <node id="LOST_TRIGGER_RATE" address="0x18" permission="r"
+          description="Rate of lost triggers in Hz"
+          mask="0x00ffffff"
+          fw_signal="lost_trig_rate"/>
 
     <node id="HIT_COUNTERS" address="0x20" description="Counters">
       <node id="RB${RB_IDX}" address="0x0"

@@ -75,6 +75,10 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |TRIG_MASK_B | ~0x16~ | ~0x58~ | ~[31:0]~ | rw | ~0x0~ | Bitmask for the B trigger | 
 |------------+---+---+---------+-----+-----+----------------------------|
+|TRIGGER_RATE | ~0x17~ | ~0x5c~ | ~[23:0]~ | r |  | Rate of triggers in Hz | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|LOST_TRIGGER_RATE | ~0x18~ | ~0x60~ | ~[23:0]~ | r |  | Rate of lost triggers in Hz | 
+|------------+---+---+---------+-----+-----+----------------------------|
 
 *MT.HIT_COUNTERS*
 

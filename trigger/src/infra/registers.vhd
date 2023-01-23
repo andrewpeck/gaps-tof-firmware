@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_MT_NUM_REGS : integer := 133;
+    constant REG_MT_NUM_REGS : integer := 135;
     constant REG_MT_ADDRESS_MSB : integer := 9;
     constant REG_MT_ADDRESS_LSB : integer := 0;
     constant REG_MT_LOOPBACK_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
@@ -95,6 +95,14 @@ package registers is
     constant REG_MT_TRIG_MASK_B_MSB    : integer := 31;
     constant REG_MT_TRIG_MASK_B_LSB     : integer := 0;
     constant REG_MT_TRIG_MASK_B_DEFAULT : std_logic_vector(31 downto 0) := x"00000000";
+
+    constant REG_MT_TRIGGER_RATE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"17";
+    constant REG_MT_TRIGGER_RATE_MSB    : integer := 23;
+    constant REG_MT_TRIGGER_RATE_LSB     : integer := 0;
+
+    constant REG_MT_LOST_TRIGGER_RATE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"18";
+    constant REG_MT_LOST_TRIGGER_RATE_MSB    : integer := 23;
+    constant REG_MT_LOST_TRIGGER_RATE_LSB     : integer := 0;
 
     constant REG_MT_HIT_COUNTERS_RB0_ADDR    : std_logic_vector(9 downto 0) := "00" & x"20";
     constant REG_MT_HIT_COUNTERS_RB0_MSB    : integer := 15;

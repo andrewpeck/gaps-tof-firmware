@@ -279,6 +279,10 @@ def en_any_trigger():
     set_trig("a", 0xffffffff)
     set_trig("b", 0xffffffff)
 
+def trig_stop():
+    set_trig("a", 0x00000000)
+    set_trig("b", 0x00000000)
+
 def set_trig(which, val):
 
     adr = {"a":0x15, "b":0x16}[which]
@@ -371,6 +375,7 @@ if __name__ == '__main__':
     argParser.add_argument('--ucla_trig_en',    action='store_true', default=False, help="Enable UCLA trigger")
     argParser.add_argument('--ssl_trig_en',     action='store_true', default=False, help="Enable SSL trigger")
     argParser.add_argument('--any_trig_en',     action='store_true', default=False, help="Enable ANY trigger")
+    argParser.add_argument('--trig_stop',       action='store_true', default=False, help="Enable ANY trigger")
     argParser.add_argument('--trig_a',          action='store',                     help="Set trigger mask A")
     argParser.add_argument('--trig_b',          action='store',                     help="Set trigger mask B")
     argParser.add_argument('--read_adc',        action='store_true', default=False, help="Read ADCs")
@@ -399,6 +404,8 @@ if __name__ == '__main__':
         en_ssl_trigger()
     if args.any_trig_en:
         en_any_trigger()
+    if args.trig_stop:
+        trig_stop()
     if args.read_adc:
         read_adcs()
     if args.trig_a:
