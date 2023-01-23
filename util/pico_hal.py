@@ -174,8 +174,11 @@ def read_adc(adc, ch, shift=2):
 def reset_event_cnt():
     wReg(0xc,1,verify=False)
 
-def read_event_cnt():
-    return rReg(0xd)
+def read_event_cnt(output=False):
+    cnt = rReg(0xd)
+    if output:
+        print("Event counter = %d" % cnt)
+    return cnt
 
 def read_adcs():
 
@@ -382,6 +385,7 @@ if __name__ == '__main__':
     argParser = argparse.ArgumentParser(description = "Argument parser")
 
     argParser.add_argument('--ip',              action='store',      default=False, help="IP Address")
+    argParser.add_argument('--status',          action='store_true', default=False, help="Various status printouts")
     argParser.add_argument('--ucla_trig_en',    action='store_true', default=False, help="Enable UCLA trigger")
     argParser.add_argument('--ssl_trig_en',     action='store_true', default=False, help="Enable SSL trigger")
     argParser.add_argument('--any_trig_en',     action='store_true', default=False, help="Enable ANY trigger")
@@ -416,6 +420,12 @@ if __name__ == '__main__':
         force_trigger()
     if args.ssl_trig_en:
         en_ssl_trigger()
+    if args.status:
+        fw_info()
+        check_clocks()
+        read_rates()
+        read_adcs()
+        read_event_cnt(output=True)
     if args.any_trig_en:
         en_any_trigger()
     if args.trig_stop:
@@ -431,7 +441,7 @@ if __name__ == '__main__':
     if args.reset_event_cnt:
         reset_event_cnt()
     if args.read_event_cnt:
-        print(read_event_cnt())
+        read_event_cnt(output=True)
     if args.fw_info:
         fw_info()
     if args.loopback:
