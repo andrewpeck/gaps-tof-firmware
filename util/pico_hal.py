@@ -292,6 +292,16 @@ def set_trig(which, val):
 
     wReg(adr, val)
 
+def set_trig_generate(val):
+    wReg(0x9, val)
+
+def read_rates():
+    rate = rReg(0x17)
+    lost = rReg(0x18)
+    print("Trigger rate      = %d Hz" % rate)
+    print("Lost trigger rate = %d Hz" % lost)
+    return rate,lost
+
 def read_daq():
 
     def read_daq_word():
@@ -375,9 +385,11 @@ if __name__ == '__main__':
     argParser.add_argument('--ucla_trig_en',    action='store_true', default=False, help="Enable UCLA trigger")
     argParser.add_argument('--ssl_trig_en',     action='store_true', default=False, help="Enable SSL trigger")
     argParser.add_argument('--any_trig_en',     action='store_true', default=False, help="Enable ANY trigger")
+    argParser.add_argument('--trig_rates',      action='store_true', default=False, help="Read the trigger rates")
     argParser.add_argument('--trig_stop',       action='store_true', default=False, help="Enable ANY trigger")
     argParser.add_argument('--trig_a',          action='store',                     help="Set trigger mask A")
     argParser.add_argument('--trig_b',          action='store',                     help="Set trigger mask B")
+    argParser.add_argument('--trig_generate',   action='store',                     help="Set the poisson trigger generator rate (in Arbitrary units)")
     argParser.add_argument('--read_adc',        action='store_true', default=False, help="Read ADCs")
     argParser.add_argument('--loopback',        action='store_true', default=False, help="Ethernet Loopback")
     argParser.add_argument('--fw_info',         action='store_true', default=False, help="Firmware Info")
@@ -398,6 +410,8 @@ if __name__ == '__main__':
         check_clocks()
     if args.ucla_trig_en:
         en_ucla_trigger()
+    if args.trig_rates:
+        read_rates()
     if args.force_trig:
         force_trigger()
     if args.ssl_trig_en:
@@ -408,6 +422,8 @@ if __name__ == '__main__':
         trig_stop()
     if args.read_adc:
         read_adcs()
+    if args.trig_generate:
+        set_trig_generate(int(args.trig_generate))
     if args.trig_a:
         set_trig("a", args.trig_a)
     if args.trig_b:
