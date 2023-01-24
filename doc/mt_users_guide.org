@@ -154,54 +154,120 @@ Then, in vivado you can connect to a hardware manager on the local machine's por
 The control software is found in ~util/pico_hal.py~. It is a simple python script that can be
 controlled from the command line.
 
-Calling ~python3 pico_hal.py --help~ will print a help menu, a snapshot of which is shown below.
+Calling ~python3 pico_hal.py --help~ will print a help menu, a snapshot of which
+is shown below. Please run the ~--help~ command to get the latest listings.
 
 #+begin_src
-usage: pico_hal.py [-h] [--ip IP] [--ucla_trig_en] [--ssl_trig_en] [--any_trig_en] [--ucla_trig_dis] [--ssl_trig_dis] [--any_trig_dis] [--read_adc] [--loopback] [--fw_info] [--reset_event_cnt] [--read_event_cnt]
+usage: pico_hal.py [-h] [--ip IP] [--status] [--ucla_trig_en] [--ssl_trig_en]
+                   [--any_trig_en] [--trig_rates] [--trig_stop]
+                   [--trig_a TRIG_A] [--trig_b TRIG_B]
+                   [--trig_generate TRIG_GENERATE] [--read_adc] [--loopback]
+                   [--fw_info] [--reset_event_cnt] [--read_event_cnt]
+                   [--read_daq] [--force_trig] [--check_clocks]
 
 Argument parser
 
 options:
-  -h, --help         show this help message and exit
-  --ip IP            IP Address
-  --ucla_trig_en     Enable UCLA trigger
-  --ssl_trig_en      Enable SSL trigger
-  --any_trig_en      Enable ANY trigger
-  --ucla_trig_dis    Disable UCLA trigger
-  --ssl_trig_dis     Disable SSL trigger
-  --any_trig_dis     Disable ANY trigger
-  --read_adc         Read ADCs
-  --loopback         Ethernet Loopback
-  --fw_info          Firmware Info
-  --reset_event_cnt  Reset Event Counter
-  --read_event_cnt   Read Event Counter
+  -h, --help            show this help message and exit
+  --ip IP               IP Address
+  --status              Various status printouts
+  --ucla_trig_en        Enable UCLA trigger
+  --ssl_trig_en         Enable SSL trigger
+  --any_trig_en         Enable ANY trigger
+  --trig_rates          Read the trigger rates
+  --trig_stop           Enable ANY trigger
+  --trig_a TRIG_A       Set trigger mask A
+  --trig_b TRIG_B       Set trigger mask B
+  --trig_generate TRIG_GENERATE
+                        Set the poisson trigger generator rate (in Arbitrary
+                        units)
+  --read_adc            Read ADCs
+  --loopback            Ethernet Loopback
+  --fw_info             Firmware Info
+  --reset_event_cnt     Reset Event Counter
+  --read_event_cnt      Read Event Counter
+  --read_daq            Read DAQ
+  --force_trig          Force an MTB Trigger
+  --check_clocks        Check clock frequencies
+
 #+end_src
 
-*** ADC Reading
+** MTB Programmable Trigger
 
-#+begin_src
-┌──────┬───────────┬─────────┬──────────────┐
-│   Ch │ Reading   │ Value   │ Function     │
-├──────┼───────────┼─────────┼──────────────┤
-│    0 │ 0x79D     │ 1.19 V  │ NC           │
-│    1 │ 0x115     │ 0.17 A  │ DSI1 Current │
-│    2 │ 0x000     │ 0.00 A  │ DSI2 Current │
-│    3 │ 0x002     │ 0.00 A  │ DSI3 Current │
-│    4 │ 0x001     │ 0.00 A  │ DSI4 Current │
-│    5 │ 0x002     │ 0.00 A  │ DSI5 Current │
-│    6 │ 0x00F     │ 0.01 V  │ NC           │
-│    7 │ 0x377     │ 0.54 A  │ CCB Current  │
-│    8 │ 0x00F     │ 0.09 V  │ 12V Voltage  │
-│    9 │ 0xA84     │ 3.29 V  │ 3.3V Voltage │
-│   10 │ 0x7F9     │ 2.49 V  │ 2.5V Voltage │
-│   11 │ 0x9E8     │ 1.55 V  │ Misc 0       │
-│   12 │ 0xA32     │ 1.59 V  │ Misc 1       │
-│   13 │ 0xA2A     │ 1.59 V  │ Misc 2       │
-│   14 │ 0x9AD     │ 1.51 V  │ Misc 3       │
-│   15 │ 0x00A     │ 0.01 V  │ NC           │
-│    0 │ 0xA24     │ 46.26 C │ FPGA TEMP    │
-│    1 │ 0x528     │ 0.97 V  │ FPGA VCCINT  │
-│    2 │ 0x9E6     │ 1.86 V  │ FPGA VCCAUX  │
-│    3 │ 0x528     │ 0.97 V  │ FPGA VCCBRAM │
-└──────┴───────────┴─────────┴──────────────┘
+This is designed for simple testing with LTBs on the first 4 inputs.
+
+You have 4 RATs connected, up to 8 paddles are received from each RAT.
+
+In the MTB they are mapped, in order of their inputs, into a 32 bit bitmap.
+
+So..
+
+#+begin_example
+harting connector 0 is bits 0-7
+harting connector 1 is bits 8-15
+harting connector 2 is bits 16-23
+harting connector 3 is bits 24-31
+#+end_example
+
+There are two registers, trig_a and trig_b
+
+The trigger condition is ~or(trig_a and hits) AND or(trig_b and hits)~
+
+So for instance, in the first case of simple trigger of 6 inputs each (where 6 inputs is 0x3f)
+
+By just bitshifting we can pick out the bits we want:
+
+#+begin_example
+LTB0 = 0x3f << 0  = 0x0000003f
+LTB1 = 0x3f << 8  = 0x00003f00
+LTB2 = 0x3f << 16 = 0x003f0000
+LTB3 = 0x3f << 24 = 0x3f000000
+#+end_example
+
+#+begin_example
+A =  LTB0 | LTB1 = 0x00003f3f
+B =  LTB2 | LTB3 = 0x3f3f0000
+#+end_example
+
+To reduce rates and pick just 4 from top and bottom it would be something like:
+
+#+begin_example
+A =  LTB0 | LTB1 = 0x00003c00
+B =  LTB2 | LTB3 = 0x000f0000
+#+end_example
+
+You can set the values like:
+
+#+begin_src bash
+python3 pico_hal.py --trig_a 0xf --trig_b 0xf0
 #+end_src
+
+To get the UCLA trigger setup ~(OR(0-3) AND OR(4-7))~ we would just set:
+
+#+begin_example
+A = 0x0F, B = 0xF0
+#+end_example
+
+To get the December SSL trigger ~(OR(0-7) AND OR(8-15))~, set
+
+#+begin_example
+A = 0x00FF, B=0xFF00,
+#+end_example
+
+To get the new SSL trigger for 6 inputs on 4 paddles each ~OR(0-11) and OR(12-23))~, set:
+
+#+begin_example
+A = 0x000FFF, B = 0xFFF000
+#+end_example
+
+To get the any trigger on inputs 0-3, set
+
+#+begin_example
+A = 0xf, b=0xf
+#+end_example
+
+To disable the trigger just set either a or b to 0.
+
+#+begin_example
+A = 0x0, B = 0x0
+#+end_example
