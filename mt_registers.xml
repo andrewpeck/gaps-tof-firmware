@@ -56,7 +56,7 @@
           fw_write_pulse_signal="trigger_ipb"/>
 
     <node id="TRIG_GEN_RATE" address="0x9" permission="rw"
-          description="Rate of generated triggers f_trig =(2^32-1) * clk_period * rate"
+          description="Rate of generated triggers f_trig = (1/clk_period) * rate/0xffffffff"
           mask="0xffffffff"
           fw_default="0x00000000"
           fw_signal="trig_gen_rate"/>

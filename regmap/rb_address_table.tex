@@ -262,7 +262,7 @@
     \hline
     \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
     \nopagebreak
-    TRIG\_GEN\_RATE & \texttt{0x59} & \texttt{[31:0]} & rw & \texttt{0x0} & Rate of generated triggers f\_trig =(2\^32-1) * clk\_period * rate \\\hline
+    TRIG\_GEN\_RATE & \texttt{0x59} & \texttt{[31:0]} & rw & \texttt{0x0} & Rate of generated triggers f\_trig = (1/clk\_period) * rate/0xffffffff \\\hline
     \end{tabularx}
     \vspace{5mm}
 
