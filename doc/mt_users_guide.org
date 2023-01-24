@@ -271,3 +271,33 @@ To disable the trigger just set either a or b to 0.
 #+begin_example
 A = 0x0, B = 0x0
 #+end_example
+
+** MTB Trigger Generator
+
+The MTB firmware has a feature that can
+fabricate triggers at any frequency 0 to 100MHz. It is a simple trigger generator that works
+by generating a random number from a uniform distribution using a simple RNG algorithm.
+The random number is compared to a 32 bit programmable threshold--- values below the threshold generate triggers.
+In this way, the module generates a random trigger with Poisson distribution of arrival times. There are no rules enforced by the trigger generator, but the
+deadtime of the TIU or the 1us deadtime of the TIU emulator will limit the maximum rate.
+
+It can be controlled, for example, by setting:
+
+#+begin_example
+python3 pico_hal.py --trig_generate 10000000
+#+end_example
+
+And can be disabled by:
+
+#+begin_example
+python3 pico_hal.py --trig_generate 0
+#+end_example
+
+The number 10000000 controls the rate-- it is not in Hz though..
+I'd need to do some calculations for the conversion. Biggest number == more rate
+
+The rate of generated triggers should be:
+
+   ~f_trig = (1/clk_period) * rate/0xffffffff~
+
+e.g. a rate of 1E5 corresponds to a trigger rate of ~2328 Hz.
