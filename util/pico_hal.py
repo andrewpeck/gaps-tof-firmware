@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import socket
+import sys
 import random
 import select
 import time
@@ -448,3 +449,6 @@ if __name__ == '__main__':
         loopback()
     if args.read_daq:
         read_daq()
+
+    if len(sys.argv) == 1:
+        argParser.print_help()
