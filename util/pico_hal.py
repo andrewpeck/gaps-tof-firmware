@@ -253,20 +253,20 @@ def read_adcs():
 
 def check_clocks():
 
-    def check_clock(freq, spec):
+    def check_clock(freq, desc, spec):
         if (spec < freq*1.01 and spec > freq*0.99):
             stat = "OK"
         else:
             stat = "BAD"
-        print ("% 10d (%s)" % (freq, stat))
+        print ("%s: % 10d Hz (%s)" % (desc, freq, stat))
 
-    for adr, spec in ((0x1, 100000000),
-                     (0x2, 20000000),
-                     (0x3, 20000000),
-                     (0x4, 20000000),
-                     (0x5, 20000000),
-                     (0x6, 20000000)):
-        check_clock(rReg(adr), spec)
+    for desc, adr, spec in (["MTB  CLK", 0x1, 100000000],
+                            ["DSI0 CLK", 0x2, 20000000],
+                            ["DSI2 CLK", 0x3, 20000000],
+                            ["DSI2 CLK", 0x4, 20000000],
+                            ["DSI2 CLK", 0x5, 20000000],
+                            ["DSI2 CLK", 0x6, 20000000]):
+        check_clock(rReg(adr), desc, spec)
 
 def force_trigger():
     wReg(0x8, 1)
@@ -428,9 +428,13 @@ if __name__ == '__main__':
         en_ssl_trigger()
     if args.status:
         fw_info()
+        print("")
         check_clocks()
+        print("")
         read_rates()
+        print("")
         read_adcs()
+        print("")
         read_event_cnt(output=True)
     if args.any_trig_en:
         en_any_trigger()
