@@ -299,6 +299,10 @@ def set_trig(which, val):
 def set_trig_generate(val):
     wReg(0x9, val)
 
+def set_trig_hz(rate):
+    # rate = f_trig / 1E8 * 0xffffffff
+    set_trig_generate(int((rate*0xffffffff)/1E8))
+
 def read_rates():
     rate = rReg(0x17)
     lost = rReg(0x18)
@@ -394,7 +398,8 @@ if __name__ == '__main__':
     argParser.add_argument('--trig_stop',       action='store_true', default=False, help="Stop all triggers.")
     argParser.add_argument('--trig_a',          action='store',                     help="Set trigger mask A")
     argParser.add_argument('--trig_b',          action='store',                     help="Set trigger mask B")
-    argParser.add_argument('--trig_generate',   action='store',                     help="Set the poisson trigger generator rate (f_trig = (1/clk_period) * rate/0xffffffff)")
+    argParser.add_argument('--trig_set_hz',     action='store',                     help="Set the poisson trigger generator rate in Hz")
+    argParser.add_argument('--trig_generate',   action='store',                     help="Set the poisson trigger generator rate (f_trig = 1E8 * rate / 0xffffffff)")
     argParser.add_argument('--read_adc',        action='store_true', default=False, help="Read ADCs")
     argParser.add_argument('--loopback',        action='store_true', default=False, help="Ethernet Loopback Test")
     argParser.add_argument('--fw_info',         action='store_true', default=False, help="Print firmware version info")
@@ -435,6 +440,8 @@ if __name__ == '__main__':
         read_adcs()
     if args.trig_generate:
         set_trig_generate(int(args.trig_generate))
+    if args.trig_set_hz:
+        set_trig_hz(int(args.trig_set_hz))
     if args.trig_a:
         set_trig("a", args.trig_a)
     if args.trig_b:
