@@ -123,14 +123,12 @@ begin
         data_srl(SR) <= data_srl(SR-1);
       end loop;
 
-      if (to_integer(unsigned(coarse_delay)) = 0) then
-        data_dly <= data_oversample;
-      else
-        data_dly <= data_srl (to_integer(unsigned(coarse_delay)-1));
-      end if;
-
     end if;
   end process;
+
+  data_dly <= data_oversample
+              when to_integer(unsigned(coarse_delay)) = 0
+              else data_srl (to_integer(unsigned(coarse_delay)-1));
 
   --------------------------------------------------------------------------------
   -- Deserializer
