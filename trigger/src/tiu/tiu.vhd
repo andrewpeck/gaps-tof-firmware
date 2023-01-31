@@ -59,6 +59,7 @@ architecture behavioral of tiu is
   -- Trigger Logic
   --------------------------------------------------------------------------------
 
+  signal tiu_trigger       : std_logic := '0';
   signal event_cnt         : std_logic_vector (event_cnt_i'range)   := (others => '0');
   signal tiu_trigger_cnt   : integer range 0 to tiu_trigger_cnt_max := 0;
   signal ready_for_trigger : std_logic;
@@ -115,7 +116,7 @@ begin
       probe2(0)             => tiu_busy_i,
       probe2(1)             => tiu_serial_o,
       probe2(2)             => tiu_gps,
-      probe2(3)             => tiu_trigger_o,
+      probe2(3)             => tiu_trigger,
       probe2(4)             => trigger_i,
       probe2(5)             => global_busy_o,
       probe2(6)             => timestamp_valid_o,
@@ -177,40 +178,43 @@ begin
 
   ready_for_trigger <= '1' when tiu_tx_busy = '0' and
                        tiu_busy = '0' and
-                       tiu_trigger_o = '0' and
+                       tiu_trigger = '0' and
                        tiu_timeout = '0' and
                        tiu_trigger_cnt = 0 else '0';
+
+  tiu_trigger_o <= '1' when tiu_trigger='1' or (ready_for_trigger = '1' and trigger_i = '1')
+                   else '0';
 
   process (clock) is
   begin
     if (rising_edge(clock)) then
 
       tiu_init_tx   <= '0';
-      tiu_trigger_o <= '0';
+      tiu_trigger <= '0';
       tiu_timeout   <= '0';
 
       -- start a trigger
       if (ready_for_trigger = '1' and trigger_i = '1') then
-        tiu_trigger_o   <= '1';
+        tiu_trigger   <= '1';
         tiu_trigger_cnt <= tiu_trigger_cnt_max;
         event_cnt       <= event_cnt_i;
 
       -- when the busy/ack is received, deassert the trigger output and start the
       -- event count serializer
-      elsif (tiu_trigger_o = '1' and tiu_busy = '1') then
+      elsif (tiu_trigger = '1' and tiu_busy = '1') then
         tiu_init_tx     <= '1';
-        tiu_trigger_o   <= '0';
+        tiu_trigger   <= '0';
         tiu_trigger_cnt <= 0;
 
       -- still waiting for the busy
-      elsif (tiu_trigger_o = '1' and tiu_trigger_cnt > 0) then
+      elsif (tiu_trigger = '1' and tiu_trigger_cnt > 0) then
         tiu_trigger_cnt <= tiu_trigger_cnt - 1;
-        tiu_trigger_o   <= '1';
+        tiu_trigger   <= '1';
 
       -- timeout
-      elsif (tiu_trigger_o = '1' and tiu_trigger_cnt = 0) then
+      elsif (tiu_trigger = '1' and tiu_trigger_cnt = 0) then
         tiu_trigger_cnt <= 0;
-        tiu_trigger_o   <= '0';
+        tiu_trigger   <= '0';
         tiu_timeout     <= '1';
 
         if (send_event_cnt_on_timeout = '1') then
@@ -222,7 +226,7 @@ begin
       --  + ???
       else
         tiu_trigger_cnt <= 0;
-        tiu_trigger_o   <= '0';
+        tiu_trigger   <= '0';
       end if;
 
     end if;
@@ -358,7 +362,7 @@ begin
 
           tiu_emu_busy <= '0';
 
-          if (tiu_trigger_o = '1') then
+          if (tiu_trigger = '1') then
             tiu_busy_state   <= WAITING_FOR_BUSY;
             tiu_emu_busy_cnt <= 100;
           end if;
