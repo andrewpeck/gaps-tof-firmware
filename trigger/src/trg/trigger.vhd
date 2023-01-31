@@ -97,7 +97,7 @@ begin
       clk    => clk,
       probe0 => (others => '0'),
       probe1 => (others => '0'),
-      probe2 => '0' & global_trigger & dead & programmable_trigger,
+      probe2 => busy_i & global_trigger & dead & programmable_trigger,
       probe3 => event_cnt_o,
       probe4 => hitmask
       );
