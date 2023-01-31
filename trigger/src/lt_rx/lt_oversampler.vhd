@@ -150,11 +150,6 @@ begin
   -- Output select
   --------------------------------------------------------------------------------
 
-  process (clk) is
-  begin
-    if (rising_edge(clk)) then
-      data_o <= dd(sel);
-    end if;
-  end process;
+  data_o <= dd(sel);
 
 end behavioral;
