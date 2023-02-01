@@ -160,8 +160,6 @@ begin
       probe14(31 downto 0)  => (others => '0')
       );
 
-  global_busy_o <= '0' when ready_for_trigger = '1' else '1';
-
   tiu_busy <= tiu_emu_busy when tiu_emulation_mode = '1' else tiu_busy_i;
   tiu_gps  <= tiu_emu_gps  when tiu_emulation_mode = '1' else tiu_gps_i;
 
@@ -182,8 +180,14 @@ begin
                        tiu_timeout = '0' and
                        tiu_trigger_cnt = 0 else '0';
 
-  tiu_trigger_o <= '1' when tiu_trigger='1' or (ready_for_trigger = '1' and trigger_i = '1')
-                   else '0';
+  -- or the statemachine derived tiu_trigger signal with the async
+  -- source of the trigger so that it is activated 1 clock cycle ahead of the
+  -- state machine. this reduces latency by 1 clock. thanks to the OR, once the
+  -- state machine takes effect the active hi trigger signal will get taken
+  -- over and held high until the ack comes back from the tiu
+  tiu_trigger_o <= tiu_trigger or (ready_for_trigger and trigger_i);
+
+  global_busy_o <= not ready_for_trigger;
 
   process (clock) is
   begin
