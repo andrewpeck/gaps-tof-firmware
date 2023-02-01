@@ -1,4 +1,4 @@
-GEN:readout_board_zx2:
+GEN:rb_zx2:
     extends: .generate_project
     variables:
       extends: .vars
