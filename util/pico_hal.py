@@ -276,8 +276,8 @@ def en_ucla_trigger():
     set_trig("b", 0x0000000f)
 
 def en_ssl_trigger():
-    set_trig("a", 0x3f3f0000)
-    set_trig("b", 0x00003f3f)
+    set_trig("a", 0xfc3f0000)
+    set_trig("b", 0x0000fc3f)
 
 def en_any_trigger():
     set_trig("a", 0xffffffff)
