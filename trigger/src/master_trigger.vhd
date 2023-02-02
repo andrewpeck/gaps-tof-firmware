@@ -630,13 +630,11 @@ begin
   end process;
 
   -- optionally mask off hot channels
-  process (clock) is
+  process (all) is
   begin
-    if (rising_edge(clock)) then
-      for I in 0 to discrim_masked'length-1 loop
-        discrim_masked(I) <= discrim(I) and repeat(not channel_mask(I / 8)(I mod 8), discrim_masked(I)'length);
-      end loop;
-    end if;
+    for I in 0 to discrim_masked'length-1 loop
+      discrim_masked(I) <= discrim(I) and repeat(not channel_mask(I / 8)(I mod 8), discrim_masked(I)'length);
+    end loop;
   end process;
 
   trigger : entity work.trigger
