@@ -1,2 +1,7 @@
-ltb/ip/clk_wiz_0_1/clk_wiz_0.xci
 ltb/src/trenzLTproto.v top=trenzLTproto
+ltb/src/i2cSlave.v
+ltb/src/i2cSlave_define.v
+ltb/src/registerInterface.v
+ltb/src/serialInterface.v
+
+ltb/ip/clk_wiz_0_1/clk_wiz_0.xci

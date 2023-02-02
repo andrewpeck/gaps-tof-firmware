@@ -22,7 +22,7 @@
 `define PULSE_STEP 1
 
 module trenzLTproto(
-    input CLK1,
+    input       CLK1,
     input [2:0] DISC_A,
     input [2:0] DISC_B,
     input [2:0] DISC_C,
@@ -42,11 +42,14 @@ module trenzLTproto(
     input [2:0] DISC_N,
     input [2:0] DISC_O,
     input [2:0] DISC_P,
+
+    inout       scl, // trenz pin 10 j1, B35_L13_P, F4
+    inout       sda, // trenz pin 8  j1, B35_L15_P, H2
+
+    output      LEDgreen,
     
-    output LEDgreen,
-    
-    output TRIG_OUT_0,
-    output TRIG_OUT_1
+    output      TRIG_OUT_0,
+    output      TRIG_OUT_1
     );
     
         
@@ -255,8 +258,25 @@ module trenzLTproto(
     //this is for the trigger package types with 13 bits 
     //shiftPISO13 s0 (.clk(CLK2), .trig(trigDel), .data(dataLow), .line(TRIG_OUT_0) );
     //shiftPISO13 s1 (.clk(CLK2), .trig(trigDel), .data(dataHigh), .line(TRIG_OUT_1) );   
-    
-           
+
+
+   // `define I2C_ADDRESS 7'h3c
+   i2cSlave u_i2cSlave
+     (
+      .clk(CLK2),
+      .rst(!locked),
+      .sda(sda),
+      .scl(scl),
+      .myReg0(),
+      .myReg1(),
+      .myReg2(),
+      .myReg3(),
+      .myReg4(8'h05),
+      .myReg5(8'h06),
+      .myReg6(8'h07),
+      .myReg7(8'h08)
+      );
+
 endmodule
 
 

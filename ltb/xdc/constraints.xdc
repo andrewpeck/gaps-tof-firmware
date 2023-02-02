@@ -205,3 +205,10 @@ set_property IOSTANDARD LVCMOS33 [get_ports TRIG_OUT_1]
 
 
 #set_clock_groups -name tiktok -logically_exclusive -group [get_clocks [list CLK1 [get_clocks -of_objects [get_pins ck/inst/mmcm_adv_inst/CLKOUT0] -filter {IS_GENERATED && MASTER_CLOCK == CLK1}]]]
+
+
+# i2c
+set_property PACKAGE_PIN F4 [get_ports scl];
+set_property PACKAGE_PIN H2 [get_ports sda];
+set_property IOSTANDARD LVCMOS33 [get_ports scl]
+set_property IOSTANDARD LVCMOS33 [get_ports sda]
