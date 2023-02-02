@@ -25,7 +25,7 @@ use xpm.vcomponents.all;
 -- DSI v1 Schematics: http://ohm.bu.edu/~apeck/20220516_gaps_mt_data_package/20220516_GAPS_DSIv1/GAPS_DSIv1_docs/Schematics%20DAQ%20Stack%20Interface.pdf
 -- DSI v2 Schematics: http://weber.bu.edu/~apeck/schematics/GAPS/DSI_Schematics_v2.pdf
 -- CCB v2 Schematics: http://weber.bu.edu/~apeck/schematics/GAPS/Schematics%20Callisto%20Carrier%20Backplane%20v2.pdf
--- LTB Schematics: http://weber.bu.edu/~apeck/schematics/GAPS/GAPSLocalTriggerV6/GAPSLocalTriggerV6.pdf
+-- LTB Schematics: http://weber.bu.edu/~apeck/schematics/GAPS/GAPSLocalTriggerV6.pdf
 -- Callisto Schematics: https://numato.com/help/wp-content/uploads/2018/06/CallistoK7Sch.pdf
 
 entity gaps_mt is
