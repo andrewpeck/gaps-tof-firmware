@@ -404,33 +404,27 @@ begin
       src_clk      => dma_axi_aclk,        -- 1-bit input: Source clock.
       src_in_bin   => dma_pointer  -- WIDTH-bit input: Binary input bus that will be synchronized to the destination clock domain.
       );
-      
-  xpm_ram_buff_occ_a_reset : xpm_cdc_pulse
+
+  xpm_ram_buff_occ_a_reset : xpm_cdc_sync_rst
     generic map (
-      DEST_SYNC_FF => 2, -- range: 2-10
-      RST_USED     => 0  -- integer; 0=no reset, 1=implement reset
+      INIT         => 1, -- DECIMAL; 0=initialize synchronization registers to 0, 1=initialize
+      DEST_SYNC_FF => 2  -- range: 2-10
       )
     port map (
-      src_clk    => clk33,
-      src_pulse  => ram_a_occ_rst_i,
-      src_rst    => '0',
-      dest_rst   => '0',
-      dest_clk   => dma_axi_aclk,
-      dest_pulse => ram_a_occ_rst
+      dest_clk => dma_axi_aclk,
+      src_rst  => ram_a_occ_rst_i,
+      dest_rst => ram_a_occ_rst
       );
       
-  xpm_ram_buff_occ_b_reset : xpm_cdc_pulse
+  xpm_ram_buff_occ_b_reset : xpm_cdc_sync_rst
     generic map (
-      DEST_SYNC_FF => 2, -- range: 2-10
-      RST_USED     => 0  -- integer; 0=no reset, 1=implement reset
+      INIT         => 1, -- DECIMAL; 0=initialize synchronization registers to 0, 1=initialize
+      DEST_SYNC_FF => 2  -- range: 2-10
       )
     port map (
-      src_clk    => clk33,
-      src_pulse  => ram_b_occ_rst_i,
-      src_rst    => '0',
-      dest_rst   => '0',
-      dest_clk   => dma_axi_aclk,
-      dest_pulse => ram_b_occ_rst
+      dest_clk => dma_axi_aclk,
+      src_rst  => ram_b_occ_rst_i,
+      dest_rst => ram_b_occ_rst
       );
 
   xpm_ram_toggle_req_inst : xpm_cdc_pulse

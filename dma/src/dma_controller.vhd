@@ -318,6 +318,12 @@ architecture Behavioral of dma_controller is
       sync_o  : out std_logic);
   end component synchronizer;
 
+  signal ram_a_occ_rst_extnd   : std_logic;
+  signal ram_b_occ_rst_extnd   : std_logic;
+  constant ram_occ_rst_cnt_max : integer := 7;
+  signal ram_a_occ_rst_cnt     : integer := ram_occ_rst_cnt_max;
+  signal ram_b_occ_rst_cnt     : integer := ram_occ_rst_cnt_max;
+
 begin
 
   --------------------------------------------------------------------------------
@@ -798,7 +804,7 @@ begin
       end if;
 
       if (ram_in_a_buff = '1' and buff_switched_pulse='1')
-        or reset='1' or ram_a_occ_rst = '1' then
+        or ram_a_occ_rst_extnd = '1' then
         if (OCCUPANCY_IS_OFFSET) then
           ram_buff_a_occupancy_o <= (others => '0');
         else
@@ -807,7 +813,7 @@ begin
       end if;
 
       if (ram_in_b_buff = '1' and buff_switched_pulse='1')
-        or reset='1' or ram_b_occ_rst = '1' then
+        or ram_b_occ_rst_extnd = '1' then
         if (OCCUPANCY_IS_OFFSET) then
           ram_buff_b_occupancy_o <= (others => '0');
         else
@@ -817,6 +823,32 @@ begin
 
     end if;
   end process;
+
+  --------------------------------------------------------------------------------
+  -- Reset pulse extension
+  --------------------------------------------------------------------------------
+
+  process (clk_axi) is
+  begin
+    if (rising_edge(clk_axi)) then
+
+      if (reset = '1' or ram_a_occ_rst ='1') then
+        ram_a_occ_rst_cnt <= ram_occ_rst_cnt_max;
+      elsif (ram_a_occ_rst_cnt > 0) then
+        ram_a_occ_rst_cnt <= ram_a_occ_rst_cnt - 1;
+      end if;
+
+      if (reset = '1' or ram_b_occ_rst ='1') then
+        ram_b_occ_rst_cnt <= ram_occ_rst_cnt_max;
+      elsif (ram_b_occ_rst_cnt > 0) then
+        ram_b_occ_rst_cnt <= ram_b_occ_rst_cnt - 1;
+      end if;
+
+    end if;
+  end process;
+
+  ram_a_occ_rst_extnd <= '0' when ram_a_occ_rst_cnt = 1 else '0';
+  ram_b_occ_rst_extnd <= '0' when ram_b_occ_rst_cnt = 1 else '0';
 
   -------------------------------------------------------------------------------
   -- Data Mover IP
