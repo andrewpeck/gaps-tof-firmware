@@ -1147,7 +1147,7 @@ begin
       fifo_data_wen => fifo_data_wen,
 
       packet_counter    => dma_packet_counter,
-      dma_control_reset => dma_control_reset,
+      dma_control_reset_i => dma_control_reset,
       dma_clear         => dma_clear,
 
       clk33          => clock,

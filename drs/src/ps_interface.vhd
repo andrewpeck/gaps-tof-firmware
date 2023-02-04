@@ -57,9 +57,9 @@ entity ps_interface is
     clk33          : in std_logic;
     pl_mmcm_locked : in std_logic;
 
-    packet_counter    : out std_logic_vector(31 downto 0);
-    dma_control_reset : in  std_logic;
-    dma_clear         : in  std_logic;
+    packet_counter      : out std_logic_vector(31 downto 0);
+    dma_control_reset_i : in  std_logic;
+    dma_clear           : in  std_logic;
 
     ipb_reset    : out std_logic;
     ipb_clk      : out std_logic;
@@ -69,8 +69,7 @@ entity ps_interface is
 
     --DMA 
     dma_reset_i : in std_logic;
-    
-    
+
     --------------------------------------------------------------
     -- RAM Occupancy signals
     --------------------------------------------------------------
@@ -91,15 +90,17 @@ architecture Behavioral of ps_interface is
 
   signal packet_counter_xdma : std_logic_vector (31 downto 0);
 
-  signal dma_reset                : std_logic;
-  signal dma_reset_synced         : std_logic;
-  signal dma_control_reset_synced : std_logic;
-  signal dma_clear_synced         : std_logic := '0';
+  signal dma_clear_synced : std_logic := '0';
+
+  signal dma_reset,         dma_reset_synced         : std_logic := '1';
+  signal dma_control_reset, dma_control_reset_synced : std_logic := '1';
+  signal ram_a_occ_rst,     ram_a_occ_rst_synced     : std_logic := '1';
+  signal ram_b_occ_rst,     ram_b_occ_rst_synced     : std_logic := '1';
 
   signal ipb_reset_async      : std_logic := '0';
   signal ipb_axi_aresetn_sync : std_logic := '0';
 
-  signal dma_axi_aclk    : std_logic;
+  signal dma_axi_aclk : std_logic;
 
   signal dma_hp_axi_araddr   : std_logic_vector (31 downto 0);
   signal dma_hp_axi_arburst  : std_logic_vector (1 downto 0);
@@ -179,10 +180,7 @@ architecture Behavioral of ps_interface is
   signal ram_buff_a_occupancy  : std_logic_vector(31 downto 0) := (others => '0');
   signal ram_buff_b_occupancy  : std_logic_vector(31 downto 0) := (others => '0');
   signal dma_pointer           : std_logic_vector(31 downto 0);
-  signal ram_a_occ_rst         : std_logic;
-  signal ram_b_occ_rst         : std_logic;
   signal ram_toggle_request    : std_logic;
-
 
 begin
 
@@ -224,8 +222,8 @@ begin
       dma_hp_axi_araddr    => dma_hp_axi_araddr,
       dma_hp_axi_arburst   => dma_hp_axi_arburst,
       dma_hp_axi_arcache   => dma_hp_axi_arcache,
-      --dma_hp_axi_aruser  => dma_hp_axi_aruser,
-      --dma_hp_axi_awuser  => dma_hp_axi_awuser,
+    --dma_hp_axi_aruser  => dma_hp_axi_aruser,
+    --dma_hp_axi_awuser  => dma_hp_axi_awuser,
       dma_hp_axi_arid      => dma_hp_axi_arid,
       dma_hp_axi_arlen     => dma_hp_axi_arlen,
       dma_hp_axi_arlock(0) => dma_hp_axi_arlock(0),
@@ -293,7 +291,10 @@ begin
   process (clk33) is
   begin
     if (rising_edge(clk33)) then
-      dma_reset <= dma_reset_i;
+      dma_reset         <= dma_reset_i;
+      dma_control_reset <= dma_control_reset_i;
+      ram_a_occ_rst     <= ram_a_occ_rst_i;
+      ram_b_occ_rst     <= ram_b_occ_rst_i;
     end if;
   end process;
 
@@ -308,18 +309,15 @@ begin
       dest_rst => dma_reset_synced
       );
 
-  xpm_dma_ctrl_reset_sync : xpm_cdc_pulse
+  xpm_dma_ctrl_reset_sync : xpm_cdc_sync_rst
     generic map (
       DEST_SYNC_FF => 2, -- range: 2-10
-      RST_USED     => 0  -- integer; 0=no reset, 1=implement reset
+      INIT         => 1  -- 0=initialize synchronization registers to 0, 1=initialize
       )
     port map (
-      src_rst    => '0',
-      dest_rst   => '0',
-      src_clk    => clk33,
-      dest_clk   => dma_axi_aclk,
-      src_pulse  => dma_control_reset,
-      dest_pulse => dma_control_reset_synced
+      dest_clk => dma_axi_aclk,
+      src_rst  => dma_control_reset or dma_control_reset_i,
+      dest_rst => dma_control_reset_synced
       );
 
   xpm_dma_clear_sync : xpm_cdc_pulse
@@ -412,8 +410,8 @@ begin
       )
     port map (
       dest_clk => dma_axi_aclk,
-      src_rst  => ram_a_occ_rst_i,
-      dest_rst => ram_a_occ_rst
+      src_rst  => ram_a_occ_rst_i or ram_a_occ_rst,
+      dest_rst => ram_a_occ_rst_synced
       );
       
   xpm_ram_buff_occ_b_reset : xpm_cdc_sync_rst
@@ -423,8 +421,8 @@ begin
       )
     port map (
       dest_clk => dma_axi_aclk,
-      src_rst  => ram_b_occ_rst_i,
-      dest_rst => ram_b_occ_rst
+      src_rst  => ram_b_occ_rst_i or ram_b_occ_rst,
+      dest_rst => ram_b_occ_rst_synced
       );
 
   xpm_ram_toggle_req_inst : xpm_cdc_pulse
@@ -462,8 +460,8 @@ begin
       daq_busy_in => daq_busy_in,
       
       -- RAM occupancy monitoring
-      ram_a_occ_rst          => ram_a_occ_rst,
-      ram_b_occ_rst          => ram_b_occ_rst,
+      ram_a_occ_rst          => ram_a_occ_rst_synced,
+      ram_b_occ_rst          => ram_b_occ_rst_synced,
       ram_toggle_request_i   => ram_toggle_request,
       ram_buff_a_occupancy_o => ram_buff_a_occupancy,
       ram_buff_b_occupancy_o => ram_buff_b_occupancy,
