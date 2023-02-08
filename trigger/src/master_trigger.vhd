@@ -174,6 +174,7 @@ architecture structural of gaps_mt is
   signal channel_mask : t_std8_array (NUM_LTS-1 downto 0);
   signal discrim_1bit : t_std8_array (NUM_LTS-1 downto 0);
 
+  signal lost_trigger   : std_logic;
   signal global_trigger : std_logic;  -- single bit == the baloon triggered somewhere
   signal global_busy    : std_logic;
 
@@ -664,6 +665,7 @@ begin
       event_cnt_o => event_cnt,
 
       -- ouptut from trigger logic
+      lost_trigger_o   => lost_trigger,   --
       global_trigger_o => global_trigger, -- OR of the trigger menu
       rb_triggers_o    => rb_triggers,    -- 39 trigger outputs  (-1 per rb)
       channel_select_o => channel_select  -- trigger output (197 trigger outputs)
@@ -725,7 +727,7 @@ begin
     port map (
       clk_i   => clock,
       reset_i => reset,
-      en_i    => global_trigger and global_busy,
+      en_i    => lost_trigger,
       rate_o  => lost_trig_rate
       );
 

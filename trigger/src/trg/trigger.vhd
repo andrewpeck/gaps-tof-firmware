@@ -38,6 +38,7 @@ entity trigger is
 
     channel_select_o : out channel_bitmask_t;
     global_trigger_o : out std_logic;
+    lost_trigger_o   : out std_logic;
     rb_triggers_o    : out std_logic_vector (NUM_RBS-1 downto 0);
     event_cnt_o      : out std_logic_vector (31 downto 0)
 
@@ -148,6 +149,7 @@ begin
   process (clk) is
   begin
     if (rising_edge(clk)) then
+      lost_trigger_o   <= busy_i and global_trigger;
       global_trigger_r <= not busy_i and not dead and global_trigger;
       rb_triggers_r    <= rb_triggers;
 
