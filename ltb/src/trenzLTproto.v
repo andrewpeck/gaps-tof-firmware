@@ -21,8 +21,15 @@
 
 `define PULSE_STEP 1
 
-module trenzLTproto(
+module
+trenzLTproto
+   #(parameter GLOBAL_DATE = 0,
+     parameter GLOBAL_TIME = 0,
+     parameter GLOBAL_VER  = 0,
+     parameter GLOBAL_SHA  = 0
+     )(
     input       CLK1,
+
     input [2:0] DISC_A,
     input [2:0] DISC_B,
     input [2:0] DISC_C,
@@ -271,10 +278,10 @@ module trenzLTproto(
       .myReg1(),
       .myReg2(),
       .myReg3(),
-      .myReg4(8'h05),
-      .myReg5(8'h06),
-      .myReg6(8'h07),
-      .myReg7(8'h08)
+      .myReg4(GLOBAL_SHA[7:0]),
+      .myReg5(GLOBAL_SHA[15:8]),
+      .myReg6(GLOBAL_SHA[23:16]),
+      .myReg7(GLOBAL_SHA[31:24])
       );
 
 endmodule
