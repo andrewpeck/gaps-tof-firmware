@@ -1,3 +1,4 @@
+# -*- mode: vivado -*-
 set basename [file rootname [lindex [glob *.bit] 0]]
 set bitfile ${basename}.bit
 set binfile ${basename}.bin
@@ -67,7 +68,7 @@ proc select_hw_targets {} {
         set target $targets
         puts "Target $target [dict get $devices $target] found, press y key to continue."
         gets stdin select
-        if {[string equal $select "y"]} {
+        if {[string equal [string tolower $select] "y"]} {
             set targets $target
         } else {
             error "No target selected"
@@ -115,7 +116,7 @@ foreach target $targets {
         if {[string equal $device "xc7k160t_0"]} {
             puts "Master trigger board selected... do you want to program the Flash? y/n"
             gets stdin select
-            if {[string equal $select "y"]} {
+            if {[string equal [string tolower $select] "y"]} {
                 program_flash $binfile "xc7k160t_0" "mt25ql01g-spi-x1_x2_x4"
                 boot_hw_device  [lindex [get_hw_devices xc7k160t_0] 0]
                 set programmed "True"
