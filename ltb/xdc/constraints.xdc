@@ -208,7 +208,7 @@ set_property IOSTANDARD LVCMOS33 [get_ports TRIG_OUT_1]
 
 
 # i2c
-set_property PACKAGE_PIN F4 [get_ports scl];
-set_property PACKAGE_PIN H2 [get_ports sda];
+set_property PACKAGE_PIN F4 [get_ports scl]
+set_property PACKAGE_PIN E3 [get_ports sda]
 set_property IOSTANDARD LVCMOS33 [get_ports scl]
 set_property IOSTANDARD LVCMOS33 [get_ports sda]

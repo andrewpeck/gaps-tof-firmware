@@ -44,7 +44,7 @@ module trenzLTproto(
     input [2:0] DISC_P,
 
     inout       scl, // trenz pin 10 j1, B35_L13_P, F4
-    inout       sda, // trenz pin 8  j1, B35_L15_P, H2
+    inout       sda, // trenz pin 12 j1, B35_L12_P, E3
 
     output      LEDgreen,
     
