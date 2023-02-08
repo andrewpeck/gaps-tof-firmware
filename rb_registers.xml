@@ -357,8 +357,8 @@
             <node id="GLOBAL_TIME" mask="0xFFFFFFFF" permission="r" address="0x1" description="HOG Global Time"    fw_signal="GLOBAL_TIME"/>
             <node id="GLOBAL_VER"  mask="0xFFFFFFFF" permission="r" address="0x2" description="HOG Global Version" fw_signal="GLOBAL_VER"/>
             <node id="GLOBAL_SHA"  mask="0xFFFFFFFF" permission="r" address="0x3" description="HOG Global SHA"     fw_signal="GLOBAL_SHA"/>
-            <node id="TOP_SHA"     mask="0xFFFFFFFF" permission="r" address="0x4" description="HOG Top SHA"        fw_signal="TOP_SHA"/>
-            <node id="TOP_VER"     mask="0xFFFFFFFF" permission="r" address="0x5" description="HOG Top Version"    fw_signal="TOP_VER"/>
+            <node id="REPO_SHA"    mask="0xFFFFFFFF" permission="r" address="0x4" description="HOG Repo SHA"       fw_signal="REPO_SHA"/>
+            <node id="TOP_VER"     mask="0xFFFFFFFF" permission="r" address="0x5" description="HOG Repo Version"   fw_signal="REPO_VER"/>
             <node id="HOG_SHA"     mask="0xFFFFFFFF" permission="r" address="0x6" description="HOG SHA"            fw_signal="HOG_SHA"/>
             <node id="HOG_VER"     mask="0xFFFFFFFF" permission="r" address="0x7" description="HOG Version"        fw_signal="HOG_VER"/>
         </node> <!--HOG-->

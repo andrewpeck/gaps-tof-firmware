@@ -35,7 +35,9 @@ entity top_readout_board is
     TOP_VER     : std_logic_vector (31 downto 0) := x"00000000";
     TOP_SHA     : std_logic_vector (31 downto 0) := x"00000000";
     HOG_SHA     : std_logic_vector (31 downto 0) := x"00000000";
-    HOG_VER     : std_logic_vector (31 downto 0) := x"00000000"
+    HOG_VER     : std_logic_vector (31 downto 0) := x"00000000";
+    REPO_SHA    : std_logic_vector (31 downto 0) := x"00000000";
+    REPO_VER    : std_logic_vector (31 downto 0) := x"00000000"
     );
   port (
 
@@ -1324,8 +1326,8 @@ begin
   regs_read_arr(44)(REG_HOG_GLOBAL_TIME_MSB downto REG_HOG_GLOBAL_TIME_LSB) <= GLOBAL_TIME;
   regs_read_arr(45)(REG_HOG_GLOBAL_VER_MSB downto REG_HOG_GLOBAL_VER_LSB) <= GLOBAL_VER;
   regs_read_arr(46)(REG_HOG_GLOBAL_SHA_MSB downto REG_HOG_GLOBAL_SHA_LSB) <= GLOBAL_SHA;
-  regs_read_arr(47)(REG_HOG_TOP_SHA_MSB downto REG_HOG_TOP_SHA_LSB) <= TOP_SHA;
-  regs_read_arr(48)(REG_HOG_TOP_VER_MSB downto REG_HOG_TOP_VER_LSB) <= TOP_VER;
+  regs_read_arr(47)(REG_HOG_REPO_SHA_MSB downto REG_HOG_REPO_SHA_LSB) <= REPO_SHA;
+  regs_read_arr(48)(REG_HOG_TOP_VER_MSB downto REG_HOG_TOP_VER_LSB) <= REPO_VER;
   regs_read_arr(49)(REG_HOG_HOG_SHA_MSB downto REG_HOG_HOG_SHA_LSB) <= HOG_SHA;
   regs_read_arr(50)(REG_HOG_HOG_VER_MSB downto REG_HOG_HOG_VER_LSB) <= HOG_VER;
   regs_read_arr(52)(REG_SPY_DATA_MSB downto REG_SPY_DATA_LSB) <= spy_data;

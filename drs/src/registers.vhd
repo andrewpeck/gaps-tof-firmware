@@ -262,9 +262,9 @@ package registers is
     constant REG_HOG_GLOBAL_SHA_MSB    : integer := 31;
     constant REG_HOG_GLOBAL_SHA_LSB     : integer := 0;
 
-    constant REG_HOG_TOP_SHA_ADDR    : std_logic_vector(9 downto 0) := "00" & x"64";
-    constant REG_HOG_TOP_SHA_MSB    : integer := 31;
-    constant REG_HOG_TOP_SHA_LSB     : integer := 0;
+    constant REG_HOG_REPO_SHA_ADDR    : std_logic_vector(9 downto 0) := "00" & x"64";
+    constant REG_HOG_REPO_SHA_MSB    : integer := 31;
+    constant REG_HOG_REPO_SHA_LSB     : integer := 0;
 
     constant REG_HOG_TOP_VER_ADDR    : std_logic_vector(9 downto 0) := "00" & x"65";
     constant REG_HOG_TOP_VER_MSB    : integer := 31;
