@@ -1,0 +1,576 @@
+{
+    "DRS.CHIP.DMODE": {
+        "name": "DRS.CHIP.DMODE",
+        "address": 0,
+        "permission": "rw",
+        "mask": 2,
+        "description": "set 1 = continuous domino, 0=single shot"
+    },
+    "DRS.CHIP.STANDBY_MODE": {
+        "name": "DRS.CHIP.STANDBY_MODE",
+        "address": 0,
+        "permission": "rw",
+        "mask": 4,
+        "description": "set 1 = shutdown drs"
+    },
+    "DRS.CHIP.TRANSPARENT_MODE": {
+        "name": "DRS.CHIP.TRANSPARENT_MODE",
+        "address": 0,
+        "permission": "rw",
+        "mask": 8,
+        "description": "set 1 = transparent mode"
+    },
+    "DRS.CHIP.DRS_PLL_LOCK": {
+        "name": "DRS.CHIP.DRS_PLL_LOCK",
+        "address": 0,
+        "permission": "r",
+        "mask": 16,
+        "description": "DRS PLL Locked"
+    },
+    "DRS.CHIP.CHANNEL_CONFIG": {
+        "name": "DRS.CHIP.CHANNEL_CONFIG",
+        "address": 0,
+        "permission": "rw",
+        "mask": 4278190080,
+        "description": "Write Shift Register Configuration                             \\\\ # of chn - # of cells per ch - bit pattern                             \\\\ 8        - 1024              - 11111111b                             \\\\ 4        - 2048              - 01010101b                             \\\\ 2        - 4096              - 00010001b                             \\\\ 1        - 8192              - 00000001b"
+    },
+    "DRS.CHIP.DTAP_FREQ": {
+        "name": "DRS.CHIP.DTAP_FREQ",
+        "address": 1,
+        "permission": "r",
+        "mask": 65535,
+        "description": "Frequency of DTAP in units of 100Hz"
+    },
+    "DRS.CHIP.CLK_IDELAY": {
+        "name": "DRS.CHIP.CLK_IDELAY",
+        "address": 2,
+        "permission": "rw",
+        "mask": 31,
+        "description": "DRS CLK IDELAY Setting 0-31 in 78 ps increments"
+    },
+    "DRS.READOUT.ROI_MODE": {
+        "name": "DRS.READOUT.ROI_MODE",
+        "address": 16,
+        "permission": "rw",
+        "mask": 1,
+        "description": "Set to 1 to enable Region of Interest Readout"
+    },
+    "DRS.READOUT.BUSY": {
+        "name": "DRS.READOUT.BUSY",
+        "address": 16,
+        "permission": "r",
+        "mask": 2,
+        "description": "DRS is busy"
+    },
+    "DRS.READOUT.ADC_LATENCY": {
+        "name": "DRS.READOUT.ADC_LATENCY",
+        "address": 16,
+        "permission": "rw",
+        "mask": 1008,
+        "description": "Latency from first sr clock to when ADC data should be valid"
+    },
+    "DRS.READOUT.SAMPLE_COUNT": {
+        "name": "DRS.READOUT.SAMPLE_COUNT",
+        "address": 16,
+        "permission": "rw",
+        "mask": 4190208,
+        "description": "Number of samples to read out (0 to 1023)"
+    },
+    "DRS.READOUT.EN_SPIKE_REMOVAL": {
+        "name": "DRS.READOUT.EN_SPIKE_REMOVAL",
+        "address": 16,
+        "permission": "rw",
+        "mask": 4194304,
+        "description": "set 1 to enable spike removal"
+    },
+    "DRS.READOUT.READOUT_MASK": {
+        "name": "DRS.READOUT.READOUT_MASK",
+        "address": 17,
+        "permission": "rw",
+        "mask": 511,
+        "description": "8 bit mask, set a bit to 1 to enable readout of that channel. 9th is auto-read if any channel is enabled *and* AUTO_9TH_CHANNEL set to 1"
+    },
+    "DRS.READOUT.AUTO_9TH_CHANNEL": {
+        "name": "DRS.READOUT.AUTO_9TH_CHANNEL",
+        "address": 17,
+        "permission": "rw",
+        "mask": 512,
+        "description": "Set to 1 to auto read the 9th channel"
+    },
+    "DRS.READOUT.START": {
+        "name": "DRS.READOUT.START",
+        "address": 18,
+        "permission": "w",
+        "mask": 1,
+        "description": "Write 1 to take the state machine out of idle mode"
+    },
+    "DRS.READOUT.REINIT": {
+        "name": "DRS.READOUT.REINIT",
+        "address": 19,
+        "permission": "w",
+        "mask": 1,
+        "description": "Write 1 to reinitialize DRS state machine (restores to idle state)"
+    },
+    "DRS.READOUT.CONFIGURE": {
+        "name": "DRS.READOUT.CONFIGURE",
+        "address": 20,
+        "permission": "w",
+        "mask": 1,
+        "description": "Write 1 to configure the DRS. Should be done before data taking"
+    },
+    "DRS.READOUT.DRS_RESET": {
+        "name": "DRS.READOUT.DRS_RESET",
+        "address": 21,
+        "permission": "w",
+        "mask": 1,
+        "description": "Write 1 to completely reset the DRS state machine logic"
+    },
+    "DRS.READOUT.DAQ_RESET": {
+        "name": "DRS.READOUT.DAQ_RESET",
+        "address": 22,
+        "permission": "w",
+        "mask": 1,
+        "description": "Write 1 to completely reset the DAQ state machine logic"
+    },
+    "DRS.READOUT.DMA_RESET": {
+        "name": "DRS.READOUT.DMA_RESET",
+        "address": 23,
+        "permission": "w",
+        "mask": 1,
+        "description": "Write 1 to completely reset the DMA state machine logic"
+    },
+    "DRS.READOUT.WAIT_VDD_CLKS": {
+        "name": "DRS.READOUT.WAIT_VDD_CLKS",
+        "address": 24,
+        "permission": "rw",
+        "mask": 65535,
+        "description": "Number of ADC clocks to wait before reading out the drs, allowing vdd to stabilize; default=0x14d=10us"
+    },
+    "DRS.READOUT.DRS_DIAGNOSTIC_MODE": {
+        "name": "DRS.READOUT.DRS_DIAGNOSTIC_MODE",
+        "address": 25,
+        "permission": "rw",
+        "mask": 1,
+        "description": "1 will make the DRS read out the cell ID instead of ADC data"
+    },
+    "DRS.READOUT.POSNEG": {
+        "name": "DRS.READOUT.POSNEG",
+        "address": 26,
+        "permission": "rw",
+        "mask": 1,
+        "description": "1 to sample on positive edge, 0 on negative"
+    },
+    "DRS.READOUT.DMA_CLEAR": {
+        "name": "DRS.READOUT.DMA_CLEAR",
+        "address": 27,
+        "permission": "w",
+        "mask": 1,
+        "description": "Write 1 to clear the DMA memory (write zeroes)"
+    },
+    "DRS.FPGA.DNA.DNA_LSBS": {
+        "name": "DRS.FPGA.DNA.DNA_LSBS",
+        "address": 32,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "Device DNA [31:0]"
+    },
+    "DRS.FPGA.DNA.DNA_MSBS": {
+        "name": "DRS.FPGA.DNA.DNA_MSBS",
+        "address": 33,
+        "permission": "r",
+        "mask": 33554431,
+        "description": "Device DNA [56:32]"
+    },
+    "DRS.FPGA.TIMESTAMP.TIMESTAMP_LSBS": {
+        "name": "DRS.FPGA.TIMESTAMP.TIMESTAMP_LSBS",
+        "address": 36,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "Device TIMESTAMP [31:0]"
+    },
+    "DRS.FPGA.TIMESTAMP.TIMESTAMP_MSBS": {
+        "name": "DRS.FPGA.TIMESTAMP.TIMESTAMP_MSBS",
+        "address": 37,
+        "permission": "r",
+        "mask": 65535,
+        "description": "Device TIMESTAMP [47:32]"
+    },
+    "DRS.FPGA.XADC.CALIBRATION": {
+        "name": "DRS.FPGA.XADC.CALIBRATION",
+        "address": 38,
+        "permission": "r",
+        "mask": 4095,
+        "description": "XADC Calibration"
+    },
+    "DRS.FPGA.XADC.VCCPINT": {
+        "name": "DRS.FPGA.XADC.VCCPINT",
+        "address": 38,
+        "permission": "r",
+        "mask": 268369920,
+        "description": "XADC vccpint"
+    },
+    "DRS.FPGA.XADC.VCCPAUX": {
+        "name": "DRS.FPGA.XADC.VCCPAUX",
+        "address": 39,
+        "permission": "r",
+        "mask": 4095,
+        "description": "XADC Calibration"
+    },
+    "DRS.FPGA.XADC.VCCODDR": {
+        "name": "DRS.FPGA.XADC.VCCODDR",
+        "address": 39,
+        "permission": "r",
+        "mask": 268369920,
+        "description": "XADC vccoddr"
+    },
+    "DRS.FPGA.XADC.TEMP": {
+        "name": "DRS.FPGA.XADC.TEMP",
+        "address": 40,
+        "permission": "r",
+        "mask": 4095,
+        "description": "XADC Temperature"
+    },
+    "DRS.FPGA.XADC.VCCINT": {
+        "name": "DRS.FPGA.XADC.VCCINT",
+        "address": 40,
+        "permission": "r",
+        "mask": 268369920,
+        "description": "XADC vccint"
+    },
+    "DRS.FPGA.XADC.VCCAUX": {
+        "name": "DRS.FPGA.XADC.VCCAUX",
+        "address": 41,
+        "permission": "r",
+        "mask": 4095,
+        "description": "XADC VCCAUX"
+    },
+    "DRS.FPGA.XADC.VCCBRAM": {
+        "name": "DRS.FPGA.XADC.VCCBRAM",
+        "address": 41,
+        "permission": "r",
+        "mask": 268369920,
+        "description": "XADC vccbram"
+    },
+    "DRS.FPGA.BOARD_ID": {
+        "name": "DRS.FPGA.BOARD_ID",
+        "address": 42,
+        "permission": "rw",
+        "mask": 255,
+        "description": "Board ID Number"
+    },
+    "DRS.FPGA.DRS_TEMP": {
+        "name": "DRS.FPGA.DRS_TEMP",
+        "address": 43,
+        "permission": "rw",
+        "mask": 65535,
+        "description": "Copy of the I2C DRS temperature reading"
+    },
+    "DRS.DAQ.INJECT_DEBUG_PACKET": {
+        "name": "DRS.DAQ.INJECT_DEBUG_PACKET",
+        "address": 48,
+        "permission": "w",
+        "mask": 1,
+        "description": "Injects a fixed format debug packet into the DAQ"
+    },
+    "DRS.DAQ.DAQ_FRAGMENT_EN": {
+        "name": "DRS.DAQ.DAQ_FRAGMENT_EN",
+        "address": 49,
+        "permission": "rw",
+        "mask": 1,
+        "description": "1 to enable daq fragments (header only packets) when the DRS is busy"
+    },
+    "DRS.DAQ.DAQ_BUSY": {
+        "name": "DRS.DAQ.DAQ_BUSY",
+        "address": 49,
+        "permission": "r",
+        "mask": 2,
+        "description": "1 = DAQ is still busy reading out"
+    },
+    "DRS.TRIGGER.FORCE_TRIGGER": {
+        "name": "DRS.TRIGGER.FORCE_TRIGGER",
+        "address": 64,
+        "permission": "w",
+        "mask": 1,
+        "description": "Generates a trigger"
+    },
+    "DRS.TRIGGER.EXT_TRIGGER_EN": {
+        "name": "DRS.TRIGGER.EXT_TRIGGER_EN",
+        "address": 65,
+        "permission": "rw",
+        "mask": 1,
+        "description": "Set to 1 to enable the external trigger"
+    },
+    "DRS.TRIGGER.EXT_TRIGGER_ACTIVE_HI": {
+        "name": "DRS.TRIGGER.EXT_TRIGGER_ACTIVE_HI",
+        "address": 65,
+        "permission": "rw",
+        "mask": 2,
+        "description": "Set to 1 for active high external trigger"
+    },
+    "DRS.TRIGGER.MT_TRIGGER_IS_LEVEL": {
+        "name": "DRS.TRIGGER.MT_TRIGGER_IS_LEVEL",
+        "address": 65,
+        "permission": "rw",
+        "mask": 4,
+        "description": "Set to 1 for mt level trigger on v2.4 boards"
+    },
+    "DRS.TRIGGER.TRIGGER_DELAY": {
+        "name": "DRS.TRIGGER.TRIGGER_DELAY",
+        "address": 66,
+        "permission": "rw",
+        "mask": 4095,
+        "description": "Trigger delay measured in LUT1 units"
+    },
+    "DRS.TRIGGER.CNT_MT_PRBS_ERRS": {
+        "name": "DRS.TRIGGER.CNT_MT_PRBS_ERRS",
+        "address": 67,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "Number of PRBS errors on the MT line"
+    },
+    "DRS.TRIGGER.MT_PRBS_ERR_RESET": {
+        "name": "DRS.TRIGGER.MT_PRBS_ERR_RESET",
+        "address": 68,
+        "permission": "w",
+        "mask": 1,
+        "description": "Write 1 to reset the MT PRBS Error Counter"
+    },
+    "DRS.TRIGGER.MT_TRIGGER_MODE": {
+        "name": "DRS.TRIGGER.MT_TRIGGER_MODE",
+        "address": 69,
+        "permission": "w",
+        "mask": 1,
+        "description": "1 to use the MT as the source of the trigger"
+    },
+    "DRS.TRIGGER.CNT_MT_CRC_ERR": {
+        "name": "DRS.TRIGGER.CNT_MT_CRC_ERR",
+        "address": 70,
+        "permission": "r",
+        "mask": 65535,
+        "description": "Number of MT CRC errors"
+    },
+    "DRS.TRIGGER.TRIGGER_ENABLE": {
+        "name": "DRS.TRIGGER.TRIGGER_ENABLE",
+        "address": 71,
+        "permission": "rw",
+        "mask": 1,
+        "description": "Set to 0 to stop all triggers. 1 to enable triggers."
+    },
+    "DRS.COUNTERS.CNT_SEM_CORRECTION": {
+        "name": "DRS.COUNTERS.CNT_SEM_CORRECTION",
+        "address": 80,
+        "permission": "r",
+        "mask": 65535,
+        "description": "Number of Single Event Errors corrected by the scrubber"
+    },
+    "DRS.COUNTERS.CNT_SEM_UNCORRECTABLE": {
+        "name": "DRS.COUNTERS.CNT_SEM_UNCORRECTABLE",
+        "address": 81,
+        "permission": "r",
+        "mask": 983040,
+        "description": "Number of Critical Single Event Errors (uncorrectable by scrubber)"
+    },
+    "DRS.COUNTERS.CNT_READOUTS_COMPLETED": {
+        "name": "DRS.COUNTERS.CNT_READOUTS_COMPLETED",
+        "address": 82,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "Number of readouts completed since reset"
+    },
+    "DRS.COUNTERS.CNT_DMA_READOUTS_COMPLETED": {
+        "name": "DRS.COUNTERS.CNT_DMA_READOUTS_COMPLETED",
+        "address": 83,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "Number of readouts completed since reset"
+    },
+    "DRS.COUNTERS.CNT_LOST_EVENT": {
+        "name": "DRS.COUNTERS.CNT_LOST_EVENT",
+        "address": 84,
+        "permission": "r",
+        "mask": 4294901760,
+        "description": "Number of trigger lost due to deadtime"
+    },
+    "DRS.COUNTERS.CNT_EVENT": {
+        "name": "DRS.COUNTERS.CNT_EVENT",
+        "address": 85,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "Number of triggers received"
+    },
+    "DRS.COUNTERS.TRIGGER_RATE": {
+        "name": "DRS.COUNTERS.TRIGGER_RATE",
+        "address": 86,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "Rate of triggers in Hz"
+    },
+    "DRS.COUNTERS.LOST_TRIGGER_RATE": {
+        "name": "DRS.COUNTERS.LOST_TRIGGER_RATE",
+        "address": 87,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "Rate of lost triggers in Hz"
+    },
+    "DRS.COUNTERS.CNT_RESET": {
+        "name": "DRS.COUNTERS.CNT_RESET",
+        "address": 88,
+        "permission": "w",
+        "mask": 1,
+        "description": "Reset the counters"
+    },
+    "DRS.TRIG_GEN_RATE": {
+        "name": "DRS.TRIG_GEN_RATE",
+        "address": 89,
+        "permission": "rw",
+        "mask": 4294967295,
+        "description": "Rate of generated triggers f_trig = (1/clk_period) * rate/0xffffffff"
+    },
+    "DRS.HOG.GLOBAL_DATE": {
+        "name": "DRS.HOG.GLOBAL_DATE",
+        "address": 96,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "HOG Global Date"
+    },
+    "DRS.HOG.GLOBAL_TIME": {
+        "name": "DRS.HOG.GLOBAL_TIME",
+        "address": 97,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "HOG Global Time"
+    },
+    "DRS.HOG.GLOBAL_VER": {
+        "name": "DRS.HOG.GLOBAL_VER",
+        "address": 98,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "HOG Global Version"
+    },
+    "DRS.HOG.GLOBAL_SHA": {
+        "name": "DRS.HOG.GLOBAL_SHA",
+        "address": 99,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "HOG Global SHA"
+    },
+    "DRS.HOG.REPO_SHA": {
+        "name": "DRS.HOG.REPO_SHA",
+        "address": 100,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "HOG Repo SHA"
+    },
+    "DRS.HOG.TOP_VER": {
+        "name": "DRS.HOG.TOP_VER",
+        "address": 101,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "HOG Repo Version"
+    },
+    "DRS.HOG.HOG_SHA": {
+        "name": "DRS.HOG.HOG_SHA",
+        "address": 102,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "HOG SHA"
+    },
+    "DRS.HOG.HOG_VER": {
+        "name": "DRS.HOG.HOG_VER",
+        "address": 103,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "HOG Version"
+    },
+    "DRS.SPY.RESET": {
+        "name": "DRS.SPY.RESET",
+        "address": 112,
+        "permission": "w",
+        "mask": 1,
+        "description": "Spy Buffer Reset"
+    },
+    "DRS.SPY.DATA": {
+        "name": "DRS.SPY.DATA",
+        "address": 113,
+        "permission": "r",
+        "mask": 65535,
+        "description": "Spy Read Data"
+    },
+    "DRS.SPY.FULL": {
+        "name": "DRS.SPY.FULL",
+        "address": 114,
+        "permission": "r",
+        "mask": 1,
+        "description": "Spy Buffer Full"
+    },
+    "DRS.SPY.EMPTY": {
+        "name": "DRS.SPY.EMPTY",
+        "address": 114,
+        "permission": "r",
+        "mask": 2,
+        "description": "Spy Buffer Empty"
+    },
+    "DRS.DMA.RAM_A_OCC_RST": {
+        "name": "DRS.DMA.RAM_A_OCC_RST",
+        "address": 256,
+        "permission": "w",
+        "mask": 1,
+        "description": "Sets RAM buffer a counter to 0"
+    },
+    "DRS.DMA.RAM_B_OCC_RST": {
+        "name": "DRS.DMA.RAM_B_OCC_RST",
+        "address": 257,
+        "permission": "w",
+        "mask": 1,
+        "description": "Sets RAM buffer b counter to 0"
+    },
+    "DRS.DMA.RAM_A_OCCUPANCY": {
+        "name": "DRS.DMA.RAM_A_OCCUPANCY",
+        "address": 258,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "RAM buffer a occupancy"
+    },
+    "DRS.DMA.RAM_B_OCCUPANCY": {
+        "name": "DRS.DMA.RAM_B_OCCUPANCY",
+        "address": 259,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "RAM buffer b occupancy"
+    },
+    "DRS.DMA.DMA_POINTER": {
+        "name": "DRS.DMA.DMA_POINTER",
+        "address": 260,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "DMA controller pointer"
+    },
+    "DRS.DMA.TOGGLE_RAM": {
+        "name": "DRS.DMA.TOGGLE_RAM",
+        "address": 261,
+        "permission": "w",
+        "mask": 1,
+        "description": "Write 1 to switch the dma buffer to the other half"
+    },
+    "DRS.GFP.EVENTID_SPI_EN": {
+        "name": "DRS.GFP.EVENTID_SPI_EN",
+        "address": 512,
+        "permission": "rw",
+        "mask": 1,
+        "description": "1 to enable GFP Event ID from SPI"
+    },
+    "DRS.GFP.EVENTID_RX": {
+        "name": "DRS.GFP.EVENTID_RX",
+        "address": 513,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "Event ID from GFP SPI Interface"
+    },
+    "DRS.GFP.EVENTID_TIMEOUT_CNT": {
+        "name": "DRS.GFP.EVENTID_TIMEOUT_CNT",
+        "address": 514,
+        "permission": "r",
+        "mask": 65535,
+        "description": "Timed out triggers waiting for event id"
+    }
+}

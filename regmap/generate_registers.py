@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 __author__ = 'evka'
 
+import json
 import io
 import xml.etree.ElementTree as xml
 import textwrap as tw
@@ -191,6 +192,7 @@ def main(CONFIG):
     CONSTANTS_FILE                = CONFIG['CONSTANTS_FILE']
     DOC_FILE                      = CONFIG['DOC_FILE']
     ORG_FILE                      = CONFIG['ORG_FILE']
+    JSON_FILE                     = CONFIG['JSON_FILE']
     PACKAGE_FILE                  = CONFIG['PACKAGE_FILE']
     TOP_NODE_NAME                 = CONFIG['TOP_NODE_NAME']
     VHDL_REG_GENERATED_DISCLAIMER = CONFIG['VHDL_REG_GENERATED_DISCLAIMER']
@@ -212,8 +214,8 @@ def main(CONFIG):
         print('============================================================================')
         print(module.toString())
         print('============================================================================')
-        #for reg in module.regs:
-        #    print(reg.toString())
+        for reg in module.regs:
+           print(reg.toString())
 
     print('Writing documentation file to ' + DOC_FILE.replace(".tex",SUFFIX+".tex"))
     writeDocFile (modules, DOC_FILE)
@@ -231,6 +233,19 @@ def main(CONFIG):
     for module in modules:
         if not module.isExternal:
             updateModuleFile(module)
+
+
+    regs = {}
+    for module in modules:
+        for reg in module.regs:
+            regs[reg.name] = {"name": reg.name,
+                              "address": reg.address,
+                              "permission": reg.permission,
+                              "mask": reg.mask,
+                              "description": reg.description}
+
+    with open(JSON_FILE, "w+") as outfile:
+        outfile.write(json.dumps(regs, indent=4))
 
     if board_type == 'ctp7':
         writeStatusBashScript(modules, BASH_STATUS_SCRIPT_FILE)
