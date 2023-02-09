@@ -1155,9 +1155,9 @@ begin
       fifo_clock_in => clock,           -- TODO: separate daq clock
       fifo_data_wen => fifo_data_wen,
 
-      packet_counter    => dma_packet_counter,
+      packet_counter      => dma_packet_counter,
       dma_control_reset_i => dma_control_reset,
-      dma_clear         => dma_clear,
+      dma_clear           => dma_clear,
 
       clk33          => clock,
       pl_mmcm_locked => locked,
@@ -1244,44 +1244,45 @@ begin
   regs_addresses(23)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"2a";
   regs_addresses(24)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"2b";
   regs_addresses(25)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"30";
-  regs_addresses(26)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"40";
-  regs_addresses(27)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"41";
-  regs_addresses(28)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"42";
-  regs_addresses(29)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"43";
-  regs_addresses(30)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"44";
-  regs_addresses(31)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"45";
-  regs_addresses(32)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"46";
-  regs_addresses(33)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"47";
-  regs_addresses(34)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"50";
-  regs_addresses(35)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"51";
-  regs_addresses(36)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"52";
-  regs_addresses(37)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"53";
-  regs_addresses(38)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"54";
-  regs_addresses(39)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"55";
-  regs_addresses(40)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"56";
-  regs_addresses(41)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"57";
-  regs_addresses(42)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"58";
-  regs_addresses(43)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"59";
-  regs_addresses(44)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"60";
-  regs_addresses(45)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"61";
-  regs_addresses(46)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"62";
-  regs_addresses(47)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"63";
-  regs_addresses(48)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"64";
-  regs_addresses(49)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"65";
-  regs_addresses(50)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"66";
-  regs_addresses(51)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"67";
-  regs_addresses(52)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"70";
-  regs_addresses(53)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"71";
-  regs_addresses(54)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"72";
-  regs_addresses(55)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"00";
-  regs_addresses(56)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"01";
-  regs_addresses(57)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"02";
-  regs_addresses(58)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"03";
-  regs_addresses(59)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"04";
-  regs_addresses(60)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"05";
-  regs_addresses(61)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "10" & x"00";
-  regs_addresses(62)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "10" & x"01";
-  regs_addresses(63)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "10" & x"02";
+  regs_addresses(26)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"31";
+  regs_addresses(27)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"40";
+  regs_addresses(28)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"41";
+  regs_addresses(29)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"42";
+  regs_addresses(30)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"43";
+  regs_addresses(31)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"44";
+  regs_addresses(32)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"45";
+  regs_addresses(33)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"46";
+  regs_addresses(34)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"47";
+  regs_addresses(35)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"50";
+  regs_addresses(36)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"51";
+  regs_addresses(37)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"52";
+  regs_addresses(38)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"53";
+  regs_addresses(39)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"54";
+  regs_addresses(40)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"55";
+  regs_addresses(41)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"56";
+  regs_addresses(42)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"57";
+  regs_addresses(43)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"58";
+  regs_addresses(44)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"59";
+  regs_addresses(45)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"60";
+  regs_addresses(46)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"61";
+  regs_addresses(47)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"62";
+  regs_addresses(48)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"63";
+  regs_addresses(49)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"64";
+  regs_addresses(50)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"65";
+  regs_addresses(51)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"66";
+  regs_addresses(52)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"67";
+  regs_addresses(53)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"70";
+  regs_addresses(54)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"71";
+  regs_addresses(55)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"72";
+  regs_addresses(56)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"00";
+  regs_addresses(57)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"01";
+  regs_addresses(58)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"02";
+  regs_addresses(59)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"03";
+  regs_addresses(60)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"04";
+  regs_addresses(61)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"05";
+  regs_addresses(62)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "10" & x"00";
+  regs_addresses(63)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "10" & x"01";
+  regs_addresses(64)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "10" & x"02";
 
   -- Connect read signals
   regs_read_arr(0)(REG_CHIP_DMODE_BIT) <= dmode;
@@ -1315,39 +1316,41 @@ begin
   regs_read_arr(22)(REG_FPGA_XADC_VCCBRAM_MSB downto REG_FPGA_XADC_VCCBRAM_LSB) <= vccbram;
   regs_read_arr(23)(REG_FPGA_BOARD_ID_MSB downto REG_FPGA_BOARD_ID_LSB) <= board_id;
   regs_read_arr(24)(REG_FPGA_DRS_TEMP_MSB downto REG_FPGA_DRS_TEMP_LSB) <= drs_temp;
-  regs_read_arr(27)(REG_TRIGGER_EXT_TRIGGER_EN_BIT) <= ext_trigger_en;
-  regs_read_arr(27)(REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT) <= ext_trigger_active_hi;
-  regs_read_arr(27)(REG_TRIGGER_MT_TRIGGER_IS_LEVEL_BIT) <= mt_is_level_trigger;
-  regs_read_arr(28)(REG_TRIGGER_TRIGGER_DELAY_MSB downto REG_TRIGGER_TRIGGER_DELAY_LSB) <= drs_dwrite_delay_sel;
-  regs_read_arr(29)(REG_TRIGGER_CNT_MT_PRBS_ERRS_MSB downto REG_TRIGGER_CNT_MT_PRBS_ERRS_LSB) <= cnt_mt_prbs_err;
-  regs_read_arr(32)(REG_TRIGGER_CNT_MT_CRC_ERR_MSB downto REG_TRIGGER_CNT_MT_CRC_ERR_LSB) <= cnt_mt_crc_err;
-  regs_read_arr(33)(REG_TRIGGER_TRIGGER_ENABLE_BIT) <= trigger_enable;
-  regs_read_arr(34)(REG_COUNTERS_CNT_SEM_CORRECTION_MSB downto REG_COUNTERS_CNT_SEM_CORRECTION_LSB) <= cnt_sem_corrected;
-  regs_read_arr(35)(REG_COUNTERS_CNT_SEM_UNCORRECTABLE_MSB downto REG_COUNTERS_CNT_SEM_UNCORRECTABLE_LSB) <= cnt_sem_uncorrectable;
-  regs_read_arr(36)(REG_COUNTERS_CNT_READOUTS_COMPLETED_MSB downto REG_COUNTERS_CNT_READOUTS_COMPLETED_LSB) <= cnt_readouts;
-  regs_read_arr(37)(REG_COUNTERS_CNT_DMA_READOUTS_COMPLETED_MSB downto REG_COUNTERS_CNT_DMA_READOUTS_COMPLETED_LSB) <= dma_packet_counter;
-  regs_read_arr(38)(REG_COUNTERS_CNT_LOST_EVENT_MSB downto REG_COUNTERS_CNT_LOST_EVENT_LSB) <= cnt_lost_events;
-  regs_read_arr(39)(REG_COUNTERS_CNT_EVENT_MSB downto REG_COUNTERS_CNT_EVENT_LSB) <= event_counter;
-  regs_read_arr(40)(REG_COUNTERS_TRIGGER_RATE_MSB downto REG_COUNTERS_TRIGGER_RATE_LSB) <= trigger_rate;
-  regs_read_arr(41)(REG_COUNTERS_LOST_TRIGGER_RATE_MSB downto REG_COUNTERS_LOST_TRIGGER_RATE_LSB) <= lost_trigger_rate;
-  regs_read_arr(43)(REG_TRIG_GEN_RATE_MSB downto REG_TRIG_GEN_RATE_LSB) <= trig_gen_rate;
-  regs_read_arr(44)(REG_HOG_GLOBAL_DATE_MSB downto REG_HOG_GLOBAL_DATE_LSB) <= GLOBAL_DATE;
-  regs_read_arr(45)(REG_HOG_GLOBAL_TIME_MSB downto REG_HOG_GLOBAL_TIME_LSB) <= GLOBAL_TIME;
-  regs_read_arr(46)(REG_HOG_GLOBAL_VER_MSB downto REG_HOG_GLOBAL_VER_LSB) <= GLOBAL_VER;
-  regs_read_arr(47)(REG_HOG_GLOBAL_SHA_MSB downto REG_HOG_GLOBAL_SHA_LSB) <= GLOBAL_SHA;
-  regs_read_arr(48)(REG_HOG_REPO_SHA_MSB downto REG_HOG_REPO_SHA_LSB) <= REPO_SHA;
-  regs_read_arr(49)(REG_HOG_TOP_VER_MSB downto REG_HOG_TOP_VER_LSB) <= REPO_VER;
-  regs_read_arr(50)(REG_HOG_HOG_SHA_MSB downto REG_HOG_HOG_SHA_LSB) <= HOG_SHA;
-  regs_read_arr(51)(REG_HOG_HOG_VER_MSB downto REG_HOG_HOG_VER_LSB) <= HOG_VER;
-  regs_read_arr(53)(REG_SPY_DATA_MSB downto REG_SPY_DATA_LSB) <= spy_data;
-  regs_read_arr(54)(REG_SPY_FULL_BIT) <= spy_full;
-  regs_read_arr(54)(REG_SPY_EMPTY_BIT) <= spy_empty;
-  regs_read_arr(57)(REG_DMA_RAM_A_OCCUPANCY_MSB downto REG_DMA_RAM_A_OCCUPANCY_LSB) <= ram_buff_a_occupancy;
-  regs_read_arr(58)(REG_DMA_RAM_B_OCCUPANCY_MSB downto REG_DMA_RAM_B_OCCUPANCY_LSB) <= ram_buff_b_occupancy;
-  regs_read_arr(59)(REG_DMA_DMA_POINTER_MSB downto REG_DMA_DMA_POINTER_LSB) <= dma_pointer;
-  regs_read_arr(61)(REG_GFP_EVENTID_SPI_EN_BIT) <= gfp_use_eventid;
-  regs_read_arr(62)(REG_GFP_EVENTID_RX_MSB downto REG_GFP_EVENTID_RX_LSB) <= gfp_eventid_rx;
-  regs_read_arr(63)(REG_GFP_EVENTID_TIMEOUT_CNT_MSB downto REG_GFP_EVENTID_TIMEOUT_CNT_LSB) <= gfp_eventid_timeout_cnt;
+  regs_read_arr(26)(REG_DAQ_DAQ_FRAGMENT_EN_BIT) <= daq_fragment_en;
+  regs_read_arr(26)(REG_DAQ_DAQ_BUSY_BIT) <= daq_busy;
+  regs_read_arr(28)(REG_TRIGGER_EXT_TRIGGER_EN_BIT) <= ext_trigger_en;
+  regs_read_arr(28)(REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT) <= ext_trigger_active_hi;
+  regs_read_arr(28)(REG_TRIGGER_MT_TRIGGER_IS_LEVEL_BIT) <= mt_is_level_trigger;
+  regs_read_arr(29)(REG_TRIGGER_TRIGGER_DELAY_MSB downto REG_TRIGGER_TRIGGER_DELAY_LSB) <= drs_dwrite_delay_sel;
+  regs_read_arr(30)(REG_TRIGGER_CNT_MT_PRBS_ERRS_MSB downto REG_TRIGGER_CNT_MT_PRBS_ERRS_LSB) <= cnt_mt_prbs_err;
+  regs_read_arr(33)(REG_TRIGGER_CNT_MT_CRC_ERR_MSB downto REG_TRIGGER_CNT_MT_CRC_ERR_LSB) <= cnt_mt_crc_err;
+  regs_read_arr(34)(REG_TRIGGER_TRIGGER_ENABLE_BIT) <= trigger_enable;
+  regs_read_arr(35)(REG_COUNTERS_CNT_SEM_CORRECTION_MSB downto REG_COUNTERS_CNT_SEM_CORRECTION_LSB) <= cnt_sem_corrected;
+  regs_read_arr(36)(REG_COUNTERS_CNT_SEM_UNCORRECTABLE_MSB downto REG_COUNTERS_CNT_SEM_UNCORRECTABLE_LSB) <= cnt_sem_uncorrectable;
+  regs_read_arr(37)(REG_COUNTERS_CNT_READOUTS_COMPLETED_MSB downto REG_COUNTERS_CNT_READOUTS_COMPLETED_LSB) <= cnt_readouts;
+  regs_read_arr(38)(REG_COUNTERS_CNT_DMA_READOUTS_COMPLETED_MSB downto REG_COUNTERS_CNT_DMA_READOUTS_COMPLETED_LSB) <= dma_packet_counter;
+  regs_read_arr(39)(REG_COUNTERS_CNT_LOST_EVENT_MSB downto REG_COUNTERS_CNT_LOST_EVENT_LSB) <= cnt_lost_events;
+  regs_read_arr(40)(REG_COUNTERS_CNT_EVENT_MSB downto REG_COUNTERS_CNT_EVENT_LSB) <= event_counter;
+  regs_read_arr(41)(REG_COUNTERS_TRIGGER_RATE_MSB downto REG_COUNTERS_TRIGGER_RATE_LSB) <= trigger_rate;
+  regs_read_arr(42)(REG_COUNTERS_LOST_TRIGGER_RATE_MSB downto REG_COUNTERS_LOST_TRIGGER_RATE_LSB) <= lost_trigger_rate;
+  regs_read_arr(44)(REG_TRIG_GEN_RATE_MSB downto REG_TRIG_GEN_RATE_LSB) <= trig_gen_rate;
+  regs_read_arr(45)(REG_HOG_GLOBAL_DATE_MSB downto REG_HOG_GLOBAL_DATE_LSB) <= GLOBAL_DATE;
+  regs_read_arr(46)(REG_HOG_GLOBAL_TIME_MSB downto REG_HOG_GLOBAL_TIME_LSB) <= GLOBAL_TIME;
+  regs_read_arr(47)(REG_HOG_GLOBAL_VER_MSB downto REG_HOG_GLOBAL_VER_LSB) <= GLOBAL_VER;
+  regs_read_arr(48)(REG_HOG_GLOBAL_SHA_MSB downto REG_HOG_GLOBAL_SHA_LSB) <= GLOBAL_SHA;
+  regs_read_arr(49)(REG_HOG_REPO_SHA_MSB downto REG_HOG_REPO_SHA_LSB) <= REPO_SHA;
+  regs_read_arr(50)(REG_HOG_TOP_VER_MSB downto REG_HOG_TOP_VER_LSB) <= REPO_VER;
+  regs_read_arr(51)(REG_HOG_HOG_SHA_MSB downto REG_HOG_HOG_SHA_LSB) <= HOG_SHA;
+  regs_read_arr(52)(REG_HOG_HOG_VER_MSB downto REG_HOG_HOG_VER_LSB) <= HOG_VER;
+  regs_read_arr(54)(REG_SPY_DATA_MSB downto REG_SPY_DATA_LSB) <= spy_data;
+  regs_read_arr(55)(REG_SPY_FULL_BIT) <= spy_full;
+  regs_read_arr(55)(REG_SPY_EMPTY_BIT) <= spy_empty;
+  regs_read_arr(58)(REG_DMA_RAM_A_OCCUPANCY_MSB downto REG_DMA_RAM_A_OCCUPANCY_LSB) <= ram_buff_a_occupancy;
+  regs_read_arr(59)(REG_DMA_RAM_B_OCCUPANCY_MSB downto REG_DMA_RAM_B_OCCUPANCY_LSB) <= ram_buff_b_occupancy;
+  regs_read_arr(60)(REG_DMA_DMA_POINTER_MSB downto REG_DMA_DMA_POINTER_LSB) <= dma_pointer;
+  regs_read_arr(62)(REG_GFP_EVENTID_SPI_EN_BIT) <= gfp_use_eventid;
+  regs_read_arr(63)(REG_GFP_EVENTID_RX_MSB downto REG_GFP_EVENTID_RX_LSB) <= gfp_eventid_rx;
+  regs_read_arr(64)(REG_GFP_EVENTID_TIMEOUT_CNT_MSB downto REG_GFP_EVENTID_TIMEOUT_CNT_LSB) <= gfp_eventid_timeout_cnt;
 
   -- Connect write signals
   dmode <= regs_write_arr(0)(REG_CHIP_DMODE_BIT);
@@ -1366,15 +1369,15 @@ begin
   posneg <= regs_write_arr(13)(REG_READOUT_POSNEG_BIT);
   board_id <= regs_write_arr(23)(REG_FPGA_BOARD_ID_MSB downto REG_FPGA_BOARD_ID_LSB);
   drs_temp <= regs_write_arr(24)(REG_FPGA_DRS_TEMP_MSB downto REG_FPGA_DRS_TEMP_LSB);
-  daq_fragment_en <= regs_write_arr(25)(REG_DAQ_DAQ_FRAGMENT_EN_BIT);
-  ext_trigger_en <= regs_write_arr(27)(REG_TRIGGER_EXT_TRIGGER_EN_BIT);
-  ext_trigger_active_hi <= regs_write_arr(27)(REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT);
-  mt_is_level_trigger <= regs_write_arr(27)(REG_TRIGGER_MT_TRIGGER_IS_LEVEL_BIT);
-  drs_dwrite_delay_sel <= regs_write_arr(28)(REG_TRIGGER_TRIGGER_DELAY_MSB downto REG_TRIGGER_TRIGGER_DELAY_LSB);
-  mt_trigger_mode <= regs_write_arr(31)(REG_TRIGGER_MT_TRIGGER_MODE_BIT);
-  trigger_enable <= regs_write_arr(33)(REG_TRIGGER_TRIGGER_ENABLE_BIT);
-  trig_gen_rate <= regs_write_arr(43)(REG_TRIG_GEN_RATE_MSB downto REG_TRIG_GEN_RATE_LSB);
-  gfp_use_eventid <= regs_write_arr(61)(REG_GFP_EVENTID_SPI_EN_BIT);
+  daq_fragment_en <= regs_write_arr(26)(REG_DAQ_DAQ_FRAGMENT_EN_BIT);
+  ext_trigger_en <= regs_write_arr(28)(REG_TRIGGER_EXT_TRIGGER_EN_BIT);
+  ext_trigger_active_hi <= regs_write_arr(28)(REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT);
+  mt_is_level_trigger <= regs_write_arr(28)(REG_TRIGGER_MT_TRIGGER_IS_LEVEL_BIT);
+  drs_dwrite_delay_sel <= regs_write_arr(29)(REG_TRIGGER_TRIGGER_DELAY_MSB downto REG_TRIGGER_TRIGGER_DELAY_LSB);
+  mt_trigger_mode <= regs_write_arr(32)(REG_TRIGGER_MT_TRIGGER_MODE_BIT);
+  trigger_enable <= regs_write_arr(34)(REG_TRIGGER_TRIGGER_ENABLE_BIT);
+  trig_gen_rate <= regs_write_arr(44)(REG_TRIG_GEN_RATE_MSB downto REG_TRIG_GEN_RATE_LSB);
+  gfp_use_eventid <= regs_write_arr(62)(REG_GFP_EVENTID_SPI_EN_BIT);
 
   -- Connect write pulse signals
   start <= regs_write_pulse_arr(5);
@@ -1385,18 +1388,18 @@ begin
   dma_control_reset <= regs_write_pulse_arr(10);
   dma_clear <= regs_write_pulse_arr(14);
   debug_packet_inject <= regs_write_pulse_arr(25);
-  force_trig <= regs_write_pulse_arr(26);
-  mt_prbs_rst <= regs_write_pulse_arr(30);
-  cnt_reset <= regs_write_pulse_arr(42);
-  spy_reset <= regs_write_pulse_arr(52);
-  ram_a_occ_rst <= regs_write_pulse_arr(55);
-  ram_b_occ_rst <= regs_write_pulse_arr(56);
-  ram_toggle_request <= regs_write_pulse_arr(60);
+  force_trig <= regs_write_pulse_arr(27);
+  mt_prbs_rst <= regs_write_pulse_arr(31);
+  cnt_reset <= regs_write_pulse_arr(43);
+  spy_reset <= regs_write_pulse_arr(53);
+  ram_a_occ_rst <= regs_write_pulse_arr(56);
+  ram_b_occ_rst <= regs_write_pulse_arr(57);
+  ram_toggle_request <= regs_write_pulse_arr(61);
 
   -- Connect write done signals
 
   -- Connect read pulse signals
-  spy_rd_en <= regs_read_pulse_arr(53);
+  spy_rd_en <= regs_read_pulse_arr(54);
 
   -- Connect counter instances
 
@@ -1507,7 +1510,7 @@ begin
   -- Connect rate instances
 
   -- Connect read ready signals
-    regs_read_ready_arr(53) <= spy_valid;
+    regs_read_ready_arr(54) <= spy_valid;
 
   -- Defaults
   regs_defaults(0)(REG_CHIP_DMODE_BIT) <= REG_CHIP_DMODE_DEFAULT;
@@ -1526,15 +1529,15 @@ begin
   regs_defaults(13)(REG_READOUT_POSNEG_BIT) <= REG_READOUT_POSNEG_DEFAULT;
   regs_defaults(23)(REG_FPGA_BOARD_ID_MSB downto REG_FPGA_BOARD_ID_LSB) <= REG_FPGA_BOARD_ID_DEFAULT;
   regs_defaults(24)(REG_FPGA_DRS_TEMP_MSB downto REG_FPGA_DRS_TEMP_LSB) <= REG_FPGA_DRS_TEMP_DEFAULT;
-  regs_defaults(25)(REG_DAQ_DAQ_FRAGMENT_EN_BIT) <= REG_DAQ_DAQ_FRAGMENT_EN_DEFAULT;
-  regs_defaults(27)(REG_TRIGGER_EXT_TRIGGER_EN_BIT) <= REG_TRIGGER_EXT_TRIGGER_EN_DEFAULT;
-  regs_defaults(27)(REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT) <= REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_DEFAULT;
-  regs_defaults(27)(REG_TRIGGER_MT_TRIGGER_IS_LEVEL_BIT) <= REG_TRIGGER_MT_TRIGGER_IS_LEVEL_DEFAULT;
-  regs_defaults(28)(REG_TRIGGER_TRIGGER_DELAY_MSB downto REG_TRIGGER_TRIGGER_DELAY_LSB) <= REG_TRIGGER_TRIGGER_DELAY_DEFAULT;
-  regs_defaults(31)(REG_TRIGGER_MT_TRIGGER_MODE_BIT) <= REG_TRIGGER_MT_TRIGGER_MODE_DEFAULT;
-  regs_defaults(33)(REG_TRIGGER_TRIGGER_ENABLE_BIT) <= REG_TRIGGER_TRIGGER_ENABLE_DEFAULT;
-  regs_defaults(43)(REG_TRIG_GEN_RATE_MSB downto REG_TRIG_GEN_RATE_LSB) <= REG_TRIG_GEN_RATE_DEFAULT;
-  regs_defaults(61)(REG_GFP_EVENTID_SPI_EN_BIT) <= REG_GFP_EVENTID_SPI_EN_DEFAULT;
+  regs_defaults(26)(REG_DAQ_DAQ_FRAGMENT_EN_BIT) <= REG_DAQ_DAQ_FRAGMENT_EN_DEFAULT;
+  regs_defaults(28)(REG_TRIGGER_EXT_TRIGGER_EN_BIT) <= REG_TRIGGER_EXT_TRIGGER_EN_DEFAULT;
+  regs_defaults(28)(REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT) <= REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_DEFAULT;
+  regs_defaults(28)(REG_TRIGGER_MT_TRIGGER_IS_LEVEL_BIT) <= REG_TRIGGER_MT_TRIGGER_IS_LEVEL_DEFAULT;
+  regs_defaults(29)(REG_TRIGGER_TRIGGER_DELAY_MSB downto REG_TRIGGER_TRIGGER_DELAY_LSB) <= REG_TRIGGER_TRIGGER_DELAY_DEFAULT;
+  regs_defaults(32)(REG_TRIGGER_MT_TRIGGER_MODE_BIT) <= REG_TRIGGER_MT_TRIGGER_MODE_DEFAULT;
+  regs_defaults(34)(REG_TRIGGER_TRIGGER_ENABLE_BIT) <= REG_TRIGGER_TRIGGER_ENABLE_DEFAULT;
+  regs_defaults(44)(REG_TRIG_GEN_RATE_MSB downto REG_TRIG_GEN_RATE_LSB) <= REG_TRIG_GEN_RATE_DEFAULT;
+  regs_defaults(62)(REG_GFP_EVENTID_SPI_EN_BIT) <= REG_GFP_EVENTID_SPI_EN_DEFAULT;
 
   -- Define writable regs
   regs_writable_arr(0) <= '1';
@@ -1546,13 +1549,13 @@ begin
   regs_writable_arr(13) <= '1';
   regs_writable_arr(23) <= '1';
   regs_writable_arr(24) <= '1';
-  regs_writable_arr(25) <= '1';
-  regs_writable_arr(27) <= '1';
+  regs_writable_arr(26) <= '1';
   regs_writable_arr(28) <= '1';
-  regs_writable_arr(31) <= '1';
-  regs_writable_arr(33) <= '1';
-  regs_writable_arr(43) <= '1';
-  regs_writable_arr(61) <= '1';
+  regs_writable_arr(29) <= '1';
+  regs_writable_arr(32) <= '1';
+  regs_writable_arr(34) <= '1';
+  regs_writable_arr(44) <= '1';
+  regs_writable_arr(62) <= '1';
 
   -- --==== Registers end ============================================================================
 

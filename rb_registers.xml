@@ -232,11 +232,15 @@
                 description="Injects a fixed format debug packet into the DAQ"
                 mask="0x1"
                 fw_write_pulse_signal="debug_packet_inject" />
-            <node id="DAQ_FRAGMENT_EN" address="0x0" permission="w"
+            <node id="DAQ_FRAGMENT_EN" address="0x1" permission="rw"
                 description="1 to enable daq fragments (header only packets) when the DRS is busy"
                 mask="0x1"
                 fw_default="0x1"
                 fw_signal="daq_fragment_en" />
+            <node id="DAQ_BUSY" address="0x1" permission="r"
+                description="1 = DAQ is still busy reading out"
+                mask="0x2"
+                fw_signal="daq_busy" />
         </node> <!--DAQ-->
 
         <node id="TRIGGER" address="0x40"
