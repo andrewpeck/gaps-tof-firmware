@@ -16,6 +16,8 @@ entity trigger_mux is
   port(
     clock : in std_logic;
 
+    enable : in std_logic := '1';
+
     -- async trigger from scintillator
     ext_trigger_i         : in std_logic;  -- ASYNC trigger input, must be >30ns
     ext_trigger_en        : in std_logic;  -- 1 to enable external trigger
@@ -145,7 +147,7 @@ begin
   ext_trigger <= ext_trigger_en_ff and (ext_trigger_async);
 
   --
-  trigger <= ext_trigger or master_trigger or force_trig_ff;
+  trigger <= enable and (ext_trigger or master_trigger or force_trig_ff);
 
   dwrite_o <= not (trigger or trigger_os or trigger_r);
 

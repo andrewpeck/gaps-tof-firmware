@@ -286,6 +286,11 @@
                 fw_cnt_reset_signal="reset or cnt_reset"
                 fw_cnt_en_signal="not mt_crc_ok and mt_crc_valid"
                 fw_signal="cnt_mt_crc_err"/>
+            <node id="TRIGGER_ENABLE" address="0x7" permission="rw"
+                description="Set to 0 to stop all triggers. 1 to enable triggers."
+                fw_default="0x0"
+                mask="0x1"
+                fw_signal="trigger_enable" />
         </node> <!--TRIGGER-->
 
         <node id="COUNTERS" address="0x50" description="Counters">
