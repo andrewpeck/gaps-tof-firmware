@@ -263,7 +263,6 @@ always @(posedge clock) begin
   drs_stat_stop_cell   <= 0;
   drs_sr_count         <= 0;
   drs_addr             <= 0;
-  drs_reinit_request   <= 0;
   drs_old_roi_mode     <= 0;
   drs_sample_count     <= 0;
   drs_rd_tmp_count     <= 0;
