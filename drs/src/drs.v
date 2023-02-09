@@ -86,7 +86,6 @@ module drs #(
     output reg        drs_rsrload_o,  // Read Shift Register Load Input
     output reg        drs_srclk_en_o, // Multiplexed Shift Register Clock Input
     output reg        drs_srin_o,     // Shared Shift Register Input
-    output reg        drs_on_o   ,    //
     output reg [9:0]  drs_stop_cell_o ,
 
     //------------------------------------------------------------------------------------------------------------------
@@ -247,7 +246,6 @@ always @(posedge clock) begin
   drs_denable_o        <= 0;     // domino waves disabled
   drs_srin_o           <= 0;
   drs_addr_o           <= ADR_STANDBY;  // standby
-  drs_on_o             <= 1;
   drs_rsrload_o        <= 0;
   drs_dwrite_o         <= 0;
   drs_srclk_en_o       <= 0;
@@ -364,7 +362,6 @@ always @(posedge clock) begin
           drs_rd_tmp_count     <= 0;
           drs_sr_count         <= 0;
 
-          drs_on_o <= 1;
           if (drs_ctl_transp_mode)
             drs_addr_o <= ADR_TRANSPARENT;  // transparent mode
           else
@@ -859,7 +856,6 @@ always @(posedge clock) begin
           // Logic
           //------------------------------------------------------------------------------------------------------------
 
-          drs_on_o   <= 0;           // DRS power off (test board)
           drs_addr_o <= ADR_STANDBY; // standby mode
 
     end // fini
@@ -931,7 +927,7 @@ end
     .probe20 (drs_rsrload_o),
     .probe21 (drs_srclk_en_o),
     .probe22 (drs_srin_o),
-    .probe23 (drs_on_o),
+    .probe23 (1'b0),
     .probe24 (fifo_wdata_o[13:0]),
     .probe25 (fifo_wen_o),
     .probe26 (busy_o),

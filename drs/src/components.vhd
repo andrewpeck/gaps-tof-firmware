@@ -43,7 +43,6 @@ package components is
       drs_rsrload_o            : out std_logic;
       drs_srclk_en_o           : out std_logic;
       drs_srin_o               : out std_logic;
-      drs_on_o                 : out std_logic;
       drs_stop_cell_o          : out std_logic_vector(9 downto 0);
       fifo_wdata_o             : out std_logic_vector;
       fifo_wen_o               : out std_logic;
