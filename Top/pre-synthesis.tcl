@@ -8,6 +8,9 @@ set_msg_config -quiet -id {Synth 8-2507} -new_severity {INFO}
 
 lassign [GetVer [Git ls-files]] repo_ver repo_sha
 
+set repo_ver [FormatGeneric $repo_ver]
+set repo_sha [FormatGeneric $repo_sha]
+
 set generic_string [get_property generic [current_fileset]]
 
 if {[string first REPO_SHA $generic_string] != -1} {
