@@ -1,1036 +1,888 @@
 {
     "MT.LOOPBACK": {
-        "name": "MT.LOOPBACK",
-        "address": 0,
+        "adr": 0,
         "permission": "rw",
         "mask": 4294967295,
         "description": "Loopback register"
     },
     "MT.CLOCK_RATE": {
-        "name": "MT.CLOCK_RATE",
-        "address": 1,
+        "adr": 1,
         "permission": "r",
         "mask": 4294967295,
         "description": "System clock frequency"
     },
     "MT.FB_CLOCK_RATE_0": {
-        "name": "MT.FB_CLOCK_RATE_0",
-        "address": 2,
+        "adr": 2,
         "permission": "r",
         "mask": 4294967295,
         "description": "Feedback clock frequency"
     },
     "MT.FB_CLOCK_RATE_1": {
-        "name": "MT.FB_CLOCK_RATE_1",
-        "address": 3,
+        "adr": 3,
         "permission": "r",
         "mask": 4294967295,
         "description": "Feedback clock frequency"
     },
     "MT.FB_CLOCK_RATE_2": {
-        "name": "MT.FB_CLOCK_RATE_2",
-        "address": 4,
+        "adr": 4,
         "permission": "r",
         "mask": 4294967295,
         "description": "Feedback clock frequency"
     },
     "MT.FB_CLOCK_RATE_3": {
-        "name": "MT.FB_CLOCK_RATE_3",
-        "address": 5,
+        "adr": 5,
         "permission": "r",
         "mask": 4294967295,
         "description": "Feedback clock frequency"
     },
     "MT.FB_CLOCK_RATE_4": {
-        "name": "MT.FB_CLOCK_RATE_4",
-        "address": 6,
+        "adr": 6,
         "permission": "r",
         "mask": 4294967295,
         "description": "Feedback clock frequency"
     },
     "MT.DSI_ON": {
-        "name": "MT.DSI_ON",
-        "address": 7,
+        "adr": 7,
         "permission": "rw",
         "mask": 31,
         "description": "Bitmask 1 = enable DSI"
     },
     "MT.FORCE_TRIGGER": {
-        "name": "MT.FORCE_TRIGGER",
-        "address": 8,
+        "adr": 8,
         "permission": "w",
         "mask": 1,
         "description": "Write 1 to generate a trigger"
     },
     "MT.TRIG_GEN_RATE": {
-        "name": "MT.TRIG_GEN_RATE",
-        "address": 9,
+        "adr": 9,
         "permission": "rw",
         "mask": 4294967295,
         "description": "Rate of generated triggers f_trig = (1/clk_period) * rate/0xffffffff"
     },
     "MT.RESYNC": {
-        "name": "MT.RESYNC",
-        "address": 10,
+        "adr": 10,
         "permission": "w",
         "mask": 1,
         "description": "Write 1 to resync"
     },
     "MT.ANY_TRIG_EN": {
-        "name": "MT.ANY_TRIG_EN",
-        "address": 11,
+        "adr": 11,
         "permission": "rw",
         "mask": 4,
         "description": "1 to enable the ANY trigger"
     },
     "MT.EVENT_CNT_RESET": {
-        "name": "MT.EVENT_CNT_RESET",
-        "address": 12,
+        "adr": 12,
         "permission": "w",
         "mask": 1,
         "description": "Write 1 to reset the event counter"
     },
     "MT.EVENT_CNT": {
-        "name": "MT.EVENT_CNT",
-        "address": 13,
+        "adr": 13,
         "permission": "r",
         "mask": 4294967295,
         "description": "Event Counter"
     },
     "MT.TIU_EMULATION_MODE": {
-        "name": "MT.TIU_EMULATION_MODE",
-        "address": 14,
+        "adr": 14,
         "permission": "rw",
         "mask": 1,
         "description": "1 to emulate the TIU"
     },
     "MT.EVENT_QUEUE.RESET": {
-        "name": "MT.EVENT_QUEUE.RESET",
-        "address": 16,
+        "adr": 16,
         "permission": "w",
         "mask": 1,
         "description": "DAQ Buffer Reset"
     },
     "MT.EVENT_QUEUE.DATA": {
-        "name": "MT.EVENT_QUEUE.DATA",
-        "address": 17,
+        "adr": 17,
         "permission": "r",
         "mask": 4294967295,
         "description": "DAQ Read Data"
     },
     "MT.EVENT_QUEUE.FULL": {
-        "name": "MT.EVENT_QUEUE.FULL",
-        "address": 18,
+        "adr": 18,
         "permission": "r",
         "mask": 1,
         "description": "DAQ Buffer Full"
     },
     "MT.EVENT_QUEUE.EMPTY": {
-        "name": "MT.EVENT_QUEUE.EMPTY",
-        "address": 18,
+        "adr": 18,
         "permission": "r",
         "mask": 2,
         "description": "DAQ Buffer Empty"
     },
     "MT.TRIG_MASK_A": {
-        "name": "MT.TRIG_MASK_A",
-        "address": 21,
+        "adr": 21,
         "permission": "rw",
         "mask": 4294967295,
         "description": "Bitmask for the A trigger"
     },
     "MT.TRIG_MASK_B": {
-        "name": "MT.TRIG_MASK_B",
-        "address": 22,
+        "adr": 22,
         "permission": "rw",
         "mask": 4294967295,
         "description": "Bitmask for the B trigger"
     },
     "MT.TRIGGER_RATE": {
-        "name": "MT.TRIGGER_RATE",
-        "address": 23,
+        "adr": 23,
         "permission": "r",
         "mask": 16777215,
         "description": "Rate of triggers in Hz"
     },
     "MT.LOST_TRIGGER_RATE": {
-        "name": "MT.LOST_TRIGGER_RATE",
-        "address": 24,
+        "adr": 24,
         "permission": "r",
         "mask": 16777215,
         "description": "Rate of lost triggers in Hz"
     },
     "MT.HIT_COUNTERS.RB0": {
-        "name": "MT.HIT_COUNTERS.RB0",
-        "address": 32,
+        "adr": 32,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=0"
     },
     "MT.HIT_COUNTERS.RB1": {
-        "name": "MT.HIT_COUNTERS.RB1",
-        "address": 33,
+        "adr": 33,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=1"
     },
     "MT.HIT_COUNTERS.RB2": {
-        "name": "MT.HIT_COUNTERS.RB2",
-        "address": 34,
+        "adr": 34,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=2"
     },
     "MT.HIT_COUNTERS.RB3": {
-        "name": "MT.HIT_COUNTERS.RB3",
-        "address": 35,
+        "adr": 35,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=3"
     },
     "MT.HIT_COUNTERS.RB4": {
-        "name": "MT.HIT_COUNTERS.RB4",
-        "address": 36,
+        "adr": 36,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=4"
     },
     "MT.HIT_COUNTERS.RB5": {
-        "name": "MT.HIT_COUNTERS.RB5",
-        "address": 37,
+        "adr": 37,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=5"
     },
     "MT.HIT_COUNTERS.RB6": {
-        "name": "MT.HIT_COUNTERS.RB6",
-        "address": 38,
+        "adr": 38,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=6"
     },
     "MT.HIT_COUNTERS.RB7": {
-        "name": "MT.HIT_COUNTERS.RB7",
-        "address": 39,
+        "adr": 39,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=7"
     },
     "MT.HIT_COUNTERS.RB8": {
-        "name": "MT.HIT_COUNTERS.RB8",
-        "address": 40,
+        "adr": 40,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=8"
     },
     "MT.HIT_COUNTERS.RB9": {
-        "name": "MT.HIT_COUNTERS.RB9",
-        "address": 41,
+        "adr": 41,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=9"
     },
     "MT.HIT_COUNTERS.RB10": {
-        "name": "MT.HIT_COUNTERS.RB10",
-        "address": 42,
+        "adr": 42,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=10"
     },
     "MT.HIT_COUNTERS.RB11": {
-        "name": "MT.HIT_COUNTERS.RB11",
-        "address": 43,
+        "adr": 43,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=11"
     },
     "MT.HIT_COUNTERS.RB12": {
-        "name": "MT.HIT_COUNTERS.RB12",
-        "address": 44,
+        "adr": 44,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=12"
     },
     "MT.HIT_COUNTERS.RB13": {
-        "name": "MT.HIT_COUNTERS.RB13",
-        "address": 45,
+        "adr": 45,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=13"
     },
     "MT.HIT_COUNTERS.RB14": {
-        "name": "MT.HIT_COUNTERS.RB14",
-        "address": 46,
+        "adr": 46,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=14"
     },
     "MT.HIT_COUNTERS.RB15": {
-        "name": "MT.HIT_COUNTERS.RB15",
-        "address": 47,
+        "adr": 47,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=15"
     },
     "MT.HIT_COUNTERS.RB16": {
-        "name": "MT.HIT_COUNTERS.RB16",
-        "address": 48,
+        "adr": 48,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=16"
     },
     "MT.HIT_COUNTERS.RB17": {
-        "name": "MT.HIT_COUNTERS.RB17",
-        "address": 49,
+        "adr": 49,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=17"
     },
     "MT.HIT_COUNTERS.RB18": {
-        "name": "MT.HIT_COUNTERS.RB18",
-        "address": 50,
+        "adr": 50,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=18"
     },
     "MT.HIT_COUNTERS.RB19": {
-        "name": "MT.HIT_COUNTERS.RB19",
-        "address": 51,
+        "adr": 51,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=19"
     },
     "MT.HIT_COUNTERS.RB20": {
-        "name": "MT.HIT_COUNTERS.RB20",
-        "address": 52,
+        "adr": 52,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=20"
     },
     "MT.HIT_COUNTERS.RB21": {
-        "name": "MT.HIT_COUNTERS.RB21",
-        "address": 53,
+        "adr": 53,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=21"
     },
     "MT.HIT_COUNTERS.RB22": {
-        "name": "MT.HIT_COUNTERS.RB22",
-        "address": 54,
+        "adr": 54,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=22"
     },
     "MT.HIT_COUNTERS.RB23": {
-        "name": "MT.HIT_COUNTERS.RB23",
-        "address": 55,
+        "adr": 55,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=23"
     },
     "MT.HIT_COUNTERS.RB24": {
-        "name": "MT.HIT_COUNTERS.RB24",
-        "address": 56,
+        "adr": 56,
         "permission": "r",
         "mask": 65535,
         "description": "hit count on LT=24"
     },
     "MT.ETH_RX_BAD_FRAME_CNT": {
-        "name": "MT.ETH_RX_BAD_FRAME_CNT",
-        "address": 61,
+        "adr": 61,
         "permission": "r",
         "mask": 65535,
         "description": "Ethernet MAC bad frame error"
     },
     "MT.ETH_RX_BAD_FCS_CNT": {
-        "name": "MT.ETH_RX_BAD_FCS_CNT",
-        "address": 61,
+        "adr": 61,
         "permission": "r",
         "mask": 4294901760,
         "description": "Ethernet MAC bad fcs"
     },
     "MT.CHANNEL_MASK.LT0": {
-        "name": "MT.CHANNEL_MASK.LT0",
-        "address": 64,
+        "adr": 64,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=0"
     },
     "MT.CHANNEL_MASK.LT1": {
-        "name": "MT.CHANNEL_MASK.LT1",
-        "address": 65,
+        "adr": 65,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=1"
     },
     "MT.CHANNEL_MASK.LT2": {
-        "name": "MT.CHANNEL_MASK.LT2",
-        "address": 66,
+        "adr": 66,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=2"
     },
     "MT.CHANNEL_MASK.LT3": {
-        "name": "MT.CHANNEL_MASK.LT3",
-        "address": 67,
+        "adr": 67,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=3"
     },
     "MT.CHANNEL_MASK.LT4": {
-        "name": "MT.CHANNEL_MASK.LT4",
-        "address": 68,
+        "adr": 68,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=4"
     },
     "MT.CHANNEL_MASK.LT5": {
-        "name": "MT.CHANNEL_MASK.LT5",
-        "address": 69,
+        "adr": 69,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=5"
     },
     "MT.CHANNEL_MASK.LT6": {
-        "name": "MT.CHANNEL_MASK.LT6",
-        "address": 70,
+        "adr": 70,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=6"
     },
     "MT.CHANNEL_MASK.LT7": {
-        "name": "MT.CHANNEL_MASK.LT7",
-        "address": 71,
+        "adr": 71,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=7"
     },
     "MT.CHANNEL_MASK.LT8": {
-        "name": "MT.CHANNEL_MASK.LT8",
-        "address": 72,
+        "adr": 72,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=8"
     },
     "MT.CHANNEL_MASK.LT9": {
-        "name": "MT.CHANNEL_MASK.LT9",
-        "address": 73,
+        "adr": 73,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=9"
     },
     "MT.CHANNEL_MASK.LT10": {
-        "name": "MT.CHANNEL_MASK.LT10",
-        "address": 74,
+        "adr": 74,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=10"
     },
     "MT.CHANNEL_MASK.LT11": {
-        "name": "MT.CHANNEL_MASK.LT11",
-        "address": 75,
+        "adr": 75,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=11"
     },
     "MT.CHANNEL_MASK.LT12": {
-        "name": "MT.CHANNEL_MASK.LT12",
-        "address": 76,
+        "adr": 76,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=12"
     },
     "MT.CHANNEL_MASK.LT13": {
-        "name": "MT.CHANNEL_MASK.LT13",
-        "address": 77,
+        "adr": 77,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=13"
     },
     "MT.CHANNEL_MASK.LT14": {
-        "name": "MT.CHANNEL_MASK.LT14",
-        "address": 78,
+        "adr": 78,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=14"
     },
     "MT.CHANNEL_MASK.LT15": {
-        "name": "MT.CHANNEL_MASK.LT15",
-        "address": 79,
+        "adr": 79,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=15"
     },
     "MT.CHANNEL_MASK.LT16": {
-        "name": "MT.CHANNEL_MASK.LT16",
-        "address": 80,
+        "adr": 80,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=16"
     },
     "MT.CHANNEL_MASK.LT17": {
-        "name": "MT.CHANNEL_MASK.LT17",
-        "address": 81,
+        "adr": 81,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=17"
     },
     "MT.CHANNEL_MASK.LT18": {
-        "name": "MT.CHANNEL_MASK.LT18",
-        "address": 82,
+        "adr": 82,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=18"
     },
     "MT.CHANNEL_MASK.LT19": {
-        "name": "MT.CHANNEL_MASK.LT19",
-        "address": 83,
+        "adr": 83,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=19"
     },
     "MT.CHANNEL_MASK.LT20": {
-        "name": "MT.CHANNEL_MASK.LT20",
-        "address": 84,
+        "adr": 84,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=20"
     },
     "MT.CHANNEL_MASK.LT21": {
-        "name": "MT.CHANNEL_MASK.LT21",
-        "address": 85,
+        "adr": 85,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=21"
     },
     "MT.CHANNEL_MASK.LT22": {
-        "name": "MT.CHANNEL_MASK.LT22",
-        "address": 86,
+        "adr": 86,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=22"
     },
     "MT.CHANNEL_MASK.LT23": {
-        "name": "MT.CHANNEL_MASK.LT23",
-        "address": 87,
+        "adr": 87,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=23"
     },
     "MT.CHANNEL_MASK.LT24": {
-        "name": "MT.CHANNEL_MASK.LT24",
-        "address": 88,
+        "adr": 88,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=24"
     },
     "MT.COARSE_DELAYS.LT0": {
-        "name": "MT.COARSE_DELAYS.LT0",
-        "address": 192,
+        "adr": 192,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 0"
     },
     "MT.COARSE_DELAYS.LT1": {
-        "name": "MT.COARSE_DELAYS.LT1",
-        "address": 193,
+        "adr": 193,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 1"
     },
     "MT.COARSE_DELAYS.LT2": {
-        "name": "MT.COARSE_DELAYS.LT2",
-        "address": 194,
+        "adr": 194,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 2"
     },
     "MT.COARSE_DELAYS.LT3": {
-        "name": "MT.COARSE_DELAYS.LT3",
-        "address": 195,
+        "adr": 195,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 3"
     },
     "MT.COARSE_DELAYS.LT4": {
-        "name": "MT.COARSE_DELAYS.LT4",
-        "address": 196,
+        "adr": 196,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 4"
     },
     "MT.COARSE_DELAYS.LT5": {
-        "name": "MT.COARSE_DELAYS.LT5",
-        "address": 197,
+        "adr": 197,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 5"
     },
     "MT.COARSE_DELAYS.LT6": {
-        "name": "MT.COARSE_DELAYS.LT6",
-        "address": 198,
+        "adr": 198,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 6"
     },
     "MT.COARSE_DELAYS.LT7": {
-        "name": "MT.COARSE_DELAYS.LT7",
-        "address": 199,
+        "adr": 199,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 7"
     },
     "MT.COARSE_DELAYS.LT8": {
-        "name": "MT.COARSE_DELAYS.LT8",
-        "address": 200,
+        "adr": 200,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 8"
     },
     "MT.COARSE_DELAYS.LT9": {
-        "name": "MT.COARSE_DELAYS.LT9",
-        "address": 201,
+        "adr": 201,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 9"
     },
     "MT.COARSE_DELAYS.LT10": {
-        "name": "MT.COARSE_DELAYS.LT10",
-        "address": 202,
+        "adr": 202,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 10"
     },
     "MT.COARSE_DELAYS.LT11": {
-        "name": "MT.COARSE_DELAYS.LT11",
-        "address": 203,
+        "adr": 203,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 11"
     },
     "MT.COARSE_DELAYS.LT12": {
-        "name": "MT.COARSE_DELAYS.LT12",
-        "address": 204,
+        "adr": 204,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 12"
     },
     "MT.COARSE_DELAYS.LT13": {
-        "name": "MT.COARSE_DELAYS.LT13",
-        "address": 205,
+        "adr": 205,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 13"
     },
     "MT.COARSE_DELAYS.LT14": {
-        "name": "MT.COARSE_DELAYS.LT14",
-        "address": 206,
+        "adr": 206,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 14"
     },
     "MT.COARSE_DELAYS.LT15": {
-        "name": "MT.COARSE_DELAYS.LT15",
-        "address": 207,
+        "adr": 207,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 15"
     },
     "MT.COARSE_DELAYS.LT16": {
-        "name": "MT.COARSE_DELAYS.LT16",
-        "address": 208,
+        "adr": 208,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 16"
     },
     "MT.COARSE_DELAYS.LT17": {
-        "name": "MT.COARSE_DELAYS.LT17",
-        "address": 209,
+        "adr": 209,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 17"
     },
     "MT.COARSE_DELAYS.LT18": {
-        "name": "MT.COARSE_DELAYS.LT18",
-        "address": 210,
+        "adr": 210,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 18"
     },
     "MT.COARSE_DELAYS.LT19": {
-        "name": "MT.COARSE_DELAYS.LT19",
-        "address": 211,
+        "adr": 211,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 19"
     },
     "MT.COARSE_DELAYS.LT20": {
-        "name": "MT.COARSE_DELAYS.LT20",
-        "address": 212,
+        "adr": 212,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 20"
     },
     "MT.COARSE_DELAYS.LT21": {
-        "name": "MT.COARSE_DELAYS.LT21",
-        "address": 213,
+        "adr": 213,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 21"
     },
     "MT.COARSE_DELAYS.LT22": {
-        "name": "MT.COARSE_DELAYS.LT22",
-        "address": 214,
+        "adr": 214,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 22"
     },
     "MT.COARSE_DELAYS.LT23": {
-        "name": "MT.COARSE_DELAYS.LT23",
-        "address": 215,
+        "adr": 215,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 23"
     },
     "MT.COARSE_DELAYS.LT24": {
-        "name": "MT.COARSE_DELAYS.LT24",
-        "address": 216,
+        "adr": 216,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 24"
     },
     "MT.COARSE_DELAYS.LT25": {
-        "name": "MT.COARSE_DELAYS.LT25",
-        "address": 217,
+        "adr": 217,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 25"
     },
     "MT.COARSE_DELAYS.LT26": {
-        "name": "MT.COARSE_DELAYS.LT26",
-        "address": 218,
+        "adr": 218,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 26"
     },
     "MT.COARSE_DELAYS.LT27": {
-        "name": "MT.COARSE_DELAYS.LT27",
-        "address": 219,
+        "adr": 219,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 27"
     },
     "MT.COARSE_DELAYS.LT28": {
-        "name": "MT.COARSE_DELAYS.LT28",
-        "address": 220,
+        "adr": 220,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 28"
     },
     "MT.COARSE_DELAYS.LT29": {
-        "name": "MT.COARSE_DELAYS.LT29",
-        "address": 221,
+        "adr": 221,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 29"
     },
     "MT.COARSE_DELAYS.LT30": {
-        "name": "MT.COARSE_DELAYS.LT30",
-        "address": 222,
+        "adr": 222,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 30"
     },
     "MT.COARSE_DELAYS.LT31": {
-        "name": "MT.COARSE_DELAYS.LT31",
-        "address": 223,
+        "adr": 223,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 31"
     },
     "MT.COARSE_DELAYS.LT32": {
-        "name": "MT.COARSE_DELAYS.LT32",
-        "address": 224,
+        "adr": 224,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 32"
     },
     "MT.COARSE_DELAYS.LT33": {
-        "name": "MT.COARSE_DELAYS.LT33",
-        "address": 225,
+        "adr": 225,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 33"
     },
     "MT.COARSE_DELAYS.LT34": {
-        "name": "MT.COARSE_DELAYS.LT34",
-        "address": 226,
+        "adr": 226,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 34"
     },
     "MT.COARSE_DELAYS.LT35": {
-        "name": "MT.COARSE_DELAYS.LT35",
-        "address": 227,
+        "adr": 227,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 35"
     },
     "MT.COARSE_DELAYS.LT36": {
-        "name": "MT.COARSE_DELAYS.LT36",
-        "address": 228,
+        "adr": 228,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 36"
     },
     "MT.COARSE_DELAYS.LT37": {
-        "name": "MT.COARSE_DELAYS.LT37",
-        "address": 229,
+        "adr": 229,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 37"
     },
     "MT.COARSE_DELAYS.LT38": {
-        "name": "MT.COARSE_DELAYS.LT38",
-        "address": 230,
+        "adr": 230,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 38"
     },
     "MT.COARSE_DELAYS.LT39": {
-        "name": "MT.COARSE_DELAYS.LT39",
-        "address": 231,
+        "adr": 231,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 39"
     },
     "MT.COARSE_DELAYS.LT40": {
-        "name": "MT.COARSE_DELAYS.LT40",
-        "address": 232,
+        "adr": 232,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 40"
     },
     "MT.COARSE_DELAYS.LT41": {
-        "name": "MT.COARSE_DELAYS.LT41",
-        "address": 233,
+        "adr": 233,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 41"
     },
     "MT.COARSE_DELAYS.LT42": {
-        "name": "MT.COARSE_DELAYS.LT42",
-        "address": 234,
+        "adr": 234,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 42"
     },
     "MT.COARSE_DELAYS.LT43": {
-        "name": "MT.COARSE_DELAYS.LT43",
-        "address": 235,
+        "adr": 235,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 43"
     },
     "MT.COARSE_DELAYS.LT44": {
-        "name": "MT.COARSE_DELAYS.LT44",
-        "address": 236,
+        "adr": 236,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 44"
     },
     "MT.COARSE_DELAYS.LT45": {
-        "name": "MT.COARSE_DELAYS.LT45",
-        "address": 237,
+        "adr": 237,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 45"
     },
     "MT.COARSE_DELAYS.LT46": {
-        "name": "MT.COARSE_DELAYS.LT46",
-        "address": 238,
+        "adr": 238,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 46"
     },
     "MT.COARSE_DELAYS.LT47": {
-        "name": "MT.COARSE_DELAYS.LT47",
-        "address": 239,
+        "adr": 239,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 47"
     },
     "MT.COARSE_DELAYS.LT48": {
-        "name": "MT.COARSE_DELAYS.LT48",
-        "address": 240,
+        "adr": 240,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 48"
     },
     "MT.COARSE_DELAYS.LT49": {
-        "name": "MT.COARSE_DELAYS.LT49",
-        "address": 241,
+        "adr": 241,
         "permission": "rw",
         "mask": 15,
         "description": "Integer clock delay of LT LINK 49"
     },
     "MT.XADC.CALIBRATION": {
-        "name": "MT.XADC.CALIBRATION",
-        "address": 288,
+        "adr": 288,
         "permission": "r",
         "mask": 4095,
         "description": "XADC Calibration"
     },
     "MT.XADC.VCCPINT": {
-        "name": "MT.XADC.VCCPINT",
-        "address": 288,
+        "adr": 288,
         "permission": "r",
         "mask": 268369920,
         "description": "XADC vccpint"
     },
     "MT.XADC.VCCPAUX": {
-        "name": "MT.XADC.VCCPAUX",
-        "address": 289,
+        "adr": 289,
         "permission": "r",
         "mask": 4095,
         "description": "XADC Calibration"
     },
     "MT.XADC.VCCODDR": {
-        "name": "MT.XADC.VCCODDR",
-        "address": 289,
+        "adr": 289,
         "permission": "r",
         "mask": 268369920,
         "description": "XADC vccoddr"
     },
     "MT.XADC.TEMP": {
-        "name": "MT.XADC.TEMP",
-        "address": 290,
+        "adr": 290,
         "permission": "r",
         "mask": 4095,
         "description": "XADC Temperature"
     },
     "MT.XADC.VCCINT": {
-        "name": "MT.XADC.VCCINT",
-        "address": 290,
+        "adr": 290,
         "permission": "r",
         "mask": 268369920,
         "description": "XADC vccint"
     },
     "MT.XADC.VCCAUX": {
-        "name": "MT.XADC.VCCAUX",
-        "address": 291,
+        "adr": 291,
         "permission": "r",
         "mask": 4095,
         "description": "XADC VCCAUX"
     },
     "MT.XADC.VCCBRAM": {
-        "name": "MT.XADC.VCCBRAM",
-        "address": 291,
+        "adr": 291,
         "permission": "r",
         "mask": 268369920,
         "description": "XADC vccbram"
     },
     "MT.HOG.GLOBAL_DATE": {
-        "name": "MT.HOG.GLOBAL_DATE",
-        "address": 512,
+        "adr": 512,
         "permission": "r",
         "mask": 4294967295,
         "description": "HOG Global Date"
     },
     "MT.HOG.GLOBAL_TIME": {
-        "name": "MT.HOG.GLOBAL_TIME",
-        "address": 513,
+        "adr": 513,
         "permission": "r",
         "mask": 4294967295,
         "description": "HOG Global Time"
     },
     "MT.HOG.GLOBAL_VER": {
-        "name": "MT.HOG.GLOBAL_VER",
-        "address": 514,
+        "adr": 514,
         "permission": "r",
         "mask": 4294967295,
         "description": "HOG Global Version"
     },
     "MT.HOG.GLOBAL_SHA": {
-        "name": "MT.HOG.GLOBAL_SHA",
-        "address": 515,
+        "adr": 515,
         "permission": "r",
         "mask": 4294967295,
         "description": "HOG Global SHA"
     },
     "MT.HOG.TOP_SHA": {
-        "name": "MT.HOG.TOP_SHA",
-        "address": 516,
+        "adr": 516,
         "permission": "r",
         "mask": 4294967295,
         "description": "HOG Top SHA"
     },
     "MT.HOG.TOP_VER": {
-        "name": "MT.HOG.TOP_VER",
-        "address": 517,
+        "adr": 517,
         "permission": "r",
         "mask": 4294967295,
         "description": "HOG Top Version"
     },
     "MT.HOG.HOG_SHA": {
-        "name": "MT.HOG.HOG_SHA",
-        "address": 518,
+        "adr": 518,
         "permission": "r",
         "mask": 4294967295,
         "description": "HOG SHA"
     },
     "MT.HOG.HOG_VER": {
-        "name": "MT.HOG.HOG_VER",
-        "address": 519,
+        "adr": 519,
         "permission": "r",
         "mask": 4294967295,
         "description": "HOG Version"
     },
     "SPI.d0": {
-        "name": "SPI.d0",
-        "address": 0,
+        "adr": 0,
         "permission": "rw",
         "mask": 4294967295,
         "description": "Data reg 0"
     },
     "SPI.d1": {
-        "name": "SPI.d1",
-        "address": 1,
+        "adr": 1,
         "permission": "rw",
         "mask": 4294967295,
         "description": "Data reg 1"
     },
     "SPI.d2": {
-        "name": "SPI.d2",
-        "address": 2,
+        "adr": 2,
         "permission": "rw",
         "mask": 4294967295,
         "description": "Data reg 2"
     },
     "SPI.d3": {
-        "name": "SPI.d3",
-        "address": 3,
+        "adr": 3,
         "permission": "rw",
         "mask": 4294967295,
         "description": "Data reg 3"
     },
     "SPI.ctrl": {
-        "name": "SPI.ctrl",
-        "address": 4,
+        "adr": 4,
         "permission": "rw",
         "mask": 4294967295,
         "description": "Control reg"
     },
     "SPI.divider": {
-        "name": "SPI.divider",
-        "address": 5,
+        "adr": 5,
         "permission": "rw",
         "mask": 4294967295,
         "description": "Clock divider reg"
     },
     "SPI.ss": {
-        "name": "SPI.ss",
-        "address": 6,
+        "adr": 6,
         "permission": "rw",
         "mask": 4294967295,
         "description": "Slave select reg"

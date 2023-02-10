@@ -3,7 +3,7 @@ import sys
 import generate_registers as reg
 
 CONFIG = {
-    'TOP_NODE_NAME'                 : 'DRS',
+    'TOP_NODE_NAME'                 : 'MT',
     'ADDRESS_TABLE_TOP'             : '../mt_registers.xml',
     'CONSTANTS_FILE'                : '../trigger/src/infra/registers.vhd',
     'DOC_FILE'                      : './mt_address_table.tex',

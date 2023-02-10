@@ -206,7 +206,7 @@ def main(CONFIG):
     modules = []
     vars = {}
 
-    findRegisters(root, '',       0x0,         modules, None,          vars, False,       num_of_oh)
+    findRegisters(root, '', 0x0, modules, None, vars, False, num_of_oh)
 
     print('Modules:')
     for module in modules:
@@ -238,11 +238,18 @@ def main(CONFIG):
     regs = {}
     for module in modules:
         for reg in module.regs:
-            regs[reg.name] = {"name": reg.name,
-                              "address": reg.address,
-                              "permission": reg.permission,
-                              "mask": reg.mask,
-                              "description": reg.description}
+            d = {"adr":  reg.address,
+                 "permission": reg.permission,
+                 "mask": reg.mask,
+                 "description": reg.description}
+
+            if CONFIG['TOP_NODE_NAME']=="DRS":
+                d["adr8"] = reg.address*4
+
+            print(d)
+
+            regs[reg.name] = d
+
 
     with open(JSON_FILE, "w+") as outfile:
         outfile.write(json.dumps(regs, indent=4))
