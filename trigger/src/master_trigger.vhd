@@ -1593,227 +1593,227 @@ begin
   regs_addresses(134)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"07";
 
   -- Connect read signals
-  regs_read_arr(0)(REG_MT_LOOPBACK_MSB downto REG_MT_LOOPBACK_LSB) <= loopback;
-  regs_read_arr(1)(REG_MT_CLOCK_RATE_MSB downto REG_MT_CLOCK_RATE_LSB) <= clock_rate;
-  regs_read_arr(2)(REG_MT_FB_CLOCK_RATE_0_MSB downto REG_MT_FB_CLOCK_RATE_0_LSB) <= fb_clock_rates(0);
-  regs_read_arr(3)(REG_MT_FB_CLOCK_RATE_1_MSB downto REG_MT_FB_CLOCK_RATE_1_LSB) <= fb_clock_rates(1);
-  regs_read_arr(4)(REG_MT_FB_CLOCK_RATE_2_MSB downto REG_MT_FB_CLOCK_RATE_2_LSB) <= fb_clock_rates(2);
-  regs_read_arr(5)(REG_MT_FB_CLOCK_RATE_3_MSB downto REG_MT_FB_CLOCK_RATE_3_LSB) <= fb_clock_rates(3);
-  regs_read_arr(6)(REG_MT_FB_CLOCK_RATE_4_MSB downto REG_MT_FB_CLOCK_RATE_4_LSB) <= fb_clock_rates(4);
-  regs_read_arr(7)(REG_MT_DSI_ON_MSB downto REG_MT_DSI_ON_LSB) <= dsi_on_ipb;
-  regs_read_arr(9)(REG_MT_TRIG_GEN_RATE_MSB downto REG_MT_TRIG_GEN_RATE_LSB) <= trig_gen_rate;
-  regs_read_arr(11)(REG_MT_ANY_TRIG_EN_BIT) <= any_trig_en;
-  regs_read_arr(13)(REG_MT_EVENT_CNT_MSB downto REG_MT_EVENT_CNT_LSB) <= event_cnt;
-  regs_read_arr(14)(REG_MT_TIU_EMULATION_MODE_BIT) <= tiu_emulation_mode;
-  regs_read_arr(16)(REG_MT_EVENT_QUEUE_DATA_MSB downto REG_MT_EVENT_QUEUE_DATA_LSB) <= daq_data_xfifo;
-  regs_read_arr(17)(REG_MT_EVENT_QUEUE_FULL_BIT) <= daq_full;
-  regs_read_arr(17)(REG_MT_EVENT_QUEUE_EMPTY_BIT) <= daq_empty;
-  regs_read_arr(18)(REG_MT_TRIG_MASK_A_MSB downto REG_MT_TRIG_MASK_A_LSB) <= trig_mask_a;
-  regs_read_arr(19)(REG_MT_TRIG_MASK_B_MSB downto REG_MT_TRIG_MASK_B_LSB) <= trig_mask_b;
-  regs_read_arr(20)(REG_MT_TRIGGER_RATE_MSB downto REG_MT_TRIGGER_RATE_LSB) <= trig_rate;
-  regs_read_arr(21)(REG_MT_LOST_TRIGGER_RATE_MSB downto REG_MT_LOST_TRIGGER_RATE_LSB) <= lost_trig_rate;
-  regs_read_arr(22)(REG_MT_HIT_COUNTERS_RB0_MSB downto REG_MT_HIT_COUNTERS_RB0_LSB) <= hit_count_0;
-  regs_read_arr(23)(REG_MT_HIT_COUNTERS_RB1_MSB downto REG_MT_HIT_COUNTERS_RB1_LSB) <= hit_count_1;
-  regs_read_arr(24)(REG_MT_HIT_COUNTERS_RB2_MSB downto REG_MT_HIT_COUNTERS_RB2_LSB) <= hit_count_2;
-  regs_read_arr(25)(REG_MT_HIT_COUNTERS_RB3_MSB downto REG_MT_HIT_COUNTERS_RB3_LSB) <= hit_count_3;
-  regs_read_arr(26)(REG_MT_HIT_COUNTERS_RB4_MSB downto REG_MT_HIT_COUNTERS_RB4_LSB) <= hit_count_4;
-  regs_read_arr(27)(REG_MT_HIT_COUNTERS_RB5_MSB downto REG_MT_HIT_COUNTERS_RB5_LSB) <= hit_count_5;
-  regs_read_arr(28)(REG_MT_HIT_COUNTERS_RB6_MSB downto REG_MT_HIT_COUNTERS_RB6_LSB) <= hit_count_6;
-  regs_read_arr(29)(REG_MT_HIT_COUNTERS_RB7_MSB downto REG_MT_HIT_COUNTERS_RB7_LSB) <= hit_count_7;
-  regs_read_arr(30)(REG_MT_HIT_COUNTERS_RB8_MSB downto REG_MT_HIT_COUNTERS_RB8_LSB) <= hit_count_8;
-  regs_read_arr(31)(REG_MT_HIT_COUNTERS_RB9_MSB downto REG_MT_HIT_COUNTERS_RB9_LSB) <= hit_count_9;
-  regs_read_arr(32)(REG_MT_HIT_COUNTERS_RB10_MSB downto REG_MT_HIT_COUNTERS_RB10_LSB) <= hit_count_10;
-  regs_read_arr(33)(REG_MT_HIT_COUNTERS_RB11_MSB downto REG_MT_HIT_COUNTERS_RB11_LSB) <= hit_count_11;
-  regs_read_arr(34)(REG_MT_HIT_COUNTERS_RB12_MSB downto REG_MT_HIT_COUNTERS_RB12_LSB) <= hit_count_12;
-  regs_read_arr(35)(REG_MT_HIT_COUNTERS_RB13_MSB downto REG_MT_HIT_COUNTERS_RB13_LSB) <= hit_count_13;
-  regs_read_arr(36)(REG_MT_HIT_COUNTERS_RB14_MSB downto REG_MT_HIT_COUNTERS_RB14_LSB) <= hit_count_14;
-  regs_read_arr(37)(REG_MT_HIT_COUNTERS_RB15_MSB downto REG_MT_HIT_COUNTERS_RB15_LSB) <= hit_count_15;
-  regs_read_arr(38)(REG_MT_HIT_COUNTERS_RB16_MSB downto REG_MT_HIT_COUNTERS_RB16_LSB) <= hit_count_16;
-  regs_read_arr(39)(REG_MT_HIT_COUNTERS_RB17_MSB downto REG_MT_HIT_COUNTERS_RB17_LSB) <= hit_count_17;
-  regs_read_arr(40)(REG_MT_HIT_COUNTERS_RB18_MSB downto REG_MT_HIT_COUNTERS_RB18_LSB) <= hit_count_18;
-  regs_read_arr(41)(REG_MT_HIT_COUNTERS_RB19_MSB downto REG_MT_HIT_COUNTERS_RB19_LSB) <= hit_count_19;
-  regs_read_arr(42)(REG_MT_HIT_COUNTERS_RB20_MSB downto REG_MT_HIT_COUNTERS_RB20_LSB) <= hit_count_20;
-  regs_read_arr(43)(REG_MT_HIT_COUNTERS_RB21_MSB downto REG_MT_HIT_COUNTERS_RB21_LSB) <= hit_count_21;
-  regs_read_arr(44)(REG_MT_HIT_COUNTERS_RB22_MSB downto REG_MT_HIT_COUNTERS_RB22_LSB) <= hit_count_22;
-  regs_read_arr(45)(REG_MT_HIT_COUNTERS_RB23_MSB downto REG_MT_HIT_COUNTERS_RB23_LSB) <= hit_count_23;
-  regs_read_arr(46)(REG_MT_HIT_COUNTERS_RB24_MSB downto REG_MT_HIT_COUNTERS_RB24_LSB) <= hit_count_24;
-  regs_read_arr(47)(REG_MT_ETH_RX_BAD_FRAME_CNT_MSB downto REG_MT_ETH_RX_BAD_FRAME_CNT_LSB) <= eth_bad_frame_cnt;
-  regs_read_arr(47)(REG_MT_ETH_RX_BAD_FCS_CNT_MSB downto REG_MT_ETH_RX_BAD_FCS_CNT_LSB) <= eth_bad_fcs_cnt;
-  regs_read_arr(48)(REG_MT_CHANNEL_MASK_LT0_MSB downto REG_MT_CHANNEL_MASK_LT0_LSB) <= channel_mask(0);
-  regs_read_arr(49)(REG_MT_CHANNEL_MASK_LT1_MSB downto REG_MT_CHANNEL_MASK_LT1_LSB) <= channel_mask(1);
-  regs_read_arr(50)(REG_MT_CHANNEL_MASK_LT2_MSB downto REG_MT_CHANNEL_MASK_LT2_LSB) <= channel_mask(2);
-  regs_read_arr(51)(REG_MT_CHANNEL_MASK_LT3_MSB downto REG_MT_CHANNEL_MASK_LT3_LSB) <= channel_mask(3);
-  regs_read_arr(52)(REG_MT_CHANNEL_MASK_LT4_MSB downto REG_MT_CHANNEL_MASK_LT4_LSB) <= channel_mask(4);
-  regs_read_arr(53)(REG_MT_CHANNEL_MASK_LT5_MSB downto REG_MT_CHANNEL_MASK_LT5_LSB) <= channel_mask(5);
-  regs_read_arr(54)(REG_MT_CHANNEL_MASK_LT6_MSB downto REG_MT_CHANNEL_MASK_LT6_LSB) <= channel_mask(6);
-  regs_read_arr(55)(REG_MT_CHANNEL_MASK_LT7_MSB downto REG_MT_CHANNEL_MASK_LT7_LSB) <= channel_mask(7);
-  regs_read_arr(56)(REG_MT_CHANNEL_MASK_LT8_MSB downto REG_MT_CHANNEL_MASK_LT8_LSB) <= channel_mask(8);
-  regs_read_arr(57)(REG_MT_CHANNEL_MASK_LT9_MSB downto REG_MT_CHANNEL_MASK_LT9_LSB) <= channel_mask(9);
-  regs_read_arr(58)(REG_MT_CHANNEL_MASK_LT10_MSB downto REG_MT_CHANNEL_MASK_LT10_LSB) <= channel_mask(10);
-  regs_read_arr(59)(REG_MT_CHANNEL_MASK_LT11_MSB downto REG_MT_CHANNEL_MASK_LT11_LSB) <= channel_mask(11);
-  regs_read_arr(60)(REG_MT_CHANNEL_MASK_LT12_MSB downto REG_MT_CHANNEL_MASK_LT12_LSB) <= channel_mask(12);
-  regs_read_arr(61)(REG_MT_CHANNEL_MASK_LT13_MSB downto REG_MT_CHANNEL_MASK_LT13_LSB) <= channel_mask(13);
-  regs_read_arr(62)(REG_MT_CHANNEL_MASK_LT14_MSB downto REG_MT_CHANNEL_MASK_LT14_LSB) <= channel_mask(14);
-  regs_read_arr(63)(REG_MT_CHANNEL_MASK_LT15_MSB downto REG_MT_CHANNEL_MASK_LT15_LSB) <= channel_mask(15);
-  regs_read_arr(64)(REG_MT_CHANNEL_MASK_LT16_MSB downto REG_MT_CHANNEL_MASK_LT16_LSB) <= channel_mask(16);
-  regs_read_arr(65)(REG_MT_CHANNEL_MASK_LT17_MSB downto REG_MT_CHANNEL_MASK_LT17_LSB) <= channel_mask(17);
-  regs_read_arr(66)(REG_MT_CHANNEL_MASK_LT18_MSB downto REG_MT_CHANNEL_MASK_LT18_LSB) <= channel_mask(18);
-  regs_read_arr(67)(REG_MT_CHANNEL_MASK_LT19_MSB downto REG_MT_CHANNEL_MASK_LT19_LSB) <= channel_mask(19);
-  regs_read_arr(68)(REG_MT_CHANNEL_MASK_LT20_MSB downto REG_MT_CHANNEL_MASK_LT20_LSB) <= channel_mask(20);
-  regs_read_arr(69)(REG_MT_CHANNEL_MASK_LT21_MSB downto REG_MT_CHANNEL_MASK_LT21_LSB) <= channel_mask(21);
-  regs_read_arr(70)(REG_MT_CHANNEL_MASK_LT22_MSB downto REG_MT_CHANNEL_MASK_LT22_LSB) <= channel_mask(22);
-  regs_read_arr(71)(REG_MT_CHANNEL_MASK_LT23_MSB downto REG_MT_CHANNEL_MASK_LT23_LSB) <= channel_mask(23);
-  regs_read_arr(72)(REG_MT_CHANNEL_MASK_LT24_MSB downto REG_MT_CHANNEL_MASK_LT24_LSB) <= channel_mask(24);
-  regs_read_arr(73)(REG_MT_COARSE_DELAYS_LT0_MSB downto REG_MT_COARSE_DELAYS_LT0_LSB) <= coarse_delays(0);
-  regs_read_arr(74)(REG_MT_COARSE_DELAYS_LT1_MSB downto REG_MT_COARSE_DELAYS_LT1_LSB) <= coarse_delays(1);
-  regs_read_arr(75)(REG_MT_COARSE_DELAYS_LT2_MSB downto REG_MT_COARSE_DELAYS_LT2_LSB) <= coarse_delays(2);
-  regs_read_arr(76)(REG_MT_COARSE_DELAYS_LT3_MSB downto REG_MT_COARSE_DELAYS_LT3_LSB) <= coarse_delays(3);
-  regs_read_arr(77)(REG_MT_COARSE_DELAYS_LT4_MSB downto REG_MT_COARSE_DELAYS_LT4_LSB) <= coarse_delays(4);
-  regs_read_arr(78)(REG_MT_COARSE_DELAYS_LT5_MSB downto REG_MT_COARSE_DELAYS_LT5_LSB) <= coarse_delays(5);
-  regs_read_arr(79)(REG_MT_COARSE_DELAYS_LT6_MSB downto REG_MT_COARSE_DELAYS_LT6_LSB) <= coarse_delays(6);
-  regs_read_arr(80)(REG_MT_COARSE_DELAYS_LT7_MSB downto REG_MT_COARSE_DELAYS_LT7_LSB) <= coarse_delays(7);
-  regs_read_arr(81)(REG_MT_COARSE_DELAYS_LT8_MSB downto REG_MT_COARSE_DELAYS_LT8_LSB) <= coarse_delays(8);
-  regs_read_arr(82)(REG_MT_COARSE_DELAYS_LT9_MSB downto REG_MT_COARSE_DELAYS_LT9_LSB) <= coarse_delays(9);
-  regs_read_arr(83)(REG_MT_COARSE_DELAYS_LT10_MSB downto REG_MT_COARSE_DELAYS_LT10_LSB) <= coarse_delays(10);
-  regs_read_arr(84)(REG_MT_COARSE_DELAYS_LT11_MSB downto REG_MT_COARSE_DELAYS_LT11_LSB) <= coarse_delays(11);
-  regs_read_arr(85)(REG_MT_COARSE_DELAYS_LT12_MSB downto REG_MT_COARSE_DELAYS_LT12_LSB) <= coarse_delays(12);
-  regs_read_arr(86)(REG_MT_COARSE_DELAYS_LT13_MSB downto REG_MT_COARSE_DELAYS_LT13_LSB) <= coarse_delays(13);
-  regs_read_arr(87)(REG_MT_COARSE_DELAYS_LT14_MSB downto REG_MT_COARSE_DELAYS_LT14_LSB) <= coarse_delays(14);
-  regs_read_arr(88)(REG_MT_COARSE_DELAYS_LT15_MSB downto REG_MT_COARSE_DELAYS_LT15_LSB) <= coarse_delays(15);
-  regs_read_arr(89)(REG_MT_COARSE_DELAYS_LT16_MSB downto REG_MT_COARSE_DELAYS_LT16_LSB) <= coarse_delays(16);
-  regs_read_arr(90)(REG_MT_COARSE_DELAYS_LT17_MSB downto REG_MT_COARSE_DELAYS_LT17_LSB) <= coarse_delays(17);
-  regs_read_arr(91)(REG_MT_COARSE_DELAYS_LT18_MSB downto REG_MT_COARSE_DELAYS_LT18_LSB) <= coarse_delays(18);
-  regs_read_arr(92)(REG_MT_COARSE_DELAYS_LT19_MSB downto REG_MT_COARSE_DELAYS_LT19_LSB) <= coarse_delays(19);
-  regs_read_arr(93)(REG_MT_COARSE_DELAYS_LT20_MSB downto REG_MT_COARSE_DELAYS_LT20_LSB) <= coarse_delays(20);
-  regs_read_arr(94)(REG_MT_COARSE_DELAYS_LT21_MSB downto REG_MT_COARSE_DELAYS_LT21_LSB) <= coarse_delays(21);
-  regs_read_arr(95)(REG_MT_COARSE_DELAYS_LT22_MSB downto REG_MT_COARSE_DELAYS_LT22_LSB) <= coarse_delays(22);
-  regs_read_arr(96)(REG_MT_COARSE_DELAYS_LT23_MSB downto REG_MT_COARSE_DELAYS_LT23_LSB) <= coarse_delays(23);
-  regs_read_arr(97)(REG_MT_COARSE_DELAYS_LT24_MSB downto REG_MT_COARSE_DELAYS_LT24_LSB) <= coarse_delays(24);
-  regs_read_arr(98)(REG_MT_COARSE_DELAYS_LT25_MSB downto REG_MT_COARSE_DELAYS_LT25_LSB) <= coarse_delays(25);
-  regs_read_arr(99)(REG_MT_COARSE_DELAYS_LT26_MSB downto REG_MT_COARSE_DELAYS_LT26_LSB) <= coarse_delays(26);
-  regs_read_arr(100)(REG_MT_COARSE_DELAYS_LT27_MSB downto REG_MT_COARSE_DELAYS_LT27_LSB) <= coarse_delays(27);
-  regs_read_arr(101)(REG_MT_COARSE_DELAYS_LT28_MSB downto REG_MT_COARSE_DELAYS_LT28_LSB) <= coarse_delays(28);
-  regs_read_arr(102)(REG_MT_COARSE_DELAYS_LT29_MSB downto REG_MT_COARSE_DELAYS_LT29_LSB) <= coarse_delays(29);
-  regs_read_arr(103)(REG_MT_COARSE_DELAYS_LT30_MSB downto REG_MT_COARSE_DELAYS_LT30_LSB) <= coarse_delays(30);
-  regs_read_arr(104)(REG_MT_COARSE_DELAYS_LT31_MSB downto REG_MT_COARSE_DELAYS_LT31_LSB) <= coarse_delays(31);
-  regs_read_arr(105)(REG_MT_COARSE_DELAYS_LT32_MSB downto REG_MT_COARSE_DELAYS_LT32_LSB) <= coarse_delays(32);
-  regs_read_arr(106)(REG_MT_COARSE_DELAYS_LT33_MSB downto REG_MT_COARSE_DELAYS_LT33_LSB) <= coarse_delays(33);
-  regs_read_arr(107)(REG_MT_COARSE_DELAYS_LT34_MSB downto REG_MT_COARSE_DELAYS_LT34_LSB) <= coarse_delays(34);
-  regs_read_arr(108)(REG_MT_COARSE_DELAYS_LT35_MSB downto REG_MT_COARSE_DELAYS_LT35_LSB) <= coarse_delays(35);
-  regs_read_arr(109)(REG_MT_COARSE_DELAYS_LT36_MSB downto REG_MT_COARSE_DELAYS_LT36_LSB) <= coarse_delays(36);
-  regs_read_arr(110)(REG_MT_COARSE_DELAYS_LT37_MSB downto REG_MT_COARSE_DELAYS_LT37_LSB) <= coarse_delays(37);
-  regs_read_arr(111)(REG_MT_COARSE_DELAYS_LT38_MSB downto REG_MT_COARSE_DELAYS_LT38_LSB) <= coarse_delays(38);
-  regs_read_arr(112)(REG_MT_COARSE_DELAYS_LT39_MSB downto REG_MT_COARSE_DELAYS_LT39_LSB) <= coarse_delays(39);
-  regs_read_arr(113)(REG_MT_COARSE_DELAYS_LT40_MSB downto REG_MT_COARSE_DELAYS_LT40_LSB) <= coarse_delays(40);
-  regs_read_arr(114)(REG_MT_COARSE_DELAYS_LT41_MSB downto REG_MT_COARSE_DELAYS_LT41_LSB) <= coarse_delays(41);
-  regs_read_arr(115)(REG_MT_COARSE_DELAYS_LT42_MSB downto REG_MT_COARSE_DELAYS_LT42_LSB) <= coarse_delays(42);
-  regs_read_arr(116)(REG_MT_COARSE_DELAYS_LT43_MSB downto REG_MT_COARSE_DELAYS_LT43_LSB) <= coarse_delays(43);
-  regs_read_arr(117)(REG_MT_COARSE_DELAYS_LT44_MSB downto REG_MT_COARSE_DELAYS_LT44_LSB) <= coarse_delays(44);
-  regs_read_arr(118)(REG_MT_COARSE_DELAYS_LT45_MSB downto REG_MT_COARSE_DELAYS_LT45_LSB) <= coarse_delays(45);
-  regs_read_arr(119)(REG_MT_COARSE_DELAYS_LT46_MSB downto REG_MT_COARSE_DELAYS_LT46_LSB) <= coarse_delays(46);
-  regs_read_arr(120)(REG_MT_COARSE_DELAYS_LT47_MSB downto REG_MT_COARSE_DELAYS_LT47_LSB) <= coarse_delays(47);
-  regs_read_arr(121)(REG_MT_COARSE_DELAYS_LT48_MSB downto REG_MT_COARSE_DELAYS_LT48_LSB) <= coarse_delays(48);
-  regs_read_arr(122)(REG_MT_COARSE_DELAYS_LT49_MSB downto REG_MT_COARSE_DELAYS_LT49_LSB) <= coarse_delays(49);
-  regs_read_arr(123)(REG_MT_XADC_CALIBRATION_MSB downto REG_MT_XADC_CALIBRATION_LSB) <= calibration;
-  regs_read_arr(123)(REG_MT_XADC_VCCPINT_MSB downto REG_MT_XADC_VCCPINT_LSB) <= vccpint;
-  regs_read_arr(124)(REG_MT_XADC_VCCPAUX_MSB downto REG_MT_XADC_VCCPAUX_LSB) <= vccpaux;
-  regs_read_arr(124)(REG_MT_XADC_VCCODDR_MSB downto REG_MT_XADC_VCCODDR_LSB) <= vccoddr;
-  regs_read_arr(125)(REG_MT_XADC_TEMP_MSB downto REG_MT_XADC_TEMP_LSB) <= temp;
-  regs_read_arr(125)(REG_MT_XADC_VCCINT_MSB downto REG_MT_XADC_VCCINT_LSB) <= vccint;
-  regs_read_arr(126)(REG_MT_XADC_VCCAUX_MSB downto REG_MT_XADC_VCCAUX_LSB) <= vccaux;
-  regs_read_arr(126)(REG_MT_XADC_VCCBRAM_MSB downto REG_MT_XADC_VCCBRAM_LSB) <= vccbram;
-  regs_read_arr(127)(REG_MT_HOG_GLOBAL_DATE_MSB downto REG_MT_HOG_GLOBAL_DATE_LSB) <= GLOBAL_DATE;
-  regs_read_arr(128)(REG_MT_HOG_GLOBAL_TIME_MSB downto REG_MT_HOG_GLOBAL_TIME_LSB) <= GLOBAL_TIME;
-  regs_read_arr(129)(REG_MT_HOG_GLOBAL_VER_MSB downto REG_MT_HOG_GLOBAL_VER_LSB) <= GLOBAL_VER;
-  regs_read_arr(130)(REG_MT_HOG_GLOBAL_SHA_MSB downto REG_MT_HOG_GLOBAL_SHA_LSB) <= GLOBAL_SHA;
-  regs_read_arr(131)(REG_MT_HOG_TOP_SHA_MSB downto REG_MT_HOG_TOP_SHA_LSB) <= TOP_SHA;
-  regs_read_arr(132)(REG_MT_HOG_TOP_VER_MSB downto REG_MT_HOG_TOP_VER_LSB) <= TOP_VER;
-  regs_read_arr(133)(REG_MT_HOG_HOG_SHA_MSB downto REG_MT_HOG_HOG_SHA_LSB) <= HOG_SHA;
-  regs_read_arr(134)(REG_MT_HOG_HOG_VER_MSB downto REG_MT_HOG_HOG_VER_LSB) <= HOG_VER;
+  regs_read_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB) <= loopback;
+  regs_read_arr(1)(REG_CLOCK_RATE_MSB downto REG_CLOCK_RATE_LSB) <= clock_rate;
+  regs_read_arr(2)(REG_FB_CLOCK_RATE_0_MSB downto REG_FB_CLOCK_RATE_0_LSB) <= fb_clock_rates(0);
+  regs_read_arr(3)(REG_FB_CLOCK_RATE_1_MSB downto REG_FB_CLOCK_RATE_1_LSB) <= fb_clock_rates(1);
+  regs_read_arr(4)(REG_FB_CLOCK_RATE_2_MSB downto REG_FB_CLOCK_RATE_2_LSB) <= fb_clock_rates(2);
+  regs_read_arr(5)(REG_FB_CLOCK_RATE_3_MSB downto REG_FB_CLOCK_RATE_3_LSB) <= fb_clock_rates(3);
+  regs_read_arr(6)(REG_FB_CLOCK_RATE_4_MSB downto REG_FB_CLOCK_RATE_4_LSB) <= fb_clock_rates(4);
+  regs_read_arr(7)(REG_DSI_ON_MSB downto REG_DSI_ON_LSB) <= dsi_on_ipb;
+  regs_read_arr(9)(REG_TRIG_GEN_RATE_MSB downto REG_TRIG_GEN_RATE_LSB) <= trig_gen_rate;
+  regs_read_arr(11)(REG_ANY_TRIG_EN_BIT) <= any_trig_en;
+  regs_read_arr(13)(REG_EVENT_CNT_MSB downto REG_EVENT_CNT_LSB) <= event_cnt;
+  regs_read_arr(14)(REG_TIU_EMULATION_MODE_BIT) <= tiu_emulation_mode;
+  regs_read_arr(16)(REG_EVENT_QUEUE_DATA_MSB downto REG_EVENT_QUEUE_DATA_LSB) <= daq_data_xfifo;
+  regs_read_arr(17)(REG_EVENT_QUEUE_FULL_BIT) <= daq_full;
+  regs_read_arr(17)(REG_EVENT_QUEUE_EMPTY_BIT) <= daq_empty;
+  regs_read_arr(18)(REG_TRIG_MASK_A_MSB downto REG_TRIG_MASK_A_LSB) <= trig_mask_a;
+  regs_read_arr(19)(REG_TRIG_MASK_B_MSB downto REG_TRIG_MASK_B_LSB) <= trig_mask_b;
+  regs_read_arr(20)(REG_TRIGGER_RATE_MSB downto REG_TRIGGER_RATE_LSB) <= trig_rate;
+  regs_read_arr(21)(REG_LOST_TRIGGER_RATE_MSB downto REG_LOST_TRIGGER_RATE_LSB) <= lost_trig_rate;
+  regs_read_arr(22)(REG_HIT_COUNTERS_RB0_MSB downto REG_HIT_COUNTERS_RB0_LSB) <= hit_count_0;
+  regs_read_arr(23)(REG_HIT_COUNTERS_RB1_MSB downto REG_HIT_COUNTERS_RB1_LSB) <= hit_count_1;
+  regs_read_arr(24)(REG_HIT_COUNTERS_RB2_MSB downto REG_HIT_COUNTERS_RB2_LSB) <= hit_count_2;
+  regs_read_arr(25)(REG_HIT_COUNTERS_RB3_MSB downto REG_HIT_COUNTERS_RB3_LSB) <= hit_count_3;
+  regs_read_arr(26)(REG_HIT_COUNTERS_RB4_MSB downto REG_HIT_COUNTERS_RB4_LSB) <= hit_count_4;
+  regs_read_arr(27)(REG_HIT_COUNTERS_RB5_MSB downto REG_HIT_COUNTERS_RB5_LSB) <= hit_count_5;
+  regs_read_arr(28)(REG_HIT_COUNTERS_RB6_MSB downto REG_HIT_COUNTERS_RB6_LSB) <= hit_count_6;
+  regs_read_arr(29)(REG_HIT_COUNTERS_RB7_MSB downto REG_HIT_COUNTERS_RB7_LSB) <= hit_count_7;
+  regs_read_arr(30)(REG_HIT_COUNTERS_RB8_MSB downto REG_HIT_COUNTERS_RB8_LSB) <= hit_count_8;
+  regs_read_arr(31)(REG_HIT_COUNTERS_RB9_MSB downto REG_HIT_COUNTERS_RB9_LSB) <= hit_count_9;
+  regs_read_arr(32)(REG_HIT_COUNTERS_RB10_MSB downto REG_HIT_COUNTERS_RB10_LSB) <= hit_count_10;
+  regs_read_arr(33)(REG_HIT_COUNTERS_RB11_MSB downto REG_HIT_COUNTERS_RB11_LSB) <= hit_count_11;
+  regs_read_arr(34)(REG_HIT_COUNTERS_RB12_MSB downto REG_HIT_COUNTERS_RB12_LSB) <= hit_count_12;
+  regs_read_arr(35)(REG_HIT_COUNTERS_RB13_MSB downto REG_HIT_COUNTERS_RB13_LSB) <= hit_count_13;
+  regs_read_arr(36)(REG_HIT_COUNTERS_RB14_MSB downto REG_HIT_COUNTERS_RB14_LSB) <= hit_count_14;
+  regs_read_arr(37)(REG_HIT_COUNTERS_RB15_MSB downto REG_HIT_COUNTERS_RB15_LSB) <= hit_count_15;
+  regs_read_arr(38)(REG_HIT_COUNTERS_RB16_MSB downto REG_HIT_COUNTERS_RB16_LSB) <= hit_count_16;
+  regs_read_arr(39)(REG_HIT_COUNTERS_RB17_MSB downto REG_HIT_COUNTERS_RB17_LSB) <= hit_count_17;
+  regs_read_arr(40)(REG_HIT_COUNTERS_RB18_MSB downto REG_HIT_COUNTERS_RB18_LSB) <= hit_count_18;
+  regs_read_arr(41)(REG_HIT_COUNTERS_RB19_MSB downto REG_HIT_COUNTERS_RB19_LSB) <= hit_count_19;
+  regs_read_arr(42)(REG_HIT_COUNTERS_RB20_MSB downto REG_HIT_COUNTERS_RB20_LSB) <= hit_count_20;
+  regs_read_arr(43)(REG_HIT_COUNTERS_RB21_MSB downto REG_HIT_COUNTERS_RB21_LSB) <= hit_count_21;
+  regs_read_arr(44)(REG_HIT_COUNTERS_RB22_MSB downto REG_HIT_COUNTERS_RB22_LSB) <= hit_count_22;
+  regs_read_arr(45)(REG_HIT_COUNTERS_RB23_MSB downto REG_HIT_COUNTERS_RB23_LSB) <= hit_count_23;
+  regs_read_arr(46)(REG_HIT_COUNTERS_RB24_MSB downto REG_HIT_COUNTERS_RB24_LSB) <= hit_count_24;
+  regs_read_arr(47)(REG_ETH_RX_BAD_FRAME_CNT_MSB downto REG_ETH_RX_BAD_FRAME_CNT_LSB) <= eth_bad_frame_cnt;
+  regs_read_arr(47)(REG_ETH_RX_BAD_FCS_CNT_MSB downto REG_ETH_RX_BAD_FCS_CNT_LSB) <= eth_bad_fcs_cnt;
+  regs_read_arr(48)(REG_CHANNEL_MASK_LT0_MSB downto REG_CHANNEL_MASK_LT0_LSB) <= channel_mask(0);
+  regs_read_arr(49)(REG_CHANNEL_MASK_LT1_MSB downto REG_CHANNEL_MASK_LT1_LSB) <= channel_mask(1);
+  regs_read_arr(50)(REG_CHANNEL_MASK_LT2_MSB downto REG_CHANNEL_MASK_LT2_LSB) <= channel_mask(2);
+  regs_read_arr(51)(REG_CHANNEL_MASK_LT3_MSB downto REG_CHANNEL_MASK_LT3_LSB) <= channel_mask(3);
+  regs_read_arr(52)(REG_CHANNEL_MASK_LT4_MSB downto REG_CHANNEL_MASK_LT4_LSB) <= channel_mask(4);
+  regs_read_arr(53)(REG_CHANNEL_MASK_LT5_MSB downto REG_CHANNEL_MASK_LT5_LSB) <= channel_mask(5);
+  regs_read_arr(54)(REG_CHANNEL_MASK_LT6_MSB downto REG_CHANNEL_MASK_LT6_LSB) <= channel_mask(6);
+  regs_read_arr(55)(REG_CHANNEL_MASK_LT7_MSB downto REG_CHANNEL_MASK_LT7_LSB) <= channel_mask(7);
+  regs_read_arr(56)(REG_CHANNEL_MASK_LT8_MSB downto REG_CHANNEL_MASK_LT8_LSB) <= channel_mask(8);
+  regs_read_arr(57)(REG_CHANNEL_MASK_LT9_MSB downto REG_CHANNEL_MASK_LT9_LSB) <= channel_mask(9);
+  regs_read_arr(58)(REG_CHANNEL_MASK_LT10_MSB downto REG_CHANNEL_MASK_LT10_LSB) <= channel_mask(10);
+  regs_read_arr(59)(REG_CHANNEL_MASK_LT11_MSB downto REG_CHANNEL_MASK_LT11_LSB) <= channel_mask(11);
+  regs_read_arr(60)(REG_CHANNEL_MASK_LT12_MSB downto REG_CHANNEL_MASK_LT12_LSB) <= channel_mask(12);
+  regs_read_arr(61)(REG_CHANNEL_MASK_LT13_MSB downto REG_CHANNEL_MASK_LT13_LSB) <= channel_mask(13);
+  regs_read_arr(62)(REG_CHANNEL_MASK_LT14_MSB downto REG_CHANNEL_MASK_LT14_LSB) <= channel_mask(14);
+  regs_read_arr(63)(REG_CHANNEL_MASK_LT15_MSB downto REG_CHANNEL_MASK_LT15_LSB) <= channel_mask(15);
+  regs_read_arr(64)(REG_CHANNEL_MASK_LT16_MSB downto REG_CHANNEL_MASK_LT16_LSB) <= channel_mask(16);
+  regs_read_arr(65)(REG_CHANNEL_MASK_LT17_MSB downto REG_CHANNEL_MASK_LT17_LSB) <= channel_mask(17);
+  regs_read_arr(66)(REG_CHANNEL_MASK_LT18_MSB downto REG_CHANNEL_MASK_LT18_LSB) <= channel_mask(18);
+  regs_read_arr(67)(REG_CHANNEL_MASK_LT19_MSB downto REG_CHANNEL_MASK_LT19_LSB) <= channel_mask(19);
+  regs_read_arr(68)(REG_CHANNEL_MASK_LT20_MSB downto REG_CHANNEL_MASK_LT20_LSB) <= channel_mask(20);
+  regs_read_arr(69)(REG_CHANNEL_MASK_LT21_MSB downto REG_CHANNEL_MASK_LT21_LSB) <= channel_mask(21);
+  regs_read_arr(70)(REG_CHANNEL_MASK_LT22_MSB downto REG_CHANNEL_MASK_LT22_LSB) <= channel_mask(22);
+  regs_read_arr(71)(REG_CHANNEL_MASK_LT23_MSB downto REG_CHANNEL_MASK_LT23_LSB) <= channel_mask(23);
+  regs_read_arr(72)(REG_CHANNEL_MASK_LT24_MSB downto REG_CHANNEL_MASK_LT24_LSB) <= channel_mask(24);
+  regs_read_arr(73)(REG_COARSE_DELAYS_LT0_MSB downto REG_COARSE_DELAYS_LT0_LSB) <= coarse_delays(0);
+  regs_read_arr(74)(REG_COARSE_DELAYS_LT1_MSB downto REG_COARSE_DELAYS_LT1_LSB) <= coarse_delays(1);
+  regs_read_arr(75)(REG_COARSE_DELAYS_LT2_MSB downto REG_COARSE_DELAYS_LT2_LSB) <= coarse_delays(2);
+  regs_read_arr(76)(REG_COARSE_DELAYS_LT3_MSB downto REG_COARSE_DELAYS_LT3_LSB) <= coarse_delays(3);
+  regs_read_arr(77)(REG_COARSE_DELAYS_LT4_MSB downto REG_COARSE_DELAYS_LT4_LSB) <= coarse_delays(4);
+  regs_read_arr(78)(REG_COARSE_DELAYS_LT5_MSB downto REG_COARSE_DELAYS_LT5_LSB) <= coarse_delays(5);
+  regs_read_arr(79)(REG_COARSE_DELAYS_LT6_MSB downto REG_COARSE_DELAYS_LT6_LSB) <= coarse_delays(6);
+  regs_read_arr(80)(REG_COARSE_DELAYS_LT7_MSB downto REG_COARSE_DELAYS_LT7_LSB) <= coarse_delays(7);
+  regs_read_arr(81)(REG_COARSE_DELAYS_LT8_MSB downto REG_COARSE_DELAYS_LT8_LSB) <= coarse_delays(8);
+  regs_read_arr(82)(REG_COARSE_DELAYS_LT9_MSB downto REG_COARSE_DELAYS_LT9_LSB) <= coarse_delays(9);
+  regs_read_arr(83)(REG_COARSE_DELAYS_LT10_MSB downto REG_COARSE_DELAYS_LT10_LSB) <= coarse_delays(10);
+  regs_read_arr(84)(REG_COARSE_DELAYS_LT11_MSB downto REG_COARSE_DELAYS_LT11_LSB) <= coarse_delays(11);
+  regs_read_arr(85)(REG_COARSE_DELAYS_LT12_MSB downto REG_COARSE_DELAYS_LT12_LSB) <= coarse_delays(12);
+  regs_read_arr(86)(REG_COARSE_DELAYS_LT13_MSB downto REG_COARSE_DELAYS_LT13_LSB) <= coarse_delays(13);
+  regs_read_arr(87)(REG_COARSE_DELAYS_LT14_MSB downto REG_COARSE_DELAYS_LT14_LSB) <= coarse_delays(14);
+  regs_read_arr(88)(REG_COARSE_DELAYS_LT15_MSB downto REG_COARSE_DELAYS_LT15_LSB) <= coarse_delays(15);
+  regs_read_arr(89)(REG_COARSE_DELAYS_LT16_MSB downto REG_COARSE_DELAYS_LT16_LSB) <= coarse_delays(16);
+  regs_read_arr(90)(REG_COARSE_DELAYS_LT17_MSB downto REG_COARSE_DELAYS_LT17_LSB) <= coarse_delays(17);
+  regs_read_arr(91)(REG_COARSE_DELAYS_LT18_MSB downto REG_COARSE_DELAYS_LT18_LSB) <= coarse_delays(18);
+  regs_read_arr(92)(REG_COARSE_DELAYS_LT19_MSB downto REG_COARSE_DELAYS_LT19_LSB) <= coarse_delays(19);
+  regs_read_arr(93)(REG_COARSE_DELAYS_LT20_MSB downto REG_COARSE_DELAYS_LT20_LSB) <= coarse_delays(20);
+  regs_read_arr(94)(REG_COARSE_DELAYS_LT21_MSB downto REG_COARSE_DELAYS_LT21_LSB) <= coarse_delays(21);
+  regs_read_arr(95)(REG_COARSE_DELAYS_LT22_MSB downto REG_COARSE_DELAYS_LT22_LSB) <= coarse_delays(22);
+  regs_read_arr(96)(REG_COARSE_DELAYS_LT23_MSB downto REG_COARSE_DELAYS_LT23_LSB) <= coarse_delays(23);
+  regs_read_arr(97)(REG_COARSE_DELAYS_LT24_MSB downto REG_COARSE_DELAYS_LT24_LSB) <= coarse_delays(24);
+  regs_read_arr(98)(REG_COARSE_DELAYS_LT25_MSB downto REG_COARSE_DELAYS_LT25_LSB) <= coarse_delays(25);
+  regs_read_arr(99)(REG_COARSE_DELAYS_LT26_MSB downto REG_COARSE_DELAYS_LT26_LSB) <= coarse_delays(26);
+  regs_read_arr(100)(REG_COARSE_DELAYS_LT27_MSB downto REG_COARSE_DELAYS_LT27_LSB) <= coarse_delays(27);
+  regs_read_arr(101)(REG_COARSE_DELAYS_LT28_MSB downto REG_COARSE_DELAYS_LT28_LSB) <= coarse_delays(28);
+  regs_read_arr(102)(REG_COARSE_DELAYS_LT29_MSB downto REG_COARSE_DELAYS_LT29_LSB) <= coarse_delays(29);
+  regs_read_arr(103)(REG_COARSE_DELAYS_LT30_MSB downto REG_COARSE_DELAYS_LT30_LSB) <= coarse_delays(30);
+  regs_read_arr(104)(REG_COARSE_DELAYS_LT31_MSB downto REG_COARSE_DELAYS_LT31_LSB) <= coarse_delays(31);
+  regs_read_arr(105)(REG_COARSE_DELAYS_LT32_MSB downto REG_COARSE_DELAYS_LT32_LSB) <= coarse_delays(32);
+  regs_read_arr(106)(REG_COARSE_DELAYS_LT33_MSB downto REG_COARSE_DELAYS_LT33_LSB) <= coarse_delays(33);
+  regs_read_arr(107)(REG_COARSE_DELAYS_LT34_MSB downto REG_COARSE_DELAYS_LT34_LSB) <= coarse_delays(34);
+  regs_read_arr(108)(REG_COARSE_DELAYS_LT35_MSB downto REG_COARSE_DELAYS_LT35_LSB) <= coarse_delays(35);
+  regs_read_arr(109)(REG_COARSE_DELAYS_LT36_MSB downto REG_COARSE_DELAYS_LT36_LSB) <= coarse_delays(36);
+  regs_read_arr(110)(REG_COARSE_DELAYS_LT37_MSB downto REG_COARSE_DELAYS_LT37_LSB) <= coarse_delays(37);
+  regs_read_arr(111)(REG_COARSE_DELAYS_LT38_MSB downto REG_COARSE_DELAYS_LT38_LSB) <= coarse_delays(38);
+  regs_read_arr(112)(REG_COARSE_DELAYS_LT39_MSB downto REG_COARSE_DELAYS_LT39_LSB) <= coarse_delays(39);
+  regs_read_arr(113)(REG_COARSE_DELAYS_LT40_MSB downto REG_COARSE_DELAYS_LT40_LSB) <= coarse_delays(40);
+  regs_read_arr(114)(REG_COARSE_DELAYS_LT41_MSB downto REG_COARSE_DELAYS_LT41_LSB) <= coarse_delays(41);
+  regs_read_arr(115)(REG_COARSE_DELAYS_LT42_MSB downto REG_COARSE_DELAYS_LT42_LSB) <= coarse_delays(42);
+  regs_read_arr(116)(REG_COARSE_DELAYS_LT43_MSB downto REG_COARSE_DELAYS_LT43_LSB) <= coarse_delays(43);
+  regs_read_arr(117)(REG_COARSE_DELAYS_LT44_MSB downto REG_COARSE_DELAYS_LT44_LSB) <= coarse_delays(44);
+  regs_read_arr(118)(REG_COARSE_DELAYS_LT45_MSB downto REG_COARSE_DELAYS_LT45_LSB) <= coarse_delays(45);
+  regs_read_arr(119)(REG_COARSE_DELAYS_LT46_MSB downto REG_COARSE_DELAYS_LT46_LSB) <= coarse_delays(46);
+  regs_read_arr(120)(REG_COARSE_DELAYS_LT47_MSB downto REG_COARSE_DELAYS_LT47_LSB) <= coarse_delays(47);
+  regs_read_arr(121)(REG_COARSE_DELAYS_LT48_MSB downto REG_COARSE_DELAYS_LT48_LSB) <= coarse_delays(48);
+  regs_read_arr(122)(REG_COARSE_DELAYS_LT49_MSB downto REG_COARSE_DELAYS_LT49_LSB) <= coarse_delays(49);
+  regs_read_arr(123)(REG_XADC_CALIBRATION_MSB downto REG_XADC_CALIBRATION_LSB) <= calibration;
+  regs_read_arr(123)(REG_XADC_VCCPINT_MSB downto REG_XADC_VCCPINT_LSB) <= vccpint;
+  regs_read_arr(124)(REG_XADC_VCCPAUX_MSB downto REG_XADC_VCCPAUX_LSB) <= vccpaux;
+  regs_read_arr(124)(REG_XADC_VCCODDR_MSB downto REG_XADC_VCCODDR_LSB) <= vccoddr;
+  regs_read_arr(125)(REG_XADC_TEMP_MSB downto REG_XADC_TEMP_LSB) <= temp;
+  regs_read_arr(125)(REG_XADC_VCCINT_MSB downto REG_XADC_VCCINT_LSB) <= vccint;
+  regs_read_arr(126)(REG_XADC_VCCAUX_MSB downto REG_XADC_VCCAUX_LSB) <= vccaux;
+  regs_read_arr(126)(REG_XADC_VCCBRAM_MSB downto REG_XADC_VCCBRAM_LSB) <= vccbram;
+  regs_read_arr(127)(REG_HOG_GLOBAL_DATE_MSB downto REG_HOG_GLOBAL_DATE_LSB) <= GLOBAL_DATE;
+  regs_read_arr(128)(REG_HOG_GLOBAL_TIME_MSB downto REG_HOG_GLOBAL_TIME_LSB) <= GLOBAL_TIME;
+  regs_read_arr(129)(REG_HOG_GLOBAL_VER_MSB downto REG_HOG_GLOBAL_VER_LSB) <= GLOBAL_VER;
+  regs_read_arr(130)(REG_HOG_GLOBAL_SHA_MSB downto REG_HOG_GLOBAL_SHA_LSB) <= GLOBAL_SHA;
+  regs_read_arr(131)(REG_HOG_TOP_SHA_MSB downto REG_HOG_TOP_SHA_LSB) <= TOP_SHA;
+  regs_read_arr(132)(REG_HOG_TOP_VER_MSB downto REG_HOG_TOP_VER_LSB) <= TOP_VER;
+  regs_read_arr(133)(REG_HOG_HOG_SHA_MSB downto REG_HOG_HOG_SHA_LSB) <= HOG_SHA;
+  regs_read_arr(134)(REG_HOG_HOG_VER_MSB downto REG_HOG_HOG_VER_LSB) <= HOG_VER;
 
   -- Connect write signals
-  loopback <= regs_write_arr(0)(REG_MT_LOOPBACK_MSB downto REG_MT_LOOPBACK_LSB);
-  dsi_on_ipb <= regs_write_arr(7)(REG_MT_DSI_ON_MSB downto REG_MT_DSI_ON_LSB);
-  trig_gen_rate <= regs_write_arr(9)(REG_MT_TRIG_GEN_RATE_MSB downto REG_MT_TRIG_GEN_RATE_LSB);
-  any_trig_en <= regs_write_arr(11)(REG_MT_ANY_TRIG_EN_BIT);
-  tiu_emulation_mode <= regs_write_arr(14)(REG_MT_TIU_EMULATION_MODE_BIT);
-  trig_mask_a <= regs_write_arr(18)(REG_MT_TRIG_MASK_A_MSB downto REG_MT_TRIG_MASK_A_LSB);
-  trig_mask_b <= regs_write_arr(19)(REG_MT_TRIG_MASK_B_MSB downto REG_MT_TRIG_MASK_B_LSB);
-  channel_mask(0) <= regs_write_arr(48)(REG_MT_CHANNEL_MASK_LT0_MSB downto REG_MT_CHANNEL_MASK_LT0_LSB);
-  channel_mask(1) <= regs_write_arr(49)(REG_MT_CHANNEL_MASK_LT1_MSB downto REG_MT_CHANNEL_MASK_LT1_LSB);
-  channel_mask(2) <= regs_write_arr(50)(REG_MT_CHANNEL_MASK_LT2_MSB downto REG_MT_CHANNEL_MASK_LT2_LSB);
-  channel_mask(3) <= regs_write_arr(51)(REG_MT_CHANNEL_MASK_LT3_MSB downto REG_MT_CHANNEL_MASK_LT3_LSB);
-  channel_mask(4) <= regs_write_arr(52)(REG_MT_CHANNEL_MASK_LT4_MSB downto REG_MT_CHANNEL_MASK_LT4_LSB);
-  channel_mask(5) <= regs_write_arr(53)(REG_MT_CHANNEL_MASK_LT5_MSB downto REG_MT_CHANNEL_MASK_LT5_LSB);
-  channel_mask(6) <= regs_write_arr(54)(REG_MT_CHANNEL_MASK_LT6_MSB downto REG_MT_CHANNEL_MASK_LT6_LSB);
-  channel_mask(7) <= regs_write_arr(55)(REG_MT_CHANNEL_MASK_LT7_MSB downto REG_MT_CHANNEL_MASK_LT7_LSB);
-  channel_mask(8) <= regs_write_arr(56)(REG_MT_CHANNEL_MASK_LT8_MSB downto REG_MT_CHANNEL_MASK_LT8_LSB);
-  channel_mask(9) <= regs_write_arr(57)(REG_MT_CHANNEL_MASK_LT9_MSB downto REG_MT_CHANNEL_MASK_LT9_LSB);
-  channel_mask(10) <= regs_write_arr(58)(REG_MT_CHANNEL_MASK_LT10_MSB downto REG_MT_CHANNEL_MASK_LT10_LSB);
-  channel_mask(11) <= regs_write_arr(59)(REG_MT_CHANNEL_MASK_LT11_MSB downto REG_MT_CHANNEL_MASK_LT11_LSB);
-  channel_mask(12) <= regs_write_arr(60)(REG_MT_CHANNEL_MASK_LT12_MSB downto REG_MT_CHANNEL_MASK_LT12_LSB);
-  channel_mask(13) <= regs_write_arr(61)(REG_MT_CHANNEL_MASK_LT13_MSB downto REG_MT_CHANNEL_MASK_LT13_LSB);
-  channel_mask(14) <= regs_write_arr(62)(REG_MT_CHANNEL_MASK_LT14_MSB downto REG_MT_CHANNEL_MASK_LT14_LSB);
-  channel_mask(15) <= regs_write_arr(63)(REG_MT_CHANNEL_MASK_LT15_MSB downto REG_MT_CHANNEL_MASK_LT15_LSB);
-  channel_mask(16) <= regs_write_arr(64)(REG_MT_CHANNEL_MASK_LT16_MSB downto REG_MT_CHANNEL_MASK_LT16_LSB);
-  channel_mask(17) <= regs_write_arr(65)(REG_MT_CHANNEL_MASK_LT17_MSB downto REG_MT_CHANNEL_MASK_LT17_LSB);
-  channel_mask(18) <= regs_write_arr(66)(REG_MT_CHANNEL_MASK_LT18_MSB downto REG_MT_CHANNEL_MASK_LT18_LSB);
-  channel_mask(19) <= regs_write_arr(67)(REG_MT_CHANNEL_MASK_LT19_MSB downto REG_MT_CHANNEL_MASK_LT19_LSB);
-  channel_mask(20) <= regs_write_arr(68)(REG_MT_CHANNEL_MASK_LT20_MSB downto REG_MT_CHANNEL_MASK_LT20_LSB);
-  channel_mask(21) <= regs_write_arr(69)(REG_MT_CHANNEL_MASK_LT21_MSB downto REG_MT_CHANNEL_MASK_LT21_LSB);
-  channel_mask(22) <= regs_write_arr(70)(REG_MT_CHANNEL_MASK_LT22_MSB downto REG_MT_CHANNEL_MASK_LT22_LSB);
-  channel_mask(23) <= regs_write_arr(71)(REG_MT_CHANNEL_MASK_LT23_MSB downto REG_MT_CHANNEL_MASK_LT23_LSB);
-  channel_mask(24) <= regs_write_arr(72)(REG_MT_CHANNEL_MASK_LT24_MSB downto REG_MT_CHANNEL_MASK_LT24_LSB);
-  coarse_delays(0) <= regs_write_arr(73)(REG_MT_COARSE_DELAYS_LT0_MSB downto REG_MT_COARSE_DELAYS_LT0_LSB);
-  coarse_delays(1) <= regs_write_arr(74)(REG_MT_COARSE_DELAYS_LT1_MSB downto REG_MT_COARSE_DELAYS_LT1_LSB);
-  coarse_delays(2) <= regs_write_arr(75)(REG_MT_COARSE_DELAYS_LT2_MSB downto REG_MT_COARSE_DELAYS_LT2_LSB);
-  coarse_delays(3) <= regs_write_arr(76)(REG_MT_COARSE_DELAYS_LT3_MSB downto REG_MT_COARSE_DELAYS_LT3_LSB);
-  coarse_delays(4) <= regs_write_arr(77)(REG_MT_COARSE_DELAYS_LT4_MSB downto REG_MT_COARSE_DELAYS_LT4_LSB);
-  coarse_delays(5) <= regs_write_arr(78)(REG_MT_COARSE_DELAYS_LT5_MSB downto REG_MT_COARSE_DELAYS_LT5_LSB);
-  coarse_delays(6) <= regs_write_arr(79)(REG_MT_COARSE_DELAYS_LT6_MSB downto REG_MT_COARSE_DELAYS_LT6_LSB);
-  coarse_delays(7) <= regs_write_arr(80)(REG_MT_COARSE_DELAYS_LT7_MSB downto REG_MT_COARSE_DELAYS_LT7_LSB);
-  coarse_delays(8) <= regs_write_arr(81)(REG_MT_COARSE_DELAYS_LT8_MSB downto REG_MT_COARSE_DELAYS_LT8_LSB);
-  coarse_delays(9) <= regs_write_arr(82)(REG_MT_COARSE_DELAYS_LT9_MSB downto REG_MT_COARSE_DELAYS_LT9_LSB);
-  coarse_delays(10) <= regs_write_arr(83)(REG_MT_COARSE_DELAYS_LT10_MSB downto REG_MT_COARSE_DELAYS_LT10_LSB);
-  coarse_delays(11) <= regs_write_arr(84)(REG_MT_COARSE_DELAYS_LT11_MSB downto REG_MT_COARSE_DELAYS_LT11_LSB);
-  coarse_delays(12) <= regs_write_arr(85)(REG_MT_COARSE_DELAYS_LT12_MSB downto REG_MT_COARSE_DELAYS_LT12_LSB);
-  coarse_delays(13) <= regs_write_arr(86)(REG_MT_COARSE_DELAYS_LT13_MSB downto REG_MT_COARSE_DELAYS_LT13_LSB);
-  coarse_delays(14) <= regs_write_arr(87)(REG_MT_COARSE_DELAYS_LT14_MSB downto REG_MT_COARSE_DELAYS_LT14_LSB);
-  coarse_delays(15) <= regs_write_arr(88)(REG_MT_COARSE_DELAYS_LT15_MSB downto REG_MT_COARSE_DELAYS_LT15_LSB);
-  coarse_delays(16) <= regs_write_arr(89)(REG_MT_COARSE_DELAYS_LT16_MSB downto REG_MT_COARSE_DELAYS_LT16_LSB);
-  coarse_delays(17) <= regs_write_arr(90)(REG_MT_COARSE_DELAYS_LT17_MSB downto REG_MT_COARSE_DELAYS_LT17_LSB);
-  coarse_delays(18) <= regs_write_arr(91)(REG_MT_COARSE_DELAYS_LT18_MSB downto REG_MT_COARSE_DELAYS_LT18_LSB);
-  coarse_delays(19) <= regs_write_arr(92)(REG_MT_COARSE_DELAYS_LT19_MSB downto REG_MT_COARSE_DELAYS_LT19_LSB);
-  coarse_delays(20) <= regs_write_arr(93)(REG_MT_COARSE_DELAYS_LT20_MSB downto REG_MT_COARSE_DELAYS_LT20_LSB);
-  coarse_delays(21) <= regs_write_arr(94)(REG_MT_COARSE_DELAYS_LT21_MSB downto REG_MT_COARSE_DELAYS_LT21_LSB);
-  coarse_delays(22) <= regs_write_arr(95)(REG_MT_COARSE_DELAYS_LT22_MSB downto REG_MT_COARSE_DELAYS_LT22_LSB);
-  coarse_delays(23) <= regs_write_arr(96)(REG_MT_COARSE_DELAYS_LT23_MSB downto REG_MT_COARSE_DELAYS_LT23_LSB);
-  coarse_delays(24) <= regs_write_arr(97)(REG_MT_COARSE_DELAYS_LT24_MSB downto REG_MT_COARSE_DELAYS_LT24_LSB);
-  coarse_delays(25) <= regs_write_arr(98)(REG_MT_COARSE_DELAYS_LT25_MSB downto REG_MT_COARSE_DELAYS_LT25_LSB);
-  coarse_delays(26) <= regs_write_arr(99)(REG_MT_COARSE_DELAYS_LT26_MSB downto REG_MT_COARSE_DELAYS_LT26_LSB);
-  coarse_delays(27) <= regs_write_arr(100)(REG_MT_COARSE_DELAYS_LT27_MSB downto REG_MT_COARSE_DELAYS_LT27_LSB);
-  coarse_delays(28) <= regs_write_arr(101)(REG_MT_COARSE_DELAYS_LT28_MSB downto REG_MT_COARSE_DELAYS_LT28_LSB);
-  coarse_delays(29) <= regs_write_arr(102)(REG_MT_COARSE_DELAYS_LT29_MSB downto REG_MT_COARSE_DELAYS_LT29_LSB);
-  coarse_delays(30) <= regs_write_arr(103)(REG_MT_COARSE_DELAYS_LT30_MSB downto REG_MT_COARSE_DELAYS_LT30_LSB);
-  coarse_delays(31) <= regs_write_arr(104)(REG_MT_COARSE_DELAYS_LT31_MSB downto REG_MT_COARSE_DELAYS_LT31_LSB);
-  coarse_delays(32) <= regs_write_arr(105)(REG_MT_COARSE_DELAYS_LT32_MSB downto REG_MT_COARSE_DELAYS_LT32_LSB);
-  coarse_delays(33) <= regs_write_arr(106)(REG_MT_COARSE_DELAYS_LT33_MSB downto REG_MT_COARSE_DELAYS_LT33_LSB);
-  coarse_delays(34) <= regs_write_arr(107)(REG_MT_COARSE_DELAYS_LT34_MSB downto REG_MT_COARSE_DELAYS_LT34_LSB);
-  coarse_delays(35) <= regs_write_arr(108)(REG_MT_COARSE_DELAYS_LT35_MSB downto REG_MT_COARSE_DELAYS_LT35_LSB);
-  coarse_delays(36) <= regs_write_arr(109)(REG_MT_COARSE_DELAYS_LT36_MSB downto REG_MT_COARSE_DELAYS_LT36_LSB);
-  coarse_delays(37) <= regs_write_arr(110)(REG_MT_COARSE_DELAYS_LT37_MSB downto REG_MT_COARSE_DELAYS_LT37_LSB);
-  coarse_delays(38) <= regs_write_arr(111)(REG_MT_COARSE_DELAYS_LT38_MSB downto REG_MT_COARSE_DELAYS_LT38_LSB);
-  coarse_delays(39) <= regs_write_arr(112)(REG_MT_COARSE_DELAYS_LT39_MSB downto REG_MT_COARSE_DELAYS_LT39_LSB);
-  coarse_delays(40) <= regs_write_arr(113)(REG_MT_COARSE_DELAYS_LT40_MSB downto REG_MT_COARSE_DELAYS_LT40_LSB);
-  coarse_delays(41) <= regs_write_arr(114)(REG_MT_COARSE_DELAYS_LT41_MSB downto REG_MT_COARSE_DELAYS_LT41_LSB);
-  coarse_delays(42) <= regs_write_arr(115)(REG_MT_COARSE_DELAYS_LT42_MSB downto REG_MT_COARSE_DELAYS_LT42_LSB);
-  coarse_delays(43) <= regs_write_arr(116)(REG_MT_COARSE_DELAYS_LT43_MSB downto REG_MT_COARSE_DELAYS_LT43_LSB);
-  coarse_delays(44) <= regs_write_arr(117)(REG_MT_COARSE_DELAYS_LT44_MSB downto REG_MT_COARSE_DELAYS_LT44_LSB);
-  coarse_delays(45) <= regs_write_arr(118)(REG_MT_COARSE_DELAYS_LT45_MSB downto REG_MT_COARSE_DELAYS_LT45_LSB);
-  coarse_delays(46) <= regs_write_arr(119)(REG_MT_COARSE_DELAYS_LT46_MSB downto REG_MT_COARSE_DELAYS_LT46_LSB);
-  coarse_delays(47) <= regs_write_arr(120)(REG_MT_COARSE_DELAYS_LT47_MSB downto REG_MT_COARSE_DELAYS_LT47_LSB);
-  coarse_delays(48) <= regs_write_arr(121)(REG_MT_COARSE_DELAYS_LT48_MSB downto REG_MT_COARSE_DELAYS_LT48_LSB);
-  coarse_delays(49) <= regs_write_arr(122)(REG_MT_COARSE_DELAYS_LT49_MSB downto REG_MT_COARSE_DELAYS_LT49_LSB);
+  loopback <= regs_write_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB);
+  dsi_on_ipb <= regs_write_arr(7)(REG_DSI_ON_MSB downto REG_DSI_ON_LSB);
+  trig_gen_rate <= regs_write_arr(9)(REG_TRIG_GEN_RATE_MSB downto REG_TRIG_GEN_RATE_LSB);
+  any_trig_en <= regs_write_arr(11)(REG_ANY_TRIG_EN_BIT);
+  tiu_emulation_mode <= regs_write_arr(14)(REG_TIU_EMULATION_MODE_BIT);
+  trig_mask_a <= regs_write_arr(18)(REG_TRIG_MASK_A_MSB downto REG_TRIG_MASK_A_LSB);
+  trig_mask_b <= regs_write_arr(19)(REG_TRIG_MASK_B_MSB downto REG_TRIG_MASK_B_LSB);
+  channel_mask(0) <= regs_write_arr(48)(REG_CHANNEL_MASK_LT0_MSB downto REG_CHANNEL_MASK_LT0_LSB);
+  channel_mask(1) <= regs_write_arr(49)(REG_CHANNEL_MASK_LT1_MSB downto REG_CHANNEL_MASK_LT1_LSB);
+  channel_mask(2) <= regs_write_arr(50)(REG_CHANNEL_MASK_LT2_MSB downto REG_CHANNEL_MASK_LT2_LSB);
+  channel_mask(3) <= regs_write_arr(51)(REG_CHANNEL_MASK_LT3_MSB downto REG_CHANNEL_MASK_LT3_LSB);
+  channel_mask(4) <= regs_write_arr(52)(REG_CHANNEL_MASK_LT4_MSB downto REG_CHANNEL_MASK_LT4_LSB);
+  channel_mask(5) <= regs_write_arr(53)(REG_CHANNEL_MASK_LT5_MSB downto REG_CHANNEL_MASK_LT5_LSB);
+  channel_mask(6) <= regs_write_arr(54)(REG_CHANNEL_MASK_LT6_MSB downto REG_CHANNEL_MASK_LT6_LSB);
+  channel_mask(7) <= regs_write_arr(55)(REG_CHANNEL_MASK_LT7_MSB downto REG_CHANNEL_MASK_LT7_LSB);
+  channel_mask(8) <= regs_write_arr(56)(REG_CHANNEL_MASK_LT8_MSB downto REG_CHANNEL_MASK_LT8_LSB);
+  channel_mask(9) <= regs_write_arr(57)(REG_CHANNEL_MASK_LT9_MSB downto REG_CHANNEL_MASK_LT9_LSB);
+  channel_mask(10) <= regs_write_arr(58)(REG_CHANNEL_MASK_LT10_MSB downto REG_CHANNEL_MASK_LT10_LSB);
+  channel_mask(11) <= regs_write_arr(59)(REG_CHANNEL_MASK_LT11_MSB downto REG_CHANNEL_MASK_LT11_LSB);
+  channel_mask(12) <= regs_write_arr(60)(REG_CHANNEL_MASK_LT12_MSB downto REG_CHANNEL_MASK_LT12_LSB);
+  channel_mask(13) <= regs_write_arr(61)(REG_CHANNEL_MASK_LT13_MSB downto REG_CHANNEL_MASK_LT13_LSB);
+  channel_mask(14) <= regs_write_arr(62)(REG_CHANNEL_MASK_LT14_MSB downto REG_CHANNEL_MASK_LT14_LSB);
+  channel_mask(15) <= regs_write_arr(63)(REG_CHANNEL_MASK_LT15_MSB downto REG_CHANNEL_MASK_LT15_LSB);
+  channel_mask(16) <= regs_write_arr(64)(REG_CHANNEL_MASK_LT16_MSB downto REG_CHANNEL_MASK_LT16_LSB);
+  channel_mask(17) <= regs_write_arr(65)(REG_CHANNEL_MASK_LT17_MSB downto REG_CHANNEL_MASK_LT17_LSB);
+  channel_mask(18) <= regs_write_arr(66)(REG_CHANNEL_MASK_LT18_MSB downto REG_CHANNEL_MASK_LT18_LSB);
+  channel_mask(19) <= regs_write_arr(67)(REG_CHANNEL_MASK_LT19_MSB downto REG_CHANNEL_MASK_LT19_LSB);
+  channel_mask(20) <= regs_write_arr(68)(REG_CHANNEL_MASK_LT20_MSB downto REG_CHANNEL_MASK_LT20_LSB);
+  channel_mask(21) <= regs_write_arr(69)(REG_CHANNEL_MASK_LT21_MSB downto REG_CHANNEL_MASK_LT21_LSB);
+  channel_mask(22) <= regs_write_arr(70)(REG_CHANNEL_MASK_LT22_MSB downto REG_CHANNEL_MASK_LT22_LSB);
+  channel_mask(23) <= regs_write_arr(71)(REG_CHANNEL_MASK_LT23_MSB downto REG_CHANNEL_MASK_LT23_LSB);
+  channel_mask(24) <= regs_write_arr(72)(REG_CHANNEL_MASK_LT24_MSB downto REG_CHANNEL_MASK_LT24_LSB);
+  coarse_delays(0) <= regs_write_arr(73)(REG_COARSE_DELAYS_LT0_MSB downto REG_COARSE_DELAYS_LT0_LSB);
+  coarse_delays(1) <= regs_write_arr(74)(REG_COARSE_DELAYS_LT1_MSB downto REG_COARSE_DELAYS_LT1_LSB);
+  coarse_delays(2) <= regs_write_arr(75)(REG_COARSE_DELAYS_LT2_MSB downto REG_COARSE_DELAYS_LT2_LSB);
+  coarse_delays(3) <= regs_write_arr(76)(REG_COARSE_DELAYS_LT3_MSB downto REG_COARSE_DELAYS_LT3_LSB);
+  coarse_delays(4) <= regs_write_arr(77)(REG_COARSE_DELAYS_LT4_MSB downto REG_COARSE_DELAYS_LT4_LSB);
+  coarse_delays(5) <= regs_write_arr(78)(REG_COARSE_DELAYS_LT5_MSB downto REG_COARSE_DELAYS_LT5_LSB);
+  coarse_delays(6) <= regs_write_arr(79)(REG_COARSE_DELAYS_LT6_MSB downto REG_COARSE_DELAYS_LT6_LSB);
+  coarse_delays(7) <= regs_write_arr(80)(REG_COARSE_DELAYS_LT7_MSB downto REG_COARSE_DELAYS_LT7_LSB);
+  coarse_delays(8) <= regs_write_arr(81)(REG_COARSE_DELAYS_LT8_MSB downto REG_COARSE_DELAYS_LT8_LSB);
+  coarse_delays(9) <= regs_write_arr(82)(REG_COARSE_DELAYS_LT9_MSB downto REG_COARSE_DELAYS_LT9_LSB);
+  coarse_delays(10) <= regs_write_arr(83)(REG_COARSE_DELAYS_LT10_MSB downto REG_COARSE_DELAYS_LT10_LSB);
+  coarse_delays(11) <= regs_write_arr(84)(REG_COARSE_DELAYS_LT11_MSB downto REG_COARSE_DELAYS_LT11_LSB);
+  coarse_delays(12) <= regs_write_arr(85)(REG_COARSE_DELAYS_LT12_MSB downto REG_COARSE_DELAYS_LT12_LSB);
+  coarse_delays(13) <= regs_write_arr(86)(REG_COARSE_DELAYS_LT13_MSB downto REG_COARSE_DELAYS_LT13_LSB);
+  coarse_delays(14) <= regs_write_arr(87)(REG_COARSE_DELAYS_LT14_MSB downto REG_COARSE_DELAYS_LT14_LSB);
+  coarse_delays(15) <= regs_write_arr(88)(REG_COARSE_DELAYS_LT15_MSB downto REG_COARSE_DELAYS_LT15_LSB);
+  coarse_delays(16) <= regs_write_arr(89)(REG_COARSE_DELAYS_LT16_MSB downto REG_COARSE_DELAYS_LT16_LSB);
+  coarse_delays(17) <= regs_write_arr(90)(REG_COARSE_DELAYS_LT17_MSB downto REG_COARSE_DELAYS_LT17_LSB);
+  coarse_delays(18) <= regs_write_arr(91)(REG_COARSE_DELAYS_LT18_MSB downto REG_COARSE_DELAYS_LT18_LSB);
+  coarse_delays(19) <= regs_write_arr(92)(REG_COARSE_DELAYS_LT19_MSB downto REG_COARSE_DELAYS_LT19_LSB);
+  coarse_delays(20) <= regs_write_arr(93)(REG_COARSE_DELAYS_LT20_MSB downto REG_COARSE_DELAYS_LT20_LSB);
+  coarse_delays(21) <= regs_write_arr(94)(REG_COARSE_DELAYS_LT21_MSB downto REG_COARSE_DELAYS_LT21_LSB);
+  coarse_delays(22) <= regs_write_arr(95)(REG_COARSE_DELAYS_LT22_MSB downto REG_COARSE_DELAYS_LT22_LSB);
+  coarse_delays(23) <= regs_write_arr(96)(REG_COARSE_DELAYS_LT23_MSB downto REG_COARSE_DELAYS_LT23_LSB);
+  coarse_delays(24) <= regs_write_arr(97)(REG_COARSE_DELAYS_LT24_MSB downto REG_COARSE_DELAYS_LT24_LSB);
+  coarse_delays(25) <= regs_write_arr(98)(REG_COARSE_DELAYS_LT25_MSB downto REG_COARSE_DELAYS_LT25_LSB);
+  coarse_delays(26) <= regs_write_arr(99)(REG_COARSE_DELAYS_LT26_MSB downto REG_COARSE_DELAYS_LT26_LSB);
+  coarse_delays(27) <= regs_write_arr(100)(REG_COARSE_DELAYS_LT27_MSB downto REG_COARSE_DELAYS_LT27_LSB);
+  coarse_delays(28) <= regs_write_arr(101)(REG_COARSE_DELAYS_LT28_MSB downto REG_COARSE_DELAYS_LT28_LSB);
+  coarse_delays(29) <= regs_write_arr(102)(REG_COARSE_DELAYS_LT29_MSB downto REG_COARSE_DELAYS_LT29_LSB);
+  coarse_delays(30) <= regs_write_arr(103)(REG_COARSE_DELAYS_LT30_MSB downto REG_COARSE_DELAYS_LT30_LSB);
+  coarse_delays(31) <= regs_write_arr(104)(REG_COARSE_DELAYS_LT31_MSB downto REG_COARSE_DELAYS_LT31_LSB);
+  coarse_delays(32) <= regs_write_arr(105)(REG_COARSE_DELAYS_LT32_MSB downto REG_COARSE_DELAYS_LT32_LSB);
+  coarse_delays(33) <= regs_write_arr(106)(REG_COARSE_DELAYS_LT33_MSB downto REG_COARSE_DELAYS_LT33_LSB);
+  coarse_delays(34) <= regs_write_arr(107)(REG_COARSE_DELAYS_LT34_MSB downto REG_COARSE_DELAYS_LT34_LSB);
+  coarse_delays(35) <= regs_write_arr(108)(REG_COARSE_DELAYS_LT35_MSB downto REG_COARSE_DELAYS_LT35_LSB);
+  coarse_delays(36) <= regs_write_arr(109)(REG_COARSE_DELAYS_LT36_MSB downto REG_COARSE_DELAYS_LT36_LSB);
+  coarse_delays(37) <= regs_write_arr(110)(REG_COARSE_DELAYS_LT37_MSB downto REG_COARSE_DELAYS_LT37_LSB);
+  coarse_delays(38) <= regs_write_arr(111)(REG_COARSE_DELAYS_LT38_MSB downto REG_COARSE_DELAYS_LT38_LSB);
+  coarse_delays(39) <= regs_write_arr(112)(REG_COARSE_DELAYS_LT39_MSB downto REG_COARSE_DELAYS_LT39_LSB);
+  coarse_delays(40) <= regs_write_arr(113)(REG_COARSE_DELAYS_LT40_MSB downto REG_COARSE_DELAYS_LT40_LSB);
+  coarse_delays(41) <= regs_write_arr(114)(REG_COARSE_DELAYS_LT41_MSB downto REG_COARSE_DELAYS_LT41_LSB);
+  coarse_delays(42) <= regs_write_arr(115)(REG_COARSE_DELAYS_LT42_MSB downto REG_COARSE_DELAYS_LT42_LSB);
+  coarse_delays(43) <= regs_write_arr(116)(REG_COARSE_DELAYS_LT43_MSB downto REG_COARSE_DELAYS_LT43_LSB);
+  coarse_delays(44) <= regs_write_arr(117)(REG_COARSE_DELAYS_LT44_MSB downto REG_COARSE_DELAYS_LT44_LSB);
+  coarse_delays(45) <= regs_write_arr(118)(REG_COARSE_DELAYS_LT45_MSB downto REG_COARSE_DELAYS_LT45_LSB);
+  coarse_delays(46) <= regs_write_arr(119)(REG_COARSE_DELAYS_LT46_MSB downto REG_COARSE_DELAYS_LT46_LSB);
+  coarse_delays(47) <= regs_write_arr(120)(REG_COARSE_DELAYS_LT47_MSB downto REG_COARSE_DELAYS_LT47_LSB);
+  coarse_delays(48) <= regs_write_arr(121)(REG_COARSE_DELAYS_LT48_MSB downto REG_COARSE_DELAYS_LT48_LSB);
+  coarse_delays(49) <= regs_write_arr(122)(REG_COARSE_DELAYS_LT49_MSB downto REG_COARSE_DELAYS_LT49_LSB);
 
   -- Connect write pulse signals
   trigger_ipb <= regs_write_pulse_arr(8);
@@ -1828,7 +1828,7 @@ begin
 
   -- Connect counter instances
 
-  COUNTER_MT_HIT_COUNTERS_RB0 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB0 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -1841,7 +1841,7 @@ begin
   );
 
 
-  COUNTER_MT_HIT_COUNTERS_RB1 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB1 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -1854,7 +1854,7 @@ begin
   );
 
 
-  COUNTER_MT_HIT_COUNTERS_RB2 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB2 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -1867,7 +1867,7 @@ begin
   );
 
 
-  COUNTER_MT_HIT_COUNTERS_RB3 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB3 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -1880,7 +1880,7 @@ begin
   );
 
 
-  COUNTER_MT_HIT_COUNTERS_RB4 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB4 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -1893,7 +1893,7 @@ begin
   );
 
 
-  COUNTER_MT_HIT_COUNTERS_RB5 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB5 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -1906,7 +1906,7 @@ begin
   );
 
 
-  COUNTER_MT_HIT_COUNTERS_RB6 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB6 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -1919,7 +1919,7 @@ begin
   );
 
 
-  COUNTER_MT_HIT_COUNTERS_RB7 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB7 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -1932,7 +1932,7 @@ begin
   );
 
 
-  COUNTER_MT_HIT_COUNTERS_RB8 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB8 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -1945,7 +1945,7 @@ begin
   );
 
 
-  COUNTER_MT_HIT_COUNTERS_RB9 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB9 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -1958,7 +1958,7 @@ begin
   );
 
 
-  COUNTER_MT_HIT_COUNTERS_RB10 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB10 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -1971,7 +1971,7 @@ begin
   );
 
 
-  COUNTER_MT_HIT_COUNTERS_RB11 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB11 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -1984,7 +1984,7 @@ begin
   );
 
 
-  COUNTER_MT_HIT_COUNTERS_RB12 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB12 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -1997,7 +1997,7 @@ begin
   );
 
 
-  COUNTER_MT_HIT_COUNTERS_RB13 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB13 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -2010,7 +2010,7 @@ begin
   );
 
 
-  COUNTER_MT_HIT_COUNTERS_RB14 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB14 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -2023,7 +2023,7 @@ begin
   );
 
 
-  COUNTER_MT_HIT_COUNTERS_RB15 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB15 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -2036,7 +2036,7 @@ begin
   );
 
 
-  COUNTER_MT_HIT_COUNTERS_RB16 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB16 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -2049,7 +2049,7 @@ begin
   );
 
 
-  COUNTER_MT_HIT_COUNTERS_RB17 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB17 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -2062,7 +2062,7 @@ begin
   );
 
 
-  COUNTER_MT_HIT_COUNTERS_RB18 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB18 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -2075,7 +2075,7 @@ begin
   );
 
 
-  COUNTER_MT_HIT_COUNTERS_RB19 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB19 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -2088,7 +2088,7 @@ begin
   );
 
 
-  COUNTER_MT_HIT_COUNTERS_RB20 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB20 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -2101,7 +2101,7 @@ begin
   );
 
 
-  COUNTER_MT_HIT_COUNTERS_RB21 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB21 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -2114,7 +2114,7 @@ begin
   );
 
 
-  COUNTER_MT_HIT_COUNTERS_RB22 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB22 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -2127,7 +2127,7 @@ begin
   );
 
 
-  COUNTER_MT_HIT_COUNTERS_RB23 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB23 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -2140,7 +2140,7 @@ begin
   );
 
 
-  COUNTER_MT_HIT_COUNTERS_RB24 : entity work.counter_snap
+  COUNTER_HIT_COUNTERS_RB24 : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -2153,7 +2153,7 @@ begin
   );
 
 
-  COUNTER_MT_ETH_RX_BAD_FRAME_CNT : entity work.counter_snap
+  COUNTER_ETH_RX_BAD_FRAME_CNT : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -2166,7 +2166,7 @@ begin
   );
 
 
-  COUNTER_MT_ETH_RX_BAD_FCS_CNT : entity work.counter_snap
+  COUNTER_ETH_RX_BAD_FCS_CNT : entity work.counter_snap
   generic map (
       g_COUNTER_WIDTH  => 16
   )
@@ -2185,88 +2185,88 @@ begin
     regs_read_ready_arr(16) <= daq_valid_xfifo;
 
   -- Defaults
-  regs_defaults(0)(REG_MT_LOOPBACK_MSB downto REG_MT_LOOPBACK_LSB) <= REG_MT_LOOPBACK_DEFAULT;
-  regs_defaults(7)(REG_MT_DSI_ON_MSB downto REG_MT_DSI_ON_LSB) <= REG_MT_DSI_ON_DEFAULT;
-  regs_defaults(9)(REG_MT_TRIG_GEN_RATE_MSB downto REG_MT_TRIG_GEN_RATE_LSB) <= REG_MT_TRIG_GEN_RATE_DEFAULT;
-  regs_defaults(11)(REG_MT_ANY_TRIG_EN_BIT) <= REG_MT_ANY_TRIG_EN_DEFAULT;
-  regs_defaults(14)(REG_MT_TIU_EMULATION_MODE_BIT) <= REG_MT_TIU_EMULATION_MODE_DEFAULT;
-  regs_defaults(18)(REG_MT_TRIG_MASK_A_MSB downto REG_MT_TRIG_MASK_A_LSB) <= REG_MT_TRIG_MASK_A_DEFAULT;
-  regs_defaults(19)(REG_MT_TRIG_MASK_B_MSB downto REG_MT_TRIG_MASK_B_LSB) <= REG_MT_TRIG_MASK_B_DEFAULT;
-  regs_defaults(48)(REG_MT_CHANNEL_MASK_LT0_MSB downto REG_MT_CHANNEL_MASK_LT0_LSB) <= REG_MT_CHANNEL_MASK_LT0_DEFAULT;
-  regs_defaults(49)(REG_MT_CHANNEL_MASK_LT1_MSB downto REG_MT_CHANNEL_MASK_LT1_LSB) <= REG_MT_CHANNEL_MASK_LT1_DEFAULT;
-  regs_defaults(50)(REG_MT_CHANNEL_MASK_LT2_MSB downto REG_MT_CHANNEL_MASK_LT2_LSB) <= REG_MT_CHANNEL_MASK_LT2_DEFAULT;
-  regs_defaults(51)(REG_MT_CHANNEL_MASK_LT3_MSB downto REG_MT_CHANNEL_MASK_LT3_LSB) <= REG_MT_CHANNEL_MASK_LT3_DEFAULT;
-  regs_defaults(52)(REG_MT_CHANNEL_MASK_LT4_MSB downto REG_MT_CHANNEL_MASK_LT4_LSB) <= REG_MT_CHANNEL_MASK_LT4_DEFAULT;
-  regs_defaults(53)(REG_MT_CHANNEL_MASK_LT5_MSB downto REG_MT_CHANNEL_MASK_LT5_LSB) <= REG_MT_CHANNEL_MASK_LT5_DEFAULT;
-  regs_defaults(54)(REG_MT_CHANNEL_MASK_LT6_MSB downto REG_MT_CHANNEL_MASK_LT6_LSB) <= REG_MT_CHANNEL_MASK_LT6_DEFAULT;
-  regs_defaults(55)(REG_MT_CHANNEL_MASK_LT7_MSB downto REG_MT_CHANNEL_MASK_LT7_LSB) <= REG_MT_CHANNEL_MASK_LT7_DEFAULT;
-  regs_defaults(56)(REG_MT_CHANNEL_MASK_LT8_MSB downto REG_MT_CHANNEL_MASK_LT8_LSB) <= REG_MT_CHANNEL_MASK_LT8_DEFAULT;
-  regs_defaults(57)(REG_MT_CHANNEL_MASK_LT9_MSB downto REG_MT_CHANNEL_MASK_LT9_LSB) <= REG_MT_CHANNEL_MASK_LT9_DEFAULT;
-  regs_defaults(58)(REG_MT_CHANNEL_MASK_LT10_MSB downto REG_MT_CHANNEL_MASK_LT10_LSB) <= REG_MT_CHANNEL_MASK_LT10_DEFAULT;
-  regs_defaults(59)(REG_MT_CHANNEL_MASK_LT11_MSB downto REG_MT_CHANNEL_MASK_LT11_LSB) <= REG_MT_CHANNEL_MASK_LT11_DEFAULT;
-  regs_defaults(60)(REG_MT_CHANNEL_MASK_LT12_MSB downto REG_MT_CHANNEL_MASK_LT12_LSB) <= REG_MT_CHANNEL_MASK_LT12_DEFAULT;
-  regs_defaults(61)(REG_MT_CHANNEL_MASK_LT13_MSB downto REG_MT_CHANNEL_MASK_LT13_LSB) <= REG_MT_CHANNEL_MASK_LT13_DEFAULT;
-  regs_defaults(62)(REG_MT_CHANNEL_MASK_LT14_MSB downto REG_MT_CHANNEL_MASK_LT14_LSB) <= REG_MT_CHANNEL_MASK_LT14_DEFAULT;
-  regs_defaults(63)(REG_MT_CHANNEL_MASK_LT15_MSB downto REG_MT_CHANNEL_MASK_LT15_LSB) <= REG_MT_CHANNEL_MASK_LT15_DEFAULT;
-  regs_defaults(64)(REG_MT_CHANNEL_MASK_LT16_MSB downto REG_MT_CHANNEL_MASK_LT16_LSB) <= REG_MT_CHANNEL_MASK_LT16_DEFAULT;
-  regs_defaults(65)(REG_MT_CHANNEL_MASK_LT17_MSB downto REG_MT_CHANNEL_MASK_LT17_LSB) <= REG_MT_CHANNEL_MASK_LT17_DEFAULT;
-  regs_defaults(66)(REG_MT_CHANNEL_MASK_LT18_MSB downto REG_MT_CHANNEL_MASK_LT18_LSB) <= REG_MT_CHANNEL_MASK_LT18_DEFAULT;
-  regs_defaults(67)(REG_MT_CHANNEL_MASK_LT19_MSB downto REG_MT_CHANNEL_MASK_LT19_LSB) <= REG_MT_CHANNEL_MASK_LT19_DEFAULT;
-  regs_defaults(68)(REG_MT_CHANNEL_MASK_LT20_MSB downto REG_MT_CHANNEL_MASK_LT20_LSB) <= REG_MT_CHANNEL_MASK_LT20_DEFAULT;
-  regs_defaults(69)(REG_MT_CHANNEL_MASK_LT21_MSB downto REG_MT_CHANNEL_MASK_LT21_LSB) <= REG_MT_CHANNEL_MASK_LT21_DEFAULT;
-  regs_defaults(70)(REG_MT_CHANNEL_MASK_LT22_MSB downto REG_MT_CHANNEL_MASK_LT22_LSB) <= REG_MT_CHANNEL_MASK_LT22_DEFAULT;
-  regs_defaults(71)(REG_MT_CHANNEL_MASK_LT23_MSB downto REG_MT_CHANNEL_MASK_LT23_LSB) <= REG_MT_CHANNEL_MASK_LT23_DEFAULT;
-  regs_defaults(72)(REG_MT_CHANNEL_MASK_LT24_MSB downto REG_MT_CHANNEL_MASK_LT24_LSB) <= REG_MT_CHANNEL_MASK_LT24_DEFAULT;
-  regs_defaults(73)(REG_MT_COARSE_DELAYS_LT0_MSB downto REG_MT_COARSE_DELAYS_LT0_LSB) <= REG_MT_COARSE_DELAYS_LT0_DEFAULT;
-  regs_defaults(74)(REG_MT_COARSE_DELAYS_LT1_MSB downto REG_MT_COARSE_DELAYS_LT1_LSB) <= REG_MT_COARSE_DELAYS_LT1_DEFAULT;
-  regs_defaults(75)(REG_MT_COARSE_DELAYS_LT2_MSB downto REG_MT_COARSE_DELAYS_LT2_LSB) <= REG_MT_COARSE_DELAYS_LT2_DEFAULT;
-  regs_defaults(76)(REG_MT_COARSE_DELAYS_LT3_MSB downto REG_MT_COARSE_DELAYS_LT3_LSB) <= REG_MT_COARSE_DELAYS_LT3_DEFAULT;
-  regs_defaults(77)(REG_MT_COARSE_DELAYS_LT4_MSB downto REG_MT_COARSE_DELAYS_LT4_LSB) <= REG_MT_COARSE_DELAYS_LT4_DEFAULT;
-  regs_defaults(78)(REG_MT_COARSE_DELAYS_LT5_MSB downto REG_MT_COARSE_DELAYS_LT5_LSB) <= REG_MT_COARSE_DELAYS_LT5_DEFAULT;
-  regs_defaults(79)(REG_MT_COARSE_DELAYS_LT6_MSB downto REG_MT_COARSE_DELAYS_LT6_LSB) <= REG_MT_COARSE_DELAYS_LT6_DEFAULT;
-  regs_defaults(80)(REG_MT_COARSE_DELAYS_LT7_MSB downto REG_MT_COARSE_DELAYS_LT7_LSB) <= REG_MT_COARSE_DELAYS_LT7_DEFAULT;
-  regs_defaults(81)(REG_MT_COARSE_DELAYS_LT8_MSB downto REG_MT_COARSE_DELAYS_LT8_LSB) <= REG_MT_COARSE_DELAYS_LT8_DEFAULT;
-  regs_defaults(82)(REG_MT_COARSE_DELAYS_LT9_MSB downto REG_MT_COARSE_DELAYS_LT9_LSB) <= REG_MT_COARSE_DELAYS_LT9_DEFAULT;
-  regs_defaults(83)(REG_MT_COARSE_DELAYS_LT10_MSB downto REG_MT_COARSE_DELAYS_LT10_LSB) <= REG_MT_COARSE_DELAYS_LT10_DEFAULT;
-  regs_defaults(84)(REG_MT_COARSE_DELAYS_LT11_MSB downto REG_MT_COARSE_DELAYS_LT11_LSB) <= REG_MT_COARSE_DELAYS_LT11_DEFAULT;
-  regs_defaults(85)(REG_MT_COARSE_DELAYS_LT12_MSB downto REG_MT_COARSE_DELAYS_LT12_LSB) <= REG_MT_COARSE_DELAYS_LT12_DEFAULT;
-  regs_defaults(86)(REG_MT_COARSE_DELAYS_LT13_MSB downto REG_MT_COARSE_DELAYS_LT13_LSB) <= REG_MT_COARSE_DELAYS_LT13_DEFAULT;
-  regs_defaults(87)(REG_MT_COARSE_DELAYS_LT14_MSB downto REG_MT_COARSE_DELAYS_LT14_LSB) <= REG_MT_COARSE_DELAYS_LT14_DEFAULT;
-  regs_defaults(88)(REG_MT_COARSE_DELAYS_LT15_MSB downto REG_MT_COARSE_DELAYS_LT15_LSB) <= REG_MT_COARSE_DELAYS_LT15_DEFAULT;
-  regs_defaults(89)(REG_MT_COARSE_DELAYS_LT16_MSB downto REG_MT_COARSE_DELAYS_LT16_LSB) <= REG_MT_COARSE_DELAYS_LT16_DEFAULT;
-  regs_defaults(90)(REG_MT_COARSE_DELAYS_LT17_MSB downto REG_MT_COARSE_DELAYS_LT17_LSB) <= REG_MT_COARSE_DELAYS_LT17_DEFAULT;
-  regs_defaults(91)(REG_MT_COARSE_DELAYS_LT18_MSB downto REG_MT_COARSE_DELAYS_LT18_LSB) <= REG_MT_COARSE_DELAYS_LT18_DEFAULT;
-  regs_defaults(92)(REG_MT_COARSE_DELAYS_LT19_MSB downto REG_MT_COARSE_DELAYS_LT19_LSB) <= REG_MT_COARSE_DELAYS_LT19_DEFAULT;
-  regs_defaults(93)(REG_MT_COARSE_DELAYS_LT20_MSB downto REG_MT_COARSE_DELAYS_LT20_LSB) <= REG_MT_COARSE_DELAYS_LT20_DEFAULT;
-  regs_defaults(94)(REG_MT_COARSE_DELAYS_LT21_MSB downto REG_MT_COARSE_DELAYS_LT21_LSB) <= REG_MT_COARSE_DELAYS_LT21_DEFAULT;
-  regs_defaults(95)(REG_MT_COARSE_DELAYS_LT22_MSB downto REG_MT_COARSE_DELAYS_LT22_LSB) <= REG_MT_COARSE_DELAYS_LT22_DEFAULT;
-  regs_defaults(96)(REG_MT_COARSE_DELAYS_LT23_MSB downto REG_MT_COARSE_DELAYS_LT23_LSB) <= REG_MT_COARSE_DELAYS_LT23_DEFAULT;
-  regs_defaults(97)(REG_MT_COARSE_DELAYS_LT24_MSB downto REG_MT_COARSE_DELAYS_LT24_LSB) <= REG_MT_COARSE_DELAYS_LT24_DEFAULT;
-  regs_defaults(98)(REG_MT_COARSE_DELAYS_LT25_MSB downto REG_MT_COARSE_DELAYS_LT25_LSB) <= REG_MT_COARSE_DELAYS_LT25_DEFAULT;
-  regs_defaults(99)(REG_MT_COARSE_DELAYS_LT26_MSB downto REG_MT_COARSE_DELAYS_LT26_LSB) <= REG_MT_COARSE_DELAYS_LT26_DEFAULT;
-  regs_defaults(100)(REG_MT_COARSE_DELAYS_LT27_MSB downto REG_MT_COARSE_DELAYS_LT27_LSB) <= REG_MT_COARSE_DELAYS_LT27_DEFAULT;
-  regs_defaults(101)(REG_MT_COARSE_DELAYS_LT28_MSB downto REG_MT_COARSE_DELAYS_LT28_LSB) <= REG_MT_COARSE_DELAYS_LT28_DEFAULT;
-  regs_defaults(102)(REG_MT_COARSE_DELAYS_LT29_MSB downto REG_MT_COARSE_DELAYS_LT29_LSB) <= REG_MT_COARSE_DELAYS_LT29_DEFAULT;
-  regs_defaults(103)(REG_MT_COARSE_DELAYS_LT30_MSB downto REG_MT_COARSE_DELAYS_LT30_LSB) <= REG_MT_COARSE_DELAYS_LT30_DEFAULT;
-  regs_defaults(104)(REG_MT_COARSE_DELAYS_LT31_MSB downto REG_MT_COARSE_DELAYS_LT31_LSB) <= REG_MT_COARSE_DELAYS_LT31_DEFAULT;
-  regs_defaults(105)(REG_MT_COARSE_DELAYS_LT32_MSB downto REG_MT_COARSE_DELAYS_LT32_LSB) <= REG_MT_COARSE_DELAYS_LT32_DEFAULT;
-  regs_defaults(106)(REG_MT_COARSE_DELAYS_LT33_MSB downto REG_MT_COARSE_DELAYS_LT33_LSB) <= REG_MT_COARSE_DELAYS_LT33_DEFAULT;
-  regs_defaults(107)(REG_MT_COARSE_DELAYS_LT34_MSB downto REG_MT_COARSE_DELAYS_LT34_LSB) <= REG_MT_COARSE_DELAYS_LT34_DEFAULT;
-  regs_defaults(108)(REG_MT_COARSE_DELAYS_LT35_MSB downto REG_MT_COARSE_DELAYS_LT35_LSB) <= REG_MT_COARSE_DELAYS_LT35_DEFAULT;
-  regs_defaults(109)(REG_MT_COARSE_DELAYS_LT36_MSB downto REG_MT_COARSE_DELAYS_LT36_LSB) <= REG_MT_COARSE_DELAYS_LT36_DEFAULT;
-  regs_defaults(110)(REG_MT_COARSE_DELAYS_LT37_MSB downto REG_MT_COARSE_DELAYS_LT37_LSB) <= REG_MT_COARSE_DELAYS_LT37_DEFAULT;
-  regs_defaults(111)(REG_MT_COARSE_DELAYS_LT38_MSB downto REG_MT_COARSE_DELAYS_LT38_LSB) <= REG_MT_COARSE_DELAYS_LT38_DEFAULT;
-  regs_defaults(112)(REG_MT_COARSE_DELAYS_LT39_MSB downto REG_MT_COARSE_DELAYS_LT39_LSB) <= REG_MT_COARSE_DELAYS_LT39_DEFAULT;
-  regs_defaults(113)(REG_MT_COARSE_DELAYS_LT40_MSB downto REG_MT_COARSE_DELAYS_LT40_LSB) <= REG_MT_COARSE_DELAYS_LT40_DEFAULT;
-  regs_defaults(114)(REG_MT_COARSE_DELAYS_LT41_MSB downto REG_MT_COARSE_DELAYS_LT41_LSB) <= REG_MT_COARSE_DELAYS_LT41_DEFAULT;
-  regs_defaults(115)(REG_MT_COARSE_DELAYS_LT42_MSB downto REG_MT_COARSE_DELAYS_LT42_LSB) <= REG_MT_COARSE_DELAYS_LT42_DEFAULT;
-  regs_defaults(116)(REG_MT_COARSE_DELAYS_LT43_MSB downto REG_MT_COARSE_DELAYS_LT43_LSB) <= REG_MT_COARSE_DELAYS_LT43_DEFAULT;
-  regs_defaults(117)(REG_MT_COARSE_DELAYS_LT44_MSB downto REG_MT_COARSE_DELAYS_LT44_LSB) <= REG_MT_COARSE_DELAYS_LT44_DEFAULT;
-  regs_defaults(118)(REG_MT_COARSE_DELAYS_LT45_MSB downto REG_MT_COARSE_DELAYS_LT45_LSB) <= REG_MT_COARSE_DELAYS_LT45_DEFAULT;
-  regs_defaults(119)(REG_MT_COARSE_DELAYS_LT46_MSB downto REG_MT_COARSE_DELAYS_LT46_LSB) <= REG_MT_COARSE_DELAYS_LT46_DEFAULT;
-  regs_defaults(120)(REG_MT_COARSE_DELAYS_LT47_MSB downto REG_MT_COARSE_DELAYS_LT47_LSB) <= REG_MT_COARSE_DELAYS_LT47_DEFAULT;
-  regs_defaults(121)(REG_MT_COARSE_DELAYS_LT48_MSB downto REG_MT_COARSE_DELAYS_LT48_LSB) <= REG_MT_COARSE_DELAYS_LT48_DEFAULT;
-  regs_defaults(122)(REG_MT_COARSE_DELAYS_LT49_MSB downto REG_MT_COARSE_DELAYS_LT49_LSB) <= REG_MT_COARSE_DELAYS_LT49_DEFAULT;
+  regs_defaults(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB) <= REG_LOOPBACK_DEFAULT;
+  regs_defaults(7)(REG_DSI_ON_MSB downto REG_DSI_ON_LSB) <= REG_DSI_ON_DEFAULT;
+  regs_defaults(9)(REG_TRIG_GEN_RATE_MSB downto REG_TRIG_GEN_RATE_LSB) <= REG_TRIG_GEN_RATE_DEFAULT;
+  regs_defaults(11)(REG_ANY_TRIG_EN_BIT) <= REG_ANY_TRIG_EN_DEFAULT;
+  regs_defaults(14)(REG_TIU_EMULATION_MODE_BIT) <= REG_TIU_EMULATION_MODE_DEFAULT;
+  regs_defaults(18)(REG_TRIG_MASK_A_MSB downto REG_TRIG_MASK_A_LSB) <= REG_TRIG_MASK_A_DEFAULT;
+  regs_defaults(19)(REG_TRIG_MASK_B_MSB downto REG_TRIG_MASK_B_LSB) <= REG_TRIG_MASK_B_DEFAULT;
+  regs_defaults(48)(REG_CHANNEL_MASK_LT0_MSB downto REG_CHANNEL_MASK_LT0_LSB) <= REG_CHANNEL_MASK_LT0_DEFAULT;
+  regs_defaults(49)(REG_CHANNEL_MASK_LT1_MSB downto REG_CHANNEL_MASK_LT1_LSB) <= REG_CHANNEL_MASK_LT1_DEFAULT;
+  regs_defaults(50)(REG_CHANNEL_MASK_LT2_MSB downto REG_CHANNEL_MASK_LT2_LSB) <= REG_CHANNEL_MASK_LT2_DEFAULT;
+  regs_defaults(51)(REG_CHANNEL_MASK_LT3_MSB downto REG_CHANNEL_MASK_LT3_LSB) <= REG_CHANNEL_MASK_LT3_DEFAULT;
+  regs_defaults(52)(REG_CHANNEL_MASK_LT4_MSB downto REG_CHANNEL_MASK_LT4_LSB) <= REG_CHANNEL_MASK_LT4_DEFAULT;
+  regs_defaults(53)(REG_CHANNEL_MASK_LT5_MSB downto REG_CHANNEL_MASK_LT5_LSB) <= REG_CHANNEL_MASK_LT5_DEFAULT;
+  regs_defaults(54)(REG_CHANNEL_MASK_LT6_MSB downto REG_CHANNEL_MASK_LT6_LSB) <= REG_CHANNEL_MASK_LT6_DEFAULT;
+  regs_defaults(55)(REG_CHANNEL_MASK_LT7_MSB downto REG_CHANNEL_MASK_LT7_LSB) <= REG_CHANNEL_MASK_LT7_DEFAULT;
+  regs_defaults(56)(REG_CHANNEL_MASK_LT8_MSB downto REG_CHANNEL_MASK_LT8_LSB) <= REG_CHANNEL_MASK_LT8_DEFAULT;
+  regs_defaults(57)(REG_CHANNEL_MASK_LT9_MSB downto REG_CHANNEL_MASK_LT9_LSB) <= REG_CHANNEL_MASK_LT9_DEFAULT;
+  regs_defaults(58)(REG_CHANNEL_MASK_LT10_MSB downto REG_CHANNEL_MASK_LT10_LSB) <= REG_CHANNEL_MASK_LT10_DEFAULT;
+  regs_defaults(59)(REG_CHANNEL_MASK_LT11_MSB downto REG_CHANNEL_MASK_LT11_LSB) <= REG_CHANNEL_MASK_LT11_DEFAULT;
+  regs_defaults(60)(REG_CHANNEL_MASK_LT12_MSB downto REG_CHANNEL_MASK_LT12_LSB) <= REG_CHANNEL_MASK_LT12_DEFAULT;
+  regs_defaults(61)(REG_CHANNEL_MASK_LT13_MSB downto REG_CHANNEL_MASK_LT13_LSB) <= REG_CHANNEL_MASK_LT13_DEFAULT;
+  regs_defaults(62)(REG_CHANNEL_MASK_LT14_MSB downto REG_CHANNEL_MASK_LT14_LSB) <= REG_CHANNEL_MASK_LT14_DEFAULT;
+  regs_defaults(63)(REG_CHANNEL_MASK_LT15_MSB downto REG_CHANNEL_MASK_LT15_LSB) <= REG_CHANNEL_MASK_LT15_DEFAULT;
+  regs_defaults(64)(REG_CHANNEL_MASK_LT16_MSB downto REG_CHANNEL_MASK_LT16_LSB) <= REG_CHANNEL_MASK_LT16_DEFAULT;
+  regs_defaults(65)(REG_CHANNEL_MASK_LT17_MSB downto REG_CHANNEL_MASK_LT17_LSB) <= REG_CHANNEL_MASK_LT17_DEFAULT;
+  regs_defaults(66)(REG_CHANNEL_MASK_LT18_MSB downto REG_CHANNEL_MASK_LT18_LSB) <= REG_CHANNEL_MASK_LT18_DEFAULT;
+  regs_defaults(67)(REG_CHANNEL_MASK_LT19_MSB downto REG_CHANNEL_MASK_LT19_LSB) <= REG_CHANNEL_MASK_LT19_DEFAULT;
+  regs_defaults(68)(REG_CHANNEL_MASK_LT20_MSB downto REG_CHANNEL_MASK_LT20_LSB) <= REG_CHANNEL_MASK_LT20_DEFAULT;
+  regs_defaults(69)(REG_CHANNEL_MASK_LT21_MSB downto REG_CHANNEL_MASK_LT21_LSB) <= REG_CHANNEL_MASK_LT21_DEFAULT;
+  regs_defaults(70)(REG_CHANNEL_MASK_LT22_MSB downto REG_CHANNEL_MASK_LT22_LSB) <= REG_CHANNEL_MASK_LT22_DEFAULT;
+  regs_defaults(71)(REG_CHANNEL_MASK_LT23_MSB downto REG_CHANNEL_MASK_LT23_LSB) <= REG_CHANNEL_MASK_LT23_DEFAULT;
+  regs_defaults(72)(REG_CHANNEL_MASK_LT24_MSB downto REG_CHANNEL_MASK_LT24_LSB) <= REG_CHANNEL_MASK_LT24_DEFAULT;
+  regs_defaults(73)(REG_COARSE_DELAYS_LT0_MSB downto REG_COARSE_DELAYS_LT0_LSB) <= REG_COARSE_DELAYS_LT0_DEFAULT;
+  regs_defaults(74)(REG_COARSE_DELAYS_LT1_MSB downto REG_COARSE_DELAYS_LT1_LSB) <= REG_COARSE_DELAYS_LT1_DEFAULT;
+  regs_defaults(75)(REG_COARSE_DELAYS_LT2_MSB downto REG_COARSE_DELAYS_LT2_LSB) <= REG_COARSE_DELAYS_LT2_DEFAULT;
+  regs_defaults(76)(REG_COARSE_DELAYS_LT3_MSB downto REG_COARSE_DELAYS_LT3_LSB) <= REG_COARSE_DELAYS_LT3_DEFAULT;
+  regs_defaults(77)(REG_COARSE_DELAYS_LT4_MSB downto REG_COARSE_DELAYS_LT4_LSB) <= REG_COARSE_DELAYS_LT4_DEFAULT;
+  regs_defaults(78)(REG_COARSE_DELAYS_LT5_MSB downto REG_COARSE_DELAYS_LT5_LSB) <= REG_COARSE_DELAYS_LT5_DEFAULT;
+  regs_defaults(79)(REG_COARSE_DELAYS_LT6_MSB downto REG_COARSE_DELAYS_LT6_LSB) <= REG_COARSE_DELAYS_LT6_DEFAULT;
+  regs_defaults(80)(REG_COARSE_DELAYS_LT7_MSB downto REG_COARSE_DELAYS_LT7_LSB) <= REG_COARSE_DELAYS_LT7_DEFAULT;
+  regs_defaults(81)(REG_COARSE_DELAYS_LT8_MSB downto REG_COARSE_DELAYS_LT8_LSB) <= REG_COARSE_DELAYS_LT8_DEFAULT;
+  regs_defaults(82)(REG_COARSE_DELAYS_LT9_MSB downto REG_COARSE_DELAYS_LT9_LSB) <= REG_COARSE_DELAYS_LT9_DEFAULT;
+  regs_defaults(83)(REG_COARSE_DELAYS_LT10_MSB downto REG_COARSE_DELAYS_LT10_LSB) <= REG_COARSE_DELAYS_LT10_DEFAULT;
+  regs_defaults(84)(REG_COARSE_DELAYS_LT11_MSB downto REG_COARSE_DELAYS_LT11_LSB) <= REG_COARSE_DELAYS_LT11_DEFAULT;
+  regs_defaults(85)(REG_COARSE_DELAYS_LT12_MSB downto REG_COARSE_DELAYS_LT12_LSB) <= REG_COARSE_DELAYS_LT12_DEFAULT;
+  regs_defaults(86)(REG_COARSE_DELAYS_LT13_MSB downto REG_COARSE_DELAYS_LT13_LSB) <= REG_COARSE_DELAYS_LT13_DEFAULT;
+  regs_defaults(87)(REG_COARSE_DELAYS_LT14_MSB downto REG_COARSE_DELAYS_LT14_LSB) <= REG_COARSE_DELAYS_LT14_DEFAULT;
+  regs_defaults(88)(REG_COARSE_DELAYS_LT15_MSB downto REG_COARSE_DELAYS_LT15_LSB) <= REG_COARSE_DELAYS_LT15_DEFAULT;
+  regs_defaults(89)(REG_COARSE_DELAYS_LT16_MSB downto REG_COARSE_DELAYS_LT16_LSB) <= REG_COARSE_DELAYS_LT16_DEFAULT;
+  regs_defaults(90)(REG_COARSE_DELAYS_LT17_MSB downto REG_COARSE_DELAYS_LT17_LSB) <= REG_COARSE_DELAYS_LT17_DEFAULT;
+  regs_defaults(91)(REG_COARSE_DELAYS_LT18_MSB downto REG_COARSE_DELAYS_LT18_LSB) <= REG_COARSE_DELAYS_LT18_DEFAULT;
+  regs_defaults(92)(REG_COARSE_DELAYS_LT19_MSB downto REG_COARSE_DELAYS_LT19_LSB) <= REG_COARSE_DELAYS_LT19_DEFAULT;
+  regs_defaults(93)(REG_COARSE_DELAYS_LT20_MSB downto REG_COARSE_DELAYS_LT20_LSB) <= REG_COARSE_DELAYS_LT20_DEFAULT;
+  regs_defaults(94)(REG_COARSE_DELAYS_LT21_MSB downto REG_COARSE_DELAYS_LT21_LSB) <= REG_COARSE_DELAYS_LT21_DEFAULT;
+  regs_defaults(95)(REG_COARSE_DELAYS_LT22_MSB downto REG_COARSE_DELAYS_LT22_LSB) <= REG_COARSE_DELAYS_LT22_DEFAULT;
+  regs_defaults(96)(REG_COARSE_DELAYS_LT23_MSB downto REG_COARSE_DELAYS_LT23_LSB) <= REG_COARSE_DELAYS_LT23_DEFAULT;
+  regs_defaults(97)(REG_COARSE_DELAYS_LT24_MSB downto REG_COARSE_DELAYS_LT24_LSB) <= REG_COARSE_DELAYS_LT24_DEFAULT;
+  regs_defaults(98)(REG_COARSE_DELAYS_LT25_MSB downto REG_COARSE_DELAYS_LT25_LSB) <= REG_COARSE_DELAYS_LT25_DEFAULT;
+  regs_defaults(99)(REG_COARSE_DELAYS_LT26_MSB downto REG_COARSE_DELAYS_LT26_LSB) <= REG_COARSE_DELAYS_LT26_DEFAULT;
+  regs_defaults(100)(REG_COARSE_DELAYS_LT27_MSB downto REG_COARSE_DELAYS_LT27_LSB) <= REG_COARSE_DELAYS_LT27_DEFAULT;
+  regs_defaults(101)(REG_COARSE_DELAYS_LT28_MSB downto REG_COARSE_DELAYS_LT28_LSB) <= REG_COARSE_DELAYS_LT28_DEFAULT;
+  regs_defaults(102)(REG_COARSE_DELAYS_LT29_MSB downto REG_COARSE_DELAYS_LT29_LSB) <= REG_COARSE_DELAYS_LT29_DEFAULT;
+  regs_defaults(103)(REG_COARSE_DELAYS_LT30_MSB downto REG_COARSE_DELAYS_LT30_LSB) <= REG_COARSE_DELAYS_LT30_DEFAULT;
+  regs_defaults(104)(REG_COARSE_DELAYS_LT31_MSB downto REG_COARSE_DELAYS_LT31_LSB) <= REG_COARSE_DELAYS_LT31_DEFAULT;
+  regs_defaults(105)(REG_COARSE_DELAYS_LT32_MSB downto REG_COARSE_DELAYS_LT32_LSB) <= REG_COARSE_DELAYS_LT32_DEFAULT;
+  regs_defaults(106)(REG_COARSE_DELAYS_LT33_MSB downto REG_COARSE_DELAYS_LT33_LSB) <= REG_COARSE_DELAYS_LT33_DEFAULT;
+  regs_defaults(107)(REG_COARSE_DELAYS_LT34_MSB downto REG_COARSE_DELAYS_LT34_LSB) <= REG_COARSE_DELAYS_LT34_DEFAULT;
+  regs_defaults(108)(REG_COARSE_DELAYS_LT35_MSB downto REG_COARSE_DELAYS_LT35_LSB) <= REG_COARSE_DELAYS_LT35_DEFAULT;
+  regs_defaults(109)(REG_COARSE_DELAYS_LT36_MSB downto REG_COARSE_DELAYS_LT36_LSB) <= REG_COARSE_DELAYS_LT36_DEFAULT;
+  regs_defaults(110)(REG_COARSE_DELAYS_LT37_MSB downto REG_COARSE_DELAYS_LT37_LSB) <= REG_COARSE_DELAYS_LT37_DEFAULT;
+  regs_defaults(111)(REG_COARSE_DELAYS_LT38_MSB downto REG_COARSE_DELAYS_LT38_LSB) <= REG_COARSE_DELAYS_LT38_DEFAULT;
+  regs_defaults(112)(REG_COARSE_DELAYS_LT39_MSB downto REG_COARSE_DELAYS_LT39_LSB) <= REG_COARSE_DELAYS_LT39_DEFAULT;
+  regs_defaults(113)(REG_COARSE_DELAYS_LT40_MSB downto REG_COARSE_DELAYS_LT40_LSB) <= REG_COARSE_DELAYS_LT40_DEFAULT;
+  regs_defaults(114)(REG_COARSE_DELAYS_LT41_MSB downto REG_COARSE_DELAYS_LT41_LSB) <= REG_COARSE_DELAYS_LT41_DEFAULT;
+  regs_defaults(115)(REG_COARSE_DELAYS_LT42_MSB downto REG_COARSE_DELAYS_LT42_LSB) <= REG_COARSE_DELAYS_LT42_DEFAULT;
+  regs_defaults(116)(REG_COARSE_DELAYS_LT43_MSB downto REG_COARSE_DELAYS_LT43_LSB) <= REG_COARSE_DELAYS_LT43_DEFAULT;
+  regs_defaults(117)(REG_COARSE_DELAYS_LT44_MSB downto REG_COARSE_DELAYS_LT44_LSB) <= REG_COARSE_DELAYS_LT44_DEFAULT;
+  regs_defaults(118)(REG_COARSE_DELAYS_LT45_MSB downto REG_COARSE_DELAYS_LT45_LSB) <= REG_COARSE_DELAYS_LT45_DEFAULT;
+  regs_defaults(119)(REG_COARSE_DELAYS_LT46_MSB downto REG_COARSE_DELAYS_LT46_LSB) <= REG_COARSE_DELAYS_LT46_DEFAULT;
+  regs_defaults(120)(REG_COARSE_DELAYS_LT47_MSB downto REG_COARSE_DELAYS_LT47_LSB) <= REG_COARSE_DELAYS_LT47_DEFAULT;
+  regs_defaults(121)(REG_COARSE_DELAYS_LT48_MSB downto REG_COARSE_DELAYS_LT48_LSB) <= REG_COARSE_DELAYS_LT48_DEFAULT;
+  regs_defaults(122)(REG_COARSE_DELAYS_LT49_MSB downto REG_COARSE_DELAYS_LT49_LSB) <= REG_COARSE_DELAYS_LT49_DEFAULT;
 
   -- Define writable regs
   regs_writable_arr(0) <= '1';
