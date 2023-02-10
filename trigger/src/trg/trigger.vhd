@@ -159,6 +159,10 @@ begin
     end if;
   end process;
 
+  --------------------------------------------------------------------------------
+  -- Event Counter
+  --------------------------------------------------------------------------------
+
   event_counter : entity work.event_counter
     port map (
       clk              => clk,
@@ -169,10 +173,9 @@ begin
 
   --------------------------------------------------------------------------------
   -- Deadtime
-  --
-  -- this should I guess be replaced with busy logic from the sili
-  -- but just put some simple stupid deadtime in for now
-  --
+  --------------------------------------------------------------------------------
+  -- Enforce some minimal deadtime between triggers,
+  -- give the SiLi some time to respond
   --------------------------------------------------------------------------------
 
   process (clk) is
