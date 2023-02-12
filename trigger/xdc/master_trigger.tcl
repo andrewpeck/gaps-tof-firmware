@@ -103,10 +103,6 @@ set_max_delay -datapath_only 5.0 \
     -to [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/m_rst_sync2_reg_reg/D]
 
 set_max_delay -datapath_only 5.0 \
-    -from [get_pins {reset_ff_reg[0]/C}] \
-    -to [get_pins eth_infra_inst/gtx_rst_r0_reg/D]
-
-set_max_delay -datapath_only 5.0 \
     -from [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/wr_ptr_update_sync3_reg_reg/C] \
     -to [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/wr_ptr_update_ack_sync1_reg_reg/D]
 
