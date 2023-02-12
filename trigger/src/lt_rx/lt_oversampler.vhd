@@ -27,6 +27,9 @@ architecture behavioral of oversample is
 
   signal sel : natural range 0 to 3 := 0;
 
+  attribute SHREG_EXTRACT                        : string;
+  attribute SHREG_EXTRACT of d0, d90, d180, d270 : signal is "no";
+
 begin
 
   sel_o <= std_logic_vector(to_unsigned(sel, 2));
