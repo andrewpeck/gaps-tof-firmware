@@ -590,9 +590,9 @@ begin
         clk90 => clk200_90,              -- logic clock
 
         -- clock and data from lt boards
-        data_i => (lt_data_i_pri xor lt_data_i_inv) and lt_data_i_en,
-
-        link_en  => dsi_link_en,
+        data_i  => lt_data_i_pri,
+        inv     => lt_data_i_inv,
+        link_en => dsi_link_en and lt_data_i_en,
 
         -- sr delay settings (in units of 1 clock cycle)
         coarse_delays_i => coarse_delays,

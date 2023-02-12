@@ -39,11 +39,12 @@ entity lt_rx is
     clk   : in std_logic;
     clk90 : in std_logic;
 
-    link_en : in std_logic_vector (NUM_INPUTS-1 downto 0);
+    link_en         : in std_logic_vector (NUM_INPUTS-1 downto 0);
+    inv             : in std_logic_vector (NUM_INPUTS-1 downto 0);
+    coarse_delays_i : in lt_coarse_delays_array_t;
+
 
     data_i : in std_logic_vector (NUM_INPUTS-1 downto 0);
-
-    coarse_delays_i : in lt_coarse_delays_array_t;
 
     hits_o : out threshold_array_t
     );
@@ -107,8 +108,9 @@ begin
         reset => reset,
 
         coarse_delay => coarse_delays(I),
+        en           => link_en(I),
+        inv          => inv(I),
 
-        en      => link_en(I),
         data_i  => data_i(I),
         data_o  => data_bytes(I),
         valid_o => data_valid(I)

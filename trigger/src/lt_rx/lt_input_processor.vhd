@@ -31,6 +31,7 @@ entity lt_input_processor is
 
     coarse_delay : in coarse_delay_t;
     en           : in std_logic;
+    inv          : in std_logic;
 
     data_i  : in  std_logic;
     data_o  : out std_logic_vector (7 downto 0) := (others => '0');
@@ -102,6 +103,7 @@ begin
     port map (
       clk    => clk,
       clk90  => clk90,
+      inv    => inv,
       data_i => data_i,
       data_o => data_oversample,
       sel_o  => sel
@@ -143,9 +145,7 @@ begin
   -- data output 8 bits wide
 
   lt_deserializer_inst : entity work.lt_deserializer
-    generic map (
-      WORD_SIZE => NUM_LT_BITS
-      )
+    generic map (WORD_SIZE => NUM_LT_BITS)
     port map (
       clock   => clk,
       reset   => reset or not rdy or not en,

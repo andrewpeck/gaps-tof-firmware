@@ -7,6 +7,7 @@ entity oversample is
   port(
     clk    : in  std_logic;
     clk90  : in  std_logic;
+    inv    : in  std_logic;
     data_i : in  std_logic;
     data_o : out std_logic := '0';
     sel_o  : out std_logic_vector(1 downto 0)
@@ -150,6 +151,6 @@ begin
   -- Output select
   --------------------------------------------------------------------------------
 
-  data_o <= dd(sel);
+  data_o <= dd(sel) xor inv;
 
 end behavioral;
