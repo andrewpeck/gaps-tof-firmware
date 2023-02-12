@@ -331,3 +331,19 @@ if {$err > 0} {
 
 #set_property IOSTANDARD LVCMOS33 [get_ports -of_objects [get_iobanks 34]];
 #set_property IOSTANDARD LVCMOS33 [get_ports -of_objects [get_iobanks 33]];
+
+# constraint the max delay from input to the sampling flip-flops
+for {set i 0} {$i < 50} {incr i} {
+
+    if {[expr $i % 2 == 0]} {
+        set input [expr $i*2 - $i/2]
+    }
+    if {[expr $i % 2 == 0]} {
+        set input [expr $i*2 - ($i+1)/2]
+    }
+
+
+    set_max_delay -datapath_only \
+        -from [get_ports lt_data_i_p[$input]] \
+        -to [get_pins noloop_r.lt_rx/genloop[$i].lt_input_processor_inst/oversample_inst/d*_reg/D] 1.9
+}
