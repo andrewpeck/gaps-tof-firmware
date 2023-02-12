@@ -212,3 +212,7 @@ set_property PACKAGE_PIN F4 [get_ports scl]
 set_property PACKAGE_PIN E3 [get_ports sda]
 set_property IOSTANDARD LVCMOS33 [get_ports scl]
 set_property IOSTANDARD LVCMOS33 [get_ports sda]
+
+# constrain the input delays:
+set_max_delay -datapath_only \
+    -from [get_ports {DISC_*}] 4.8
