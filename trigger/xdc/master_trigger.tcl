@@ -190,7 +190,7 @@ set input_ports             [list rgmii_rx_ctl {rgmii_rxd[0]} {rgmii_rxd[1]} {rg
 
 # transmitter
 create_generated_clock -name rgmii_tx_clk -multiply_by 1 \
-    -source [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/rgmii_phy_if_inst/clk_oddr_inst/oddr[0].oddr_inst/C] [get_ports rgmii_tx_clk]
+    -source [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/*/rgmii_phy_if_inst/clk_oddr_inst/oddr[0].oddr_inst/C].oddr_inst/C] [get_ports rgmii_tx_clk]
 
 set fwclk        rgmii_tx_clk;     # forwarded clock name (generated using create_generated_clock at output clock port)
 set tsu_r        1.000;            # destination device setup time requirement for rising edge
