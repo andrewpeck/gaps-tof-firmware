@@ -141,7 +141,7 @@ set_property PULLDOWN true [get_ports rgmii_clk125]
 set_property IOSTANDARD LVCMOS25 [get_ports *rgmii*];
 
 set_property SLEW FAST [get_ports rgmii_tx*]
-set_property DRIVE 6 [get_ports rgmii_tx*]
+set_property DRIVE 4 [get_ports rgmii_tx*]
 
 set_property PULLUP true [get_ports rgmii_mdc]
 set_property PULLUP true [get_ports rgmii_mdio]
