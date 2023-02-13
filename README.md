@@ -230,6 +230,29 @@ bits per trigger.
 | TIU Event ID | EXT<sub>OUT0</sub> | LVDS OUT: Asynchronous serial output containing the event ID                                                                                |
 | TIU Trigger  | EXT<sub>OUT1</sub> | LVDS OUT: Trigger output from the MT to TIU. Asynchronous level which should not be deasserted until the BUSY is received back from the TIU |
 
+## Trigger Latency
+
+| Item                                 | Delay (ns) | Source               |
+|--------------------------------------|------------|----------------------|
+| LTB Analog Frontend (AD8014)         | 0.5        | estimate             |
+| LTB Analog Frontend (ADCMP601)       | 3.5        | datasheet            |
+| LTB Input Routing                    | 1.5        | estimate             |
+| LTB FPGA Input Delay                 | 3.6        | Vivado timing report |
+| LTB FPGA Firmware                    | 20         | guess                |
+| LTB FPGA Output Delay                | 4.2        | Vivado timing report |
+| LTB Output Routing                   | 1          | estimate             |
+| LTB Differential Buffer (DS90LV027A) | 1.5        | datasheet            |
+| Cable (10 ft)                        | 13         | measurement          |
+| DSI Isolator (ADN4654)               | 4          | datasheet            |
+| DSI to MTB FPGA Routing              | 1.5        | estimate             |
+| MTB FPGA Input Delay                 | 2          | timing report        |
+| MTB FPGA LTB Deserialization         | 45         | 9 bits @ 200 MHz     |
+| MTB FPGA Firmware                    | 85         | measurement (ILA)    |
+| MTB FPGA Output Delay                | 3.9        | timing report        |
+| MTB FPGA to Output Routing           | 1          | estimate             |
+| MTB Output Buffer (DS90LV031ATMTC)   | 2          | datasheet            |
+| Total                                | 193.2      |                      |
+
 ## Gitlab runner registration
 
 Some simple instructions for registering a Gitlab runner
