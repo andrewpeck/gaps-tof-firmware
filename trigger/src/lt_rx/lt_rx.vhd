@@ -149,19 +149,16 @@ begin
     --
     -- data word = {start, A, B, C, D, E, F, G, H};
     --
-    process (clk) is
+    process (all) is
     begin
-      if (rising_edge(clk)) then
-        for J in 0 to 7 loop
-          if (valid_a = '1' and valid_b = '1') then
-            hits_o(I*8+J) <= data_bytes((I+1)*2-1)(J) & data_bytes(I*2)(J);
-          else
-            hits_o(I*8+J) <= (others => '0');
-          end if;
-        end loop;
-      end if;
+      for J in 0 to 7 loop
+        if (valid_a = '1' and valid_b = '1') then
+          hits_o(I*8+J) <= data_bytes((I+1)*2-1)(J) & data_bytes(I*2)(J);
+        else
+          hits_o(I*8+J) <= (others => '0');
+        end if;
+      end loop;
     end process;
-
   end generate;
 
 end rtl;
