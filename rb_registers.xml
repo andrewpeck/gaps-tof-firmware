@@ -53,6 +53,11 @@
                 mask="0x1f"
                 fw_default="0x0f"
                 fw_signal="clock_tap_delays" />
+            <node id="CYLON_MODE" address="0x3" permission="rw"
+                description="1 for cylon mode"
+                mask="0x1"
+                fw_default="0x0"
+                fw_signal="cylon_mode" />
 
         </node> <!--CONFIG-->
 
