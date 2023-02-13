@@ -797,8 +797,14 @@ begin
   tiu_busy_i <= ext_in(0);
   tiu_gps_i  <= ext_in(1);
   ext_out(0) <= tiu_serial_o;
-  ext_out(1) <= tiu_trigger_o;
-  ext_io(10) <= tiu_trigger_o;
+
+  process (clk200) is
+  begin
+    if (rising_edge(clk200)) then
+      ext_out(1) <= tiu_trigger_o;
+      ext_io(10) <= tiu_trigger_o;
+    end if;
+  end process;
 
   tiu_inst : entity work.tiu
     generic map (
