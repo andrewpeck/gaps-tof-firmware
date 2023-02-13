@@ -48,6 +48,13 @@
         "description": "DRS CLK IDELAY Setting 0-31 in 78 ps increments",
         "adr8": 8
     },
+    "DRS.CHIP.CYLON_MODE": {
+        "adr": 3,
+        "permission": "rw",
+        "mask": 1,
+        "description": "1 for cylon mode",
+        "adr8": 12
+    },
     "DRS.READOUT.ROI_MODE": {
         "adr": 16,
         "permission": "rw",
