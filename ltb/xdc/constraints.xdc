@@ -109,4 +109,4 @@ set_property IOSTANDARD LVCMOS33 [get_ports sda]
 
 # constrain the input delays:
 set_max_delay -datapath_only \
-    -from [get_ports {DISC_*}] 4.8
+    -from [get_ports {DISC_*}] 4.9
