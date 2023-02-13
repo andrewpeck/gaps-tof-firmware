@@ -1,4 +1,22 @@
-# DRS4 Readout Board + Master Trigger + Local Trigger Firmware
+## Table of Contents <span class="tag" tag-name="TOC_4"><span class="smallcaps">TOC_4</span></span>
+
+-   [Organization](#organization)
+-   [Software dependencies](#software-dependencies)
+-   [Register Access](#register-access)
+    -   [Address Table](#address-table)
+-   [Building the Firmware](#building-the-firmware)
+    -   [Special note for 2020.1 and hardware
+        generation](#special-note-for-20201-and-hardware-generation)
+    -   [Build instructions](#build-instructions)
+-   [DRS Data Flow](#drs-data-flow)
+-   [RB Dataformat](#rb-dataformat)
+-   [Master Trigger to RB Data
+    Format](#master-trigger-to-rb-data-format)
+-   [Local Trigger Data Format](#local-trigger-data-format)
+-   [Master Trigger DAQ Data Format](#master-trigger-daq-data-format)
+-   [Master Trigger External IO](#master-trigger-external-io)
+-   [Trigger Latency](#trigger-latency)
+-   [Gitlab runner registration](#gitlab-runner-registration)
 
 ## Organization
 
@@ -39,11 +57,11 @@ accessed through an AXI⟷Wishbone Bridge
 
 From the Zynq, it appears as a memory-mapped into an address space,
 starting at `Base Address=0x8000_0000` (with a maximum address of
-0x8000<sub>FFFF</sub>, giving an effective address space of 16 bits or
-65536 registers).
+0x8000_FFFF, giving an effective address space of 16 bits or 65536
+registers).
 
 An interactive client can read and write from registers, by calling
-reg<sub>interface</sub>.py
+reg_interface.py
 
 A python library `rw_reg.py` allows for register access by name
 
@@ -132,48 +150,48 @@ no files are missing, the build directory is clean, and so on.
 
 ## RB Dataformat
 
-| Field               | Len             | Description                                                           |
-|---------------------|-----------------|-----------------------------------------------------------------------|
-| HEAD                | `[15:0]`        | 0xAAAA                                                                |
-| STATUS              | `[15:0]`        | `[0]` = empty event fragment                                          |
-|                     |                 | `[1]` = drs was busy (lost trigger)                                   |
-|                     |                 | `[2]` = locked                                                        |
-|                     |                 | `[3]` = locked (past second)                                          |
-|                     |                 | `[15:4]` = 12 bit FPGA temperature                                    |
-| LEN                 | `[15:0]`        | length of packet in 2 byte words                                      |
-| ROI                 | `[15:0]`        | size of region of interest                                            |
-| DNA                 | `[15:0]`        | Zynq7000 Device DNA bits \[63:48\] ^ \[47:32\] ^ \[31:16\] ^ \[15:0\] |
-| RSVD0               | `[15:0]`        | Reserved                                                              |
-| RSVD1               | `[15:0]`        | Reserved                                                              |
-| RSVD2               | `[15:0]`        | Reserved                                                              |
-| FW<sub>HASH</sub>   | `[15:0]`        | First 16 bits of Git Hash                                             |
-| ID                  | `[15:0]`        | `[15:8]` = readout board ID                                           |
-|                     |                 | `[7:0]` = reserved                                                    |
-| CH<sub>MASK</sub>   | `[15:0]`        | `[8:0]` = Channel Enable Mask '1'=ON                                  |
-|                     |                 | `[15:9]` reserved                                                     |
-| EVENT<sub>CNT</sub> | `[31:0]`        | Event ID Received From Trigger                                        |
-| DTAP                | `[15:0]`        | DTAP Frequency in 100Hz                                               |
-| DRS<sub>TEMP</sub>  | `[15:0]`        | DRS temperature, written by software                                  |
-| TIMESTAMP           | `[47:0]`        | # of 33MHz clocks elapsed since resync                                |
-| PAYLOAD             | 0 to XXXX words | `HEADER[15:0]` = Channel ID                                           |
-|                     |                 | —– begin block data —–                                                |
-|                     |                 | `DATA[13:0]` = ADC data `DATA[15:14]` parity                          |
-|                     |                 | —– end block: len = ROI words —–                                      |
-|                     |                 | `TRAILER[31:0]` = crc32                                               |
-| STOP CELL           | `[15:0]`        | Stop cell of the DRS                                                  |
-| CRC32               | `[31:0]`        | Packet CRC (excluding Trailer)                                        |
-| TAIL                | `[15:0]`        | 0x5555                                                                |
+| Field     | Len             | Description                                                           |
+|-----------|-----------------|-----------------------------------------------------------------------|
+| HEAD      | `[15:0]`        | 0xAAAA                                                                |
+| STATUS    | `[15:0]`        | `[0]` = empty event fragment                                          |
+|           |                 | `[1]` = drs was busy (lost trigger)                                   |
+|           |                 | `[2]` = locked                                                        |
+|           |                 | `[3]` = locked (past second)                                          |
+|           |                 | `[15:4]` = 12 bit FPGA temperature                                    |
+| LEN       | `[15:0]`        | length of packet in 2 byte words                                      |
+| ROI       | `[15:0]`        | size of region of interest                                            |
+| DNA       | `[15:0]`        | Zynq7000 Device DNA bits \[63:48\] ^ \[47:32\] ^ \[31:16\] ^ \[15:0\] |
+| RSVD0     | `[15:0]`        | Reserved                                                              |
+| RSVD1     | `[15:0]`        | Reserved                                                              |
+| RSVD2     | `[15:0]`        | Reserved                                                              |
+| FW_HASH   | `[15:0]`        | First 16 bits of Git Hash                                             |
+| ID        | `[15:0]`        | `[15:8]` = readout board ID                                           |
+|           |                 | `[7:0]` = reserved                                                    |
+| CH_MASK   | `[15:0]`        | `[8:0]` = Channel Enable Mask '1'=ON                                  |
+|           |                 | `[15:9]` reserved                                                     |
+| EVENT_CNT | `[31:0]`        | Event ID Received From Trigger                                        |
+| DTAP      | `[15:0]`        | DTAP Frequency in 100Hz                                               |
+| DRS_TEMP  | `[15:0]`        | DRS temperature, written by software                                  |
+| TIMESTAMP | `[47:0]`        | # of 33MHz clocks elapsed since resync                                |
+| PAYLOAD   | 0 to XXXX words | `HEADER[15:0]` = Channel ID                                           |
+|           |                 | —– begin block data —–                                                |
+|           |                 | `DATA[13:0]` = ADC data `DATA[15:14]` parity                          |
+|           |                 | —– end block: len = ROI words —–                                      |
+|           |                 | `TRAILER[31:0]` = crc32                                               |
+| STOP CELL | `[15:0]`        | Stop cell of the DRS                                                  |
+| CRC32     | `[31:0]`        | Packet CRC (excluding Trailer)                                        |
+| TAIL      | `[15:0]`        | 0x5555                                                                |
 
 ## Master Trigger to RB Data Format
 
-| Field              | Len      | Description                                                 |
-|--------------------|----------|-------------------------------------------------------------|
-| START              | `[0:0]`  | '1' to start                                                |
-| TRIGGER            | `[0:0]`  | '1' initiates a trigger; '0' for an event fragment          |
-| CH<sub>MASK</sub>  | `[7:0]`  | bitfield set to '1' to readout a channel                    |
-| EVENT<sub>ID</sub> | `[31:0]` | Event ID                                                    |
-| CMD                | `[1:0]`  | 3=resync                                                    |
-| CRC8               | `[7:0]`  | lfsr(7:0)=1+x<sup>2+x</sup>4+x<sup>6+x</sup>7+x<sup>8</sup> |
+| Field    | Len      | Description                                        |
+|----------|----------|----------------------------------------------------|
+| START    | `[0:0]`  | '1' to start                                       |
+| TRIGGER  | `[0:0]`  | '1' initiates a trigger; '0' for an event fragment |
+| CH_MASK  | `[7:0]`  | bitfield set to '1' to readout a channel           |
+| EVENT_ID | `[31:0]` | Event ID                                           |
+| CMD      | `[1:0]`  | 3=resync                                           |
+| CRC8     | `[7:0]`  | lfsr(7:0)=1+x<sup>2+x</sup>4+x<sup>6+x</sup>7+x^8  |
 
 ## Local Trigger Data Format
 
@@ -207,28 +225,28 @@ bits per trigger.
 
 ## Master Trigger DAQ Data Format
 
-| Field                   | Len      | Description                                                |
-|-------------------------|----------|------------------------------------------------------------|
-| HEADER                  | `[15:0]` | 0xAAAA                                                     |
-| EVENT<sub>CNT</sub>     | `[31:0]` | Event counter                                              |
-| TIMESTAMP               | `[31:0]` | Internal timestamp at the time of trigger (1 unit = 10 ns) |
-| TIU<sub>TIMESTAMP</sub> | `[31:0]` | Timestamp at the edge of the TIU GPS (1 unit = 10 ns)      |
-| TIU<sub>GPS</sub>       | `[47:0]` | Second received from the TIU (format?)                     |
-| RESERVED                | `[15:0]` | Reserved                                                   |
-| BOARD<sub>MASK</sub>    | `[31:0]` | 25 bits indicating boards which are read out               |
-| HITS                    | –        | Variable sized, 16 bits / board \* n<sub>boards</sub>      |
-| PAD                     | `[15:0]` | Optional, only here if the # of boards read is odd         |
-| CRC                     | `[31:0]` | CRC32, same polynomial as the RB                           |
-| TRAILER                 | `[15:0]` | 0x5555                                                     |
+| Field         | Len      | Description                                                |
+|---------------|----------|------------------------------------------------------------|
+| HEADER        | `[15:0]` | 0xAAAA                                                     |
+| EVENT_CNT     | `[31:0]` | Event counter                                              |
+| TIMESTAMP     | `[31:0]` | Internal timestamp at the time of trigger (1 unit = 10 ns) |
+| TIU_TIMESTAMP | `[31:0]` | Timestamp at the edge of the TIU GPS (1 unit = 10 ns)      |
+| TIU_GPS       | `[47:0]` | Second received from the TIU (format?)                     |
+| RESERVED      | `[15:0]` | Reserved                                                   |
+| BOARD_MASK    | `[31:0]` | 25 bits indicating boards which are read out               |
+| HITS          | –        | Variable sized, 16 bits / board \* n_boards                |
+| PAD           | `[15:0]` | Optional, only here if the # of boards read is odd         |
+| CRC           | `[31:0]` | CRC32, same polynomial as the RB                           |
+| TRAILER       | `[15:0]` | 0x5555                                                     |
 
 ## Master Trigger External IO
 
-| Signal       | Assignment         | Description                                                                                                                                 |
-|--------------|--------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| TIU Busy     | EXT<sub>IN0</sub>  | LVDS IN: Busy acknowledgment from the TIU. Trigger should be deasserted only after busy is received.                                        |
-| TIU Timecode | EXT<sub>IN1</sub>  | LVDS IN: Asynchronous serial input containing the GPS timestamp.                                                                            |
-| TIU Event ID | EXT<sub>OUT0</sub> | LVDS OUT: Asynchronous serial output containing the event ID                                                                                |
-| TIU Trigger  | EXT<sub>OUT1</sub> | LVDS OUT: Trigger output from the MT to TIU. Asynchronous level which should not be deasserted until the BUSY is received back from the TIU |
+| Signal       | Assignment | Description                                                                                                                                 |
+|--------------|------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| TIU Busy     | EXT_IN0    | LVDS IN: Busy acknowledgment from the TIU. Trigger should be deasserted only after busy is received.                                        |
+| TIU Timecode | EXT_IN1    | LVDS IN: Asynchronous serial input containing the GPS timestamp.                                                                            |
+| TIU Event ID | EXT_OUT0   | LVDS OUT: Asynchronous serial output containing the event ID                                                                                |
+| TIU Trigger  | EXT_OUT1   | LVDS OUT: Trigger output from the MT to TIU. Asynchronous level which should not be deasserted until the BUSY is received back from the TIU |
 
 ## Trigger Latency
 

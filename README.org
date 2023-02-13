@@ -1,4 +1,23 @@
-* DRS4 Readout Board + Master Trigger + Local Trigger Firmware
+#+OPTIONS: ^:nil
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+TITLE: GAPS TOF Firmware
+
+** Table of Contents :TOC_4:
+  - [[#organization][Organization]]
+  - [[#software-dependencies][Software dependencies]]
+  - [[#register-access][Register Access]]
+    - [[#address-table][Address Table]]
+  - [[#building-the-firmware][Building the Firmware]]
+    - [[#special-note-for-20201-and-hardware-generation][Special note for 2020.1 and hardware generation]]
+    - [[#build-instructions][Build instructions]]
+  - [[#drs-data-flow][DRS Data Flow]]
+  - [[#rb-dataformat][RB Dataformat]]
+  - [[#master-trigger-to-rb-data-format][Master Trigger to RB Data Format]]
+  - [[#local-trigger-data-format][Local Trigger Data Format]]
+  - [[#master-trigger-daq-data-format][Master Trigger DAQ Data Format]]
+  - [[#master-trigger-external-io][Master Trigger External IO]]
+  - [[#trigger-latency][Trigger Latency]]
+  - [[#gitlab-runner-registration][Gitlab runner registration]]
 
 ** Organization
 
