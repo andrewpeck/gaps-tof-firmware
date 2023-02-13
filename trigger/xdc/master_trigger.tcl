@@ -347,3 +347,13 @@ for {set i 0} {$i < 50} {incr i} {
         -from [get_ports lt_data_i_p[$input]] \
         -to [get_pins noloop_r.lt_rx/genloop[$i].lt_input_processor_inst/oversample_inst/d*_reg/D] 1.9
 }
+
+# trigger output
+set_max_delay -datapath_only \
+    -from [get_pins {ext_out_reg[1]/C}] \
+    -to [get_ports {ext_out[1]}] 3.9
+
+# trigger output mirror
+set_max_delay -datapath_only \
+    -from [get_pins {ext_io_reg[10]/C}] \
+    -to [get_ports {ext_io[10]}] 4.6
