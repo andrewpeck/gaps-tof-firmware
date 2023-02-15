@@ -54,6 +54,8 @@ architecture rtl of lt_rx is
 
   signal reset : std_logic := '0';
 
+  signal spy : std_logic_vector (NUM_INPUTS-1 downto 0) := (others => '0');
+
   signal data_bytes    : t_std8_array (NUM_INPUTS-1 downto 0);
   signal data_valid    : std_logic_vector (NUM_INPUTS-1 downto 0);
   signal coarse_delays : lt_coarse_delays_array_t;
@@ -110,6 +112,7 @@ begin
         coarse_delay => coarse_delays(I),
         en           => link_en(I),
         inv          => inv(I),
+        spy          => spy(I),
 
         data_i  => data_i(I),
         data_o  => data_bytes(I),
