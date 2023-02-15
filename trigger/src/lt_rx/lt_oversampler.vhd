@@ -1,6 +1,7 @@
 -- TODO: latency depends on the selected phase.. should make it invariant
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.std_logic_misc.all;
 use ieee.numeric_std.all;
 
 entity oversample is
@@ -113,47 +114,87 @@ begin
       e01 <= d(0) xor d(1);
       e12 <= d(1) xor d(2);
       e23 <= d(2) xor d(3);
-      e30 <= dd(3) xor d(0);
+      e30 <= d(0) xor dd(3);
+    --e30 <= dd(3) xor d(0);
     end if;
   end process;
 
   process (clk) is
   begin
     if (rising_edge(clk)) then
-      case sel_next is
+
+      -- case sel is
+      --   when 0 =>
+      --     if (e30 = '1') then
+      --       sel_next <= 1;
+      --     elsif (e01 = '1') then
+      --       sel_next <= 3;
+      --     end if;
+      --   when 1 =>
+      --     if (e01 = '1') then
+      --       sel_next <= 2;
+      --     elsif (e12 = '1') then
+      --       sel_next <= 0;
+      --     end if;
+      --   when 2 =>
+      --     if (e12 = '1') then
+      --       sel_next <= 3;
+      --     elsif (e23 = '1') then
+      --       sel_next <= 1;
+      --     end if;
+      --   when 3 =>
+      --     if (e23 = '1') then
+      --       sel_next <= 0;
+      --     elsif (e30 = '1') then
+      --       sel_next <= 2;
+      --     end if;
+      --   when others =>
+      --     sel_next <= 0;
+      -- end case;
+
+
+      case sel is
         when 0 =>
-          if (e30 = '1') then
-            sel_next <= 1;
-          elsif (e01 = '1') then
-            sel_next <= 3;
+          if e01 = '1' then
+            sel_next <= 2 after 0.1 ns;
+          elsif e30 = '1' then
+            sel_next <= 1 after 0.1 ns;
           end if;
         when 1 =>
-          if (e01 = '1') then
-            sel_next <= 2;
-          elsif (e12 = '1') then
-            sel_next <= 0;
-          end if;
-        when 2 =>
-          if (e12 = '1') then
-            sel_next <= 3;
-          elsif (e23 = '1') then
-            sel_next <= 1;
+          if e12 = '1' then
+            sel_next <= 0 after 0.1 ns;
+          elsif e01 = '1' then
+            sel_next <= 3 after 0.1 ns;
           end if;
         when 3 =>
-          if (e23 = '1') then
-            sel_next <= 0;
-          elsif (e30 = '1') then
-            sel_next <= 2;
+          if e23 = '1' then
+            sel_next <= 1 after 0.1 ns;
+          elsif e12 = '1' then
+            sel_next <= 2 after 0.1 ns;
           end if;
-        when others =>
-          sel_next <= 0;
+        when 2 =>
+          if e30 = '1' then
+            sel_next <= 3 after 0.1 ns;
+          elsif e23 = '1' then
+            sel_next <= 0 after 0.1 ns;
+          end if;
+        when others => null;
       end case;
 
-      if (dd(sel) = '0' and idle_i = '1') then
+
+    end if;  -- rising_edge(clk)
+  end process;
+
+  process (clk) is
+  begin
+    if (rising_edge(clk)) then
+
+      -- add some crude logic to make sure we aren't shifting during a datapacket
+      if (and_reduce(d) = inv and and_reduce(dd) = inv and idle_i = '1') then
         sel <= sel_next;
       end if;
 
-    end if;  -- rising_edge(clk)
+    end if;
   end process;
 
   --------------------------------------------------------------------------------
