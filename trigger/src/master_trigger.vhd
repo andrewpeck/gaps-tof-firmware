@@ -174,6 +174,7 @@ architecture structural of gaps_mt is
 
   signal lost_trigger   : std_logic;
   signal global_trigger : std_logic;  -- single bit == the baloon triggered somewhere
+  signal pre_trigger    : std_logic;  -- 1 clock cycle earlier than global_trigger
   signal global_busy    : std_logic;
 
   signal trig_rate       : std_logic_vector (23 downto 0) := (others => '0');
@@ -665,6 +666,7 @@ begin
       -- ouptut from trigger logic
       lost_trigger_o   => lost_trigger,   --
       global_trigger_o => global_trigger, -- OR of the trigger menu
+      pre_trigger_o    => pre_trigger,
       rb_triggers_o    => rb_triggers,    -- 39 trigger outputs  (-1 per rb)
       channel_select_o => channel_select  -- trigger output (197 trigger outputs)
       );
@@ -827,7 +829,7 @@ begin
       tiu_emulation_mode        => mtb_is_ucla or tiu_emulation_mode,
 
       -- mt trigger signals
-      trigger_i         => global_trigger,
+      trigger_i         => pre_trigger or global_trigger,
       event_cnt_i       => event_cnt,
       timestamp_i       => std_logic_vector(timestamp),
 
@@ -946,7 +948,7 @@ begin
   -- Signal Sump
   --------------------------------------------------------------------------------
 
-  sump_o <= global_trigger;
+  sump_o <= '0';
 
   --------------------------------------------------------------------------------
   -- ILA

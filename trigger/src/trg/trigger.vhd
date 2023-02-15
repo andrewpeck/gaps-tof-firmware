@@ -36,6 +36,7 @@ entity trigger is
 
     force_trigger_i : in std_logic;
 
+    pre_trigger_o    : out std_logic;
     channel_select_o : out channel_bitmask_t;
     global_trigger_o : out std_logic;
     lost_trigger_o   : out std_logic;
@@ -57,7 +58,7 @@ architecture behavioral of trigger is
   -- Global trigger
   --------------------------------------------------------------------------------
 
-  signal global_trigger, global_trigger_r : std_logic := '0';
+  signal global_trigger : std_logic := '0';
 
   -- flatten the 200 inputs from a threshold to just a bitmask meaning that a
   -- channel is either on or off
@@ -139,23 +140,22 @@ begin
     rb_triggers(I) <= or_reduce(per_channel_triggers((I+1)*4-1 downto I*4));
   end generate;
 
-  global_trigger <= or_reduce(per_channel_triggers);
+  global_trigger <= not busy_i and not dead and or_reduce(per_channel_triggers);
 
   --------------------------------------------------------------------------------
-  -- event counter:
+  -- outputs
   --------------------------------------------------------------------------------
 
-  -- delay by 1 clock to align with event count
+  pre_trigger_o <= global_trigger;
+
   process (clk) is
   begin
     if (rising_edge(clk)) then
       lost_trigger_o   <= busy_i and global_trigger;
-      global_trigger_r <= not busy_i and not dead and global_trigger;
       rb_triggers_r    <= rb_triggers;
-
       channel_select_o <= per_channel_triggers;
-      rb_triggers_o    <= repeat (not busy_i, rb_triggers_o'length) and (rb_triggers_r or repeat(global_trigger_r and all_triggers_are_global, rb_triggers_o'length));
-      global_trigger_o <= global_trigger_r;
+      rb_triggers_o    <= repeat (not busy_i, rb_triggers_o'length) and (rb_triggers_r or repeat(global_trigger and all_triggers_are_global, rb_triggers_o'length));
+      global_trigger_o <= global_trigger;  -- delay by 1 clock to align with event count
     end if;
   end process;
 
@@ -167,7 +167,7 @@ begin
     port map (
       clk              => clk,
       rst_i            => reset or event_cnt_reset,
-      global_trigger_i => global_trigger_r,
+      global_trigger_i => global_trigger,
       event_count_o    => event_cnt_o
       );
 
