@@ -9,6 +9,7 @@ entity oversample is
     clk90  : in  std_logic;
     inv    : in  std_logic;
     data_i : in  std_logic;
+    idle_i : in  std_logic;
     data_o : out std_logic := '0';
     sel_o  : out std_logic_vector(1 downto 0)
     );
@@ -25,7 +26,8 @@ architecture behavioral of oversample is
   signal d, dd              : std_logic_vector (3 downto 0) := (others => '0');
   signal e01, e12, e23, e30 : std_logic                     := '0';
 
-  signal sel : natural range 0 to 3 := 0;
+  signal sel_next : natural range 0 to 3 := 0;
+  signal sel      : natural range 0 to 3 := 0;
 
   attribute SHREG_EXTRACT                        : string;
   attribute SHREG_EXTRACT of d0, d90, d180, d270 : signal is "no";
@@ -118,34 +120,38 @@ begin
   process (clk) is
   begin
     if (rising_edge(clk)) then
-      case sel is
+      case sel_next is
         when 0 =>
           if (e30 = '1') then
-            sel <= 1;
+            sel_next <= 1;
           elsif (e01 = '1') then
-            sel <= 3;
+            sel_next <= 3;
           end if;
         when 1 =>
           if (e01 = '1') then
-            sel <= 2;
+            sel_next <= 2;
           elsif (e12 = '1') then
-            sel <= 0;
+            sel_next <= 0;
           end if;
         when 2 =>
           if (e12 = '1') then
-            sel <= 3;
+            sel_next <= 3;
           elsif (e23 = '1') then
-            sel <= 1;
+            sel_next <= 1;
           end if;
         when 3 =>
           if (e23 = '1') then
-            sel <= 0;
+            sel_next <= 0;
           elsif (e30 = '1') then
-            sel <= 2;
+            sel_next <= 2;
           end if;
         when others =>
-          sel <= 0;
+          sel_next <= 0;
       end case;
+
+      if (dd(sel) = '0' and idle_i = '1') then
+        sel <= sel_next;
+      end if;
 
     end if;  -- rising_edge(clk)
   end process;

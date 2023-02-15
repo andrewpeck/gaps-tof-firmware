@@ -15,7 +15,8 @@ entity lt_deserializer is
     data_i  : in  std_logic;
     data_o  : out std_logic_vector (WORD_SIZE-1 downto 0);
     valid_o : out std_logic;
-    err_o   : out std_logic
+    err_o   : out std_logic;
+    idle_o  : out std_logic
     );
 end lt_deserializer;
 
@@ -31,6 +32,8 @@ architecture behavioral of lt_deserializer is
   signal state_bit_cnt : natural range 0 to WORD_SIZE - 1 := 0;
 
 begin
+
+  idle_o <= '1' when state = IDLE else '0';
 
   process (clock) is
   begin

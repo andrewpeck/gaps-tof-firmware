@@ -69,6 +69,8 @@ architecture behavioral of lt_input_processor is
 
   signal sel : std_logic_vector (1 downto 0) := (others => '0');
 
+  signal idle : std_logic := '0';
+
 begin
 
   spy <= data_oversample;
@@ -107,6 +109,7 @@ begin
     port map (
       clk    => clk,
       clk90  => clk90,
+      idle_i => idle,
       inv    => inv,
       data_i => data_i,
       data_o => data_oversample,
@@ -156,7 +159,8 @@ begin
       data_i  => data_dly,
       valid_o => valid,
       data_o  => data_o,
-      err_o   => err
+      err_o   => err,
+      idle_o  => idle
       );
 
   --------------------------------------------------------------------------------
