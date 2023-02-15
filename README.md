@@ -256,7 +256,7 @@ bits per trigger.
 | LTB Analog Frontend (ADCMP601)       | 3.5        | datasheet            |
 | LTB Input Routing                    | 1.5        | estimate             |
 | LTB FPGA Input Delay                 | 3.6        | Vivado timing report |
-| LTB FPGA Firmware                    | 20         | guess                |
+| LTB FPGA Firmware                    | 50         | measurement          |
 | LTB FPGA Output Delay                | 4.2        | Vivado timing report |
 | LTB Output Routing                   | 1          | estimate             |
 | LTB Differential Buffer (DS90LV027A) | 1.5        | datasheet            |
@@ -265,11 +265,11 @@ bits per trigger.
 | DSI to MTB FPGA Routing              | 1.5        | estimate             |
 | MTB FPGA Input Delay                 | 2          | timing report        |
 | MTB FPGA LTB Deserialization         | 45         | 9 bits @ 200 MHz     |
-| MTB FPGA Firmware                    | 85         | measurement (ILA)    |
+| MTB FPGA Firmware                    | 60         | measurement (ILA)    |
 | MTB FPGA Output Delay                | 3.9        | timing report        |
 | MTB FPGA to Output Routing           | 1          | estimate             |
 | MTB Output Buffer (DS90LV031ATMTC)   | 2          | datasheet            |
-| Total                                | 193.2      |                      |
+| Total                                | 223.2      |                      |
 
 ## Gitlab runner registration
 
