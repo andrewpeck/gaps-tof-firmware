@@ -28,10 +28,11 @@ entity lt_input_processor is
 
     clk   : in std_logic;
     clk90 : in std_logic;
+    clk2x : in std_logic;
 
-    coarse_delay : in coarse_delay_t;
-    en           : in std_logic;
-    inv          : in std_logic;
+    coarse_delay : in  coarse_delay_t;
+    en           : in  std_logic;
+    inv          : in  std_logic;
     spy          : out std_logic;
 
     data_i  : in  std_logic;
@@ -97,18 +98,11 @@ begin
         );
   end generate;
 
-  --------------------------------------------------------------------------------
-  -- Oversampler
-  --
-  -- Samples the data on the correct clock phase
-  -- 1 bit in, 1 bit out
-  --
-  --------------------------------------------------------------------------------
-
   oversample_inst : entity work.oversample
     port map (
       clk    => clk,
       clk90  => clk90,
+      clk2x  => clk2x,
       idle_i => idle,
       inv    => inv,
       data_i => data_i,

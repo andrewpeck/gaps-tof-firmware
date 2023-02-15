@@ -153,8 +153,8 @@ architecture structural of gaps_mt is
   signal reset  : std_logic;
   signal locked : std_logic;
 
-  signal clock                                       : std_logic;
-  signal clk25, clk200, clk200_90, clk125, clk125_90 : std_logic;
+  signal clock                                               : std_logic;
+  signal clk25, clk200, clk200_90, clk400, clk125, clk125_90 : std_logic;
 
   signal event_cnt       : std_logic_vector (EVENTCNTB-1 downto 0);
   signal event_cnt_reset : std_logic;
@@ -462,6 +462,7 @@ begin
       clk100    => clock,               -- system clock
       clk200_90 => clk200_90,           -- 200mhz for LTB
       clk200    => clk200,              -- 200mhz for iodelay / LTB
+      clk400    => clk400,              -- 400mhz for LTB
       clk125    => clk125,              -- for ethernet
       clk125_90 => clk125_90,           -- for ethernet
       locked    => locked               -- mmcm locked
@@ -585,8 +586,9 @@ begin
         reset_i => reset,
 
         -- system clock
-        clk   => clk200,                 -- logic clock
-        clk90 => clk200_90,              -- logic clock
+        clk   => clk200,
+        clk90 => clk200_90,
+        clk2x => clk400,
 
         -- clock and data from lt boards
         data_i  => lt_data_i_pri,

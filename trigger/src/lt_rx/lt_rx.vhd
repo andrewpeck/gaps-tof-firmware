@@ -38,6 +38,7 @@ entity lt_rx is
 
     clk   : in std_logic;
     clk90 : in std_logic;
+    clk2x : in std_logic;
 
     link_en         : in std_logic_vector (NUM_INPUTS-1 downto 0);
     inv             : in std_logic_vector (NUM_INPUTS-1 downto 0);
@@ -107,6 +108,7 @@ begin
       port map (
         clk   => clk,
         clk90 => clk90,
+        clk2x => clk2x,
         reset => reset,
 
         coarse_delay => coarse_delays(I),

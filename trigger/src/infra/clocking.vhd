@@ -25,6 +25,7 @@ entity clocking is
     clk100    : out std_logic;
     clk200_90 : out std_logic;
     clk200    : out std_logic;
+    clk400    : out std_logic;
     clk125    : out std_logic;
     clk125_90 : out std_logic;
     locked    : out std_logic
@@ -33,6 +34,8 @@ end clocking;
 
 architecture structural of clocking is
 
+  signal locked1, locked2 : std_logic := '0';
+
   component mt_clk_wiz
     port (
       -- Clock out ports
@@ -40,6 +43,18 @@ architecture structural of clocking is
       clk100    : out std_logic;
       clk200_90 : out std_logic;
       clk200    : out std_logic;
+      clk400    : out std_logic;
+      -- Status and control signals
+      reset     : in  std_logic;
+      locked    : out std_logic;
+      -- Clock in ports
+      clk_in1   : in  std_logic
+      );
+  end component;
+
+  component mt_eth_clocks
+    port (
+      -- Clock out ports
       clk125    : out std_logic;
       clk125_90 : out std_logic;
       -- Status and control signals
@@ -49,6 +64,7 @@ architecture structural of clocking is
       clk_in1   : in  std_logic
       );
   end component;
+
 
   signal sys_clk : std_logic := '0';
 
@@ -151,14 +167,26 @@ begin
       clk100    => clk100,
       clk200_90 => clk200_90,
       clk200    => clk200,
+      clk400    => clk400,
       clk25     => clk25,
+      -- Status and control signals
+      reset     => '0',
+      locked    => locked1,
+      -- Clock in ports
+      clk_in1   => clk_i_bufg
+      );
+
+  eth_clocking : mt_eth_clocks
+    port map (
       clk125    => clk125,
       clk125_90 => clk125_90,
       -- Status and control signals
       reset     => '0',
-      locked    => locked,
+      locked    => locked2,
       -- Clock in ports
       clk_in1   => clk_i_bufg
       );
+
+  locked <= locked1 and locked2;
 
 end structural;
