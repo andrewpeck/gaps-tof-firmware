@@ -68,7 +68,9 @@ architecture behavioral of lt_input_processor is
   signal valid    : std_logic                             := '0';
   signal valid_sr : std_logic_vector (STRETCH-1 downto 0) := (others => '0');
 
-  signal sel : std_logic_vector (1 downto 0) := (others => '0');
+  signal sel    : std_logic_vector (1 downto 0) := (others => '0');
+  signal dd_mon : std_logic_vector (3 downto 0) := (others => '0');
+  signal e4     : std_logic_vector (3 downto 0) := (others => '0');
 
   signal idle : std_logic := '0';
 
@@ -91,12 +93,21 @@ begin
         probe5(1)          => data_oversample,
         probe6(0)          => en,
         probe6(1)          => '0',
-        probe7             => (others => '0'),
+        probe7(3 downto 0) => dd_mon,
+        probe7(7 downto 4) => e4,
         probe8             => (others => '0'),
         probe9             => (others => '0'),
         probe10            => (others => '0')
         );
   end generate;
+
+  --------------------------------------------------------------------------------
+  -- Oversampler
+  --
+  -- Samples the data on the correct clock phase
+  -- 1 bit in, 1 bit out
+  --
+  --------------------------------------------------------------------------------
 
   oversample_inst : entity work.oversample
     port map (
@@ -107,7 +118,9 @@ begin
       inv    => inv,
       data_i => data_i,
       data_o => data_oversample,
-      sel_o  => sel
+      sel_o  => sel,
+      e4_o   => e4,
+      mon_o  => dd_mon
       );
 
   --------------------------------------------------------------------------------

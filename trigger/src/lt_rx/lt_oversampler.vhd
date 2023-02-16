@@ -19,7 +19,9 @@ entity oversample is
     data_i : in  std_logic;
     idle_i : in  std_logic;
     data_o : out std_logic := '0';
-    sel_o  : out std_logic_vector(1 downto 0)
+    sel_o  : out std_logic_vector(1 downto 0);
+    mon_o  : out std_logic_vector(3 downto 0);
+    e4_o   : out std_logic_vector(3 downto 0)
     );
 end oversample;
 
@@ -27,13 +29,17 @@ architecture behavioral of oversample is
 
   -- https://docs.xilinx.com/v/u/en-US/xapp1294-4x-oversampling-async-dru
 
-  signal d, dd              : std_logic_vector (3 downto 0) := (others => '0');
+  signal d, dd, ddd, dddd   : std_logic_vector (3 downto 0) := (others => '0');
   signal e01, e12, e23, e30 : std_logic                     := '0';
 
-  signal sel_next : natural range 0 to 3 := 0;
-  signal sel      : natural range 0 to 3 := 0;
+  signal sel : natural range 0 to 3 := 0;
+
+  constant deadcnt_max : integer                        := 8;
+  signal deadcnt       : natural range 0 to deadcnt_max := 0;
+
 begin
 
+  e4_o  <= e30 & e23 & e12 & e01;
   sel_o <= std_logic_vector(to_unsigned(sel, 2));
 
   assert SAMPLER = "IDDR" or SAMPLER = "FFS"
@@ -161,7 +167,9 @@ begin
   process (clk) is
   begin
     if (rising_edge(clk)) then
-      dd <= d;
+      dd   <= d;
+      ddd  <= dd;
+      dddd <= ddd;
     end if;
   end process;
 
@@ -175,8 +183,7 @@ begin
       e01 <= d(0) xor d(1);
       e12 <= d(1) xor d(2);
       e23 <= d(2) xor d(3);
-      e30 <= d(0) xor dd(3);
-    --e30 <= dd(3) xor d(0);
+      e30 <= d(3) xor dd(0);
     end if;
   end process;
 
@@ -184,84 +191,55 @@ begin
   begin
     if (rising_edge(clk)) then
 
-      -- case sel is
-      --   when 0 =>
-      --     if (e30 = '1') then
-      --       sel_next <= 1;
-      --     elsif (e01 = '1') then
-      --       sel_next <= 3;
-      --     end if;
-      --   when 1 =>
-      --     if (e01 = '1') then
-      --       sel_next <= 2;
-      --     elsif (e12 = '1') then
-      --       sel_next <= 0;
-      --     end if;
-      --   when 2 =>
-      --     if (e12 = '1') then
-      --       sel_next <= 3;
-      --     elsif (e23 = '1') then
-      --       sel_next <= 1;
-      --     end if;
-      --   when 3 =>
-      --     if (e23 = '1') then
-      --       sel_next <= 0;
-      --     elsif (e30 = '1') then
-      --       sel_next <= 2;
-      --     end if;
-      --   when others =>
-      --     sel_next <= 0;
-      -- end case;
+      -- allow 2 transitions before the data starts being processed,
+      -- due to the dd delay
+      if (deadcnt = 0 or deadcnt = deadcnt_max or deadcnt = deadcnt_max-1) then
 
+        case sel is
+          when 0 =>
+            if (e30 = '1') then
+              sel <= 1;
+            elsif (e01 = '1') then
+              sel <= 3;
+            end if;
+          when 1 =>
+            if (e01 = '1') then
+              sel <= 2;
+            elsif (e12 = '1') then
+              sel <= 0;
+            end if;
+          when 2 =>
+            if (e12 = '1') then
+              sel <= 3;
+            elsif (e23 = '1') then
+              sel <= 1;
+            end if;
+          when 3 =>
+            if (e23 = '1') then
+              sel <= 0;
+            elsif (e30 = '1') then
+              sel <= 2;
+            end if;
+          when others =>
+            sel <= 0;
+        end case;
 
-      case sel is
-        when 0 =>
-          if e01 = '1' then
-            sel_next <= 2 after 0.1 ns;
-          elsif e30 = '1' then
-            sel_next <= 1 after 0.1 ns;
-          end if;
-        when 1 =>
-          if e12 = '1' then
-            sel_next <= 0 after 0.1 ns;
-          elsif e01 = '1' then
-            sel_next <= 3 after 0.1 ns;
-          end if;
-        when 3 =>
-          if e23 = '1' then
-            sel_next <= 1 after 0.1 ns;
-          elsif e12 = '1' then
-            sel_next <= 2 after 0.1 ns;
-          end if;
-        when 2 =>
-          if e30 = '1' then
-            sel_next <= 3 after 0.1 ns;
-          elsif e23 = '1' then
-            sel_next <= 0 after 0.1 ns;
-          end if;
-        when others => null;
-      end case;
-
-
-    end if;  -- rising_edge(clk)
-  end process;
-
-  process (clk) is
-  begin
-    if (rising_edge(clk)) then
-
-      -- add some crude logic to make sure we aren't shifting during a datapacket
-      if (and_reduce(d) = inv and and_reduce(dd) = inv and idle_i = '1') then
-        sel <= sel_next;
       end if;
 
-    end if;
+      if (deadcnt = 0 and (e01 = '1' or e12 = '1' or e23 = '1' or e30 = '1')) then
+        deadcnt <= deadcnt_max;
+      elsif (deadcnt > 0) then
+        deadcnt <= deadcnt - 1;
+      end if;
+
+    end if;  -- rising_edge(clk)
   end process;
 
   --------------------------------------------------------------------------------
   -- Output select
   --------------------------------------------------------------------------------
 
-  data_o <= dd(sel) xor inv;
+  data_o <= dddd(sel) xor inv;
+  mon_o  <= dddd xor (inv & inv & inv & inv);
 
 end behavioral;

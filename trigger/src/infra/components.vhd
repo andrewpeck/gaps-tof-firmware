@@ -5,6 +5,20 @@ use ieee.numeric_std.all;
 
 package components is
 
+ component clk_rgmii
+   port (
+      -- Clock in ports
+      clkfb_in          : in     std_logic;
+      -- Clock out ports
+      clk_out1          : out    std_logic;
+      clkfb_out         : out    std_logic;
+      -- Status and control signals
+      reset             : in     std_logic;
+      locked            : out    std_logic;
+      clk_in1           : in     std_logic
+    );
+  end component;
+
   component ila_trigger
     port (
       clk     : in std_logic;
@@ -26,10 +40,10 @@ package components is
       probe4  : in std_logic_vector(1 downto 0);
       probe5  : in std_logic_vector(1 downto 0);
       probe6  : in std_logic_vector(1 downto 0);
-      probe7  : in std_logic_vector(1 downto 0);
-      probe8  : in std_logic_vector(1 downto 0);
-      probe9  : in std_logic_vector(1 downto 0);
-      probe10 : in std_logic_vector(1 downto 0)
+      probe7  : in std_logic_vector(7 downto 0);
+      probe8  : in std_logic_vector(7 downto 0);
+      probe9  : in std_logic_vector(7 downto 0);
+      probe10 : in std_logic_vector(7 downto 0)
     );
   end component;
 
