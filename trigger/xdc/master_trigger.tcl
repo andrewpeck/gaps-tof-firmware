@@ -356,4 +356,4 @@ set_max_delay -datapath_only \
 # trigger output mirror
 set_max_delay -datapath_only \
     -from [get_pins {ext_io_reg[10]/C}] \
-    -to [get_ports {ext_io[10]}] 4.6
+    -to [get_ports {ext_io[10]}] 4.7
