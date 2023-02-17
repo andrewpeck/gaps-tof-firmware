@@ -137,154 +137,154 @@
         "mask": 16777215,
         "description": "Rate of lost triggers in Hz"
     },
-    "MT.HIT_COUNTERS.RB0": {
+    "MT.HIT_COUNTERS.LT0": {
         "adr": 32,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=0"
     },
-    "MT.HIT_COUNTERS.RB1": {
+    "MT.HIT_COUNTERS.LT1": {
         "adr": 33,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=1"
     },
-    "MT.HIT_COUNTERS.RB2": {
+    "MT.HIT_COUNTERS.LT2": {
         "adr": 34,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=2"
     },
-    "MT.HIT_COUNTERS.RB3": {
+    "MT.HIT_COUNTERS.LT3": {
         "adr": 35,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=3"
     },
-    "MT.HIT_COUNTERS.RB4": {
+    "MT.HIT_COUNTERS.LT4": {
         "adr": 36,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=4"
     },
-    "MT.HIT_COUNTERS.RB5": {
+    "MT.HIT_COUNTERS.LT5": {
         "adr": 37,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=5"
     },
-    "MT.HIT_COUNTERS.RB6": {
+    "MT.HIT_COUNTERS.LT6": {
         "adr": 38,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=6"
     },
-    "MT.HIT_COUNTERS.RB7": {
+    "MT.HIT_COUNTERS.LT7": {
         "adr": 39,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=7"
     },
-    "MT.HIT_COUNTERS.RB8": {
+    "MT.HIT_COUNTERS.LT8": {
         "adr": 40,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=8"
     },
-    "MT.HIT_COUNTERS.RB9": {
+    "MT.HIT_COUNTERS.LT9": {
         "adr": 41,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=9"
     },
-    "MT.HIT_COUNTERS.RB10": {
+    "MT.HIT_COUNTERS.LT10": {
         "adr": 42,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=10"
     },
-    "MT.HIT_COUNTERS.RB11": {
+    "MT.HIT_COUNTERS.LT11": {
         "adr": 43,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=11"
     },
-    "MT.HIT_COUNTERS.RB12": {
+    "MT.HIT_COUNTERS.LT12": {
         "adr": 44,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=12"
     },
-    "MT.HIT_COUNTERS.RB13": {
+    "MT.HIT_COUNTERS.LT13": {
         "adr": 45,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=13"
     },
-    "MT.HIT_COUNTERS.RB14": {
+    "MT.HIT_COUNTERS.LT14": {
         "adr": 46,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=14"
     },
-    "MT.HIT_COUNTERS.RB15": {
+    "MT.HIT_COUNTERS.LT15": {
         "adr": 47,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=15"
     },
-    "MT.HIT_COUNTERS.RB16": {
+    "MT.HIT_COUNTERS.LT16": {
         "adr": 48,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=16"
     },
-    "MT.HIT_COUNTERS.RB17": {
+    "MT.HIT_COUNTERS.LT17": {
         "adr": 49,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=17"
     },
-    "MT.HIT_COUNTERS.RB18": {
+    "MT.HIT_COUNTERS.LT18": {
         "adr": 50,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=18"
     },
-    "MT.HIT_COUNTERS.RB19": {
+    "MT.HIT_COUNTERS.LT19": {
         "adr": 51,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=19"
     },
-    "MT.HIT_COUNTERS.RB20": {
+    "MT.HIT_COUNTERS.LT20": {
         "adr": 52,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=20"
     },
-    "MT.HIT_COUNTERS.RB21": {
+    "MT.HIT_COUNTERS.LT21": {
         "adr": 53,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=21"
     },
-    "MT.HIT_COUNTERS.RB22": {
+    "MT.HIT_COUNTERS.LT22": {
         "adr": 54,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=22"
     },
-    "MT.HIT_COUNTERS.RB23": {
+    "MT.HIT_COUNTERS.LT23": {
         "adr": 55,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=23"
     },
-    "MT.HIT_COUNTERS.RB24": {
+    "MT.HIT_COUNTERS.LT24": {
         "adr": 56,
         "permission": "r",
-        "mask": 65535,
+        "mask": 16777215,
         "description": "hit count on LT=24"
     },
     "MT.ETH_RX_BAD_FRAME_CNT": {

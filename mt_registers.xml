@@ -128,17 +128,17 @@
           fw_signal="lost_trig_rate"/>
 
     <node id="HIT_COUNTERS" address="0x20" description="Counters">
-      <node id="RB${RB_IDX}" address="0x0"
+      <node id="LT${RB_IDX}" address="0x0"
             generate="true"
             generate_size="25"
             generate_address_step="1"
             generate_idx_var="RB_IDX"
             permission="r"
-            mask="0x0000ffff"
+            mask="0x00ffffff"
             description="hit count on LT=${RB_IDX}"
             fw_make_signal="true"
             fw_signal="hit_count_${RB_IDX}"
-            fw_cnt_en_signal="or_reduce(discrim_1bit(${RB_IDX}))">
+            fw_cnt_en_signal="ltb_hit(${RB_IDX})">
       </node>
     </node>
 
