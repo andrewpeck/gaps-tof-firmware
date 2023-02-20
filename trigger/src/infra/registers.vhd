@@ -89,12 +89,12 @@ package registers is
     constant REG_TRIG_MASK_A_ADDR    : std_logic_vector(9 downto 0) := "00" & x"15";
     constant REG_TRIG_MASK_A_MSB    : integer := 31;
     constant REG_TRIG_MASK_A_LSB     : integer := 0;
-    constant REG_TRIG_MASK_A_DEFAULT : std_logic_vector(31 downto 0) := x"ffff0000";
+    constant REG_TRIG_MASK_A_DEFAULT : std_logic_vector(31 downto 0) := x"00000000";
 
     constant REG_TRIG_MASK_B_ADDR    : std_logic_vector(9 downto 0) := "00" & x"16";
     constant REG_TRIG_MASK_B_MSB    : integer := 31;
     constant REG_TRIG_MASK_B_LSB     : integer := 0;
-    constant REG_TRIG_MASK_B_DEFAULT : std_logic_vector(31 downto 0) := x"0000ffff";
+    constant REG_TRIG_MASK_B_DEFAULT : std_logic_vector(31 downto 0) := x"00000000";
 
     constant REG_TRIGGER_RATE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"17";
     constant REG_TRIGGER_RATE_MSB    : integer := 23;
@@ -105,103 +105,103 @@ package registers is
     constant REG_LOST_TRIGGER_RATE_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT0_ADDR    : std_logic_vector(9 downto 0) := "00" & x"20";
-    constant REG_HIT_COUNTERS_LT0_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT0_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT0_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT1_ADDR    : std_logic_vector(9 downto 0) := "00" & x"21";
-    constant REG_HIT_COUNTERS_LT1_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT1_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT1_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT2_ADDR    : std_logic_vector(9 downto 0) := "00" & x"22";
-    constant REG_HIT_COUNTERS_LT2_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT2_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT2_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT3_ADDR    : std_logic_vector(9 downto 0) := "00" & x"23";
-    constant REG_HIT_COUNTERS_LT3_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT3_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT3_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT4_ADDR    : std_logic_vector(9 downto 0) := "00" & x"24";
-    constant REG_HIT_COUNTERS_LT4_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT4_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT4_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT5_ADDR    : std_logic_vector(9 downto 0) := "00" & x"25";
-    constant REG_HIT_COUNTERS_LT5_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT5_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT5_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT6_ADDR    : std_logic_vector(9 downto 0) := "00" & x"26";
-    constant REG_HIT_COUNTERS_LT6_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT6_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT6_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT7_ADDR    : std_logic_vector(9 downto 0) := "00" & x"27";
-    constant REG_HIT_COUNTERS_LT7_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT7_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT7_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT8_ADDR    : std_logic_vector(9 downto 0) := "00" & x"28";
-    constant REG_HIT_COUNTERS_LT8_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT8_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT8_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT9_ADDR    : std_logic_vector(9 downto 0) := "00" & x"29";
-    constant REG_HIT_COUNTERS_LT9_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT9_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT9_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT10_ADDR    : std_logic_vector(9 downto 0) := "00" & x"2a";
-    constant REG_HIT_COUNTERS_LT10_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT10_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT10_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT11_ADDR    : std_logic_vector(9 downto 0) := "00" & x"2b";
-    constant REG_HIT_COUNTERS_LT11_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT11_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT11_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT12_ADDR    : std_logic_vector(9 downto 0) := "00" & x"2c";
-    constant REG_HIT_COUNTERS_LT12_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT12_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT12_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT13_ADDR    : std_logic_vector(9 downto 0) := "00" & x"2d";
-    constant REG_HIT_COUNTERS_LT13_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT13_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT13_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT14_ADDR    : std_logic_vector(9 downto 0) := "00" & x"2e";
-    constant REG_HIT_COUNTERS_LT14_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT14_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT14_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT15_ADDR    : std_logic_vector(9 downto 0) := "00" & x"2f";
-    constant REG_HIT_COUNTERS_LT15_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT15_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT15_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT16_ADDR    : std_logic_vector(9 downto 0) := "00" & x"30";
-    constant REG_HIT_COUNTERS_LT16_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT16_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT16_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT17_ADDR    : std_logic_vector(9 downto 0) := "00" & x"31";
-    constant REG_HIT_COUNTERS_LT17_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT17_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT17_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT18_ADDR    : std_logic_vector(9 downto 0) := "00" & x"32";
-    constant REG_HIT_COUNTERS_LT18_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT18_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT18_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT19_ADDR    : std_logic_vector(9 downto 0) := "00" & x"33";
-    constant REG_HIT_COUNTERS_LT19_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT19_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT19_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT20_ADDR    : std_logic_vector(9 downto 0) := "00" & x"34";
-    constant REG_HIT_COUNTERS_LT20_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT20_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT20_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT21_ADDR    : std_logic_vector(9 downto 0) := "00" & x"35";
-    constant REG_HIT_COUNTERS_LT21_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT21_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT21_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT22_ADDR    : std_logic_vector(9 downto 0) := "00" & x"36";
-    constant REG_HIT_COUNTERS_LT22_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT22_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT22_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT23_ADDR    : std_logic_vector(9 downto 0) := "00" & x"37";
-    constant REG_HIT_COUNTERS_LT23_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT23_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT23_LSB     : integer := 0;
 
     constant REG_HIT_COUNTERS_LT24_ADDR    : std_logic_vector(9 downto 0) := "00" & x"38";
-    constant REG_HIT_COUNTERS_LT24_MSB    : integer := 31;
+    constant REG_HIT_COUNTERS_LT24_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT24_LSB     : integer := 0;
 
     constant REG_ETH_RX_BAD_FRAME_CNT_ADDR    : std_logic_vector(9 downto 0) := "00" & x"3d";
