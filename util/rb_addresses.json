@@ -363,6 +363,13 @@
         "description": "Set to 0 to stop all triggers. 1 to enable triggers.",
         "adr8": 284
     },
+    "DRS.TRIGGER.MT_EVENT_CNT": {
+        "adr": 72,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "Recevied event counter",
+        "adr8": 288
+    },
     "DRS.COUNTERS.CNT_SEM_CORRECTION": {
         "adr": 80,
         "permission": "r",

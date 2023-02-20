@@ -300,6 +300,10 @@
                 fw_default="0x0"
                 mask="0x1"
                 fw_signal="trigger_enable" />
+            <node id="MT_EVENT_CNT" address="0x8" permission="r"
+                description="Recevied event counter"
+                mask="0xffffffff"
+                fw_signal="mt_event_cnt" />
         </node> <!--TRIGGER-->
 
         <node id="COUNTERS" address="0x50" description="Counters">
