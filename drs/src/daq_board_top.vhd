@@ -725,7 +725,7 @@ begin
     port map (
       rst    => reset,
       clk    => clock,
-      wr_en  => mt_event_cnt_valid,
+      wr_en  => trigger_enable and mt_event_cnt_valid,
       rd_en  => event_queue_rd_en,
       din    => event_queue_din,
       dout   => event_queue_dout,
