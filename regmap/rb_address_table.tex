@@ -59,6 +59,8 @@
     DTAP\_FREQ & \texttt{0x1} & \texttt{[15:0]} & r & \texttt{} & Frequency of DTAP in units of 100Hz \\\hline
     CLK\_IDELAY & \texttt{0x2} & \texttt{[4:0]} & rw & \texttt{0xF} & DRS CLK IDELAY Setting 0-31 in 78 ps increments \\\hline
     CYLON\_MODE & \texttt{0x3} & \texttt{[0:0]} & rw & \texttt{0x0} & 1 for cylon mode \\\hline
+    LOSS\_OF\_LOCK & \texttt{0x4} & \texttt{[0:0]} & r & \texttt{} & Raw reading of LOL signal \\\hline
+    LOSS\_OF\_LOCK\_STABLE & \texttt{0x4} & \texttt{[1:1]} & r & \texttt{} & Loss of lock stable over the past \~second \\\hline
     \end{tabularx}
     \vspace{5mm}
 

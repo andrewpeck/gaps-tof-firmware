@@ -58,6 +58,14 @@
                 mask="0x1"
                 fw_default="0x0"
                 fw_signal="cylon_mode" />
+            <node id="LOSS_OF_LOCK" address="0x4" permission="r"
+                description="Raw reading of LOL signal"
+                mask="0x1"
+                fw_signal="loss_of_lock_i" />
+            <node id="LOSS_OF_LOCK_STABLE" address="0x4" permission="r"
+                description="Loss of lock stable over the past ~second"
+                mask="0x2"
+                fw_signal="lock_stable" />
 
         </node> <!--CONFIG-->
 

@@ -55,6 +55,20 @@
         "description": "1 for cylon mode",
         "adr8": 12
     },
+    "DRS.CHIP.LOSS_OF_LOCK": {
+        "adr": 4,
+        "permission": "r",
+        "mask": 1,
+        "description": "Raw reading of LOL signal",
+        "adr8": 16
+    },
+    "DRS.CHIP.LOSS_OF_LOCK_STABLE": {
+        "adr": 4,
+        "permission": "r",
+        "mask": 2,
+        "description": "Loss of lock stable over the past ~second",
+        "adr8": 16
+    },
     "DRS.READOUT.ROI_MODE": {
         "adr": 16,
         "permission": "rw",
