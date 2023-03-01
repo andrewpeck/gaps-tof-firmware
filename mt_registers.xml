@@ -138,11 +138,27 @@
             description="hit count on LT=${RB_IDX}"
             fw_make_signal="true"
             fw_signal="hit_count_${RB_IDX}"
+            fw_cnt_reset_signal="ipb_reset or hit_cnt_reset"
+            fw_cnt_snap_signal="cnt_snap"
             fw_cnt_en_signal="ltb_hit(${RB_IDX})">
       </node>
+
+    <node id="RESET"
+          address="25"
+          permission="w"
+          mask="0x1"
+          description="Write 1 to reset hit counters."
+          fw_write_pulse_signal="hit_cnt_reset"/>
+    <node id="SNAP"
+          address="26"
+          permission="rw"
+          description="1 to snap the hit counters."
+          mask="0x1"
+          fw_default="0x1"
+          fw_signal="cnt_snap"/>
     </node>
 
-    <node id="CHANNEL_MASK" address="0x40" description="1 to mask a channel">
+    <node id="CHANNEL_MASK" address="0x50" description="1 to mask a channel">
       <node id="LT${LT_IDX}" address="0x0"
             generate="true"
             generate_size="25"

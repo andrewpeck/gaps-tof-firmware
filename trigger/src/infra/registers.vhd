@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_MT_NUM_REGS : integer := 135;
+    constant REG_MT_NUM_REGS : integer := 137;
     constant REG_MT_ADDRESS_MSB : integer := 9;
     constant REG_MT_ADDRESS_LSB : integer := 0;
     constant REG_LOOPBACK_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
@@ -204,6 +204,13 @@ package registers is
     constant REG_HIT_COUNTERS_LT24_MSB    : integer := 23;
     constant REG_HIT_COUNTERS_LT24_LSB     : integer := 0;
 
+    constant REG_HIT_COUNTERS_RESET_ADDR    : std_logic_vector(9 downto 0) := "00" & x"39";
+    constant REG_HIT_COUNTERS_RESET_BIT    : integer := 0;
+
+    constant REG_HIT_COUNTERS_SNAP_ADDR    : std_logic_vector(9 downto 0) := "00" & x"3a";
+    constant REG_HIT_COUNTERS_SNAP_BIT    : integer := 0;
+    constant REG_HIT_COUNTERS_SNAP_DEFAULT : std_logic := '1';
+
     constant REG_ETH_RX_BAD_FRAME_CNT_ADDR    : std_logic_vector(9 downto 0) := "00" & x"3d";
     constant REG_ETH_RX_BAD_FRAME_CNT_MSB    : integer := 15;
     constant REG_ETH_RX_BAD_FRAME_CNT_LSB     : integer := 0;
@@ -212,127 +219,127 @@ package registers is
     constant REG_ETH_RX_BAD_FCS_CNT_MSB    : integer := 31;
     constant REG_ETH_RX_BAD_FCS_CNT_LSB     : integer := 16;
 
-    constant REG_CHANNEL_MASK_LT0_ADDR    : std_logic_vector(9 downto 0) := "00" & x"40";
+    constant REG_CHANNEL_MASK_LT0_ADDR    : std_logic_vector(9 downto 0) := "00" & x"50";
     constant REG_CHANNEL_MASK_LT0_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT0_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT0_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_CHANNEL_MASK_LT1_ADDR    : std_logic_vector(9 downto 0) := "00" & x"41";
+    constant REG_CHANNEL_MASK_LT1_ADDR    : std_logic_vector(9 downto 0) := "00" & x"51";
     constant REG_CHANNEL_MASK_LT1_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT1_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT1_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_CHANNEL_MASK_LT2_ADDR    : std_logic_vector(9 downto 0) := "00" & x"42";
+    constant REG_CHANNEL_MASK_LT2_ADDR    : std_logic_vector(9 downto 0) := "00" & x"52";
     constant REG_CHANNEL_MASK_LT2_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT2_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT2_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_CHANNEL_MASK_LT3_ADDR    : std_logic_vector(9 downto 0) := "00" & x"43";
+    constant REG_CHANNEL_MASK_LT3_ADDR    : std_logic_vector(9 downto 0) := "00" & x"53";
     constant REG_CHANNEL_MASK_LT3_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT3_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT3_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_CHANNEL_MASK_LT4_ADDR    : std_logic_vector(9 downto 0) := "00" & x"44";
+    constant REG_CHANNEL_MASK_LT4_ADDR    : std_logic_vector(9 downto 0) := "00" & x"54";
     constant REG_CHANNEL_MASK_LT4_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT4_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT4_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_CHANNEL_MASK_LT5_ADDR    : std_logic_vector(9 downto 0) := "00" & x"45";
+    constant REG_CHANNEL_MASK_LT5_ADDR    : std_logic_vector(9 downto 0) := "00" & x"55";
     constant REG_CHANNEL_MASK_LT5_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT5_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT5_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_CHANNEL_MASK_LT6_ADDR    : std_logic_vector(9 downto 0) := "00" & x"46";
+    constant REG_CHANNEL_MASK_LT6_ADDR    : std_logic_vector(9 downto 0) := "00" & x"56";
     constant REG_CHANNEL_MASK_LT6_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT6_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT6_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_CHANNEL_MASK_LT7_ADDR    : std_logic_vector(9 downto 0) := "00" & x"47";
+    constant REG_CHANNEL_MASK_LT7_ADDR    : std_logic_vector(9 downto 0) := "00" & x"57";
     constant REG_CHANNEL_MASK_LT7_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT7_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT7_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_CHANNEL_MASK_LT8_ADDR    : std_logic_vector(9 downto 0) := "00" & x"48";
+    constant REG_CHANNEL_MASK_LT8_ADDR    : std_logic_vector(9 downto 0) := "00" & x"58";
     constant REG_CHANNEL_MASK_LT8_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT8_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT8_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_CHANNEL_MASK_LT9_ADDR    : std_logic_vector(9 downto 0) := "00" & x"49";
+    constant REG_CHANNEL_MASK_LT9_ADDR    : std_logic_vector(9 downto 0) := "00" & x"59";
     constant REG_CHANNEL_MASK_LT9_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT9_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT9_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_CHANNEL_MASK_LT10_ADDR    : std_logic_vector(9 downto 0) := "00" & x"4a";
+    constant REG_CHANNEL_MASK_LT10_ADDR    : std_logic_vector(9 downto 0) := "00" & x"5a";
     constant REG_CHANNEL_MASK_LT10_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT10_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT10_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_CHANNEL_MASK_LT11_ADDR    : std_logic_vector(9 downto 0) := "00" & x"4b";
+    constant REG_CHANNEL_MASK_LT11_ADDR    : std_logic_vector(9 downto 0) := "00" & x"5b";
     constant REG_CHANNEL_MASK_LT11_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT11_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT11_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_CHANNEL_MASK_LT12_ADDR    : std_logic_vector(9 downto 0) := "00" & x"4c";
+    constant REG_CHANNEL_MASK_LT12_ADDR    : std_logic_vector(9 downto 0) := "00" & x"5c";
     constant REG_CHANNEL_MASK_LT12_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT12_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT12_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_CHANNEL_MASK_LT13_ADDR    : std_logic_vector(9 downto 0) := "00" & x"4d";
+    constant REG_CHANNEL_MASK_LT13_ADDR    : std_logic_vector(9 downto 0) := "00" & x"5d";
     constant REG_CHANNEL_MASK_LT13_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT13_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT13_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_CHANNEL_MASK_LT14_ADDR    : std_logic_vector(9 downto 0) := "00" & x"4e";
+    constant REG_CHANNEL_MASK_LT14_ADDR    : std_logic_vector(9 downto 0) := "00" & x"5e";
     constant REG_CHANNEL_MASK_LT14_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT14_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT14_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_CHANNEL_MASK_LT15_ADDR    : std_logic_vector(9 downto 0) := "00" & x"4f";
+    constant REG_CHANNEL_MASK_LT15_ADDR    : std_logic_vector(9 downto 0) := "00" & x"5f";
     constant REG_CHANNEL_MASK_LT15_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT15_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT15_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_CHANNEL_MASK_LT16_ADDR    : std_logic_vector(9 downto 0) := "00" & x"50";
+    constant REG_CHANNEL_MASK_LT16_ADDR    : std_logic_vector(9 downto 0) := "00" & x"60";
     constant REG_CHANNEL_MASK_LT16_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT16_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT16_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_CHANNEL_MASK_LT17_ADDR    : std_logic_vector(9 downto 0) := "00" & x"51";
+    constant REG_CHANNEL_MASK_LT17_ADDR    : std_logic_vector(9 downto 0) := "00" & x"61";
     constant REG_CHANNEL_MASK_LT17_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT17_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT17_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_CHANNEL_MASK_LT18_ADDR    : std_logic_vector(9 downto 0) := "00" & x"52";
+    constant REG_CHANNEL_MASK_LT18_ADDR    : std_logic_vector(9 downto 0) := "00" & x"62";
     constant REG_CHANNEL_MASK_LT18_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT18_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT18_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_CHANNEL_MASK_LT19_ADDR    : std_logic_vector(9 downto 0) := "00" & x"53";
+    constant REG_CHANNEL_MASK_LT19_ADDR    : std_logic_vector(9 downto 0) := "00" & x"63";
     constant REG_CHANNEL_MASK_LT19_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT19_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT19_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_CHANNEL_MASK_LT20_ADDR    : std_logic_vector(9 downto 0) := "00" & x"54";
+    constant REG_CHANNEL_MASK_LT20_ADDR    : std_logic_vector(9 downto 0) := "00" & x"64";
     constant REG_CHANNEL_MASK_LT20_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT20_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT20_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_CHANNEL_MASK_LT21_ADDR    : std_logic_vector(9 downto 0) := "00" & x"55";
+    constant REG_CHANNEL_MASK_LT21_ADDR    : std_logic_vector(9 downto 0) := "00" & x"65";
     constant REG_CHANNEL_MASK_LT21_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT21_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT21_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_CHANNEL_MASK_LT22_ADDR    : std_logic_vector(9 downto 0) := "00" & x"56";
+    constant REG_CHANNEL_MASK_LT22_ADDR    : std_logic_vector(9 downto 0) := "00" & x"66";
     constant REG_CHANNEL_MASK_LT22_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT22_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT22_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_CHANNEL_MASK_LT23_ADDR    : std_logic_vector(9 downto 0) := "00" & x"57";
+    constant REG_CHANNEL_MASK_LT23_ADDR    : std_logic_vector(9 downto 0) := "00" & x"67";
     constant REG_CHANNEL_MASK_LT23_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT23_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT23_DEFAULT : std_logic_vector(7 downto 0) := x"00";
 
-    constant REG_CHANNEL_MASK_LT24_ADDR    : std_logic_vector(9 downto 0) := "00" & x"58";
+    constant REG_CHANNEL_MASK_LT24_ADDR    : std_logic_vector(9 downto 0) := "00" & x"68";
     constant REG_CHANNEL_MASK_LT24_MSB    : integer := 7;
     constant REG_CHANNEL_MASK_LT24_LSB     : integer := 0;
     constant REG_CHANNEL_MASK_LT24_DEFAULT : std_logic_vector(7 downto 0) := x"00";

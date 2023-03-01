@@ -287,6 +287,18 @@
         "mask": 16777215,
         "description": "hit count on LT=24"
     },
+    "MT.HIT_COUNTERS.RESET": {
+        "adr": 57,
+        "permission": "w",
+        "mask": 1,
+        "description": "Write 1 to reset hit counters."
+    },
+    "MT.HIT_COUNTERS.SNAP": {
+        "adr": 58,
+        "permission": "rw",
+        "mask": 1,
+        "description": "1 to snap the hit counters."
+    },
     "MT.ETH_RX_BAD_FRAME_CNT": {
         "adr": 61,
         "permission": "r",
@@ -300,151 +312,151 @@
         "description": "Ethernet MAC bad fcs"
     },
     "MT.CHANNEL_MASK.LT0": {
-        "adr": 64,
+        "adr": 80,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=0"
     },
     "MT.CHANNEL_MASK.LT1": {
-        "adr": 65,
+        "adr": 81,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=1"
     },
     "MT.CHANNEL_MASK.LT2": {
-        "adr": 66,
+        "adr": 82,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=2"
     },
     "MT.CHANNEL_MASK.LT3": {
-        "adr": 67,
+        "adr": 83,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=3"
     },
     "MT.CHANNEL_MASK.LT4": {
-        "adr": 68,
+        "adr": 84,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=4"
     },
     "MT.CHANNEL_MASK.LT5": {
-        "adr": 69,
+        "adr": 85,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=5"
     },
     "MT.CHANNEL_MASK.LT6": {
-        "adr": 70,
+        "adr": 86,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=6"
     },
     "MT.CHANNEL_MASK.LT7": {
-        "adr": 71,
+        "adr": 87,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=7"
     },
     "MT.CHANNEL_MASK.LT8": {
-        "adr": 72,
+        "adr": 88,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=8"
     },
     "MT.CHANNEL_MASK.LT9": {
-        "adr": 73,
+        "adr": 89,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=9"
     },
     "MT.CHANNEL_MASK.LT10": {
-        "adr": 74,
+        "adr": 90,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=10"
     },
     "MT.CHANNEL_MASK.LT11": {
-        "adr": 75,
+        "adr": 91,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=11"
     },
     "MT.CHANNEL_MASK.LT12": {
-        "adr": 76,
+        "adr": 92,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=12"
     },
     "MT.CHANNEL_MASK.LT13": {
-        "adr": 77,
+        "adr": 93,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=13"
     },
     "MT.CHANNEL_MASK.LT14": {
-        "adr": 78,
+        "adr": 94,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=14"
     },
     "MT.CHANNEL_MASK.LT15": {
-        "adr": 79,
+        "adr": 95,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=15"
     },
     "MT.CHANNEL_MASK.LT16": {
-        "adr": 80,
+        "adr": 96,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=16"
     },
     "MT.CHANNEL_MASK.LT17": {
-        "adr": 81,
+        "adr": 97,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=17"
     },
     "MT.CHANNEL_MASK.LT18": {
-        "adr": 82,
+        "adr": 98,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=18"
     },
     "MT.CHANNEL_MASK.LT19": {
-        "adr": 83,
+        "adr": 99,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=19"
     },
     "MT.CHANNEL_MASK.LT20": {
-        "adr": 84,
+        "adr": 100,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=20"
     },
     "MT.CHANNEL_MASK.LT21": {
-        "adr": 85,
+        "adr": 101,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=21"
     },
     "MT.CHANNEL_MASK.LT22": {
-        "adr": 86,
+        "adr": 102,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=22"
     },
     "MT.CHANNEL_MASK.LT23": {
-        "adr": 87,
+        "adr": 103,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=23"
     },
     "MT.CHANNEL_MASK.LT24": {
-        "adr": 88,
+        "adr": 104,
         "permission": "rw",
         "mask": 255,
         "description": "1 to mask a channel of LT=24"

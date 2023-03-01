@@ -150,6 +150,8 @@
     LT22 & \texttt{0x36} & \texttt{[23:0]} & r & \texttt{} & hit count on LT=22 \\\hline
     LT23 & \texttt{0x37} & \texttt{[23:0]} & r & \texttt{} & hit count on LT=23 \\\hline
     LT24 & \texttt{0x38} & \texttt{[23:0]} & r & \texttt{} & hit count on LT=24 \\\hline
+    RESET & \texttt{0x39} & \texttt{[0:0]} & w & Pulse & Write 1 to reset hit counters. \\\hline
+    SNAP & \texttt{0x3a} & \texttt{[0:0]} & rw & \texttt{0x1} & 1 to snap the hit counters. \\\hline
     \end{tabularx}
     \vspace{5mm}
 
@@ -186,31 +188,31 @@
     \hline
     \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
     \nopagebreak
-    LT0 & \texttt{0x40} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=0 \\\hline
-    LT1 & \texttt{0x41} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=1 \\\hline
-    LT2 & \texttt{0x42} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=2 \\\hline
-    LT3 & \texttt{0x43} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=3 \\\hline
-    LT4 & \texttt{0x44} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=4 \\\hline
-    LT5 & \texttt{0x45} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=5 \\\hline
-    LT6 & \texttt{0x46} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=6 \\\hline
-    LT7 & \texttt{0x47} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=7 \\\hline
-    LT8 & \texttt{0x48} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=8 \\\hline
-    LT9 & \texttt{0x49} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=9 \\\hline
-    LT10 & \texttt{0x4a} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=10 \\\hline
-    LT11 & \texttt{0x4b} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=11 \\\hline
-    LT12 & \texttt{0x4c} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=12 \\\hline
-    LT13 & \texttt{0x4d} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=13 \\\hline
-    LT14 & \texttt{0x4e} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=14 \\\hline
-    LT15 & \texttt{0x4f} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=15 \\\hline
-    LT16 & \texttt{0x50} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=16 \\\hline
-    LT17 & \texttt{0x51} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=17 \\\hline
-    LT18 & \texttt{0x52} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=18 \\\hline
-    LT19 & \texttt{0x53} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=19 \\\hline
-    LT20 & \texttt{0x54} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=20 \\\hline
-    LT21 & \texttt{0x55} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=21 \\\hline
-    LT22 & \texttt{0x56} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=22 \\\hline
-    LT23 & \texttt{0x57} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=23 \\\hline
-    LT24 & \texttt{0x58} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=24 \\\hline
+    LT0 & \texttt{0x50} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=0 \\\hline
+    LT1 & \texttt{0x51} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=1 \\\hline
+    LT2 & \texttt{0x52} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=2 \\\hline
+    LT3 & \texttt{0x53} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=3 \\\hline
+    LT4 & \texttt{0x54} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=4 \\\hline
+    LT5 & \texttt{0x55} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=5 \\\hline
+    LT6 & \texttt{0x56} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=6 \\\hline
+    LT7 & \texttt{0x57} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=7 \\\hline
+    LT8 & \texttt{0x58} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=8 \\\hline
+    LT9 & \texttt{0x59} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=9 \\\hline
+    LT10 & \texttt{0x5a} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=10 \\\hline
+    LT11 & \texttt{0x5b} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=11 \\\hline
+    LT12 & \texttt{0x5c} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=12 \\\hline
+    LT13 & \texttt{0x5d} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=13 \\\hline
+    LT14 & \texttt{0x5e} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=14 \\\hline
+    LT15 & \texttt{0x5f} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=15 \\\hline
+    LT16 & \texttt{0x60} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=16 \\\hline
+    LT17 & \texttt{0x61} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=17 \\\hline
+    LT18 & \texttt{0x62} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=18 \\\hline
+    LT19 & \texttt{0x63} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=19 \\\hline
+    LT20 & \texttt{0x64} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=20 \\\hline
+    LT21 & \texttt{0x65} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=21 \\\hline
+    LT22 & \texttt{0x66} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=22 \\\hline
+    LT23 & \texttt{0x67} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=23 \\\hline
+    LT24 & \texttt{0x68} & \texttt{[7:0]} & rw & \texttt{0x0} & 1 to mask a channel of LT=24 \\\hline
     \end{tabularx}
     \vspace{5mm}
 
