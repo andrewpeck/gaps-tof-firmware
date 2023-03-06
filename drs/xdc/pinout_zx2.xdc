@@ -69,7 +69,7 @@ set_property PACKAGE_PIN R17 [get_ports {adc_data_i[13]}]; # IO_B34_L19_R17_N
 set_property PACKAGE_PIN G17 [get_ports gfp_sdat];# IO_B35_L16_G17_P
 set_property PACKAGE_PIN G18 [get_ports gfp_sclk];# IO_B35_L16_G18_N
 
-set_property PACKAGE_PIN U10 [get_ports loss_of_lock_i];
+set_property PACKAGE_PIN E18 [get_ports loss_of_lock_i];
 
 # ext trigger on GPIO
 set_property PACKAGE_PIN D19 [get_ports ext_trigger_i]; # IO_B35_L4_D19_P
