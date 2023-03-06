@@ -98,6 +98,13 @@
           fw_default="0x0"
           fw_signal="tiu_emulation_mode"/>
 
+    <node id="TIU_BAD"
+          address="0xF"
+          permission="r"
+          mask="0x1"
+          description="1 means that the tiu link is not working"
+          fw_signal="tiu_bad"/>
+
     <node id="EVENT_QUEUE" address="0x10" description = "DAQ Buffer">
       <node id="RESET" permission="w" address="0x0" mask="0x00000001" description="DAQ Buffer Reset" fw_write_pulse_signal="daq_reset"/>
       <node id="DATA"  permission="r" address="0x1" mask="0xFFFFFFFF" description="DAQ Read Data"    fw_signal="daq_data_xfifo" fw_read_pulse_signal="daq_rd_en" fw_read_ready_signal="daq_valid_xfifo"/>

@@ -47,6 +47,8 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |TIU_EMULATION_MODE | ~0xe~ | ~0x38~ | ~0~ | rw | ~0x0~ | 1 to emulate the TIU | 
 |------------+---+---+---------+-----+-----+----------------------------|
+|TIU_BAD | ~0xf~ | ~0x3c~ | ~0~ | r |  | 1 means that the tiu link is not working | 
+|------------+---+---+---------+-----+-----+----------------------------|
 
 *MT.EVENT_QUEUE*
 

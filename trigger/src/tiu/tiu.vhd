@@ -35,6 +35,8 @@ entity tiu is
 
     -- outputs
 
+    tiu_bad_o : out std_logic := '0';
+
     global_busy_o : out std_logic;
 
     tiu_gps_valid_o : out std_logic;
@@ -470,6 +472,22 @@ begin
 
       if (reset = '1') then
         gps_rx_state <= IDLE;
+      end if;
+
+    end if;
+  end process;
+
+  process (clock) is
+  begin
+    if (rising_edge(clock)) then
+      if (tiu_busy_i = '1' and tiu_trigger_o = '0') then
+        tiu_bad_o <= '1';
+      elsif (tiu_busy_i = '1' and tiu_trigger_o = '1') then
+        tiu_bad_o <= '0';
+      end if;
+
+      if (reset = '1') then
+        tiu_bad_o <= '0';
       end if;
 
     end if;
