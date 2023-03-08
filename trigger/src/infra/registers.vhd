@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_MT_NUM_REGS : integer := 138;
+    constant REG_MT_NUM_REGS : integer := 139;
     constant REG_MT_ADDRESS_MSB : integer := 9;
     constant REG_MT_ADDRESS_LSB : integer := 0;
     constant REG_LOOPBACK_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
@@ -76,6 +76,11 @@ package registers is
     constant REG_TIU_BAD_ADDR    : std_logic_vector(9 downto 0) := "00" & x"0f";
     constant REG_TIU_BAD_BIT    : integer := 0;
 
+    constant REG_LT_INPUT_STRETCH_ADDR    : std_logic_vector(9 downto 0) := "00" & x"0f";
+    constant REG_LT_INPUT_STRETCH_MSB    : integer := 7;
+    constant REG_LT_INPUT_STRETCH_LSB     : integer := 4;
+    constant REG_LT_INPUT_STRETCH_DEFAULT : std_logic_vector(7 downto 4) := x"f";
+
     constant REG_EVENT_QUEUE_RESET_ADDR    : std_logic_vector(9 downto 0) := "00" & x"10";
     constant REG_EVENT_QUEUE_RESET_BIT    : integer := 0;
 
@@ -88,6 +93,29 @@ package registers is
 
     constant REG_EVENT_QUEUE_EMPTY_ADDR    : std_logic_vector(9 downto 0) := "00" & x"12";
     constant REG_EVENT_QUEUE_EMPTY_BIT    : integer := 1;
+
+    constant REG_INNER_TOF_THRESH_ADDR    : std_logic_vector(9 downto 0) := "00" & x"14";
+    constant REG_INNER_TOF_THRESH_MSB    : integer := 7;
+    constant REG_INNER_TOF_THRESH_LSB     : integer := 0;
+    constant REG_INNER_TOF_THRESH_DEFAULT : std_logic_vector(7 downto 0) := x"03";
+
+    constant REG_OUTER_TOF_THRESH_ADDR    : std_logic_vector(9 downto 0) := "00" & x"14";
+    constant REG_OUTER_TOF_THRESH_MSB    : integer := 15;
+    constant REG_OUTER_TOF_THRESH_LSB     : integer := 8;
+    constant REG_OUTER_TOF_THRESH_DEFAULT : std_logic_vector(15 downto 8) := x"03";
+
+    constant REG_TOTAL_TOF_THRESH_ADDR    : std_logic_vector(9 downto 0) := "00" & x"14";
+    constant REG_TOTAL_TOF_THRESH_MSB    : integer := 23;
+    constant REG_TOTAL_TOF_THRESH_LSB     : integer := 16;
+    constant REG_TOTAL_TOF_THRESH_DEFAULT : std_logic_vector(23 downto 16) := x"08";
+
+    constant REG_GAPS_TRIGGER_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"14";
+    constant REG_GAPS_TRIGGER_EN_BIT    : integer := 24;
+    constant REG_GAPS_TRIGGER_EN_DEFAULT : std_logic := '0';
+
+    constant REG_REQUIRE_BETA_ADDR    : std_logic_vector(9 downto 0) := "00" & x"14";
+    constant REG_REQUIRE_BETA_BIT    : integer := 25;
+    constant REG_REQUIRE_BETA_DEFAULT : std_logic := '1';
 
     constant REG_TRIG_MASK_A_ADDR    : std_logic_vector(9 downto 0) := "00" & x"15";
     constant REG_TRIG_MASK_A_MSB    : integer := 31;

@@ -67,6 +67,7 @@
     EVENT\_CNT & \texttt{0xd} & \texttt{[31:0]} & r & \texttt{} & Event Counter \\\hline
     TIU\_EMULATION\_MODE & \texttt{0xe} & \texttt{[0:0]} & rw & \texttt{0x0} & 1 to emulate the TIU \\\hline
     TIU\_BAD & \texttt{0xf} & \texttt{[0:0]} & r & \texttt{} & 1 means that the tiu link is not working \\\hline
+    LT\_INPUT\_STRETCH & \texttt{0xf} & \texttt{[7:4]} & rw & \texttt{0xF} & Number of clock cycles to stretch the LT inputs by \\\hline
     \end{tabularx}
     \vspace{5mm}
 
@@ -105,6 +106,11 @@
     \hline
     \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
     \nopagebreak
+    INNER\_TOF\_THRESH & \texttt{0x14} & \texttt{[7:0]} & rw & \texttt{0x3} & Inner TOF hit threshold \\\hline
+    OUTER\_TOF\_THRESH & \texttt{0x14} & \texttt{[15:8]} & rw & \texttt{0x3} & Outer TOF hit threshold \\\hline
+    TOTAL\_TOF\_THRESH & \texttt{0x14} & \texttt{[23:16]} & rw & \texttt{0x8} & Outer TOF hit threshold \\\hline
+    GAPS\_TRIGGER\_EN & \texttt{0x14} & \texttt{[24:24]} & rw & \texttt{0x0} & Enable the gaps trigger. \\\hline
+    REQUIRE\_BETA & \texttt{0x14} & \texttt{[25:25]} & rw & \texttt{0x1} & Require beta in the gaps trigger \\\hline
     TRIG\_MASK\_A & \texttt{0x15} & \texttt{[31:0]} & rw & \texttt{0x0} & Bitmask for the A trigger \\\hline
     TRIG\_MASK\_B & \texttt{0x16} & \texttt{[31:0]} & rw & \texttt{0x0} & Bitmask for the B trigger \\\hline
     TRIGGER\_RATE & \texttt{0x17} & \texttt{[23:0]} & r & \texttt{} & Rate of triggers in Hz \\\hline

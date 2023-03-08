@@ -95,6 +95,12 @@
         "mask": 1,
         "description": "1 means that the tiu link is not working"
     },
+    "MT.LT_INPUT_STRETCH": {
+        "adr": 15,
+        "permission": "rw",
+        "mask": 240,
+        "description": "Number of clock cycles to stretch the LT inputs by"
+    },
     "MT.EVENT_QUEUE.RESET": {
         "adr": 16,
         "permission": "w",
@@ -118,6 +124,36 @@
         "permission": "r",
         "mask": 2,
         "description": "DAQ Buffer Empty"
+    },
+    "MT.INNER_TOF_THRESH": {
+        "adr": 20,
+        "permission": "rw",
+        "mask": 255,
+        "description": "Inner TOF hit threshold"
+    },
+    "MT.OUTER_TOF_THRESH": {
+        "adr": 20,
+        "permission": "rw",
+        "mask": 65280,
+        "description": "Outer TOF hit threshold"
+    },
+    "MT.TOTAL_TOF_THRESH": {
+        "adr": 20,
+        "permission": "rw",
+        "mask": 16711680,
+        "description": "Outer TOF hit threshold"
+    },
+    "MT.GAPS_TRIGGER_EN": {
+        "adr": 20,
+        "permission": "rw",
+        "mask": 16777216,
+        "description": "Enable the gaps trigger."
+    },
+    "MT.REQUIRE_BETA": {
+        "adr": 20,
+        "permission": "rw",
+        "mask": 33554432,
+        "description": "Require beta in the gaps trigger"
     },
     "MT.TRIG_MASK_A": {
         "adr": 21,

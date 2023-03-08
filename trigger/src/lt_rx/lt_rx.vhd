@@ -40,6 +40,7 @@ entity lt_rx is
     clk90 : in std_logic;
     clk2x : in std_logic;
 
+    stretch         : in  std_logic_vector(3 downto 0);
     link_en         : in std_logic_vector (NUM_INPUTS-1 downto 0);
     inv             : in std_logic_vector (NUM_INPUTS-1 downto 0);
     coarse_delays_i : in lt_coarse_delays_array_t;
@@ -112,6 +113,7 @@ begin
         reset => reset,
 
         coarse_delay => coarse_delays(I),
+        stretch      => stretch,
         en           => link_en(I),
         inv          => inv(I),
         spy          => spy(I),
@@ -137,6 +139,7 @@ begin
 
     --
     -- https://gaps1.astro.ucla.edu/wiki/gaps/index.php?title=Local_Trigger_Board_Operation
+    -- https://gaps1.astro.ucla.edu/wiki/gaps/images/gaps/5/52/LTB_Data_Format.pdf
     --
     -- LT (at lest in the current scheme) is doing an AND for each paddle
     --

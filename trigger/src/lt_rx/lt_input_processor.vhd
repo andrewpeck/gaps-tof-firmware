@@ -19,8 +19,8 @@ use work.components.all;
 
 entity lt_input_processor is
   generic(
-    INST    : natural  := 0;
-    STRETCH : positive := 16
+    INST        : natural  := 0;
+    STRETCH_MAX : positive := 16
     );
   port(
 
@@ -30,6 +30,7 @@ entity lt_input_processor is
     clk90 : in std_logic;
     clk2x : in std_logic;
 
+    stretch      : in  std_logic_vector(3 downto 0);
     coarse_delay : in  coarse_delay_t;
     en           : in  std_logic;
     inv          : in  std_logic;
@@ -66,7 +67,7 @@ architecture behavioral of lt_input_processor is
   signal zero_count     : integer range 0 to zero_cnt_max := 0;
 
   signal valid    : std_logic                             := '0';
-  signal valid_sr : std_logic_vector (STRETCH-1 downto 0) := (others => '0');
+  signal valid_sr : std_logic_vector (STRETCH_MAX-1 downto 0) := (others => '0');
 
   signal sel    : std_logic_vector (1 downto 0) := (others => '0');
   signal dd_mon : std_logic_vector (3 downto 0) := (others => '0');
@@ -182,7 +183,7 @@ begin
   begin
     if (rising_edge(clk)) then
       if (valid = '1') then
-        valid_sr <= (others => '1');
+        valid_sr <= std_logic_vector(to_unsigned(integer(2**to_integer(unsigned(stretch)))-1, valid_sr'length));
       else
         valid_sr <= '0' & valid_sr(valid_sr'length-1 downto 1);
       end if;

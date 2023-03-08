@@ -51,9 +51,13 @@ NR > 1 {
         station="cube_bot"
         cnt = ++cube_bot_cnt
     }
-    else if (is_corner || (panel_num != 2 && panel_num >= 1 && panel_num <= 6)) {
+    else if (panel_num >= 1 && panel_num <= 6) {
         station="cube"
         cnt = ++cube_cnt
+    }
+    else if (is_corner) {
+        station="cube_corner"
+        cnt = ++corner_cnt
     }
     else if (panel_num >= 7 && panel_num <= 13) {
         station="umbrella"

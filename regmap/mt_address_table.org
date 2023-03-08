@@ -49,6 +49,8 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |TIU_BAD | ~0xf~ | ~0x3c~ | ~0~ | r |  | 1 means that the tiu link is not working | 
 |------------+---+---+---------+-----+-----+----------------------------|
+|LT_INPUT_STRETCH | ~0xf~ | ~0x3c~ | ~[7:4]~ | rw | ~0xF~ | Number of clock cycles to stretch the LT inputs by | 
+|------------+---+---+---------+-----+-----+----------------------------|
 
 *MT.EVENT_QUEUE*
 
@@ -73,6 +75,16 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+-------+-------+---------+------+-----+----------------------------|
 | Node       |  Adr  | Adr8  | Bits    | Perm | Def | Description                |
 |------------+-------+-------+---------+------+-----+----------------------------|
+|INNER_TOF_THRESH | ~0x14~ | ~0x50~ | ~[7:0]~ | rw | ~0x3~ | Inner TOF hit threshold | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|OUTER_TOF_THRESH | ~0x14~ | ~0x50~ | ~[15:8]~ | rw | ~0x3~ | Outer TOF hit threshold | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|TOTAL_TOF_THRESH | ~0x14~ | ~0x50~ | ~[23:16]~ | rw | ~0x8~ | Outer TOF hit threshold | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|GAPS_TRIGGER_EN | ~0x14~ | ~0x50~ | ~24~ | rw | ~0x0~ | Enable the gaps trigger. | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|REQUIRE_BETA | ~0x14~ | ~0x50~ | ~25~ | rw | ~0x1~ | Require beta in the gaps trigger | 
+|------------+---+---+---------+-----+-----+----------------------------|
 |TRIG_MASK_A | ~0x15~ | ~0x54~ | ~[31:0]~ | rw | ~0x0~ | Bitmask for the A trigger | 
 |------------+---+---+---------+-----+-----+----------------------------|
 |TRIG_MASK_B | ~0x16~ | ~0x58~ | ~[31:0]~ | rw | ~0x0~ | Bitmask for the B trigger | 
