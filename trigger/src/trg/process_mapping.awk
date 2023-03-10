@@ -18,9 +18,11 @@ NR == 1 {
         if ($i ~ /^LTB Harting.*/)
             DSI = i
     }
+
+    next
 }
 
-NR > 1 {
+{
 
     # strip off the quotes from the csv
     gsub("\"","")
@@ -77,7 +79,7 @@ NR > 1 {
 
     # vhdl output
     outputs[station][cnt] = \
-        sprintf("%s(%d) <= hits_i(%d); -- panel=%d paddle=%d station=%s (%d)",
+        sprintf("    %s(%d) <= hits_i(%d); -- panel=%d paddle=%d station=%s (%d)",
                 station, cnt, dsi_input, panel_num, paddle_num, station, cnt)
 
 }

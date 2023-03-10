@@ -289,6 +289,7 @@ begin
   process (hits_i) is
   begin
 
+    --START: autoinsert
     cube(0)  <= hits_i(0);              -- panel=1 paddle=1 station=cube (0)
     cube(1)  <= hits_i(1);              -- panel=1 paddle=2 station=cube (1)
     cube(2)  <= hits_i(2);              -- panel=1 paddle=3 station=cube (2)
@@ -410,6 +411,7 @@ begin
     cortina(6) <= hits_i(114);
     cortina(7) <= hits_i(115);
     cortina(8) <= hits_i(116);
+    --END: autoinsert
 
   end process;
 
