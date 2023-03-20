@@ -169,7 +169,7 @@ architecture structural of gaps_mt is
 
   signal dsi_link_en : std_logic_vector(lt_data_i_pri_p'range);
 
-  signal discrim, discrim_masked : threshold_array_t;   -- 1d array of 25 * 8 discrim
+  signal discrim, hits_masked, hits_xtrig : threshold_array_t;   -- 1d array of 25 * 8 discrim
 
   signal channel_mask       : t_std8_array (NUM_LTS-1 downto 0);
   signal discrim_1bit       : t_std8_array (NUM_LTS-1 downto 0);
@@ -635,7 +635,7 @@ begin
     if (rising_edge(clock)) then
       for I in 0 to discrim_1bit'length-1 loop
         for J in 0 to discrim_1bit(0)'length-1 loop
-          if (discrim_masked(I*8+J) /= "00") then
+          if (hits_masked(I*8+J) /= "00") then
             discrim_1bit(I)(J) <= '1';
           else
             discrim_1bit(I)(J) <= '0';
@@ -655,8 +655,8 @@ begin
   -- optionally mask off hot channels
   process (all) is
   begin
-    for I in 0 to discrim_masked'length-1 loop
-      discrim_masked(I) <= discrim(I) and repeat(not channel_mask(I / 8)(I mod 8), discrim_masked(I)'length);
+    for I in 0 to hits_masked'length-1 loop
+      hits_masked(I) <= discrim(I) and repeat(not channel_mask(I / 8)(I mod 8), hits_masked(I)'length);
     end loop;
   end process;
 
@@ -670,9 +670,10 @@ begin
       event_cnt_reset => event_cnt_reset,
 
       -- discrim from input stage (20x16 array of discrim)
-      hits_i => discrim_masked,
+      hits_i => hits_masked,
+      hits_o => hits_xtrig,
 
-      gaps_trigger_en  => gaps_trigger_en,
+      gaps_trigger_en   => gaps_trigger_en,
       require_beta      => require_beta,
       inner_tof_thresh  => inner_tof_thresh,
       outer_tof_thresh  => outer_tof_thresh,
@@ -933,7 +934,7 @@ begin
       timestamp_i     => std_logic_vector(timestamp),
       tiu_timestamp_i => timestamp_latch,
       tiu_gps_i       => tiu_gps,
-      hits_i          => discrim_masked,
+      hits_i          => hits_xtrig,
       data_o          => daq_data,
       data_valid_o    => daq_data_valid
       );
