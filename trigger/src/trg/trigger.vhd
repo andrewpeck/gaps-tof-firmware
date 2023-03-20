@@ -11,6 +11,7 @@ use work.components.all;
 -- Panel mapping: https://docs.google.com/spreadsheets/d/1i41fsmLf7IjfYbr1coTo9V4uk3t1GXAGgt0aOeCkeeA/edit#gid=0
 
 entity trigger is
+  generic (DEBUG : boolean := true);
   port(
 
     clk : in std_logic;
@@ -171,15 +172,20 @@ begin
   -- ILA
   --------------------------------------------------------------------------------
 
-  ila_trigger_inst : ila_trigger
-    port map (
-      clk    => clk,
-      probe0 => (others => '0'),
-      probe1 => (others => '0'),
-      probe2 => busy_i & global_trigger & dead & programmable_trigger,
-      probe3 => event_cnt_o,
-      probe4 => hitmask
-      );
+  debug_gen : if (DEBUG) generate
+    ila_trigger_inst : ila_trigger
+      port map (
+        clk                => clk,
+        probe0(0)          => global_trigger,
+        probe0(1)          => global_trigger_o,
+        probe0(7 downto 2) => (others => '0'),
+        probe1(7 downto 0) => (others => '0'),
+        probe2             => busy_i & global_trigger & dead & programmable_trigger,
+        probe3             => event_cnt_o,
+        probe4             => hitmask
+        );
+  end generate;
+
   --------------------------------------------------------------------------------
   -- Gaps Trigger
   --------------------------------------------------------------------------------
