@@ -184,20 +184,49 @@
             fw_cnt_en_signal="ltb_hit(${RB_IDX})">
       </node>
 
-    <node id="RESET"
-          address="25"
-          permission="w"
-          mask="0x1"
-          description="Write 1 to reset hit counters."
-          fw_write_pulse_signal="hit_cnt_reset"/>
-    <node id="SNAP"
-          address="26"
-          permission="rw"
-          description="1 to snap the hit counters."
-          mask="0x1"
-          fw_default="0x1"
-          fw_signal="cnt_snap"/>
+      <node id="RESET"
+            address="25"
+            permission="w"
+            mask="0x1"
+            description="Write 1 to reset hit counters."
+            fw_write_pulse_signal="hit_cnt_reset"/>
+      <node id="SNAP"
+            address="26"
+            permission="rw"
+            description="1 to snap the hit counters."
+            mask="0x1"
+            fw_default="0x1"
+            fw_signal="cnt_snap"/>
     </node>
+
+    <node id="SSL_TRIG_TOP_BOT_EN"
+          address="27"
+          permission="rw"
+          description="1 to enable"
+          mask="0x1"
+          fw_default="0x0"
+          fw_signal="ssl_trig_top_bot_en"/>
+    <node id="SSL_TRIG_TOPEDGE_BOT_EN"
+          address="27"
+          permission="rw"
+          description="1 to enable"
+          mask="0x2"
+          fw_default="0x0"
+          fw_signal="ssl_trig_topedge_bot_en"/>
+    <node id="SSL_TRIG_BOTEDGE_EN"
+          address="27"
+          permission="rw"
+          description="1 to enable"
+          mask="0x4"
+          fw_default="0x0"
+          fw_signal="ssl_trig_botedge_en"/>
+    <node id="SSL_TRIG_TOPMID_BOTMID_EN"
+          address="27"
+          permission="rw"
+          description="1 to enable"
+          mask="0x8"
+          fw_default="0x0"
+          fw_signal="ssl_trig_topmid_botmid_en"/>
 
     <node id="CHANNEL_MASK" address="0x50" description="1 to mask a channel">
       <node id="LT${LT_IDX}" address="0x0"
@@ -246,38 +275,38 @@
 
     <node id="XADC" address="0x120"
           description="Zynq XADC">
-        <node id="CALIBRATION" address="0x0" permission="r"
-              description="XADC Calibration"
-              mask="0x00000fff"
-              fw_signal="calibration" />
-        <node id="VCCPINT" address="0x0" permission="r"
-              description="XADC vccpint"
-              mask="0x0fff0000"
-              fw_signal="vccpint"/>
-        <node id="VCCPAUX" address="0x1" permission="r"
-              description="XADC Calibration"
-              mask="0x00000fff"
-              fw_signal="vccpaux" />
-        <node id="VCCODDR" address="0x1" permission="r"
-              description="XADC vccoddr"
-              mask="0x0fff0000"
-              fw_signal="vccoddr"/>
-        <node id="TEMP" address="0x2" permission="r"
-              description="XADC Temperature"
-              mask="0x00000fff"
-              fw_signal="temp" />
-        <node id="VCCINT" address="0x2" permission="r"
-              description="XADC vccint"
-              mask="0x0fff0000"
-              fw_signal="vccint"/>
-        <node id="VCCAUX" address="0x3" permission="r"
-              description="XADC VCCAUX"
-              mask="0x00000fff"
-              fw_signal="vccaux" />
-        <node id="VCCBRAM" address="0x3" permission="r"
-              description="XADC vccbram"
-              mask="0x0fff0000"
-              fw_signal="vccbram"/>
+      <node id="CALIBRATION" address="0x0" permission="r"
+            description="XADC Calibration"
+            mask="0x00000fff"
+            fw_signal="calibration" />
+      <node id="VCCPINT" address="0x0" permission="r"
+            description="XADC vccpint"
+            mask="0x0fff0000"
+            fw_signal="vccpint"/>
+      <node id="VCCPAUX" address="0x1" permission="r"
+            description="XADC Calibration"
+            mask="0x00000fff"
+            fw_signal="vccpaux" />
+      <node id="VCCODDR" address="0x1" permission="r"
+            description="XADC vccoddr"
+            mask="0x0fff0000"
+            fw_signal="vccoddr"/>
+      <node id="TEMP" address="0x2" permission="r"
+            description="XADC Temperature"
+            mask="0x00000fff"
+            fw_signal="temp" />
+      <node id="VCCINT" address="0x2" permission="r"
+            description="XADC vccint"
+            mask="0x0fff0000"
+            fw_signal="vccint"/>
+      <node id="VCCAUX" address="0x3" permission="r"
+            description="XADC VCCAUX"
+            mask="0x00000fff"
+            fw_signal="vccaux" />
+      <node id="VCCBRAM" address="0x3" permission="r"
+            description="XADC vccbram"
+            mask="0x0fff0000"
+            fw_signal="vccbram"/>
     </node> <!--XADC-->
 
     <node id="HOG" address="0x200" description = "HOG Parameters">

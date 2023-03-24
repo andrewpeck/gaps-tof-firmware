@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_MT_NUM_REGS : integer := 139;
+    constant REG_MT_NUM_REGS : integer := 140;
     constant REG_MT_ADDRESS_MSB : integer := 9;
     constant REG_MT_ADDRESS_LSB : integer := 0;
     constant REG_LOOPBACK_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
@@ -134,6 +134,22 @@ package registers is
     constant REG_LOST_TRIGGER_RATE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"18";
     constant REG_LOST_TRIGGER_RATE_MSB    : integer := 23;
     constant REG_LOST_TRIGGER_RATE_LSB     : integer := 0;
+
+    constant REG_SSL_TRIG_TOP_BOT_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1b";
+    constant REG_SSL_TRIG_TOP_BOT_EN_BIT    : integer := 0;
+    constant REG_SSL_TRIG_TOP_BOT_EN_DEFAULT : std_logic := '0';
+
+    constant REG_SSL_TRIG_TOPEDGE_BOT_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1b";
+    constant REG_SSL_TRIG_TOPEDGE_BOT_EN_BIT    : integer := 1;
+    constant REG_SSL_TRIG_TOPEDGE_BOT_EN_DEFAULT : std_logic := '0';
+
+    constant REG_SSL_TRIG_BOTEDGE_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1b";
+    constant REG_SSL_TRIG_BOTEDGE_EN_BIT    : integer := 2;
+    constant REG_SSL_TRIG_BOTEDGE_EN_DEFAULT : std_logic := '0';
+
+    constant REG_SSL_TRIG_TOPMID_BOTMID_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1b";
+    constant REG_SSL_TRIG_TOPMID_BOTMID_EN_BIT    : integer := 3;
+    constant REG_SSL_TRIG_TOPMID_BOTMID_EN_DEFAULT : std_logic := '0';
 
     constant REG_HIT_COUNTERS_LT0_ADDR    : std_logic_vector(9 downto 0) := "00" & x"20";
     constant REG_HIT_COUNTERS_LT0_MSB    : integer := 23;

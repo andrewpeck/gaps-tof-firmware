@@ -314,6 +314,9 @@ def en_any_trigger():
     set_trig("MT.TRIG_MASK_A", 0xffffffff)
     set_trig("MT.TRIG_MASK_B", 0xffffffff)
 
+def set_ssl_trig(trg, val):
+    set_trig("MT.SSL_TRIG_%s_EN" % trg, val)
+
 def trig_stop():
     set_trig("MT.TRIG_MASK_A", 0x00000000)
     set_trig("MT.TRIG_MASK_B", 0x00000000)
@@ -438,27 +441,35 @@ if __name__ == '__main__':
 
     argParser = argparse.ArgumentParser(description = "Argument parser")
 
-    argParser.add_argument('--ip',              action='store',      default=False, help="Set the IP Address of the target MTB.")
-    argParser.add_argument('--status',          action='store_true', default=False, help="Print out hte status of the TMB.")
-    argParser.add_argument('--ucla_trig_en',    action='store_true', default=False, help="Enable UCLA trigger")
-    argParser.add_argument('--ssl_trig_en',     action='store_true', default=False, help="Enable SSL trigger")
-    argParser.add_argument('--any_trig_en',     action='store_true', default=False, help="Enable ANY trigger")
-    argParser.add_argument('--trig_rates',      action='store_true', default=False, help="Read the trigger rates")
-    argParser.add_argument('--trig_stop',       action='store_true', default=False, help="Stop all triggers.")
-    argParser.add_argument('--trig_a',          action='store',                     help="Set trigger mask A")
-    argParser.add_argument('--trig_b',          action='store',                     help="Set trigger mask B")
-    argParser.add_argument('--trig_set_hz',     action='store',                     help="Set the poisson trigger generator rate in Hz")
-    argParser.add_argument('--trig_generate',   action='store',                     help="Set the poisson trigger generator rate (f_trig = 1E8 * rate / 0xffffffff)")
-    argParser.add_argument('--read_adc',        action='store_true', default=False, help="Read ADCs")
-    argParser.add_argument('--loopback',        action='store_true', default=False, help="Ethernet Loopback Test")
-    argParser.add_argument('--fw_info',         action='store_true', default=False, help="Print firmware version info")
-    argParser.add_argument('--reset_event_cnt', action='store_true', default=False, help="Reset the Event Counter")
-    argParser.add_argument('--read_event_cnt',  action='store_true', default=False, help="Read the Event Counter")
-    argParser.add_argument('--read_hit_cnt',    action='store_true', default=False, help="Read the LTB Hit Counters")
-    argParser.add_argument('--reset_hit_cnt',   action='store_true', default=False, help="Reset the LTB Hit Counters")
-    argParser.add_argument('--read_daq',        action='store_true', default=False, help="Stream the DAQ data to the screen")
-    argParser.add_argument('--force_trig',      action='store_true', default=False, help="Force an MTB Trigger")
-    argParser.add_argument('--check_clocks',    action='store_true', default=False, help="Check DSI loopback clock frequencies")
+    argParser.add_argument('--ip',                    action='store',      default=False, help="Set the IP Address of the target MTB.")
+    argParser.add_argument('--status',                action='store_true', default=False, help="Print out hte status of the TMB.")
+    argParser.add_argument('--ucla_trig_en',          action='store_true', default=False, help="Enable UCLA trigger")
+    argParser.add_argument('--ssl_trig_en',           action='store_true', default=False, help="Enable SSL trigger")
+    argParser.add_argument('--any_trig_en',           action='store_true', default=False, help="Enable ANY trigger")
+    argParser.add_argument('--ssl_top_bot_en',        action='store_true', default=False, help="Enable SSL trigger")
+    argParser.add_argument('--ssl_top_bot_dis',       action='store_true', default=False, help="Disable SSL trigger")
+    argParser.add_argument('--ssl_topedge_bot_en',    action='store_true', default=False, help="Enable SSL trigger")
+    argParser.add_argument('--ssl_topedge_bot_dis',   action='store_true', default=False, help="Disable SSL trigger")
+    argParser.add_argument('--ssl_botedge_en',        action='store_true', default=False, help="Enable SSL trigger")
+    argParser.add_argument('--ssl_botedge_dis',       action='store_true', default=False, help="Disable SSL trigger")
+    argParser.add_argument('--ssl_topmid_botmid_en',  action='store_true', default=False, help="Enable SSL trigger")
+    argParser.add_argument('--ssl_topmid_botmid_dis', action='store_true', default=False, help="Disable SSL trigger")
+    argParser.add_argument('--trig_rates',            action='store_true', default=False, help="Read the trigger rates")
+    argParser.add_argument('--trig_stop',             action='store_true', default=False, help="Stop all triggers.")
+    argParser.add_argument('--trig_a',                action='store',                     help="Set trigger mask A")
+    argParser.add_argument('--trig_b',                action='store',                     help="Set trigger mask B")
+    argParser.add_argument('--trig_set_hz',           action='store',                     help="Set the poisson trigger generator rate in Hz")
+    argParser.add_argument('--trig_generate',         action='store',                     help="Set the poisson trigger generator rate (f_trig = 1E8 * rate / 0xffffffff)")
+    argParser.add_argument('--read_adc',              action='store_true', default=False, help="Read ADCs")
+    argParser.add_argument('--loopback',              action='store_true', default=False, help="Ethernet Loopback Test")
+    argParser.add_argument('--fw_info',               action='store_true', default=False, help="Print firmware version info")
+    argParser.add_argument('--reset_event_cnt',       action='store_true', default=False, help="Reset the Event Counter")
+    argParser.add_argument('--read_event_cnt',        action='store_true', default=False, help="Read the Event Counter")
+    argParser.add_argument('--read_hit_cnt',          action='store_true', default=False, help="Read the LTB Hit Counters")
+    argParser.add_argument('--reset_hit_cnt',         action='store_true', default=False, help="Reset the LTB Hit Counters")
+    argParser.add_argument('--read_daq',              action='store_true', default=False, help="Stream the DAQ data to the screen")
+    argParser.add_argument('--force_trig',            action='store_true', default=False, help="Force an MTB Trigger")
+    argParser.add_argument('--check_clocks',          action='store_true', default=False, help="Check DSI loopback clock frequencies")
 
     args = argParser.parse_args()
 
@@ -494,6 +505,24 @@ if __name__ == '__main__':
         read_hit_cnt()
     if args.any_trig_en:
         en_any_trigger()
+
+    if args.ssl_top_bot_en:
+        set_ssl_trig("TOP_BOT", 1)
+    if args.ssl_top_bot_dis:
+        set_ssl_trig("TOP_BOT", 0)
+    if args.ssl_topedge_bot_en:
+        set_ssl_trig("TOPEDGE_BOT", 1)
+    if args.ssl_topedge_bot_dis:
+        set_ssl_trig("TOPEDGE_BOT", 0)
+    if args.ssl_botedge_en:
+        set_ssl_trig("BOTEDGE", 1)
+    if args.ssl_botedge_dis:
+        set_ssl_trig("BOTEDGE", 0)
+    if args.ssl_topmid_botmid_en:
+        set_ssl_trig("TOPMID_BOTMID", 1)
+    if args.ssl_topmid_botmid_dis:
+        set_ssl_trig("TOPMID_BOTMID", 0)
+
     if args.trig_stop:
         trig_stop()
     if args.read_adc:

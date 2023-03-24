@@ -115,6 +115,10 @@
     TRIG\_MASK\_B & \texttt{0x16} & \texttt{[31:0]} & rw & \texttt{0x0} & Bitmask for the B trigger \\\hline
     TRIGGER\_RATE & \texttt{0x17} & \texttt{[23:0]} & r & \texttt{} & Rate of triggers in Hz \\\hline
     LOST\_TRIGGER\_RATE & \texttt{0x18} & \texttt{[23:0]} & r & \texttt{} & Rate of lost triggers in Hz \\\hline
+    SSL\_TRIG\_TOP\_BOT\_EN & \texttt{0x1b} & \texttt{[0:0]} & rw & \texttt{0x0} & 1 to enable \\\hline
+    SSL\_TRIG\_TOPEDGE\_BOT\_EN & \texttt{0x1b} & \texttt{[1:1]} & rw & \texttt{0x0} & 1 to enable \\\hline
+    SSL\_TRIG\_BOTEDGE\_EN & \texttt{0x1b} & \texttt{[2:2]} & rw & \texttt{0x0} & 1 to enable \\\hline
+    SSL\_TRIG\_TOPMID\_BOTMID\_EN & \texttt{0x1b} & \texttt{[3:3]} & rw & \texttt{0x0} & 1 to enable \\\hline
     \end{tabularx}
     \vspace{5mm}
 

@@ -179,6 +179,30 @@
         "mask": 16777215,
         "description": "Rate of lost triggers in Hz"
     },
+    "MT.SSL_TRIG_TOP_BOT_EN": {
+        "adr": 27,
+        "permission": "rw",
+        "mask": 1,
+        "description": "1 to enable"
+    },
+    "MT.SSL_TRIG_TOPEDGE_BOT_EN": {
+        "adr": 27,
+        "permission": "rw",
+        "mask": 2,
+        "description": "1 to enable"
+    },
+    "MT.SSL_TRIG_BOTEDGE_EN": {
+        "adr": 27,
+        "permission": "rw",
+        "mask": 4,
+        "description": "1 to enable"
+    },
+    "MT.SSL_TRIG_TOPMID_BOTMID_EN": {
+        "adr": 27,
+        "permission": "rw",
+        "mask": 8,
+        "description": "1 to enable"
+    },
     "MT.HIT_COUNTERS.LT0": {
         "adr": 32,
         "permission": "r",
