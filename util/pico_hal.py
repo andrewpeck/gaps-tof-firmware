@@ -315,7 +315,7 @@ def en_any_trigger():
     set_trig("MT.TRIG_MASK_B", 0xffffffff)
 
 def set_ssl_trig(trg, val):
-    set_trig("MT.SSL_TRIG_%s_EN" % trg, val)
+    wReg("MT.SSL_TRIG_%s_EN" % trg, val)
 
 def trig_stop():
     set_trig("MT.TRIG_MASK_A", 0x00000000)
