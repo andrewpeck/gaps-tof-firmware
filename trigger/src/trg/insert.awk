@@ -1,6 +1,6 @@
 BEGIN {
-    start = ".*--START: autoinsert.*"
-    end = ".*--END: autoinsert.*"
+    start = ".*--START: autoinsert " heading
+    end = ".*--END: autoinsert " heading
 }
 
 $0 ~ start {

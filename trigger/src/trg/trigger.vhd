@@ -39,11 +39,11 @@ entity trigger is
     ssl_trig_botedge_en       : in std_logic;
     ssl_trig_topmid_botmid_en : in std_logic;
 
-    gaps_trigger_en     : in std_logic;
-    require_beta        : in std_logic;
-    inner_tof_thresh    : in std_logic_vector (7 downto 0);
-    outer_tof_thresh    : in std_logic_vector (7 downto 0);
-    total_tof_thresh    : in std_logic_vector (7 downto 0);
+    gaps_trigger_en  : in std_logic;
+    require_beta     : in std_logic;
+    inner_tof_thresh : in std_logic_vector (7 downto 0);
+    outer_tof_thresh : in std_logic_vector (7 downto 0);
+    total_tof_thresh : in std_logic_vector (7 downto 0);
 
     busy_i    : in std_logic;
     rb_busy_i : in std_logic_vector(NUM_RBS-1 downto 0);
@@ -332,7 +332,7 @@ begin
   end process;
 
   inner_tof_hit  <= cube_hit & cube_bot_hit & cube_corner_hit;
-  inner_tof_beta <= cube_beta;          -- exclude the bottom and corner from the beta test
+  inner_tof_beta <= cube_beta;  -- exclude the bottom and corner from the beta test
   outer_tof_hit  <= umbrella_hit & cortina_hit;
   outer_tof_beta <= umbrella_beta & cortina_beta;
 
@@ -348,7 +348,7 @@ begin
   process (hits_i) is
   begin
 
-    --START: autoinsert
+    --START: autoinsert mapping
 
     cube(0)  <= hits_i(0);              -- panel=1 paddle=1 station=cube (0)
     cube(1)  <= hits_i(1);              -- panel=1 paddle=2 station=cube (1)
@@ -395,74 +395,74 @@ begin
     cube(42) <= hits_i(54);             -- panel=6 paddle=55 station=cube (42)
     cube(43) <= hits_i(55);             -- panel=6 paddle=56 station=cube (43)
 
-    umbrella(0)  <= hits_i(60);         -- panel=7 paddle=61 station=umbrella (0)
-    umbrella(1)  <= hits_i(61);         -- panel=7 paddle=62 station=umbrella (1)
-    umbrella(2)  <= hits_i(62);         -- panel=7 paddle=63 station=umbrella (2)
-    umbrella(3)  <= hits_i(63);         -- panel=7 paddle=64 station=umbrella (3)
-    umbrella(4)  <= hits_i(64);         -- panel=7 paddle=65 station=umbrella (4)
-    umbrella(5)  <= hits_i(65);         -- panel=7 paddle=66 station=umbrella (5)
-    umbrella(6)  <= hits_i(66);         -- panel=7 paddle=67 station=umbrella (6)
-    umbrella(7)  <= hits_i(67);         -- panel=7 paddle=68 station=umbrella (7)
-    umbrella(8)  <= hits_i(68);         -- panel=7 paddle=69 station=umbrella (8)
-    umbrella(9)  <= hits_i(69);         -- panel=7 paddle=70 station=umbrella (9)
-    umbrella(10) <= hits_i(70);         -- panel=7 paddle=71 station=umbrella (10)
-    umbrella(11) <= hits_i(71);         -- panel=7 paddle=72 station=umbrella (11)
-    umbrella(12) <= hits_i(72);         -- panel=8 paddle=73 station=umbrella (12)
-    umbrella(13) <= hits_i(73);         -- panel=8 paddle=74 station=umbrella (13)
-    umbrella(14) <= hits_i(74);         -- panel=8 paddle=75 station=umbrella (14)
-    umbrella(15) <= hits_i(75);         -- panel=8 paddle=76 station=umbrella (15)
-    umbrella(16) <= hits_i(76);         -- panel=8 paddle=77 station=umbrella (16)
-    umbrella(17) <= hits_i(77);         -- panel=8 paddle=78 station=umbrella (17)
-    umbrella(18) <= hits_i(78);         -- panel=9 paddle=79 station=umbrella (18)
-    umbrella(19) <= hits_i(79);         -- panel=9 paddle=80 station=umbrella (19)
-    umbrella(20) <= hits_i(80);         -- panel=9 paddle=81 station=umbrella (20)
-    umbrella(21) <= hits_i(81);         -- panel=9 paddle=82 station=umbrella (21)
-    umbrella(22) <= hits_i(82);         -- panel=9 paddle=83 station=umbrella (22)
-    umbrella(23) <= hits_i(83);         -- panel=9 paddle=84 station=umbrella (23)
-    umbrella(24) <= hits_i(84);         -- panel=10 paddle=85 station=umbrella (24)
-    umbrella(25) <= hits_i(85);         -- panel=10 paddle=86 station=umbrella (25)
-    umbrella(26) <= hits_i(86);         -- panel=10 paddle=87 station=umbrella (26)
-    umbrella(27) <= hits_i(87);         -- panel=10 paddle=88 station=umbrella (27)
-    umbrella(28) <= hits_i(88);         -- panel=10 paddle=89 station=umbrella (28)
-    umbrella(29) <= hits_i(89);         -- panel=10 paddle=90 station=umbrella (29)
-    umbrella(30) <= hits_i(90);         -- panel=11 paddle=91 station=umbrella (30)
-    umbrella(31) <= hits_i(91);         -- panel=11 paddle=92 station=umbrella (31)
-    umbrella(32) <= hits_i(92);         -- panel=11 paddle=93 station=umbrella (32)
-    umbrella(33) <= hits_i(93);         -- panel=11 paddle=94 station=umbrella (33)
-    umbrella(34) <= hits_i(94);         -- panel=11 paddle=95 station=umbrella (34)
-    umbrella(35) <= hits_i(95);         -- panel=11 paddle=96 station=umbrella (35)
-    umbrella(36) <= hits_i(96);         -- panel=12 paddle=97 station=umbrella (36)
-    umbrella(37) <= hits_i(97);         -- panel=12 paddle=98 station=umbrella (37)
-    umbrella(38) <= hits_i(98);         -- panel=12 paddle=99 station=umbrella (38)
-    umbrella(39) <= hits_i(99);         -- panel=12 paddle=100 station=umbrella (39)
-    umbrella(40) <= hits_i(100);        -- panel=12 paddle=101 station=umbrella (40)
-    umbrella(41) <= hits_i(101);        -- panel=12 paddle=102 station=umbrella (41)
-    umbrella(42) <= hits_i(102);        -- panel=13 paddle=103 station=umbrella (42)
-    umbrella(43) <= hits_i(103);        -- panel=13 paddle=104 station=umbrella (43)
-    umbrella(44) <= hits_i(104);        -- panel=13 paddle=105 station=umbrella (44)
-    umbrella(45) <= hits_i(105);        -- panel=13 paddle=106 station=umbrella (45)
-    umbrella(46) <= hits_i(106);        -- panel=13 paddle=107 station=umbrella (46)
-    umbrella(47) <= hits_i(107);        -- panel=13 paddle=108 station=umbrella (47)
+    umbrella(0)  <= hits_i(60);   -- panel=7 paddle=61 station=umbrella (0)
+    umbrella(1)  <= hits_i(61);   -- panel=7 paddle=62 station=umbrella (1)
+    umbrella(2)  <= hits_i(62);   -- panel=7 paddle=63 station=umbrella (2)
+    umbrella(3)  <= hits_i(63);   -- panel=7 paddle=64 station=umbrella (3)
+    umbrella(4)  <= hits_i(64);   -- panel=7 paddle=65 station=umbrella (4)
+    umbrella(5)  <= hits_i(65);   -- panel=7 paddle=66 station=umbrella (5)
+    umbrella(6)  <= hits_i(66);   -- panel=7 paddle=67 station=umbrella (6)
+    umbrella(7)  <= hits_i(67);   -- panel=7 paddle=68 station=umbrella (7)
+    umbrella(8)  <= hits_i(68);   -- panel=7 paddle=69 station=umbrella (8)
+    umbrella(9)  <= hits_i(69);   -- panel=7 paddle=70 station=umbrella (9)
+    umbrella(10) <= hits_i(70);   -- panel=7 paddle=71 station=umbrella (10)
+    umbrella(11) <= hits_i(71);   -- panel=7 paddle=72 station=umbrella (11)
+    umbrella(12) <= hits_i(72);   -- panel=8 paddle=73 station=umbrella (12)
+    umbrella(13) <= hits_i(73);   -- panel=8 paddle=74 station=umbrella (13)
+    umbrella(14) <= hits_i(74);   -- panel=8 paddle=75 station=umbrella (14)
+    umbrella(15) <= hits_i(75);   -- panel=8 paddle=76 station=umbrella (15)
+    umbrella(16) <= hits_i(76);   -- panel=8 paddle=77 station=umbrella (16)
+    umbrella(17) <= hits_i(77);   -- panel=8 paddle=78 station=umbrella (17)
+    umbrella(18) <= hits_i(78);   -- panel=9 paddle=79 station=umbrella (18)
+    umbrella(19) <= hits_i(79);   -- panel=9 paddle=80 station=umbrella (19)
+    umbrella(20) <= hits_i(80);   -- panel=9 paddle=81 station=umbrella (20)
+    umbrella(21) <= hits_i(81);   -- panel=9 paddle=82 station=umbrella (21)
+    umbrella(22) <= hits_i(82);   -- panel=9 paddle=83 station=umbrella (22)
+    umbrella(23) <= hits_i(83);   -- panel=9 paddle=84 station=umbrella (23)
+    umbrella(24) <= hits_i(84);   -- panel=10 paddle=85 station=umbrella (24)
+    umbrella(25) <= hits_i(85);   -- panel=10 paddle=86 station=umbrella (25)
+    umbrella(26) <= hits_i(86);   -- panel=10 paddle=87 station=umbrella (26)
+    umbrella(27) <= hits_i(87);   -- panel=10 paddle=88 station=umbrella (27)
+    umbrella(28) <= hits_i(88);   -- panel=10 paddle=89 station=umbrella (28)
+    umbrella(29) <= hits_i(89);   -- panel=10 paddle=90 station=umbrella (29)
+    umbrella(30) <= hits_i(90);   -- panel=11 paddle=91 station=umbrella (30)
+    umbrella(31) <= hits_i(91);   -- panel=11 paddle=92 station=umbrella (31)
+    umbrella(32) <= hits_i(92);   -- panel=11 paddle=93 station=umbrella (32)
+    umbrella(33) <= hits_i(93);   -- panel=11 paddle=94 station=umbrella (33)
+    umbrella(34) <= hits_i(94);   -- panel=11 paddle=95 station=umbrella (34)
+    umbrella(35) <= hits_i(95);   -- panel=11 paddle=96 station=umbrella (35)
+    umbrella(36) <= hits_i(96);   -- panel=12 paddle=97 station=umbrella (36)
+    umbrella(37) <= hits_i(97);   -- panel=12 paddle=98 station=umbrella (37)
+    umbrella(38) <= hits_i(98);   -- panel=12 paddle=99 station=umbrella (38)
+    umbrella(39) <= hits_i(99);   -- panel=12 paddle=100 station=umbrella (39)
+    umbrella(40) <= hits_i(100);  -- panel=12 paddle=101 station=umbrella (40)
+    umbrella(41) <= hits_i(101);  -- panel=12 paddle=102 station=umbrella (41)
+    umbrella(42) <= hits_i(102);  -- panel=13 paddle=103 station=umbrella (42)
+    umbrella(43) <= hits_i(103);  -- panel=13 paddle=104 station=umbrella (43)
+    umbrella(44) <= hits_i(104);  -- panel=13 paddle=105 station=umbrella (44)
+    umbrella(45) <= hits_i(105);  -- panel=13 paddle=106 station=umbrella (45)
+    umbrella(46) <= hits_i(106);  -- panel=13 paddle=107 station=umbrella (46)
+    umbrella(47) <= hits_i(107);  -- panel=13 paddle=108 station=umbrella (47)
 
-    cube_bot(0)  <= hits_i(12);         -- panel=2 paddle=13 station=cube_bot (0)
-    cube_bot(1)  <= hits_i(13);         -- panel=2 paddle=14 station=cube_bot (1)
-    cube_bot(2)  <= hits_i(14);         -- panel=2 paddle=15 station=cube_bot (2)
-    cube_bot(3)  <= hits_i(15);         -- panel=2 paddle=16 station=cube_bot (3)
-    cube_bot(4)  <= hits_i(16);         -- panel=2 paddle=17 station=cube_bot (4)
-    cube_bot(5)  <= hits_i(17);         -- panel=2 paddle=18 station=cube_bot (5)
-    cube_bot(6)  <= hits_i(18);         -- panel=2 paddle=19 station=cube_bot (6)
-    cube_bot(7)  <= hits_i(19);         -- panel=2 paddle=20 station=cube_bot (7)
-    cube_bot(8)  <= hits_i(20);         -- panel=2 paddle=21 station=cube_bot (8)
-    cube_bot(9)  <= hits_i(21);         -- panel=2 paddle=22 station=cube_bot (9)
-    cube_bot(10) <= hits_i(22);         -- panel=2 paddle=23 station=cube_bot (10)
-    cube_bot(11) <= hits_i(23);         -- panel=2 paddle=24 station=cube_bot (11)
+    cube_bot(0)  <= hits_i(12);  -- panel=2 paddle=13 station=cube_bot (0)
+    cube_bot(1)  <= hits_i(13);  -- panel=2 paddle=14 station=cube_bot (1)
+    cube_bot(2)  <= hits_i(14);  -- panel=2 paddle=15 station=cube_bot (2)
+    cube_bot(3)  <= hits_i(15);  -- panel=2 paddle=16 station=cube_bot (3)
+    cube_bot(4)  <= hits_i(16);  -- panel=2 paddle=17 station=cube_bot (4)
+    cube_bot(5)  <= hits_i(17);  -- panel=2 paddle=18 station=cube_bot (5)
+    cube_bot(6)  <= hits_i(18);  -- panel=2 paddle=19 station=cube_bot (6)
+    cube_bot(7)  <= hits_i(19);  -- panel=2 paddle=20 station=cube_bot (7)
+    cube_bot(8)  <= hits_i(20);  -- panel=2 paddle=21 station=cube_bot (8)
+    cube_bot(9)  <= hits_i(21);  -- panel=2 paddle=22 station=cube_bot (9)
+    cube_bot(10) <= hits_i(22);  -- panel=2 paddle=23 station=cube_bot (10)
+    cube_bot(11) <= hits_i(23);  -- panel=2 paddle=24 station=cube_bot (11)
 
-    cube_corner(0) <= hits_i(56);       -- panel=0 paddle=57 station=cube_corner (0)
-    cube_corner(1) <= hits_i(57);       -- panel=0 paddle=58 station=cube_corner (1)
-    cube_corner(2) <= hits_i(58);       -- panel=0 paddle=59 station=cube_corner (2)
-    cube_corner(3) <= hits_i(59);       -- panel=0 paddle=60 station=cube_corner (3)
+    cube_corner(0) <= hits_i(56);  -- panel=0 paddle=57 station=cube_corner (0)
+    cube_corner(1) <= hits_i(57);  -- panel=0 paddle=58 station=cube_corner (1)
+    cube_corner(2) <= hits_i(58);  -- panel=0 paddle=59 station=cube_corner (2)
+    cube_corner(3) <= hits_i(59);  -- panel=0 paddle=60 station=cube_corner (3)
 
-    --END: autoinsert
+    --END: autoinsert mapping
 
     cortina(0) <= hits_i(108);
     cortina(1) <= hits_i(109);
@@ -495,12 +495,29 @@ begin
   process (clk) is
   begin
     if (rising_edge(clk)) then
-      -- OR(DSI1 J1, DSI2 J2) and OR(DSI1 J3, DSI1 J5)
-      --                             get_hits_from_slot(hits   ,dsi,slot)
-      ssl_trig_top_bot <= (or_reduce(get_hits_from_slot(hitmask, 1, 1)) or
-                           or_reduce(get_hits_from_slot(hitmask, 2, 2))) and
-                          (or_reduce(get_hits_from_slot(hitmask, 1, 3)) or
-                           or_reduce(get_hits_from_slot(hitmask, 1, 5)));
+
+      --START: autoinsert triggers
+
+      ssl_trig_top_bot <=
+        ((or_reduce(x"FF" and get_hits_from_slot(hitmask, 1, 1)) or
+          or_reduce(x"FF" and get_hits_from_slot(hitmask, 2, 2)))
+         and
+         (or_reduce(x"FF" and get_hits_from_slot(hitmask, 1, 3)) or
+          or_reduce(x"FF" and get_hits_from_slot(hitmask, 1, 5))));
+
+      ssl_trig_topedge_bot <=
+        ((or_reduce(x"3F" and get_hits_from_slot(hitmask, 1, 3)) or
+          or_reduce(x"FC" and get_hits_from_slot(hitmask, 1, 5)))
+         and
+         (or_reduce(x"C0" and get_hits_from_slot(hitmask, 1, 1)) or
+          or_reduce(x"30" and get_hits_from_slot(hitmask, 1, 2)) or
+          or_reduce(x"3C" and get_hits_from_slot(hitmask, 1, 4)) or
+          or_reduce(x"03" and get_hits_from_slot(hitmask, 2, 2)) or
+          or_reduce(x"0C" and get_hits_from_slot(hitmask, 2, 1)) or
+          or_reduce(x"3C" and get_hits_from_slot(hitmask, 2, 3))));
+
+      --END: autoinsert triggers
+
     end if;
   end process;
 
