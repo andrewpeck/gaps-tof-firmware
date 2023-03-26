@@ -45,6 +45,7 @@ entity lt_rx is
     inv             : in std_logic_vector (NUM_INPUTS-1 downto 0);
     coarse_delays_i : in lt_coarse_delays_array_t;
 
+    rdy_o           : out std_logic_vector (NUM_INPUTS-1 downto 0);
 
     data_i : in std_logic_vector (NUM_INPUTS-1 downto 0);
 
@@ -116,7 +117,8 @@ begin
         stretch      => stretch,
         en           => link_en(I),
         inv          => inv(I),
-        spy          => spy(I),
+        spy_o        => spy(I),
+        rdy_o        => rdy_o(I),
 
         data_i  => data_i(I),
         data_o  => data_bytes(I),
@@ -124,6 +126,22 @@ begin
         );
 
   end generate;
+
+  ila_200_inst : ila_200
+    port map (
+      clk                => clk,
+      probe0(0)          => '0',
+      probe1(0)          => '0',
+      probe2(7 downto 0) => spy(7 downto 0),
+      probe3(1 downto 0) => (others => '0'),
+      probe4             => data_valid(1 downto 0),
+      probe5             => data_valid(3 downto 2),
+      probe6             => data_valid(5 downto 4),
+      probe7             => data_bytes(0),
+      probe8             => data_bytes(1),
+      probe9             => data_bytes(4),
+      probe10            => data_bytes(5)
+      );
 
   --------------------------------------------------------------------------------
   -- LT data unpacker

@@ -127,6 +127,8 @@ architecture structural of gaps_mt is
   signal lt_data_i_pri   : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '0');
   signal lt_data_i_inv   : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '1');
 
+  signal lt_link_rdy     : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '1');
+
   signal lt_data_i_aux_p : std_logic_vector (NUM_LT_MT_AUX-1 downto 0) := (others => '0');
   signal lt_data_i_aux_n : std_logic_vector (NUM_LT_MT_AUX-1 downto 0) := (others => '0');
   signal lt_data_i_aux   : std_logic_vector (NUM_LT_MT_AUX-1 downto 0) := (others => '0');
@@ -611,6 +613,7 @@ begin
         -- clock and data from lt boards
         data_i  => lt_data_i_pri,
         inv     => lt_data_i_inv,
+        rdy_o   => lt_link_rdy,
         link_en => dsi_link_en,
 
         -- sr delay settings (in units of 1 clock cycle)
@@ -1647,10 +1650,15 @@ begin
   regs_addresses(139)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"07";
 
   -- Connect read signals
+  regs_read_arr(0)(REG_LT_LINK_READY0_MSB downto REG_LT_LINK_READY0_LSB) <= lt_link_rdy((0+1)*10-1 downto 0*10);
   regs_read_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB) <= loopback;
+  regs_read_arr(1)(REG_LT_LINK_READY1_MSB downto REG_LT_LINK_READY1_LSB) <= lt_link_rdy((1+1)*10-1 downto 1*10);
   regs_read_arr(1)(REG_CLOCK_RATE_MSB downto REG_CLOCK_RATE_LSB) <= clock_rate;
+  regs_read_arr(2)(REG_LT_LINK_READY2_MSB downto REG_LT_LINK_READY2_LSB) <= lt_link_rdy((2+1)*10-1 downto 2*10);
   regs_read_arr(2)(REG_FB_CLOCK_RATE_0_MSB downto REG_FB_CLOCK_RATE_0_LSB) <= fb_clock_rates(0);
+  regs_read_arr(3)(REG_LT_LINK_READY3_MSB downto REG_LT_LINK_READY3_LSB) <= lt_link_rdy((3+1)*10-1 downto 3*10);
   regs_read_arr(3)(REG_FB_CLOCK_RATE_1_MSB downto REG_FB_CLOCK_RATE_1_LSB) <= fb_clock_rates(1);
+  regs_read_arr(4)(REG_LT_LINK_READY4_MSB downto REG_LT_LINK_READY4_LSB) <= lt_link_rdy((4+1)*10-1 downto 4*10);
   regs_read_arr(4)(REG_FB_CLOCK_RATE_2_MSB downto REG_FB_CLOCK_RATE_2_LSB) <= fb_clock_rates(2);
   regs_read_arr(5)(REG_FB_CLOCK_RATE_3_MSB downto REG_FB_CLOCK_RATE_3_LSB) <= fb_clock_rates(3);
   regs_read_arr(6)(REG_FB_CLOCK_RATE_4_MSB downto REG_FB_CLOCK_RATE_4_LSB) <= fb_clock_rates(4);

@@ -13,22 +13,42 @@ package registers is
     constant REG_MT_NUM_REGS : integer := 140;
     constant REG_MT_ADDRESS_MSB : integer := 9;
     constant REG_MT_ADDRESS_LSB : integer := 0;
+    constant REG_LT_LINK_READY0_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
+    constant REG_LT_LINK_READY0_MSB    : integer := 9;
+    constant REG_LT_LINK_READY0_LSB     : integer := 0;
+
     constant REG_LOOPBACK_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
     constant REG_LOOPBACK_MSB    : integer := 31;
     constant REG_LOOPBACK_LSB     : integer := 0;
     constant REG_LOOPBACK_DEFAULT : std_logic_vector(31 downto 0) := x"00000000";
 
+    constant REG_LT_LINK_READY1_ADDR    : std_logic_vector(9 downto 0) := "00" & x"01";
+    constant REG_LT_LINK_READY1_MSB    : integer := 9;
+    constant REG_LT_LINK_READY1_LSB     : integer := 0;
+
     constant REG_CLOCK_RATE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"01";
     constant REG_CLOCK_RATE_MSB    : integer := 31;
     constant REG_CLOCK_RATE_LSB     : integer := 0;
+
+    constant REG_LT_LINK_READY2_ADDR    : std_logic_vector(9 downto 0) := "00" & x"02";
+    constant REG_LT_LINK_READY2_MSB    : integer := 9;
+    constant REG_LT_LINK_READY2_LSB     : integer := 0;
 
     constant REG_FB_CLOCK_RATE_0_ADDR    : std_logic_vector(9 downto 0) := "00" & x"02";
     constant REG_FB_CLOCK_RATE_0_MSB    : integer := 31;
     constant REG_FB_CLOCK_RATE_0_LSB     : integer := 0;
 
+    constant REG_LT_LINK_READY3_ADDR    : std_logic_vector(9 downto 0) := "00" & x"03";
+    constant REG_LT_LINK_READY3_MSB    : integer := 9;
+    constant REG_LT_LINK_READY3_LSB     : integer := 0;
+
     constant REG_FB_CLOCK_RATE_1_ADDR    : std_logic_vector(9 downto 0) := "00" & x"03";
     constant REG_FB_CLOCK_RATE_1_MSB    : integer := 31;
     constant REG_FB_CLOCK_RATE_1_LSB     : integer := 0;
+
+    constant REG_LT_LINK_READY4_ADDR    : std_logic_vector(9 downto 0) := "00" & x"04";
+    constant REG_LT_LINK_READY4_MSB    : integer := 9;
+    constant REG_LT_LINK_READY4_LSB     : integer := 0;
 
     constant REG_FB_CLOCK_RATE_2_ADDR    : std_logic_vector(9 downto 0) := "00" & x"04";
     constant REG_FB_CLOCK_RATE_2_MSB    : integer := 31;

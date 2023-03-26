@@ -180,28 +180,58 @@
         "description": "Rate of lost triggers in Hz"
     },
     "MT.SSL_TRIG_TOP_BOT_EN": {
-        "adr": 27,
+        "adr": 25,
         "permission": "rw",
         "mask": 1,
         "description": "1 to enable"
     },
     "MT.SSL_TRIG_TOPEDGE_BOT_EN": {
-        "adr": 27,
+        "adr": 25,
         "permission": "rw",
         "mask": 2,
         "description": "1 to enable"
     },
     "MT.SSL_TRIG_BOTEDGE_EN": {
-        "adr": 27,
+        "adr": 25,
         "permission": "rw",
         "mask": 4,
         "description": "1 to enable"
     },
     "MT.SSL_TRIG_TOPMID_BOTMID_EN": {
-        "adr": 27,
+        "adr": 25,
         "permission": "rw",
         "mask": 8,
         "description": "1 to enable"
+    },
+    "MT.LT_LINK_READY0": {
+        "adr": 26,
+        "permission": "r",
+        "mask": 1023,
+        "description": "DSI 0 RX Link OK"
+    },
+    "MT.LT_LINK_READY1": {
+        "adr": 27,
+        "permission": "r",
+        "mask": 1023,
+        "description": "DSI 1 RX Link OK"
+    },
+    "MT.LT_LINK_READY2": {
+        "adr": 28,
+        "permission": "r",
+        "mask": 1023,
+        "description": "DSI 2 RX Link OK"
+    },
+    "MT.LT_LINK_READY3": {
+        "adr": 29,
+        "permission": "r",
+        "mask": 1023,
+        "description": "DSI 3 RX Link OK"
+    },
+    "MT.LT_LINK_READY4": {
+        "adr": 30,
+        "permission": "r",
+        "mask": 1023,
+        "description": "DSI 4 RX Link OK"
     },
     "MT.HIT_COUNTERS.LT0": {
         "adr": 32,

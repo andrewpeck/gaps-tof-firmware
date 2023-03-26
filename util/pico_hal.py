@@ -338,6 +338,16 @@ def set_trig_hz(rate):
     # rate = f_trig / 1E8 * 0xffffffff
     set_trig_generate(int((rate*0xffffffff)/1E8))
 
+def read_ltb_link_status():
+    for dsi in range(5):
+        reg = f"MT.LT_LINK_READY{dsi}"
+        ok_mask = rReg(reg)
+        for ltb in range(5):
+            link0  = 1 ^ (0x1 & (ok_mask >> (ltb*2 + 0)))
+            link1  = 1 ^ (0x1 & (ok_mask >> (ltb*2 + 1)))
+            status = "(BAD)" if link0 or link1 else "(maybe ok)"
+            print(f"DSI {dsi} LTB {ltb} {link0=} {link1=} {status}")
+
 def read_rates():
     rate = rAdr(0x17)
     lost = rAdr(0x18)
@@ -455,6 +465,7 @@ if __name__ == '__main__':
     argParser.add_argument('--ssl_topmid_botmid_en',  action='store_true', default=False, help="Enable SSL trigger")
     argParser.add_argument('--ssl_topmid_botmid_dis', action='store_true', default=False, help="Disable SSL trigger")
     argParser.add_argument('--trig_rates',            action='store_true', default=False, help="Read the trigger rates")
+    argParser.add_argument('--ltb_status',            action='store_true', default=False, help="Read LTB link status")
     argParser.add_argument('--trig_stop',             action='store_true', default=False, help="Stop all triggers.")
     argParser.add_argument('--trig_a',                action='store',                     help="Set trigger mask A")
     argParser.add_argument('--trig_b',                action='store',                     help="Set trigger mask B")
@@ -487,6 +498,8 @@ if __name__ == '__main__':
         en_ucla_trigger()
     if args.trig_rates:
         read_rates()
+    if args.ltb_status:
+        read_ltb_link_status()
     if args.force_trig:
         force_trigger()
     if args.ssl_trig_en:
@@ -503,6 +516,8 @@ if __name__ == '__main__':
         read_event_cnt(output=True)
         print("")
         read_hit_cnt()
+        print("")
+        read_ltb_link_status()
     if args.any_trig_en:
         en_any_trigger()
 

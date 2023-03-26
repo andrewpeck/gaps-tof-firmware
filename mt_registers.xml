@@ -200,33 +200,43 @@
     </node>
 
     <node id="SSL_TRIG_TOP_BOT_EN"
-          address="27"
+          address="25"
           permission="rw"
           description="1 to enable"
           mask="0x1"
           fw_default="0x0"
           fw_signal="ssl_trig_top_bot_en"/>
     <node id="SSL_TRIG_TOPEDGE_BOT_EN"
-          address="27"
+          address="25"
           permission="rw"
           description="1 to enable"
           mask="0x2"
           fw_default="0x0"
           fw_signal="ssl_trig_topedge_bot_en"/>
     <node id="SSL_TRIG_BOTEDGE_EN"
-          address="27"
+          address="25"
           permission="rw"
           description="1 to enable"
           mask="0x4"
           fw_default="0x0"
           fw_signal="ssl_trig_botedge_en"/>
     <node id="SSL_TRIG_TOPMID_BOTMID_EN"
-          address="27"
+          address="25"
           permission="rw"
           description="1 to enable"
           mask="0x8"
           fw_default="0x0"
           fw_signal="ssl_trig_topmid_botmid_en"/>
+
+    <node id="LT_LINK_READY${DSI_IDX}" address="26"
+          generate="true"
+          generate_size="5"
+          generate_address_step="1"
+          generate_idx_var="DSI_IDX"
+          permission="r"
+          mask="0x3ff"
+          description="DSI ${DSI_IDX} RX Link OK"
+          fw_signal="lt_link_rdy((${DSI_IDX}+1)*10-1 downto ${DSI_IDX}*10)" />
 
     <node id="CHANNEL_MASK" address="0x50" description="1 to mask a channel">
       <node id="LT${LT_IDX}" address="0x0"

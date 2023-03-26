@@ -34,7 +34,9 @@ entity lt_input_processor is
     coarse_delay : in  coarse_delay_t;
     en           : in  std_logic;
     inv          : in  std_logic;
-    spy          : out std_logic;
+
+    spy_o        : out std_logic;
+    rdy_o        : out std_logic;
 
     data_i  : in  std_logic;
     data_o  : out std_logic_vector (7 downto 0) := (others => '0');
@@ -77,7 +79,8 @@ architecture behavioral of lt_input_processor is
 
 begin
 
-  spy <= data_oversample;
+  spy_o <= data_oversample;
+  rdy_o <= rdy;
 
   ilagen : if (INST = 0 or INST = 1 or
                INST = 4 or INST = 5) generate
