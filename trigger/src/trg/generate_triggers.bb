@@ -1,10 +1,6 @@
-(require '[clojure.java.shell :refer [sh]]
-         ;; '[cheshire.core :as json]
-         '[clojure.string :as str])
-;; ;; (println  (json/generate-string triggers {:pretty true}))
+(require '[clojure.string :as str])
 
-(def all-paddles
-  (range 1 17))
+(def all-paddles (range 1 17))
 
 (def triggers
   [{:name "ssl_trig_top_bot"
@@ -30,13 +26,15 @@
 
   ([mask channels]
    (if (> (count channels) 0)
-     (recur (bit-or mask (bit-shift-left 1 (int (Math/floor (/ (dec (first channels)) 2)))))
-            (rest channels)) mask)))
+     (let [pos (int (Math/floor (/ (dec (first channels)) 2)))
+           bit-mask (bit-shift-left 1 pos)
+           bit-mask (bit-or mask bit-mask)]
+       (recur bit-mask (rest channels)))
+     mask)))
 
 (defn chmap-to-string [chmap]
   (format "or_reduce(x\"%02X\" and get_hits_from_slot(hitmask, %d, %d))"
           (list-to-mask (:ch chmap)) (:dsi chmap) (:conn chmap)))
-
 
 (defn trigmap-to-string [trigmap]
   (str/join " or\n          " (map #'chmap-to-string trigmap)))
