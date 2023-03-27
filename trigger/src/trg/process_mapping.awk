@@ -1,21 +1,19 @@
 # https://docs.google.com/spreadsheets/d/1i41fsmLf7IjfYbr1coTo9V4uk3t1GXAGgt0aOeCkeeA/edit#gid=0
 
-BEGIN {
-    FS=","
-}
+BEGIN {FS=","}
 
 NR == 1 {
 
     gsub("\"","")
 
     for(i=1;i<=NF;i++) {
-        if ($i ~ /^Paddle Number.*/)
+        if ($i ~ /^Paddle Number /)
             PADDLE = i
-        if ($i ~ /^Paddle End.*/)
+        if ($i ~ /^Paddle End \(A\/B\) /)
             PADDLE_END = i
         if ($i ~ /^Panel Number.*/)
             PANEL = i
-        if ($i ~ /^LTB Harting.*/)
+        if ($i ~ /^LTB Harting Connection.*/)
             DSI = i
     }
 
