@@ -631,9 +631,9 @@ begin
       CMDB      => mt_cmd'length
       )
     port map (
-      clock      => trg_clk_oversample,
-      outclk     => clock,
-      reset      => reset,
+      clock  => trg_clk_oversample,
+      outclk => clock,
+      reset  => reset,
 
       -- provide a 200MHz copy of the trigger signal for a fast route to dwrite
       -- and a 33MHz copy for the rest of the logic
@@ -641,8 +641,8 @@ begin
       trg_o      => mt_trigger,
       fragment_o => mt_fragment,
 
-      serial_i   => mt_trigger_data,
-      enable_i   => mt_trigger_dav,
+      serial_i    => mt_trigger_data,
+      enable_i    => mt_trigger_mode and mt_trigger_dav,
       cmd_o       => mt_cmd,
       cmd_valid_o => mt_cmd_valid,
 
