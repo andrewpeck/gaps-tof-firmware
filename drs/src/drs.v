@@ -503,11 +503,12 @@ always @(posedge clock) begin
     // put in a separate state from INIT to respect addr to rsrload setup time
     RSR_LOAD: begin
 
-          // It stores the cell number where the sampling has been stopped and encodes this position
-          // in a 10 bit binary number ranging from 0 to 1023. This encoded position is clocked out
-          // to SROUT on the first ten readout clock cycles, as can be seen in Figure 15. The
-          // rising edge of the RSRLOAD signal outputs the MSB, while the falling edges of the SRCLK
-          // signal reveal the following bits up to the LSB.
+          // It stores the cell number where the sampling has been stopped and
+          // encodes this position in a 10 bit binary number ranging from 0 to
+          // 1023. This encoded position is clocked out to SROUT on the first
+          // ten readout clock cycles, as can be seen in Figure 15. The rising
+          // edge of the RSRLOAD signal outputs the MSB, while the falling edges
+          // of the SRCLK signal reveal the following bits up to the LSB.
 
           //------------------------------------------------------------------------------------------------------------
           // State
