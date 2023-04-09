@@ -94,8 +94,8 @@
     WAIT\_VDD\_CLKS & \texttt{0x18} & \texttt{[15:0]} & rw & \texttt{0x14D} & Number of ADC clocks to wait before reading out the drs, allowing vdd to stabilize; default=0x14d=10us \\\hline
     DRS\_DIAGNOSTIC\_MODE & \texttt{0x19} & \texttt{[0:0]} & rw & \texttt{0x0} & 1 will make the DRS read out the cell ID instead of ADC data \\\hline
     POSNEG & \texttt{0x1a} & \texttt{[0:0]} & rw & \texttt{0x0} & 1 to sample on positive edge, 0 on negative \\\hline
-    SROUT\_POSNEG & \texttt{0x1a} & \texttt{[1:1]} & rw & \texttt{0x1} & 1 to sample on positive edge, 0 on negative \\\hline
-    SROUT\_LATENCY & \texttt{0x1a} & \texttt{[6:4]} & rw & \texttt{0x0} & Latency of the SROUT readout \\\hline
+    SROUT\_POSNEG & \texttt{0x1a} & \texttt{[1:1]} & rw & \texttt{0x0} & 1 to sample on positive edge, 0 on negative \\\hline
+    SROUT\_LATENCY & \texttt{0x1a} & \texttt{[6:4]} & rw & \texttt{0x2} & Latency of the SROUT readout \\\hline
     DMA\_CLEAR & \texttt{0x1b} & \texttt{[0:0]} & w & Pulse & Write 1 to clear the DMA memory (write zeroes) \\\hline
     \end{tabularx}
     \vspace{5mm}

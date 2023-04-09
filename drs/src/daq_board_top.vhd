@@ -1346,6 +1346,7 @@ begin
   regs_read_arr(30)(REG_TRIGGER_MT_TRIGGER_IS_LEVEL_BIT) <= mt_is_level_trigger;
   regs_read_arr(31)(REG_TRIGGER_TRIGGER_DELAY_MSB downto REG_TRIGGER_TRIGGER_DELAY_LSB) <= drs_dwrite_delay_sel;
   regs_read_arr(32)(REG_TRIGGER_CNT_MT_PRBS_ERRS_MSB downto REG_TRIGGER_CNT_MT_PRBS_ERRS_LSB) <= cnt_mt_prbs_err;
+  regs_read_arr(34)(REG_TRIGGER_MT_TRIGGER_MODE_BIT) <= mt_trigger_mode;
   regs_read_arr(35)(REG_TRIGGER_CNT_MT_CRC_ERR_MSB downto REG_TRIGGER_CNT_MT_CRC_ERR_LSB) <= cnt_mt_crc_err;
   regs_read_arr(36)(REG_TRIGGER_TRIGGER_ENABLE_BIT) <= trigger_enable;
   regs_read_arr(37)(REG_TRIGGER_MT_EVENT_CNT_MSB downto REG_TRIGGER_MT_EVENT_CNT_LSB) <= mt_event_cnt;
