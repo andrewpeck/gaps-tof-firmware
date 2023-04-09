@@ -25,6 +25,8 @@ entity top_readout_board is
   generic (
     EN_TMR_IPB_SLAVE_DRS : integer := 0;
 
+    DEBUG : boolean := false;
+
     CLK_FREQUENCY : integer := 33000000;
 
     -- these generics get set by hog at synthesis
@@ -342,38 +344,6 @@ architecture Behavioral of top_readout_board is
   signal cylon      : std_logic_vector (3 downto 0) := (others => '0');
   signal cylon_mode : std_logic := '0';
 
-    component ila_s2mm is
-      port (
-        clk     : in std_logic;
-        probe0  : in std_logic;
-        probe1  : in std_logic;
-        probe2  : in std_logic_vector(71 downto 0);
-        probe3  : in std_logic_vector(31 downto 0);
-        probe4  : in std_logic_vector(3 downto 0);
-        probe5  : in std_logic;
-        probe6  : in std_logic;
-        probe7  : in std_logic;
-        probe8  : in std_logic_vector(31 downto 0);
-        probe9  : in std_logic;
-        probe10 : in std_logic_vector(31 downto 0);
-        probe11 : in std_logic;
-        probe12 : in std_logic;
-        probe13 : in std_logic;
-        probe14 : in std_logic;
-        probe15 : in std_logic_vector(7 downto 0);
-        probe16 : in std_logic;
-        probe17 : in std_logic;
-        probe18 : in std_logic_vector(7 downto 0);
-        probe19 : in std_logic;
-        probe20 : in std_logic;
-        probe21 : in std_logic_vector(15 downto 0);
-        probe22 : in std_logic_vector(31 downto 0);
-        probe23 : in std_logic;
-        probe24 : in std_logic_vector(33 downto 0);
-        probe25 : in std_logic_vector(7 downto 0);
-        probe26 : in std_logic_vector(5 downto 0)
-        );
-    end component;
 begin
 
   -------------------------------------------------------------------------------
@@ -565,64 +535,101 @@ begin
       data_out(0) => mt_prbs_err
       );
 
-  ila_s2mm_inst : ila_s2mm
-    port map(
-      clk                   => clock,
-      probe0                => mt_trigger_data,
-      probe1                => daq_acknowledge,
-      probe2                => (others => '0'),
-      probe3(15 downto 0)   => fifo_data_out,
-      probe3(16)            => drs_dwrite_async,
-      probe3(17)            => daq_ready,
-      probe3(18)            => ext_trigger_i,
-      probe3(27 downto 19)  => readout_mask,
-      probe3(28)            => mt_mask_valid,
-      probe3(29)            => daq_drs_busy,
-      probe3(30)            => mt_event_cnt_err,
-      probe3(31)            => mt_resync,
-      probe4                => (others => '0'),
-      probe5                => mt_prbs_err,
-      probe6                => daq_event_valid,
-      probe7                => loss_of_lock_i,
-      probe8                => mt_event_cnt,
-      probe9                => mt_trigger_dav,
-      probe10               => daq_event_cnt,
-      probe11               => mt_trigger_dav,
-      probe12               => drs_dwrite_o,
-      probe13               => mt_event_cnt_valid,
-      probe14               => daq_trigger,
-      probe15(1 downto 0)   => mt_cmd,
-      probe15(2)            => mt_cmd_valid,
-      probe15(3)            => mt_crc_valid,
-      probe15(4)            => mt_crc_ok,
-      probe15(5)            => daq_fragment,
-      probe15(6)            => mt_fragment,
-      probe15(7)            => start_readout,
-      probe16               => daq_busy,
-      probe17               => drs_busy,
-      probe18               => (others => '0'),
-      probe19               => trigger,
-      probe20               => mt_trigger,
-      probe21(8 downto 0)   => daq_mask,
-      probe21(9)            => reinit,
-      probe21(10)           => start,
-      probe21(11)           => drs_idle,
-      probe21(12)           => event_queue_rd_en,
-      probe21(13)           => event_queue_request,
-      probe21(14)           => event_queue_empty,
-      probe21(15)           => daq_ready,
-      probe22(13 downto 0)  => drs_data,
-      probe22(14)           => drs_data_valid,
-      probe22(28 downto 15) => drs_data_xfifo,
-      probe22(29)           => drs_valid_xfifo,
-      probe22(30)           => drs_rden,
-      probe22(31)           => mt_trigger_data_xdeco,
-      probe23               => fifo_data_wen,
-      probe24(7 downto 0)   => mt_crc_calc,
-      probe24(33 downto 8)  => (others => '0'),
-      probe25               => mt_crc,
-      probe26               => (others => '0')
-      );
+  gen_debug : if (DEBUG) generate
+
+    component ila_s2mm is
+      port (
+        clk     : in std_logic;
+        probe0  : in std_logic;
+        probe1  : in std_logic;
+        probe2  : in std_logic_vector(71 downto 0);
+        probe3  : in std_logic_vector(31 downto 0);
+        probe4  : in std_logic_vector(3 downto 0);
+        probe5  : in std_logic;
+        probe6  : in std_logic;
+        probe7  : in std_logic;
+        probe8  : in std_logic_vector(31 downto 0);
+        probe9  : in std_logic;
+        probe10 : in std_logic_vector(31 downto 0);
+        probe11 : in std_logic;
+        probe12 : in std_logic;
+        probe13 : in std_logic;
+        probe14 : in std_logic;
+        probe15 : in std_logic_vector(7 downto 0);
+        probe16 : in std_logic;
+        probe17 : in std_logic;
+        probe18 : in std_logic_vector(7 downto 0);
+        probe19 : in std_logic;
+        probe20 : in std_logic;
+        probe21 : in std_logic_vector(15 downto 0);
+        probe22 : in std_logic_vector(31 downto 0);
+        probe23 : in std_logic;
+        probe24 : in std_logic_vector(33 downto 0);
+        probe25 : in std_logic_vector(7 downto 0);
+        probe26 : in std_logic_vector(5 downto 0)
+        );
+    end component;
+
+  begin
+    ila_s2mm_inst : ila_s2mm
+      port map(
+        clk                   => clock,
+        probe0                => mt_trigger_data,
+        probe1                => daq_acknowledge,
+        probe2                => (others => '0'),
+        probe3(15 downto 0)   => fifo_data_out,
+        probe3(16)            => drs_dwrite_async,
+        probe3(17)            => daq_ready,
+        probe3(18)            => ext_trigger_i,
+        probe3(27 downto 19)  => readout_mask,
+        probe3(28)            => mt_mask_valid,
+        probe3(29)            => daq_drs_busy,
+        probe3(30)            => mt_event_cnt_err,
+        probe3(31)            => mt_resync,
+        probe4                => (others => '0'),
+        probe5                => mt_prbs_err,
+        probe6                => daq_event_valid,
+        probe7                => loss_of_lock_i,
+        probe8                => mt_event_cnt,
+        probe9                => mt_trigger_dav,
+        probe10               => daq_event_cnt,
+        probe11               => mt_trigger_dav,
+        probe12               => drs_dwrite_o,
+        probe13               => mt_event_cnt_valid,
+        probe14               => daq_trigger,
+        probe15(1 downto 0)   => mt_cmd,
+        probe15(2)            => mt_cmd_valid,
+        probe15(3)            => mt_crc_valid,
+        probe15(4)            => mt_crc_ok,
+        probe15(5)            => daq_fragment,
+        probe15(6)            => mt_fragment,
+        probe15(7)            => start_readout,
+        probe16               => daq_busy,
+        probe17               => drs_busy,
+        probe18               => (others => '0'),
+        probe19               => trigger,
+        probe20               => mt_trigger,
+        probe21(8 downto 0)   => daq_mask,
+        probe21(9)            => reinit,
+        probe21(10)           => start,
+        probe21(11)           => drs_idle,
+        probe21(12)           => event_queue_rd_en,
+        probe21(13)           => event_queue_request,
+        probe21(14)           => event_queue_empty,
+        probe21(15)           => daq_ready,
+        probe22(13 downto 0)  => drs_data,
+        probe22(14)           => drs_data_valid,
+        probe22(28 downto 15) => drs_data_xfifo,
+        probe22(29)           => drs_valid_xfifo,
+        probe22(30)           => drs_rden,
+        probe22(31)           => mt_trigger_data_xdeco,
+        probe23               => fifo_data_wen,
+        probe24(7 downto 0)   => mt_crc_calc,
+        probe24(33 downto 8)  => (others => '0'),
+        probe25               => mt_crc,
+        probe26               => (others => '0')
+        );
+  end generate;
 
   --------------------------------------------------------------------------------
   -- MT Receiver
