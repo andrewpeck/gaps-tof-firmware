@@ -305,7 +305,7 @@
                 description="Write 1 to reset the MT PRBS Error Counter"
                 mask="0x1"
                 fw_write_pulse_signal="mt_prbs_rst" />
-            <node id="MT_TRIGGER_MODE" address="0x5" permission="w"
+            <node id="MT_TRIGGER_MODE" address="0x5" permission="rw"
                 description="1 to use the MT as the source of the trigger"
                 mask="0x1"
                 fw_default="0x1"

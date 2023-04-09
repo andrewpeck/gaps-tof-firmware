@@ -372,7 +372,7 @@
     },
     "DRS.TRIGGER.MT_TRIGGER_MODE": {
         "adr": 69,
-        "permission": "w",
+        "permission": "rw",
         "mask": 1,
         "description": "1 to use the MT as the source of the trigger",
         "adr8": 276
