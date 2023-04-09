@@ -20,6 +20,8 @@ package components is
       diagnostic_mode          : in  std_logic;
       trigger_i                : in  std_logic;
       posneg_i                 : in  std_logic;
+      srout_posneg_i           : in  std_logic;
+      srout_latency_i          : in  std_logic_vector;
       adc_data_i               : in  std_logic_vector;
       drs_ctl_spike_removal    : in  std_logic;
       drs_ctl_roi_mode         : in  std_logic;

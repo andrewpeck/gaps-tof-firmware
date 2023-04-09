@@ -181,6 +181,20 @@
         "description": "1 to sample on positive edge, 0 on negative",
         "adr8": 104
     },
+    "DRS.READOUT.SROUT_POSNEG": {
+        "adr": 26,
+        "permission": "rw",
+        "mask": 2,
+        "description": "1 to sample on positive edge, 0 on negative",
+        "adr8": 104
+    },
+    "DRS.READOUT.SROUT_LATENCY": {
+        "adr": 26,
+        "permission": "rw",
+        "mask": 112,
+        "description": "Latency of the SROUT readout",
+        "adr8": 104
+    },
     "DRS.READOUT.DMA_CLEAR": {
         "adr": 27,
         "permission": "w",

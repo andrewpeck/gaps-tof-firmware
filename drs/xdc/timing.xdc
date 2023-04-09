@@ -1,7 +1,7 @@
 # 33MHz inputs
 set_input_delay -clock [get_clocks drs_clk_clock_wizard] -min 3.000 [get_ports -filter { NAME =~  "*adc*" && DIRECTION == "IN" }]
 set_input_delay -clock [get_clocks drs_clk_clock_wizard] -max 5.000 [get_ports -filter { NAME =~  "*adc*" && DIRECTION == "IN" }]
-set_input_delay -clock [get_clocks drs_clk_clock_wizard] -min 1.000 [get_ports -filter { NAME =~  "*srout*" && DIRECTION == "IN" }]
+set_input_delay -clock [get_clocks drs_clk_clock_wizard] -min 3.000 [get_ports -filter { NAME =~  "*srout*" && DIRECTION == "IN" }]
 set_input_delay -clock [get_clocks drs_clk_clock_wizard] -max 5.000 [get_ports -filter { NAME =~  "*srout*" && DIRECTION == "IN" }]
 
 set_input_delay -clock [get_clocks drs_clk_clock_wizard] -max 5.000 [get_ports -filter { NAME =~  "*gfp_s*" && DIRECTION == "IN" }]

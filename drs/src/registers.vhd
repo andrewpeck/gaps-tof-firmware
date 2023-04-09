@@ -113,6 +113,15 @@ package registers is
     constant REG_READOUT_POSNEG_BIT    : integer := 0;
     constant REG_READOUT_POSNEG_DEFAULT : std_logic := '0';
 
+    constant REG_READOUT_SROUT_POSNEG_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1a";
+    constant REG_READOUT_SROUT_POSNEG_BIT    : integer := 1;
+    constant REG_READOUT_SROUT_POSNEG_DEFAULT : std_logic := '1';
+
+    constant REG_READOUT_SROUT_LATENCY_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1a";
+    constant REG_READOUT_SROUT_LATENCY_MSB    : integer := 6;
+    constant REG_READOUT_SROUT_LATENCY_LSB     : integer := 4;
+    constant REG_READOUT_SROUT_LATENCY_DEFAULT : std_logic_vector(6 downto 4) := "000";
+
     constant REG_READOUT_DMA_CLEAR_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1b";
     constant REG_READOUT_DMA_CLEAR_BIT    : integer := 0;
 

@@ -139,7 +139,11 @@ architecture Behavioral of top_readout_board is
   -- Trigger Signals
   signal start_readout         : std_logic := '0';
   signal trigger               : std_logic := '0';
-  signal posneg                : std_logic := '0';
+
+  signal posneg                : std_logic;
+  signal srout_posneg          : std_logic;
+  signal srout_latency         : std_logic_vector(2 downto 0);
+
   signal ext_trigger_active_hi : std_logic := '0';
 
   signal mt_trigger_i           : std_logic              := '0';
@@ -871,8 +875,11 @@ begin
     port map (
       clock     => clock,
       reset     => reset or drs_reset,
-      trigger_i => start_readout,
-      posneg_i  => posneg,
+      trigger_i => trigger,
+
+      posneg_i        => posneg,
+      srout_posneg_i  => srout_posneg,
+      srout_latency_i => srout_latency,
 
       --adc_data => adc_data,
       adc_data_i => adc_data_i,
@@ -1309,6 +1316,8 @@ begin
   regs_read_arr(13)(REG_READOUT_WAIT_VDD_CLKS_MSB downto REG_READOUT_WAIT_VDD_CLKS_LSB) <= wait_vdd_clocks;
   regs_read_arr(14)(REG_READOUT_DRS_DIAGNOSTIC_MODE_BIT) <= drs_diagnostic_mode;
   regs_read_arr(15)(REG_READOUT_POSNEG_BIT) <= posneg;
+  regs_read_arr(15)(REG_READOUT_SROUT_POSNEG_BIT) <= srout_posneg;
+  regs_read_arr(15)(REG_READOUT_SROUT_LATENCY_MSB downto REG_READOUT_SROUT_LATENCY_LSB) <= srout_latency;
   regs_read_arr(17)(REG_FPGA_DNA_DNA_LSBS_MSB downto REG_FPGA_DNA_DNA_LSBS_LSB) <= dna (31 downto 0);
   regs_read_arr(18)(REG_FPGA_DNA_DNA_MSBS_MSB downto REG_FPGA_DNA_DNA_MSBS_LSB) <= dna (56 downto 32);
   regs_read_arr(19)(REG_FPGA_TIMESTAMP_TIMESTAMP_LSBS_MSB downto REG_FPGA_TIMESTAMP_TIMESTAMP_LSBS_LSB) <= std_logic_vector(timestamp (31 downto 0));
@@ -1376,6 +1385,8 @@ begin
   wait_vdd_clocks <= regs_write_arr(13)(REG_READOUT_WAIT_VDD_CLKS_MSB downto REG_READOUT_WAIT_VDD_CLKS_LSB);
   drs_diagnostic_mode <= regs_write_arr(14)(REG_READOUT_DRS_DIAGNOSTIC_MODE_BIT);
   posneg <= regs_write_arr(15)(REG_READOUT_POSNEG_BIT);
+  srout_posneg <= regs_write_arr(15)(REG_READOUT_SROUT_POSNEG_BIT);
+  srout_latency <= regs_write_arr(15)(REG_READOUT_SROUT_LATENCY_MSB downto REG_READOUT_SROUT_LATENCY_LSB);
   board_id <= regs_write_arr(25)(REG_FPGA_BOARD_ID_MSB downto REG_FPGA_BOARD_ID_LSB);
   drs_temp <= regs_write_arr(26)(REG_FPGA_DRS_TEMP_MSB downto REG_FPGA_DRS_TEMP_LSB);
   daq_fragment_en <= regs_write_arr(28)(REG_DAQ_DAQ_FRAGMENT_EN_BIT);
@@ -1537,6 +1548,8 @@ begin
   regs_defaults(13)(REG_READOUT_WAIT_VDD_CLKS_MSB downto REG_READOUT_WAIT_VDD_CLKS_LSB) <= REG_READOUT_WAIT_VDD_CLKS_DEFAULT;
   regs_defaults(14)(REG_READOUT_DRS_DIAGNOSTIC_MODE_BIT) <= REG_READOUT_DRS_DIAGNOSTIC_MODE_DEFAULT;
   regs_defaults(15)(REG_READOUT_POSNEG_BIT) <= REG_READOUT_POSNEG_DEFAULT;
+  regs_defaults(15)(REG_READOUT_SROUT_POSNEG_BIT) <= REG_READOUT_SROUT_POSNEG_DEFAULT;
+  regs_defaults(15)(REG_READOUT_SROUT_LATENCY_MSB downto REG_READOUT_SROUT_LATENCY_LSB) <= REG_READOUT_SROUT_LATENCY_DEFAULT;
   regs_defaults(25)(REG_FPGA_BOARD_ID_MSB downto REG_FPGA_BOARD_ID_LSB) <= REG_FPGA_BOARD_ID_DEFAULT;
   regs_defaults(26)(REG_FPGA_DRS_TEMP_MSB downto REG_FPGA_DRS_TEMP_LSB) <= REG_FPGA_DRS_TEMP_DEFAULT;
   regs_defaults(28)(REG_DAQ_DAQ_FRAGMENT_EN_BIT) <= REG_DAQ_DAQ_FRAGMENT_EN_DEFAULT;
