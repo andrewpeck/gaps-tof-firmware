@@ -868,6 +868,10 @@ always @(posedge clock) begin
 
     end // fini
 
+    default:
+
+      drs_readout_state <= START_RUNNING;
+
     endcase
   end // end !reset
 end // and always
