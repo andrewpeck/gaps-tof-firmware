@@ -882,7 +882,7 @@ begin
     port map (
       clock     => clock,
       reset     => reset or drs_reset,
-      trigger_i => trigger,
+      trigger_i => start_readout,
 
       posneg_i        => posneg,
       srout_posneg_i  => srout_posneg,
