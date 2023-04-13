@@ -503,15 +503,15 @@ begin
           or_reduce(x"FF" and get_hits_from_slot(hitmask, 2, 2)))
          and
          (or_reduce(x"FF" and get_hits_from_slot(hitmask, 1, 3)) or
-          or_reduce(x"FF" and get_hits_from_slot(hitmask, 1, 5))));
+          or_reduce(x"FF" and get_hits_from_slot(hitmask, 1, 4))));
 
       ssl_trig_topedge_bot <=
         ((or_reduce(x"3F" and get_hits_from_slot(hitmask, 1, 3)) or
-          or_reduce(x"FC" and get_hits_from_slot(hitmask, 1, 5)))
+          or_reduce(x"FC" and get_hits_from_slot(hitmask, 1, 4)))
          and
          (or_reduce(x"C0" and get_hits_from_slot(hitmask, 1, 1)) or
           or_reduce(x"30" and get_hits_from_slot(hitmask, 1, 2)) or
-          or_reduce(x"3C" and get_hits_from_slot(hitmask, 1, 4)) or
+          or_reduce(x"3C" and get_hits_from_slot(hitmask, 1, 5)) or
           or_reduce(x"03" and get_hits_from_slot(hitmask, 2, 2)) or
           or_reduce(x"0C" and get_hits_from_slot(hitmask, 2, 1)) or
           or_reduce(x"3C" and get_hits_from_slot(hitmask, 2, 3))));

@@ -1,3 +1,5 @@
+#!/usr/bin/env bb
+
 (require '[clojure.string :as str])
 
 (def all-paddles (range 1 17))
@@ -7,14 +9,14 @@
     :a [{:dsi 1 :conn 1 :ch all-paddles}
         {:dsi 2 :conn 2 :ch all-paddles}]
     :b [{:dsi 1 :conn 3 :ch all-paddles}
-        {:dsi 1 :conn 5 :ch all-paddles}]}
+        {:dsi 1 :conn 4 :ch all-paddles}]}
 
    {:name "ssl_trig_topedge_bot"
     :a [{:dsi 1 :conn 3 :ch [2 1 4 3 6 5 8 7 10 9 12 11]}
-        {:dsi 1 :conn 5 :ch [5 6 7 8 9 10 11 12 13 14 15 16]}]
+        {:dsi 1 :conn 4 :ch [5 6 7 8 9 10 11 12 13 14 15 16]}]
     :b [{:dsi 1 :conn 1 :ch [14 13 16 15]}
         {:dsi 1 :conn 2 :ch [12 11 10 9]}
-        {:dsi 1 :conn 4 :ch [10 9 8 7 12 11 6 5]}
+        {:dsi 1 :conn 5 :ch [10 9 8 7 12 11 6 5]}
         {:dsi 2 :conn 2 :ch [1 2 3 4]}
         {:dsi 2 :conn 1 :ch [5 6 7 8]}
         {:dsi 2 :conn 3 :ch [10 9 8 7 12 11 6 5]}]}])
