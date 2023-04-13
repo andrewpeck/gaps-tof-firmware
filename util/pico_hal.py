@@ -310,9 +310,10 @@ def en_ssl_trigger():
     set_trig("MT.TRIG_MASK_A", 0xfc3f0000)
     set_trig("MT.TRIG_MASK_B", 0x0000fc3f)
 
-def en_any_trigger():
-    set_trig("MT.TRIG_MASK_A", 0xffffffff)
-    set_trig("MT.TRIG_MASK_B", 0xffffffff)
+def set_any_trigger(val):
+    wReg("MT.ANY_TRIG_EN", val)
+    rd = rReg("MT.ANY_TRIG_EN")
+    print("Any trigger mode set to %d" % rd)
 
 def set_ssl_trig(trg, val):
     wReg("MT.SSL_TRIG_%s_EN" % trg, val)
@@ -456,6 +457,7 @@ if __name__ == '__main__':
     argParser.add_argument('--ucla_trig_en',          action='store_true', default=False, help="Enable UCLA trigger")
     argParser.add_argument('--ssl_trig_en',           action='store_true', default=False, help="Enable SSL trigger")
     argParser.add_argument('--any_trig_en',           action='store_true', default=False, help="Enable ANY trigger")
+    argParser.add_argument('--any_trig_dis',          action='store_true', default=False, help="Disable ANY trigger")
     argParser.add_argument('--ssl_top_bot_en',        action='store_true', default=False, help="Enable SSL trigger")
     argParser.add_argument('--ssl_top_bot_dis',       action='store_true', default=False, help="Disable SSL trigger")
     argParser.add_argument('--ssl_topedge_bot_en',    action='store_true', default=False, help="Enable SSL trigger")
@@ -518,8 +520,11 @@ if __name__ == '__main__':
         read_hit_cnt()
         print("")
         read_ltb_link_status()
+
     if args.any_trig_en:
-        en_any_trigger()
+        set_any_trigger(1)
+    if args.any_trig_dis:
+        set_any_trigger(0)
 
     if args.ssl_top_bot_en:
         set_ssl_trig("TOP_BOT", 1)
