@@ -199,7 +199,7 @@ architecture structural of gaps_mt is
 
   signal ssl_trig_top_bot_en       : std_logic;
   signal ssl_trig_topedge_bot_en   : std_logic;
-  signal ssl_trig_botedge_en       : std_logic;
+  signal ssl_trig_top_botedge_en   : std_logic;
   signal ssl_trig_topmid_botmid_en : std_logic;
 
   signal gaps_trigger_en  : std_logic;
@@ -681,9 +681,11 @@ begin
       hits_i => hits_masked,
       hits_o => hits_xtrig,
 
+      -- different trigger options are enabled / disabled here
+
       ssl_trig_top_bot_en       => ssl_trig_top_bot_en,
       ssl_trig_topedge_bot_en   => ssl_trig_topedge_bot_en,
-      ssl_trig_botedge_en       => ssl_trig_botedge_en,
+      ssl_trig_top_botedge_en   => ssl_trig_top_botedge_en,
       ssl_trig_topmid_botmid_en => ssl_trig_topmid_botmid_en,
 
       gaps_trigger_en   => gaps_trigger_en,
@@ -1683,7 +1685,7 @@ begin
   regs_read_arr(23)(REG_LOST_TRIGGER_RATE_MSB downto REG_LOST_TRIGGER_RATE_LSB) <= lost_trig_rate;
   regs_read_arr(24)(REG_SSL_TRIG_TOP_BOT_EN_BIT) <= ssl_trig_top_bot_en;
   regs_read_arr(24)(REG_SSL_TRIG_TOPEDGE_BOT_EN_BIT) <= ssl_trig_topedge_bot_en;
-  regs_read_arr(24)(REG_SSL_TRIG_BOTEDGE_EN_BIT) <= ssl_trig_botedge_en;
+  regs_read_arr(24)(REG_SSL_TRIG_TOP_BOTEDGE_EN_BIT) <= ssl_trig_top_botedge_en;
   regs_read_arr(24)(REG_SSL_TRIG_TOPMID_BOTMID_EN_BIT) <= ssl_trig_topmid_botmid_en;
   regs_read_arr(25)(REG_LT_LINK_READY0_MSB downto REG_LT_LINK_READY0_LSB) <= lt_link_rdy((0+1)*10-1 downto 0*10);
   regs_read_arr(26)(REG_LT_LINK_READY1_MSB downto REG_LT_LINK_READY1_LSB) <= lt_link_rdy((1+1)*10-1 downto 1*10);
@@ -1826,7 +1828,7 @@ begin
   trig_mask_b <= regs_write_arr(21)(REG_TRIG_MASK_B_MSB downto REG_TRIG_MASK_B_LSB);
   ssl_trig_top_bot_en <= regs_write_arr(24)(REG_SSL_TRIG_TOP_BOT_EN_BIT);
   ssl_trig_topedge_bot_en <= regs_write_arr(24)(REG_SSL_TRIG_TOPEDGE_BOT_EN_BIT);
-  ssl_trig_botedge_en <= regs_write_arr(24)(REG_SSL_TRIG_BOTEDGE_EN_BIT);
+  ssl_trig_top_botedge_en <= regs_write_arr(24)(REG_SSL_TRIG_TOP_BOTEDGE_EN_BIT);
   ssl_trig_topmid_botmid_en <= regs_write_arr(24)(REG_SSL_TRIG_TOPMID_BOTMID_EN_BIT);
   cnt_snap <= regs_write_arr(56)(REG_HIT_COUNTERS_SNAP_BIT);
   channel_mask(0) <= regs_write_arr(58)(REG_CHANNEL_MASK_LT0_MSB downto REG_CHANNEL_MASK_LT0_LSB);
@@ -2291,7 +2293,7 @@ begin
   regs_defaults(21)(REG_TRIG_MASK_B_MSB downto REG_TRIG_MASK_B_LSB) <= REG_TRIG_MASK_B_DEFAULT;
   regs_defaults(24)(REG_SSL_TRIG_TOP_BOT_EN_BIT) <= REG_SSL_TRIG_TOP_BOT_EN_DEFAULT;
   regs_defaults(24)(REG_SSL_TRIG_TOPEDGE_BOT_EN_BIT) <= REG_SSL_TRIG_TOPEDGE_BOT_EN_DEFAULT;
-  regs_defaults(24)(REG_SSL_TRIG_BOTEDGE_EN_BIT) <= REG_SSL_TRIG_BOTEDGE_EN_DEFAULT;
+  regs_defaults(24)(REG_SSL_TRIG_TOP_BOTEDGE_EN_BIT) <= REG_SSL_TRIG_TOP_BOTEDGE_EN_DEFAULT;
   regs_defaults(24)(REG_SSL_TRIG_TOPMID_BOTMID_EN_BIT) <= REG_SSL_TRIG_TOPMID_BOTMID_EN_DEFAULT;
   regs_defaults(56)(REG_HIT_COUNTERS_SNAP_BIT) <= REG_HIT_COUNTERS_SNAP_DEFAULT;
   regs_defaults(58)(REG_CHANNEL_MASK_LT0_MSB downto REG_CHANNEL_MASK_LT0_LSB) <= REG_CHANNEL_MASK_LT0_DEFAULT;

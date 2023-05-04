@@ -36,7 +36,7 @@ entity trigger is
     -- trigger parameters
     ssl_trig_top_bot_en       : in std_logic;
     ssl_trig_topedge_bot_en   : in std_logic;
-    ssl_trig_botedge_en       : in std_logic;
+    ssl_trig_top_botedge_en   : in std_logic;
     ssl_trig_topmid_botmid_en : in std_logic;
 
     gaps_trigger_en  : in std_logic;
@@ -81,7 +81,7 @@ architecture behavioral of trigger is
 
   signal ssl_trig_top_bot       : std_logic := '0';
   signal ssl_trig_topedge_bot   : std_logic := '0';
-  signal ssl_trig_botedge       : std_logic := '0';
+  signal ssl_trig_top_botedge   : std_logic := '0';
   signal ssl_trig_topmid_botmid : std_logic := '0';
 
   signal programmable_trigger : std_logic := '0';
@@ -499,22 +499,38 @@ begin
       --START: autoinsert triggers
 
       ssl_trig_top_bot <=
-        ((or_reduce(x"FF" and get_hits_from_slot(hitmask, 1, 1)) or
-          or_reduce(x"FF" and get_hits_from_slot(hitmask, 2, 2)))
+        ((or_reduce(x"3F" and get_hits_from_slot(hitmask, 1, 1)) or
+          or_reduce(x"FC" and get_hits_from_slot(hitmask, 2, 2)))
          and
-         (or_reduce(x"FF" and get_hits_from_slot(hitmask, 1, 3)) or
-          or_reduce(x"FF" and get_hits_from_slot(hitmask, 1, 4))));
+         (or_reduce(x"3F" and get_hits_from_slot(hitmask, 1, 3)) or
+          or_reduce(x"FC" and get_hits_from_slot(hitmask, 1, 4))));
 
       ssl_trig_topedge_bot <=
-        ((or_reduce(x"3F" and get_hits_from_slot(hitmask, 1, 3)) or
-          or_reduce(x"FC" and get_hits_from_slot(hitmask, 1, 4)))
-         and
-         (or_reduce(x"C0" and get_hits_from_slot(hitmask, 1, 1)) or
+        ((or_reduce(x"C0" and get_hits_from_slot(hitmask, 1, 1)) or
           or_reduce(x"30" and get_hits_from_slot(hitmask, 1, 2)) or
           or_reduce(x"3C" and get_hits_from_slot(hitmask, 1, 5)) or
           or_reduce(x"03" and get_hits_from_slot(hitmask, 2, 2)) or
           or_reduce(x"0C" and get_hits_from_slot(hitmask, 2, 1)) or
-          or_reduce(x"3C" and get_hits_from_slot(hitmask, 2, 3))));
+          or_reduce(x"3C" and get_hits_from_slot(hitmask, 2, 3)))
+         and
+         (or_reduce(x"3F" and get_hits_from_slot(hitmask, 1, 3)) or
+          or_reduce(x"FC" and get_hits_from_slot(hitmask, 1, 4))));
+
+      ssl_trig_top_botedge <=
+        ((or_reduce(x"3F" and get_hits_from_slot(hitmask, 1, 1)) or
+          or_reduce(x"FC" and get_hits_from_slot(hitmask, 2, 2)))
+         and
+         (or_reduce(x"0F" and get_hits_from_slot(hitmask, 1, 2)) or
+          or_reduce(x"C3" and get_hits_from_slot(hitmask, 1, 5)) or
+          or_reduce(x"F0" and get_hits_from_slot(hitmask, 2, 1)) or
+          or_reduce(x"C3" and get_hits_from_slot(hitmask, 2, 3))));
+
+      ssl_trig_topmid_botmid <=
+        ((or_reduce(x"03" and get_hits_from_slot(hitmask, 1, 1)) or
+          or_reduce(x"C0" and get_hits_from_slot(hitmask, 2, 2)))
+         and
+         (or_reduce(x"30" and get_hits_from_slot(hitmask, 1, 3)) or
+          or_reduce(x"0C" and get_hits_from_slot(hitmask, 1, 4))));
 
       --END: autoinsert triggers
 
@@ -534,7 +550,7 @@ begin
                                                  (gaps_trigger_en and gaps_trigger) or
                                                  (ssl_trig_top_bot_en and ssl_trig_top_bot) or
                                                  (ssl_trig_topedge_bot_en and ssl_trig_topedge_bot) or
-                                                 (ssl_trig_botedge_en and ssl_trig_botedge) or
+                                                 (ssl_trig_top_botedge_en and ssl_trig_top_botedge) or
                                                  (ssl_trig_topmid_botmid_en and ssl_trig_topmid_botmid) or
                                                  programmable_trigger);
       end loop;

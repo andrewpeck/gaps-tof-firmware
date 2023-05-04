@@ -97,7 +97,7 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |SSL_TRIG_TOPEDGE_BOT_EN | ~0x19~ | ~0x64~ | ~1~ | rw | ~0x0~ | 1 to enable | 
 |------------+---+---+---------+-----+-----+----------------------------|
-|SSL_TRIG_BOTEDGE_EN | ~0x19~ | ~0x64~ | ~2~ | rw | ~0x0~ | 1 to enable | 
+|SSL_TRIG_TOP_BOTEDGE_EN | ~0x19~ | ~0x64~ | ~2~ | rw | ~0x0~ | 1 to enable | 
 |------------+---+---+---------+-----+-----+----------------------------|
 |SSL_TRIG_TOPMID_BOTMID_EN | ~0x19~ | ~0x64~ | ~3~ | rw | ~0x0~ | 1 to enable | 
 |------------+---+---+---------+-----+-----+----------------------------|

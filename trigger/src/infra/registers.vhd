@@ -143,9 +143,9 @@ package registers is
     constant REG_SSL_TRIG_TOPEDGE_BOT_EN_BIT    : integer := 1;
     constant REG_SSL_TRIG_TOPEDGE_BOT_EN_DEFAULT : std_logic := '0';
 
-    constant REG_SSL_TRIG_BOTEDGE_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"19";
-    constant REG_SSL_TRIG_BOTEDGE_EN_BIT    : integer := 2;
-    constant REG_SSL_TRIG_BOTEDGE_EN_DEFAULT : std_logic := '0';
+    constant REG_SSL_TRIG_TOP_BOTEDGE_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"19";
+    constant REG_SSL_TRIG_TOP_BOTEDGE_EN_BIT    : integer := 2;
+    constant REG_SSL_TRIG_TOP_BOTEDGE_EN_DEFAULT : std_logic := '0';
 
     constant REG_SSL_TRIG_TOPMID_BOTMID_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"19";
     constant REG_SSL_TRIG_TOPMID_BOTMID_EN_BIT    : integer := 3;

@@ -462,8 +462,8 @@ if __name__ == '__main__':
     argParser.add_argument('--ssl_top_bot_dis',       action='store_true', default=False, help="Disable SSL trigger")
     argParser.add_argument('--ssl_topedge_bot_en',    action='store_true', default=False, help="Enable SSL trigger")
     argParser.add_argument('--ssl_topedge_bot_dis',   action='store_true', default=False, help="Disable SSL trigger")
-    argParser.add_argument('--ssl_botedge_en',        action='store_true', default=False, help="Enable SSL trigger")
-    argParser.add_argument('--ssl_botedge_dis',       action='store_true', default=False, help="Disable SSL trigger")
+    argParser.add_argument('--ssl_top_botedge_en',    action='store_true', default=False, help="Enable SSL trigger")
+    argParser.add_argument('--ssl_top_botedge_dis',   action='store_true', default=False, help="Disable SSL trigger")
     argParser.add_argument('--ssl_topmid_botmid_en',  action='store_true', default=False, help="Enable SSL trigger")
     argParser.add_argument('--ssl_topmid_botmid_dis', action='store_true', default=False, help="Disable SSL trigger")
     argParser.add_argument('--trig_rates',            action='store_true', default=False, help="Read the trigger rates")
@@ -534,10 +534,10 @@ if __name__ == '__main__':
         set_ssl_trig("TOPEDGE_BOT", 1)
     if args.ssl_topedge_bot_dis:
         set_ssl_trig("TOPEDGE_BOT", 0)
-    if args.ssl_botedge_en:
-        set_ssl_trig("BOTEDGE", 1)
-    if args.ssl_botedge_dis:
-        set_ssl_trig("BOTEDGE", 0)
+    if args.ssl_top_botedge_en:
+        set_ssl_trig("TOP_BOTEDGE", 1)
+    if args.ssl_top_botedge_dis:
+        set_ssl_trig("TOP_BOTEDGE", 0)
     if args.ssl_topmid_botmid_en:
         set_ssl_trig("TOPMID_BOTMID", 1)
     if args.ssl_topmid_botmid_dis:
