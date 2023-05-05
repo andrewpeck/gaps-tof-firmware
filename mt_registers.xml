@@ -213,13 +213,13 @@
           mask="0x2"
           fw_default="0x0"
           fw_signal="ssl_trig_topedge_bot_en"/>
-    <node id="SSL_TRIG_BOTEDGE_EN"
+    <node id="SSL_TRIG_TOP_BOTEDGE_EN"
           address="25"
           permission="rw"
           description="1 to enable"
           mask="0x4"
           fw_default="0x0"
-          fw_signal="ssl_trig_botedge_en"/>
+          fw_signal="ssl_trig_top_botedge_en"/>
     <node id="SSL_TRIG_TOPMID_BOTMID_EN"
           address="25"
           permission="rw"
