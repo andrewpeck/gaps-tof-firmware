@@ -10,7 +10,7 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_misc.all;
 use ieee.numeric_std.all;
 
-entity trg_tx is
+entity rb_tx is
   generic(
     EVENTCNTB  : natural := 32;
     MASKCNTB   : natural := 8;
@@ -32,9 +32,9 @@ entity trg_tx is
     ch_mask_i   : in std_logic_vector (MASKCNTB-1 downto 0)
 
     );
-end trg_tx;
+end rb_tx;
 
-architecture rtl of trg_tx is
+architecture rtl of rb_tx is
 
   constant LENGTH : natural := CRCB + CMDB + EVENTCNTB + MASKCNTB + 1;
 

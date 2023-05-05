@@ -815,7 +815,7 @@ begin
 
       trg    <= or_reduce(trg_extend);
 
-      trg_tx_inst : entity work.trg_tx
+      rb_tx_inst : entity work.rb_tx
         generic map (
           EVENTCNTB => EVENTCNTB,
           MASKCNTB  => NUM_RB_CHANNELS
