@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 package ipbus is
 
   constant IPB_MASTERS      : integer := 1;
-  constant IPB_SLAVES       : integer := 2;
+  constant IPB_SLAVES       : integer := 3;
   constant C_NUM_IPB_SLAVES : integer := IPB_SLAVES;
 
   constant IPB_ADDR_SIZE : integer := 32;
@@ -32,11 +32,13 @@ package ipbus is
     type t_ipb_slv is record
                      MT   : integer;
                     SPI   : integer;
+                    I2C   : integer;
     end record;
     -- IPbus slave index definition
     constant IPB_SLAVE : t_ipb_slv := (
                      MT  => 0,
-                    SPI  => 1    );
+                    SPI  => 1,
+                    I2C  => 2    );
   -- END: IPBUS_SLAVES :: DO NOT EDIT
 
   constant IPB_REQ_BITS : integer := 49;
@@ -86,6 +88,7 @@ package body ipbus is
     -- START: IPBUS_ADDR_SEL :: DO NOT EDIT
         if   (std_match(addr(15 downto 0), std_logic_vector(to_unsigned(IPB_SLAVE.             MT,     4))  & "------------")) then sel := IPB_SLAVE.MT;
         elsif(std_match(addr(15 downto 0), std_logic_vector(to_unsigned(IPB_SLAVE.            SPI,     4))  & "------------")) then sel := IPB_SLAVE.SPI;
+        elsif(std_match(addr(15 downto 0), std_logic_vector(to_unsigned(IPB_SLAVE.            I2C,     4))  & "------------")) then sel := IPB_SLAVE.I2C;
     -- END: IPBUS_ADDR_SEL :: DO NOT EDIT
     else sel                                                                                                     := 99;
     end if;

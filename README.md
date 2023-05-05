@@ -248,6 +248,21 @@ bits per trigger.
 | TIU Event ID | EXT_OUT0   | LVDS OUT: Asynchronous serial output containing the event ID                                                                                |
 | TIU Trigger  | EXT_OUT1   | LVDS OUT: Trigger output from the MT to TIU. Asynchronous level which should not be deasserted until the BUSY is received back from the TIU |
 
+| Pin        | Function          |
+|------------|-------------------|
+| ext_io(0)  | ext_trigger input |
+| ext_io(1)  | –                 |
+| ext_io(2)  | SDA               |
+| ext_io(3)  | SCL               |
+| ext_io(5)  | hk_ext_clk;       |
+| ext_io(6); | hk_ext_miso       |
+| ext_io(7)  | hk_ext_mosi;      |
+| ext_io(8)  | hk_ext_cs_n(0);   |
+| ext_io(9)  | hk_ext_cs_n(1);   |
+| ext_io(10) | trigger mirror    |
+| ext_io(12) | –                 |
+| ext_io(13) | –                 |
+
 ## Trigger Latency
 
 | Item                                 | Delay (ns) | Source               |

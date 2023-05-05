@@ -423,4 +423,10 @@ HOG Parameters
 |ss | ~0x1006~ | ~0x4018~ | ~[31:0]~ | rw | ~~ | Slave select reg | 
 |------------+---+---+---------+-----+-----+----------------------------|
 
+
+* Module I2C 	 adr = ~0x1100~
+
+I2C master controller
+
+
 # END: ADDRESS_TABLE :: DO NOT EDIT

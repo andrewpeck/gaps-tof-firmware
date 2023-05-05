@@ -41,6 +41,14 @@ ipbus-firmware/components/opencores_spi/firmware/hdl/spi_shift.v
 ipbus-firmware/components/opencores_spi/firmware/hdl/spi_top.v
 ipbus-firmware/components/opencores_spi/firmware/hdl/timescale.v
 
+# I2C Slave
+trigger/src/infra/ipbus_i2c_master.vhd
+ipbus-firmware/components/opencores_i2c/firmware/hdl/i2c_master_bit_ctrl.vhd
+ipbus-firmware/components/opencores_i2c/firmware/hdl/i2c_master_byte_ctrl.vhd
+ipbus-firmware/components/opencores_i2c/firmware/hdl/i2c_master_registers.vhd
+ipbus-firmware/components/opencores_i2c/firmware/hdl/i2c_master_top.vhd
+ipbus-firmware/components/opencores_i2c/firmware/hdl/ipbus_i2c_master.vhd
+
 # IPbus
 ipbus-firmware/components/ipbus_core/firmware/hdl/ipbus_arb.vhd
 ipbus-firmware/components/ipbus_core/firmware/hdl/ipbus_fabric_sel.vhd

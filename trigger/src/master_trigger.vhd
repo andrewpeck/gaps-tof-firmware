@@ -341,6 +341,9 @@ architecture structural of gaps_mt is
   signal hk_ext_miso : std_logic; -- master in, slave out
   signal hk_ext_mosi  :std_logic; -- master out, slave in
 
+  signal hk_scl : std_logic := '0';
+  signal hk_sda : std_logic := '0';
+
 begin
 
   process (clock, locked) is
@@ -397,9 +400,10 @@ begin
 
   -- mtb can detect if it is at UCLA through looping a 1 out from EXT_IO3
   -- and into EXT_IO2.. a jumper should be placed across these two pins
-  ext_io(3)   <= '1';
-  mtb_is_ucla <= ext_io(2);
-  ip_addr     <= UCLA_IP_ADDR when mtb_is_ucla = '1' else SSL_IP_ADDR;
+  -- ext_io(3)   <= '1';
+  -- mtb_is_ucla <= ext_io(2);
+  -- disabled to make room for i2c 5/4/2023
+  ip_addr     <= SSL_IP_ADDR;
 
   eth_infra_inst : entity work.eth_infra
     port map (
@@ -935,6 +939,23 @@ begin
   ext_io(5) <= hk_ext_clk;
   ext_io(8) <= hk_ext_cs_n(0);
   ext_io(9) <= hk_ext_cs_n(1);
+
+  --------------------------------------------------------------------------------
+  -- I2C Master
+  --------------------------------------------------------------------------------
+
+  ipbus_i2c_master_inst : entity work.ipbus_i2c_master
+    port map (
+      clk     => clock,
+      rst     => reset,
+      ipb_in  => ipb_mosi_arr(2),
+      ipb_out => ipb_miso_arr(2),
+      scl_pad => hk_scl,
+      sda_pad => hk_sda
+      );
+
+  ext_io(3) <= hk_scl;
+  ext_io(2) <= hk_sda;
 
   --------------------------------------------------------------------------------
   -- MTB DAQ
