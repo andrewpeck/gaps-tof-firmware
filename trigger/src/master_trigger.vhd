@@ -117,10 +117,7 @@ end gaps_mt;
 
 architecture structural of gaps_mt is
 
-  constant UCLA_IP_ADDR : ip_addr_t := (10, 0, 1, 10);
-  constant SSL_IP_ADDR  : ip_addr_t := (192, 168, 36, 121);
-  signal ip_addr        : ip_addr_t;
-  signal mtb_is_ucla    : std_logic := '0';
+  constant IP_ADDR      : ip_addr_t := (10, 0, 1, 10);;
 
   signal lt_data_i_pri_p : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '0');
   signal lt_data_i_pri_n : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '0');
@@ -400,10 +397,7 @@ begin
 
   -- mtb can detect if it is at UCLA through looping a 1 out from EXT_IO3
   -- and into EXT_IO2.. a jumper should be placed across these two pins
-  -- ext_io(3)   <= '1';
-  -- mtb_is_ucla <= ext_io(2);
   -- disabled to make room for i2c 5/4/2023
-  ip_addr     <= SSL_IP_ADDR;
 
   eth_infra_inst : entity work.eth_infra
     port map (
@@ -877,7 +871,7 @@ begin
 
       -- config
       send_event_cnt_on_timeout => '1',
-      tiu_emulation_mode        => mtb_is_ucla or tiu_emulation_mode,
+      tiu_emulation_mode        => tiu_emulation_mode,
 
       -- mt trigger signals
       trigger_i         => pre_trigger or global_trigger,
