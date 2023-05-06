@@ -256,7 +256,7 @@ begin
   -- Input mapping
   --------------------------------------------------------------------------------
 
-  -- Just to be clear, the "Gaps" trigger requires at least one hit in the outer
+  -- Just to be clear, the "GAPS" trigger requires at least one hit in the outer
   -- TOF that satisfies BETA and at least one hit in the inner TOF that satisfies
   -- BETA, plus at least 8 hits total, of which at least 3 have to be in the inner
   -- TOF and 3 have to be in the outer TOF.
@@ -336,7 +336,7 @@ begin
   outer_tof_hit  <= umbrella_hit & cortina_hit;
   outer_tof_beta <= umbrella_beta & cortina_beta;
 
-  -- or reduce and delay by 1 clock
+  -- or reduce and delay by 1 clock to align with hit counters
   process (clk) is
   begin
     if (rising_edge(clk)) then

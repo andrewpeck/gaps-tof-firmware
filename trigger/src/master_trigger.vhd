@@ -97,6 +97,10 @@ entity gaps_mt is
     clk_src_sel  : out std_logic; -- 1 == ext clock
 
     -- housekeeping adcs
+    --
+    -- hk adcs have been resassigned to EXT_IO due to a pin
+    -- conflict on the first revision of the board
+    --
     -- hk_cs_n : out std_logic_vector(1 downto 0);
     -- hk_clk  : out std_logic;
     -- hk_dout : in  std_logic; -- master in, slave out
@@ -666,16 +670,20 @@ begin
     end loop;
   end process;
 
+  --------------------------------------------------------------------------------
+  -- Master Trigger Logic
+  --------------------------------------------------------------------------------
+
   trigger : entity work.trigger
     port map (
-      -- system clock
-      clk => clock,
 
-      reset => reset,
-
+      -- clock and reset
+      clk             => clock,
+      reset           => reset,
       event_cnt_reset => event_cnt_reset,
 
-      -- discrim from input stage (20x16 array of discrim)
+      -- discrim from input stage (20x16 array of discrim), along with a delayed
+      -- output copy of the hits that goes to the DAQ module
       hits_i => hits_masked,
       hits_o => hits_xtrig,
 
@@ -714,7 +722,10 @@ begin
       channel_select_o => channel_select  -- trigger output (197 trigger outputs)
       );
 
-  -- Trigger generator
+  --------------------------------------------------------------------------------
+  -- Random Trigger Generator
+  --------------------------------------------------------------------------------
+
   trig_gen_inst : entity work.trig_gen
     port map (
       sys_clk    => clock,
@@ -723,6 +734,13 @@ begin
       rate       => trig_gen_rate,
       trig       => trig_gen
       );
+
+  --------------------------------------------------------------------------------
+  -- External Trigger Input
+  --
+  -- Take the trigger from external IO0, debounce it and apply a holdoff to
+  -- prevent retriggering on ringing from the input
+  --------------------------------------------------------------------------------
 
   process (clock) is
   begin
@@ -775,7 +793,7 @@ begin
       );
 
   --------------------------------------------------------------------------------
-  -- trigger tx
+  -- Readout Board Transmitter
   --
   -- takes in triggers, outputs a serialized packet to send to the readout board
   --
