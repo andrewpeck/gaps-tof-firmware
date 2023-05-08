@@ -49,7 +49,7 @@
      mask)))
 
 (defn chmap-to-string [chmap]
-  (format "or_reduce(x\"%02X\" and get_hits_from_slot(hitmask, %d, %d))"
+  (format "or_reduce(x\"%02X\" and get_hits_from_slot(hit_bitmap, %d, %d))"
           (list-to-mask (:ch chmap)) (:dsi chmap) (:conn chmap)))
 
 (defn trigmap-to-string [trigmap]

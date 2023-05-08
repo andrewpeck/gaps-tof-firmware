@@ -178,6 +178,7 @@ architecture structural of gaps_mt is
   signal discrim_1bit       : t_std8_array (NUM_LTS-1 downto 0);
   signal ltb_hit, ltb_hit_r, ltb_hit_rr : std_logic_vector (24 downto 0) := (others => '0');
 
+  signal rb_ch_bitmap : std_logic_vector (NUM_RBS*8-1 downto 0);
 
   signal lost_trigger   : std_logic;
   signal global_trigger : std_logic;  -- single bit == the baloon triggered somewhere
@@ -700,26 +701,58 @@ begin
       outer_tof_thresh  => outer_tof_thresh,
       total_tof_thresh  => total_tof_thresh,
 
-      busy_i    => global_busy,
-      rb_busy_i => (others => '0'),
-
-      all_triggers_are_global => '1',
-
       single_hit_en_i => any_trig_en,
       trig_mask_a     => trig_mask_a,
       trig_mask_b     => trig_mask_b,
 
-      -- force_trigger_i => trigger_ipb or trig_gen or ext_trigger,
-      force_trigger_i => trigger_ipb or trig_gen,
+      force_trigger_i => trigger_ipb or trig_gen, -- or ext_trigger
 
-      event_cnt_o => event_cnt,
+      -- busy logic from the SiLi should prevent any trigger from forming
+      busy_i => global_busy,
 
-      -- ouptut from trigger logic
-      lost_trigger_o   => lost_trigger,   --
-      global_trigger_o => global_trigger, -- OR of the trigger menu
-      pre_trigger_o    => pre_trigger,
-      rb_triggers_o    => rb_triggers,    -- 39 trigger outputs  (-1 per rb)
-      channel_select_o => channel_select  -- trigger output (197 trigger outputs)
+      -- NOTE: this is a placeholder for bookkeeping to keep track of which RBs
+      -- are busy reading out it is a simple deadtime calculation that is just a
+      -- function of
+      --   1. WAIT_VDD, which should be more or less constant
+      --   2. The number of channels being read out (including the 9th)
+      --
+      -- It is not clear if this is necessary or not..
+      --  + is it ok for the MTB to just send trigger requests to busy RBs?
+      --  + should busy RBs prevent the system from triggering? ever trigger
+      --    incurs significant deadtime in the system as a whole, so it makes
+      --    sense to be conservative about generating triggers and avoid
+      --    triggering if too many RBs are busy, but what is the threshold?
+      --  + does the SiLi deadtime dominate the deadtime and the RBs don't even matter?
+
+      rb_busy_i => (others => '0'),
+
+      -- Setting this parameter to '1' makes it so that all channels in all RBs
+      -- are read for every event.. it is a global readout mode as opposed to
+      -- the channel specific readout mode that will be used in flight.
+      --  + Currently only the global mode is supported awaiting implementation of
+      --    a LTB -> RB map and the logic for regionalized triggers, as well as an
+      --    understanding of exactly how the regionalized trigger should work
+      --  + e.g. should all channels with hits be read out? Or only channels "involved"
+      --    in the trigger?
+
+      read_all_channels => '1',
+
+      -- Trigger ouptut + event count from trigger logic
+      global_trigger_o => global_trigger,
+      event_cnt_o      => event_cnt,
+
+      -- Trigger could have been generated but the SiLi was dead :(
+      lost_trigger_o => lost_trigger,   --
+
+      -- Generate a 1 bit flag for every RB channel in the system to indicate
+      -- whether it should read out or not. A RB trigger is just the reduce_or
+      -- of its mask
+      rb_ch_masks_o => rb_ch_bitmap,
+
+      -- Lower latency copy of the global trigger which will arive before the
+      -- event counter. For non-latency critical uses the global
+      -- trigger signal should be used instead.
+      pre_trigger_o => pre_trigger
       );
 
   --------------------------------------------------------------------------------
@@ -800,26 +833,31 @@ begin
   --------------------------------------------------------------------------------
 
   noloop_t : if (not LOOPBACK_MODE) generate
+    signal trg_extend : std_logic_vector (7 downto 0) := (others => '0');
+    signal trg        : std_logic                     := '0';
+  begin
 
-    resync <= '1' when rb_resync = '1' or (global_trigger = '1' and event_cnt = x"00000000") else '0';
+    -- resync when requested or on the first event
+    -- this prompts the RB to reset its local clock
+    resync <= '1' when rb_resync = '1' else '0';
+
+    trg <= or_reduce(trg_extend);
+
+    process (clock) is
+    begin
+      if (rising_edge(clock)) then
+        if (global_trigger='1') then
+          trg_extend <= (others => '1');
+        else
+          trg_extend <= '0' & trg_extend(trg_extend'length-1 downto 1);
+        end if;
+      end if;
+    end process;
 
     -- extend the trigger pulses by a few clocks for the fast to slow clock transition
     trg_tx_gen : for I in 0 to NUM_RBS-1 generate
-      signal trg_extend : std_logic_vector (7 downto 0) := (others => '0');
-      signal clk        : std_logic                     := '0';
-      signal trg        : std_logic                     := '0';
+      signal clk : std_logic := '0';
     begin
-
-      process (clock) is
-      begin
-        if (rising_edge(clock)) then
-          if (rb_triggers(I)='1') then
-            trg_extend <= (others => '1');
-          else
-            trg_extend <= '0' & trg_extend(trg_extend'length-1 downto 1);
-          end if;
-        end if;
-      end process;
 
       even : if (I mod 2 = 0) generate
         clk <= clk25;
@@ -828,8 +866,6 @@ begin
       odd : if (I mod 2 = 1) generate
         clk <= clk25;
       end generate;
-
-      trg    <= or_reduce(trg_extend);
 
       rb_tx_inst : entity work.rb_tx
         generic map (
@@ -843,11 +879,8 @@ begin
           trg_i       => trg,
           resync_i    => resync,
           event_cnt_i => event_cnt,
-          ch_mask_i   => (others => '1'), -- FIXME: this should come from the
-                                          -- trigger block once the logic is in
-                                          -- place, but for now just read all channels
-          serial_o => rb_data_o(I)
-
+          ch_mask_i   => rb_ch_bitmap(8*(I+1)-1 downto 8*I),
+          serial_o    => rb_data_o(I)
           );
 
     end generate;
