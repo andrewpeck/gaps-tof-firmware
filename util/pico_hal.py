@@ -370,13 +370,14 @@ def read_daq():
             n >>= 1
         return count
 
-    state = ""
+    state = "Idle"
+    paddles_rxd = 0
+    hit_paddles = -1
 
     wReg("MT.EVENT_QUEUE.RESET", 1)
 
     while (True):
         rd = read_daq_word()
-        note = ""
 
         if (state=="Idle" and rd==0xAAAAAAAA):
             state = "Header"
