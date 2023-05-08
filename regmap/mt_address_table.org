@@ -85,6 +85,8 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |REQUIRE_BETA | ~0x14~ | ~0x50~ | ~25~ | rw | ~0x1~ | Require beta in the gaps trigger | 
 |------------+---+---+---------+-----+-----+----------------------------|
+|HIT_THRESH | ~0x14~ | ~0x50~ | ~[29:28]~ | rw | ~0x0~ | Threshold for the hit bitmap. Threshold must be > this number. | 
+|------------+---+---+---------+-----+-----+----------------------------|
 |TRIG_MASK_A | ~0x15~ | ~0x54~ | ~[31:0]~ | rw | ~0x0~ | Bitmask for the A trigger | 
 |------------+---+---+---------+-----+-----+----------------------------|
 |TRIG_MASK_B | ~0x16~ | ~0x58~ | ~[31:0]~ | rw | ~0x0~ | Bitmask for the B trigger | 

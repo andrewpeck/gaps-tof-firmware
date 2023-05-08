@@ -111,6 +111,7 @@
     TOTAL\_TOF\_THRESH & \texttt{0x14} & \texttt{[23:16]} & rw & \texttt{0x8} & Outer TOF hit threshold \\\hline
     GAPS\_TRIGGER\_EN & \texttt{0x14} & \texttt{[24:24]} & rw & \texttt{0x0} & Enable the gaps trigger. \\\hline
     REQUIRE\_BETA & \texttt{0x14} & \texttt{[25:25]} & rw & \texttt{0x1} & Require beta in the gaps trigger \\\hline
+    HIT\_THRESH & \texttt{0x14} & \texttt{[29:28]} & rw & \texttt{0x0} & Threshold for the hit bitmap. Threshold must be > this number. \\\hline
     TRIG\_MASK\_A & \texttt{0x15} & \texttt{[31:0]} & rw & \texttt{0x0} & Bitmask for the A trigger \\\hline
     TRIG\_MASK\_B & \texttt{0x16} & \texttt{[31:0]} & rw & \texttt{0x0} & Bitmask for the B trigger \\\hline
     TRIGGER\_RATE & \texttt{0x17} & \texttt{[23:0]} & r & \texttt{} & Rate of triggers in Hz \\\hline

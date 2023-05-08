@@ -155,6 +155,12 @@
         "mask": 33554432,
         "description": "Require beta in the gaps trigger"
     },
+    "MT.HIT_THRESH": {
+        "adr": 20,
+        "permission": "rw",
+        "mask": 805306368,
+        "description": "Threshold for the hit bitmap. Threshold must be > this number."
+    },
     "MT.TRIG_MASK_A": {
         "adr": 21,
         "permission": "rw",

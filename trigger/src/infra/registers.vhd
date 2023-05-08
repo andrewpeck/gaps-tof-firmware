@@ -117,6 +117,11 @@ package registers is
     constant REG_REQUIRE_BETA_BIT    : integer := 25;
     constant REG_REQUIRE_BETA_DEFAULT : std_logic := '1';
 
+    constant REG_HIT_THRESH_ADDR    : std_logic_vector(9 downto 0) := "00" & x"14";
+    constant REG_HIT_THRESH_MSB    : integer := 29;
+    constant REG_HIT_THRESH_LSB     : integer := 28;
+    constant REG_HIT_THRESH_DEFAULT : std_logic_vector(29 downto 28) := "00";
+
     constant REG_TRIG_MASK_A_ADDR    : std_logic_vector(9 downto 0) := "00" & x"15";
     constant REG_TRIG_MASK_A_MSB    : integer := 31;
     constant REG_TRIG_MASK_A_LSB     : integer := 0;

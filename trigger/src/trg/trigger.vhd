@@ -22,6 +22,8 @@ entity trigger is
 
     single_hit_en_i : in std_logic := '0';
 
+    hit_thresh : in std_logic_vector (1 downto 0);
+
     trig_mask_a : in std_logic_vector (31 downto 0);
 
     trig_mask_b : in std_logic_vector (31 downto 0);
@@ -186,7 +188,7 @@ begin
     process (clk) is
     begin
       if (rising_edge(clk)) then
-        if (hits_i(I) /= "00") then
+        if (unsigned(hits_i(I)) > unsigned(hit_thresh)) then
           hitmask(I) <= '1';
         else
           hitmask(I) <= '0';

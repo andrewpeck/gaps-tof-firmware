@@ -194,8 +194,9 @@ architecture structural of gaps_mt is
   signal ext_trigger_r1  : std_logic := '0';
   signal ext_trigger_r2  : std_logic := '0';
 
-  signal trig_mask_a  : std_logic_vector (31 downto 0) := (others => '0');
-  signal trig_mask_b  : std_logic_vector (31 downto 0) := (others => '0');
+  signal hit_thresh   : std_logic_vector (1 downto 0);
+  signal trig_mask_a  : std_logic_vector (31 downto 0);
+  signal trig_mask_b  : std_logic_vector (31 downto 0);
   signal any_trig_en  : std_logic;
 
   signal ssl_trig_top_bot_en       : std_logic;
@@ -708,6 +709,7 @@ begin
       single_hit_en_i => any_trig_en,
       trig_mask_a     => trig_mask_a,
       trig_mask_b     => trig_mask_b,
+      hit_thresh      => hit_thresh,
 
       -- force_trigger_i => trigger_ipb or trig_gen or ext_trigger,
       force_trigger_i => trigger_ipb or trig_gen,
@@ -1712,6 +1714,7 @@ begin
   regs_read_arr(19)(REG_TOTAL_TOF_THRESH_MSB downto REG_TOTAL_TOF_THRESH_LSB) <= total_tof_thresh;
   regs_read_arr(19)(REG_GAPS_TRIGGER_EN_BIT) <= gaps_trigger_en;
   regs_read_arr(19)(REG_REQUIRE_BETA_BIT) <= require_beta;
+  regs_read_arr(19)(REG_HIT_THRESH_MSB downto REG_HIT_THRESH_LSB) <= hit_thresh;
   regs_read_arr(20)(REG_TRIG_MASK_A_MSB downto REG_TRIG_MASK_A_LSB) <= trig_mask_a;
   regs_read_arr(21)(REG_TRIG_MASK_B_MSB downto REG_TRIG_MASK_B_LSB) <= trig_mask_b;
   regs_read_arr(22)(REG_TRIGGER_RATE_MSB downto REG_TRIGGER_RATE_LSB) <= trig_rate;
@@ -1857,6 +1860,7 @@ begin
   total_tof_thresh <= regs_write_arr(19)(REG_TOTAL_TOF_THRESH_MSB downto REG_TOTAL_TOF_THRESH_LSB);
   gaps_trigger_en <= regs_write_arr(19)(REG_GAPS_TRIGGER_EN_BIT);
   require_beta <= regs_write_arr(19)(REG_REQUIRE_BETA_BIT);
+  hit_thresh <= regs_write_arr(19)(REG_HIT_THRESH_MSB downto REG_HIT_THRESH_LSB);
   trig_mask_a <= regs_write_arr(20)(REG_TRIG_MASK_A_MSB downto REG_TRIG_MASK_A_LSB);
   trig_mask_b <= regs_write_arr(21)(REG_TRIG_MASK_B_MSB downto REG_TRIG_MASK_B_LSB);
   ssl_trig_top_bot_en <= regs_write_arr(24)(REG_SSL_TRIG_TOP_BOT_EN_BIT);
@@ -2322,6 +2326,7 @@ begin
   regs_defaults(19)(REG_TOTAL_TOF_THRESH_MSB downto REG_TOTAL_TOF_THRESH_LSB) <= REG_TOTAL_TOF_THRESH_DEFAULT;
   regs_defaults(19)(REG_GAPS_TRIGGER_EN_BIT) <= REG_GAPS_TRIGGER_EN_DEFAULT;
   regs_defaults(19)(REG_REQUIRE_BETA_BIT) <= REG_REQUIRE_BETA_DEFAULT;
+  regs_defaults(19)(REG_HIT_THRESH_MSB downto REG_HIT_THRESH_LSB) <= REG_HIT_THRESH_DEFAULT;
   regs_defaults(20)(REG_TRIG_MASK_A_MSB downto REG_TRIG_MASK_A_LSB) <= REG_TRIG_MASK_A_DEFAULT;
   regs_defaults(21)(REG_TRIG_MASK_B_MSB downto REG_TRIG_MASK_B_LSB) <= REG_TRIG_MASK_B_DEFAULT;
   regs_defaults(24)(REG_SSL_TRIG_TOP_BOT_EN_BIT) <= REG_SSL_TRIG_TOP_BOT_EN_DEFAULT;
