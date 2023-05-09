@@ -1,12 +1,18 @@
 # https://docs.google.com/spreadsheets/d/1i41fsmLf7IjfYbr1coTo9V4uk3t1GXAGgt0aOeCkeeA/edit#gid=0
 
-BEGIN {FS=","}
+BEGIN {FS="\",\""}
 
 NR == 1 {
 
-    gsub("\"","")
 
     for(i=1;i<=NF;i++) {
+
+        sub("\"", "", $i)
+
+        if (debug) {
+            printf("%d <%s>\n", i, $i)
+        }
+
         if ($i ~ /^Paddle Number /)
             PADDLE = i
         if ($i ~ /^Paddle End \(A\/B\) /)
@@ -15,20 +21,34 @@ NR == 1 {
             PANEL = i
         if ($i ~ /^LTB Harting Connection.*/)
             DSI = i
+        if ($i ~ /^RB Number-Channel RB Number.*/)
+            RB = i
     }
-
+    if (debug) {
+        print (PADDLE)
+        print (PADDLE_END)
+        print (PANEL)
+        print (DSI)
+        print (RB)
+    }
     next
 }
 
 {
 
-    # strip off the quotes from the csv
-    gsub("\"","")
+    for(i=1;i<=NF;i++) {
+        sub("\"", "", $i)
+    }
 
     paddle_num = int($PADDLE)
     panel_num = int($PANEL)
     paddle_end = $PADDLE_END
-    dsi_input = paddle_num # change to int($DSI)
+    dsi_input = paddle_num # TODO: change to int($DSI) when the mapping is done
+
+    split($RB, rb_and_input, "-")
+    rb_num = int(rb_and_input[1])
+    rb_input = int(rb_and_input[2])
+    rb_enum = 8*(rb_num-1)+(rb_input-1)
 
     # use a regex for this instead, E-X225
     # E-X[0-9][0-9][0-9]
@@ -67,8 +87,8 @@ NR == 1 {
         station="cortina"
         cnt = ++cortina_cnt
     } else {
-       station="xxxx"
-       exit 1
+        station="xxxx"
+        exit 1
     }
 
     # count from zero in the firmware
@@ -80,13 +100,26 @@ NR == 1 {
         sprintf("    %s(%d) <= hits_i(%d); -- panel=%d paddle=%d station=%s (%d)",
                 station, cnt, dsi_input, panel_num, paddle_num, station, cnt)
 
+    maps[NR] = \
+        sprintf("  rb_ch_bitmap_o(%3d) <= hits_bitmap_i(%d);", rb_enum, dsi_input)
+
 }
 
 END {
-    for (i in outputs) {
-        for (j in outputs[i] ) {
-            print outputs[i][j]
+
+    if (print_hitmask) {
+        for (i in outputs) {
+            for (j in outputs[i] ) {
+                print outputs[i][j]
+            }
+            print ""
         }
-        print ""
     }
+
+    if (print_rbmap) {
+        for (i in maps) {
+            print maps[i]
+        }
+    }
+
 }
