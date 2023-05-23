@@ -86,6 +86,10 @@ package registers is
     constant REG_RB_INTEGRATION_WINDOW_LSB     : integer := 8;
     constant REG_RB_INTEGRATION_WINDOW_DEFAULT : std_logic_vector(12 downto 8) := '0' & x"5";
 
+    constant REG_RB_READ_ALL_CHANNELS_ADDR    : std_logic_vector(9 downto 0) := "00" & x"0f";
+    constant REG_RB_READ_ALL_CHANNELS_BIT    : integer := 13;
+    constant REG_RB_READ_ALL_CHANNELS_DEFAULT : std_logic := '1';
+
     constant REG_EVENT_QUEUE_RESET_ADDR    : std_logic_vector(9 downto 0) := "00" & x"10";
     constant REG_EVENT_QUEUE_RESET_BIT    : integer := 0;
 

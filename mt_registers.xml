@@ -120,6 +120,14 @@
           fw_default="0x5"
           fw_signal="rb_window"/>
 
+    <node id="RB_READ_ALL_CHANNELS"
+          address="0xF"
+          permission="rw"
+          mask="0x2000"
+          description="Set to 1 to read all channels from RB for any trigger"
+          fw_default="0x1"
+          fw_signal="read_all_channels"/>
+
     <node id="EVENT_QUEUE" address="0x10" description = "DAQ Buffer">
       <node id="RESET" permission="w" address="0x0" mask="0x00000001" description="DAQ Buffer Reset" fw_write_pulse_signal="daq_reset"/>
       <node id="DATA"  permission="r" address="0x1" mask="0xFFFFFFFF" description="DAQ Read Data"    fw_signal="daq_data_xfifo" fw_read_pulse_signal="daq_rd_en" fw_read_ready_signal="daq_valid_xfifo"/>

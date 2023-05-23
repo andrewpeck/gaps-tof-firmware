@@ -183,6 +183,8 @@ architecture structural of gaps_mt is
   signal pre_trigger    : std_logic;  -- 1 clock cycle earlier than global_trigger
   signal global_busy    : std_logic;
 
+  signal read_all_channels : std_logic := '0';
+
   signal trig_rate       : std_logic_vector (23 downto 0) := (others => '0');
   signal lost_trig_rate  : std_logic_vector (23 downto 0) := (others => '0');
 
@@ -733,7 +735,7 @@ begin
       --  + e.g. should all channels with hits be read out? Or only channels "involved"
       --    in the trigger?
 
-      read_all_channels => '1',
+      read_all_channels => read_all_channels,
 
       rb_window_i => rb_window,
 
@@ -1739,6 +1741,7 @@ begin
   regs_read_arr(15)(REG_TIU_BAD_BIT) <= tiu_bad;
   regs_read_arr(15)(REG_LT_INPUT_STRETCH_MSB downto REG_LT_INPUT_STRETCH_LSB) <= lt_input_stretch;
   regs_read_arr(15)(REG_RB_INTEGRATION_WINDOW_MSB downto REG_RB_INTEGRATION_WINDOW_LSB) <= rb_window;
+  regs_read_arr(15)(REG_RB_READ_ALL_CHANNELS_BIT) <= read_all_channels;
   regs_read_arr(17)(REG_EVENT_QUEUE_DATA_MSB downto REG_EVENT_QUEUE_DATA_LSB) <= daq_data_xfifo;
   regs_read_arr(18)(REG_EVENT_QUEUE_FULL_BIT) <= daq_full;
   regs_read_arr(18)(REG_EVENT_QUEUE_EMPTY_BIT) <= daq_empty;
@@ -1888,6 +1891,7 @@ begin
   tiu_emulation_mode <= regs_write_arr(14)(REG_TIU_EMULATION_MODE_BIT);
   lt_input_stretch <= regs_write_arr(15)(REG_LT_INPUT_STRETCH_MSB downto REG_LT_INPUT_STRETCH_LSB);
   rb_window <= regs_write_arr(15)(REG_RB_INTEGRATION_WINDOW_MSB downto REG_RB_INTEGRATION_WINDOW_LSB);
+  read_all_channels <= regs_write_arr(15)(REG_RB_READ_ALL_CHANNELS_BIT);
   inner_tof_thresh <= regs_write_arr(19)(REG_INNER_TOF_THRESH_MSB downto REG_INNER_TOF_THRESH_LSB);
   outer_tof_thresh <= regs_write_arr(19)(REG_OUTER_TOF_THRESH_MSB downto REG_OUTER_TOF_THRESH_LSB);
   total_tof_thresh <= regs_write_arr(19)(REG_TOTAL_TOF_THRESH_MSB downto REG_TOTAL_TOF_THRESH_LSB);
@@ -2354,6 +2358,7 @@ begin
   regs_defaults(14)(REG_TIU_EMULATION_MODE_BIT) <= REG_TIU_EMULATION_MODE_DEFAULT;
   regs_defaults(15)(REG_LT_INPUT_STRETCH_MSB downto REG_LT_INPUT_STRETCH_LSB) <= REG_LT_INPUT_STRETCH_DEFAULT;
   regs_defaults(15)(REG_RB_INTEGRATION_WINDOW_MSB downto REG_RB_INTEGRATION_WINDOW_LSB) <= REG_RB_INTEGRATION_WINDOW_DEFAULT;
+  regs_defaults(15)(REG_RB_READ_ALL_CHANNELS_BIT) <= REG_RB_READ_ALL_CHANNELS_DEFAULT;
   regs_defaults(19)(REG_INNER_TOF_THRESH_MSB downto REG_INNER_TOF_THRESH_LSB) <= REG_INNER_TOF_THRESH_DEFAULT;
   regs_defaults(19)(REG_OUTER_TOF_THRESH_MSB downto REG_OUTER_TOF_THRESH_LSB) <= REG_OUTER_TOF_THRESH_DEFAULT;
   regs_defaults(19)(REG_TOTAL_TOF_THRESH_MSB downto REG_TOTAL_TOF_THRESH_LSB) <= REG_TOTAL_TOF_THRESH_DEFAULT;
