@@ -21,7 +21,7 @@ update_mapping:
 		https://docs.google.com/spreadsheets/d/1i41fsmLf7IjfYbr1coTo9V4uk3t1GXAGgt0aOeCkeeA/gviz/tq?tqx=out:csv
 
 process_mapping:
-	@awk -v print_hitmask=1 -f process_mapping.awk mapping.csv
+	bb process_mapping.bb --map-ltb
 
 process_rbmap:
-	@awk -v print_rbmap=1 -f process_mapping.awk mapping.csv
+	bb process_mapping.bb --map-rb
