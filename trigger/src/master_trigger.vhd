@@ -175,6 +175,7 @@ architecture structural of gaps_mt is
   signal ltb_hit, ltb_hit_r, ltb_hit_rr : std_logic_vector (24 downto 0) := (others => '0');
 
   signal rb_ch_bitmap : std_logic_vector (NUM_RBS*8-1 downto 0);
+  signal rb_busy      : std_logic_vector (NUM_RBS-1 downto 0);
   signal rb_window    : std_logic_vector (4 downto 0);
 
   signal lost_trigger   : std_logic;
@@ -675,6 +676,18 @@ begin
   -- Master Trigger Logic
   --------------------------------------------------------------------------------
 
+  rb_deadtime_inst : entity work.rb_deadtime
+    generic map (
+      NUM_RBS    => NUM_RBS,
+      CLK_PERIOD => 1000000000.0/(real(CLK_FREQ))
+      )
+    port map (
+      clock     => clock,
+      trg_i     => rb_trigger,
+      ch_mask_i => rb_ch_bitmap,
+      dead_o    => rb_busy
+      );
+
   trigger_inst : entity work.trigger
     port map (
 
@@ -715,6 +728,7 @@ begin
       -- function of
       --   1. WAIT_VDD, which should be more or less constant
       --   2. The number of channels being read out (including the 9th)
+      --   3. Some constant overhead
       --
       -- It is not clear if this is necessary or not..
       --  + is it ok for the MTB to just send trigger requests to busy RBs?
@@ -724,7 +738,7 @@ begin
       --    triggering if too many RBs are busy, but what is the threshold?
       --  + does the SiLi deadtime dominate the deadtime and the RBs don't even matter?
 
-      rb_busy_i => (others => '0'),
+      rb_busy_i => rb_busy,
 
       -- Setting this parameter to '1' makes it so that all channels in all RBs
       -- are read for every event.. it is a global readout mode as opposed to
