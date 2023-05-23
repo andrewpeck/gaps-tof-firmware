@@ -97,6 +97,7 @@
     SROUT\_POSNEG & \texttt{0x1a} & \texttt{[1:1]} & rw & \texttt{0x0} & 1 to sample on positive edge, 0 on negative \\\hline
     SROUT\_LATENCY & \texttt{0x1a} & \texttt{[6:4]} & rw & \texttt{0x2} & Latency of the SROUT readout \\\hline
     DMA\_CLEAR & \texttt{0x1b} & \texttt{[0:0]} & w & Pulse & Write 1 to clear the DMA memory (write zeroes) \\\hline
+    DRS\_DEADTIME & \texttt{0x1c} & \texttt{[15:0]} & r & \texttt{} & Measured last deadtime of the DRS in clock cycles \\\hline
     \end{tabularx}
     \vspace{5mm}
 

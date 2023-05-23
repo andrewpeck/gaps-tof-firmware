@@ -207,6 +207,7 @@ architecture Behavioral of top_readout_board is
 
   signal drs_srclk_en   : std_logic;
   signal drs_busy       : std_logic;
+  signal drs_busy_r0    : std_logic;
   signal drs_idle       : std_logic;
   signal drs_busy_latch : std_logic;
   signal roi_mode       : std_logic;
@@ -241,6 +242,9 @@ architecture Behavioral of top_readout_board is
   signal dtap_cnt : std_logic_vector (15 downto 0);
 
   signal readout_complete : std_logic;
+
+  signal drs_busy_timer        : natural range 0 to 65535 := 0;
+  signal drs_busy_timer_stable : natural range 0 to 65535 := 0;
 
   signal spy_data  : std_logic_vector (15 downto 0) := (others => '0');
   signal spy_full  : std_logic                      := '0';
@@ -930,6 +934,34 @@ begin
       idle_o => drs_idle
 
       );
+
+  --------------------------------------------------------------------------------
+  -- Busy Timer
+  --------------------------------------------------------------------------------
+
+  process (clock) is
+  begin
+    if (rising_edge(clock)) then
+      drs_busy_r0 <= drs_busy;
+
+      -- BUSY --> IDLE
+      if (drs_busy='0' and drs_busy_r0 = '1') then
+
+        drs_busy_timer_stable <= drs_busy_timer;
+
+      -- IDLE
+      elsif (drs_busy='0') then
+        drs_busy_timer <= 0;
+
+      -- BUSY
+      elsif (drs_busy='1') then
+
+        drs_busy_timer <= drs_busy_timer + 1;
+
+      end if;
+
+    end if;
+  end process;
 
   -------------------------------------------------------------------------------
   -- DAQ

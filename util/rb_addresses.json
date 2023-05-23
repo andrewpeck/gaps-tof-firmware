@@ -202,6 +202,13 @@
         "description": "Write 1 to clear the DMA memory (write zeroes)",
         "adr8": 108
     },
+    "DRS.READOUT.DRS_DEADTIME": {
+        "adr": 28,
+        "permission": "r",
+        "mask": 65535,
+        "description": "Measured last deadtime of the DRS in clock cycles",
+        "adr8": 112
+    },
     "DRS.FPGA.DNA.DNA_LSBS": {
         "adr": 32,
         "permission": "r",

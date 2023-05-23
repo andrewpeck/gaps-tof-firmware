@@ -170,6 +170,11 @@
                 mask="0x1"
                 fw_write_pulse_signal="dma_clear"/>
 
+            <node id="DRS_DEADTIME" address="0xc" permission="r"
+                description="Measured last deadtime of the DRS in clock cycles"
+                mask="0xFFFF"
+                fw_signal="std_logic_vector(to_unsigned(drs_busy_timer, 16))"/>
+
         </node> <!--READOUT-->
 
 
