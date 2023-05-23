@@ -101,6 +101,12 @@
         "mask": 240,
         "description": "Number of clock cycles to stretch the LT inputs by"
     },
+    "MT.RB_INTEGRATION_WINDOW": {
+        "adr": 15,
+        "permission": "rw",
+        "mask": 7936,
+        "description": "Number of 100MHz clock cycles to integrate the LTB hits to determine which MTB to read out."
+    },
     "MT.EVENT_QUEUE.RESET": {
         "adr": 16,
         "permission": "w",

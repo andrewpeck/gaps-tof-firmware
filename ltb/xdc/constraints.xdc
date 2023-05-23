@@ -110,3 +110,6 @@ set_property IOSTANDARD LVCMOS33 [get_ports sda]
 # constrain the input delays:
 set_max_delay -datapath_only \
     -from [get_ports {DISC_*}] 4.9
+
+# constrain the output delay
+set_output_delay -clock [get_clocks CLK1] -max 2.000 [get_ports {ext_out[*]}]

@@ -2,7 +2,7 @@
 // synthesis translate_off
 `define SIMULATION
 // synthesis translate_on
-// `define DEBUG
+`define DEBUG
 // Enable DRS ILAs for now..
 
 // TODO: implement ROI trigger delay
@@ -23,6 +23,7 @@ module drs #(
 
     // ~ 33MHz ADC clock
     input clock,
+    input ila_clock,
 
     // module reset
     input reset,
@@ -916,7 +917,7 @@ end
 
 `ifdef DEBUG
   ila_drs ila_drs_inst (
-    .clk     (clock),
+    .clk     (ila_clock),
     .probe0  (reset),
     .probe1  (trigger_i),
     .probe2  (adc_data),
@@ -924,7 +925,7 @@ end
     .probe4  (drs_ctl_dmode),
     .probe5  (drs_ctl_adc_latency[5:0]),
     .probe6  (drs_ctl_wait_vdd_clocks[15:0]),
-    .probe7  (drs_ctl_sample_count_max[9:0]),
+    .probe7  (drs_stat_stop_cell[9:0]),
     .probe8  (drs_ctl_config[7:0]),
     .probe9  (drs_ctl_standby_mode),
     .probe10 (drs_ctl_transp_mode),
@@ -940,13 +941,13 @@ end
     .probe20 (drs_rsrload_o),
     .probe21 (drs_srclk_en_o),
     .probe22 (drs_srin_o),
-    .probe23 (1'b0),
+    .probe23 (clock),
     .probe24 (fifo_wdata_o[13:0]),
     .probe25 (fifo_wen_o),
-    .probe26 (busy_o),
+    .probe26 (drs_srout_neg),
     .probe27 (drs_readout_state[4:0]),
     .probe28 (drs_rd_tmp_count[15:0]),
-    .probe29 (drs_sample_count[9:0]),
+    .probe29 (drs_stop_cell[9:0]),
     .probe30 (drs_ctl_last_chn),
     .probe31 (drs_ctl_first_chn),
     .probe32 (drs_ctl_next_chn),

@@ -36,6 +36,21 @@ Programming the flash is persistent across power cycles but rather slow. If you 
 programming (by entering ~n~ at the prompt) the FPGA will be configured directly through JTAG.
 
 
+***
+#+begin_src  bash
+get_mtb_fw() {
+    version=$1
+    project="trigger_board"
+    projectid="19574701"
+
+    file=$project-$version.zip
+    url=$(curl  "https://gitlab.com/api/v4/projects/${projectid}/releases/$version" | jq '.description' | sed -n "s|.*\[$project.zip\](\([^)]*\)).*|\1|p")
+    echo $url
+    wget $url
+    unzip $file
+}
+#+end_src
+
 ** Vivado Logic Analyzer Usage
 
 Internals of the MTB firmware can be inspected by using the Vivado Integrated Logic Analyzer.

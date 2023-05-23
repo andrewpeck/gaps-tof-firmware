@@ -1,7 +1,3 @@
--- TODO: LT format has changed from hit to 3 level thing, need to receive accordingly
---
--- FIXME: counters will multi-count pulse-extended hits
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_misc.all;
@@ -179,9 +175,11 @@ architecture structural of gaps_mt is
   signal ltb_hit, ltb_hit_r, ltb_hit_rr : std_logic_vector (24 downto 0) := (others => '0');
 
   signal rb_ch_bitmap : std_logic_vector (NUM_RBS*8-1 downto 0);
+  signal rb_window    : std_logic_vector (4 downto 0);
 
   signal lost_trigger   : std_logic;
   signal global_trigger : std_logic;  -- single bit == the baloon triggered somewhere
+  signal rb_trigger     : std_logic;  --
   signal pre_trigger    : std_logic;  -- 1 clock cycle earlier than global_trigger
   signal global_busy    : std_logic;
 
@@ -675,7 +673,7 @@ begin
   -- Master Trigger Logic
   --------------------------------------------------------------------------------
 
-  trigger : entity work.trigger
+  trigger_inst : entity work.trigger
     port map (
 
       -- clock and reset
@@ -737,8 +735,11 @@ begin
 
       read_all_channels => '1',
 
+      rb_window_i => rb_window,
+
       -- Trigger ouptut + event count from trigger logic
       global_trigger_o => global_trigger,
+      rb_trigger_o     => rb_trigger,
       event_cnt_o      => event_cnt,
 
       -- Trigger could have been generated but the SiLi was dead :(
@@ -747,7 +748,7 @@ begin
       -- Generate a 1 bit flag for every RB channel in the system to indicate
       -- whether it should read out or not. A RB trigger is just the reduce_or
       -- of its mask
-      rb_ch_masks_o => rb_ch_bitmap,
+      rb_ch_bitmap_o => rb_ch_bitmap,
 
       -- Lower latency copy of the global trigger which will arive before the
       -- event counter. For non-latency critical uses the global
@@ -833,23 +834,23 @@ begin
   --------------------------------------------------------------------------------
 
   noloop_t : if (not LOOPBACK_MODE) generate
-    signal trg_extend : std_logic_vector (7 downto 0) := (others => '0');
-    signal trg        : std_logic                     := '0';
+    signal rb_trg_extend : std_logic_vector (7 downto 0) := (others => '0');
+    signal rb_trg        : std_logic                     := '0';
   begin
 
     -- resync when requested or on the first event
     -- this prompts the RB to reset its local clock
     resync <= '1' when rb_resync = '1' else '0';
 
-    trg <= or_reduce(trg_extend);
+    rb_trg <= or_reduce(rb_trg_extend);
 
     process (clock) is
     begin
       if (rising_edge(clock)) then
-        if (global_trigger='1') then
-          trg_extend <= (others => '1');
+        if (rb_trigger = '1') then
+          rb_trg_extend <= (others => '1');
         else
-          trg_extend <= '0' & trg_extend(trg_extend'length-1 downto 1);
+          rb_trg_extend <= '0' & rb_trg_extend(rb_trg_extend'length-1 downto 1);
         end if;
       end if;
     end process;
@@ -876,7 +877,7 @@ begin
           clock => clk,
           reset => reset,
 
-          trg_i       => trg,
+          trg_i       => rb_trg,
           resync_i    => resync,
           event_cnt_i => event_cnt,
           ch_mask_i   => rb_ch_bitmap(8*(I+1)-1 downto 8*I),
@@ -1737,6 +1738,7 @@ begin
   regs_read_arr(14)(REG_TIU_EMULATION_MODE_BIT) <= tiu_emulation_mode;
   regs_read_arr(15)(REG_TIU_BAD_BIT) <= tiu_bad;
   regs_read_arr(15)(REG_LT_INPUT_STRETCH_MSB downto REG_LT_INPUT_STRETCH_LSB) <= lt_input_stretch;
+  regs_read_arr(15)(REG_RB_INTEGRATION_WINDOW_MSB downto REG_RB_INTEGRATION_WINDOW_LSB) <= rb_window;
   regs_read_arr(17)(REG_EVENT_QUEUE_DATA_MSB downto REG_EVENT_QUEUE_DATA_LSB) <= daq_data_xfifo;
   regs_read_arr(18)(REG_EVENT_QUEUE_FULL_BIT) <= daq_full;
   regs_read_arr(18)(REG_EVENT_QUEUE_EMPTY_BIT) <= daq_empty;
@@ -1885,6 +1887,7 @@ begin
   any_trig_en <= regs_write_arr(11)(REG_ANY_TRIG_EN_BIT);
   tiu_emulation_mode <= regs_write_arr(14)(REG_TIU_EMULATION_MODE_BIT);
   lt_input_stretch <= regs_write_arr(15)(REG_LT_INPUT_STRETCH_MSB downto REG_LT_INPUT_STRETCH_LSB);
+  rb_window <= regs_write_arr(15)(REG_RB_INTEGRATION_WINDOW_MSB downto REG_RB_INTEGRATION_WINDOW_LSB);
   inner_tof_thresh <= regs_write_arr(19)(REG_INNER_TOF_THRESH_MSB downto REG_INNER_TOF_THRESH_LSB);
   outer_tof_thresh <= regs_write_arr(19)(REG_OUTER_TOF_THRESH_MSB downto REG_OUTER_TOF_THRESH_LSB);
   total_tof_thresh <= regs_write_arr(19)(REG_TOTAL_TOF_THRESH_MSB downto REG_TOTAL_TOF_THRESH_LSB);
@@ -2350,6 +2353,7 @@ begin
   regs_defaults(11)(REG_ANY_TRIG_EN_BIT) <= REG_ANY_TRIG_EN_DEFAULT;
   regs_defaults(14)(REG_TIU_EMULATION_MODE_BIT) <= REG_TIU_EMULATION_MODE_DEFAULT;
   regs_defaults(15)(REG_LT_INPUT_STRETCH_MSB downto REG_LT_INPUT_STRETCH_LSB) <= REG_LT_INPUT_STRETCH_DEFAULT;
+  regs_defaults(15)(REG_RB_INTEGRATION_WINDOW_MSB downto REG_RB_INTEGRATION_WINDOW_LSB) <= REG_RB_INTEGRATION_WINDOW_DEFAULT;
   regs_defaults(19)(REG_INNER_TOF_THRESH_MSB downto REG_INNER_TOF_THRESH_LSB) <= REG_INNER_TOF_THRESH_DEFAULT;
   regs_defaults(19)(REG_OUTER_TOF_THRESH_MSB downto REG_OUTER_TOF_THRESH_LSB) <= REG_OUTER_TOF_THRESH_DEFAULT;
   regs_defaults(19)(REG_TOTAL_TOF_THRESH_MSB downto REG_TOTAL_TOF_THRESH_LSB) <= REG_TOTAL_TOF_THRESH_DEFAULT;

@@ -11,7 +11,8 @@ entity tiu is
     TIMESTAMPB : integer := 32;
     GPSB       : integer := 48;
     FREQ       : integer := 100_000_000;
-    EVENTCNTB  : integer := 32
+    EVENTCNTB  : integer := 32;
+    V          : string  := "v1"
     );
   port(
 
@@ -296,33 +297,84 @@ begin
   -- TODO: convert to an explicit SM
   --------------------------------------------------------------------------------
 
-  process (clock) is
-  begin
-    if (rising_edge(clock)) then
+  v1gen : if (v="v1") generate
+    process (clock) is
+    begin
+      if (rising_edge(clock)) then
 
-      tiu_gps_valid_o <= '0';
+        tiu_gps_valid_o <= '0';
 
-      -- synchronize the byte counter to the falling edge of the pulse
-      if (tiu_falling = '1') then
+        -- synchronize the byte counter to the falling edge of the pulse
+        if (tiu_falling = '1') then
 
-        tiu_byte_cnt <= 0;
+          tiu_byte_cnt <= 0;
 
-      elsif (tiu_timebyte_dav = '1') then
+        elsif (tiu_timebyte_dav = '1') then
 
-        if (tiu_byte_cnt < 5) then
-          tiu_byte_cnt <= tiu_byte_cnt + 1;
-          tiu_gps_buf(8*(tiu_byte_cnt+1)-1 downto 8*tiu_byte_cnt)
-            <= tiu_timebyte;
-        else
-          tiu_byte_cnt    <= 0;
-          tiu_gps_o       <= tiu_timebyte & tiu_gps_buf;
-          tiu_gps_valid_o <= '1';
+          if (tiu_byte_cnt < 5) then
+            tiu_byte_cnt <= tiu_byte_cnt + 1;
+            tiu_gps_buf(8*(tiu_byte_cnt+1)-1 downto 8*tiu_byte_cnt)
+              <= tiu_timebyte;
+          else
+            tiu_byte_cnt    <= 0;
+            tiu_gps_o       <= tiu_timebyte & tiu_gps_buf;
+            tiu_gps_valid_o <= '1';
+          end if;
         end if;
+
       end if;
+    end process;
+  end generate;
 
-    end if;
-  end process;
+  -- v2gen : if (v="v2") generate
+  --   type ts_state_t is (IDLE, LATCHING);
+  --   signal ts_state : ts_state_t := IDLE;
+  -- begin
 
+  --   process (clock)
+  --   begin
+  --     if (rising_edge(clock)) then
+  --       case state is
+
+  --         when IDLE =>
+
+  --           if (tiu_falling = '1') then
+  --             tiu_byte_cnt <= 0;
+  --             ts_state     <= LATCHING;
+  --           end if;
+
+  --         when LATCHING =>
+
+  --           if (tiu_timebyte_dav = '1') then
+
+  --             if (tiu_byte_cnt < 5) then
+  --               tiu_byte_cnt <= tiu_byte_cnt + 1;
+  --               tiu_gps_buf(8*(tiu_byte_cnt+1)-1 downto 8*tiu_byte_cnt)
+  --                 <= tiu_timebyte;
+  --             else
+  --               tiu_byte_cnt    <= 0;
+  --               tiu_gps_o       <= tiu_timebyte & tiu_gps_buf;
+  --               tiu_gps_valid_o <= '1';
+  --               ts_state        <= IDLE;
+  --             end if;
+  --           end if;
+
+  --         when others =>
+
+  --       end case;
+
+  --       if (reset = '1') then
+  --         state <= IDLE;
+  --       end if;
+
+  --     end if;
+  --   end process;
+
+  -- end generate;
+
+  --------------------------------------------------------------------------------
+  -- 1
+  --------------------------------------------------------------------------------
 
   -- on the falling edge of the tiu GPS signal, latch the timestamp
   process (clock) is

@@ -15,7 +15,12 @@ async def clk_gen(signal, period, phase):
     # pre-construct triggers for performance
     high_time = Timer(period/2.0, units="ns")
     low_time = Timer(period/2.0, units="ns")
-    await Timer(phase/360.0 * period, units="ns")
+
+    if phase > 0:
+        await Timer(phase/360.0 * period, units="ns")
+    else:
+        await Timer(period, units="ns")
+
     while True:
         signal.value = 1
         await high_time
@@ -38,6 +43,7 @@ async def oversample(dut):
     cocotb.fork(clk_gen(dut.clk90, PERIOD, 90))
 
     dut.data_i.value = 0
+    dut.idle_i.value = 1
 
     await RisingEdge(dut.clk)
     await RisingEdge(dut.clk)
@@ -59,8 +65,8 @@ async def oversample(dut):
             for _ in range(16):
                 await RisingEdge(dut.clk)
 
-            if (phase > 90):
-                await Timer(phase * PERIOD / 360, units="ns")
+            if phase > 90:
+                await Timer(phase * PERIOD / 360.0, units="ns")
 
             dut.data_i.value=1
             await Timer(PERIOD, units="ns")
@@ -103,19 +109,17 @@ def test_oversample():
     module = os.path.splitext(os.path.basename(__file__))[0]
 
     vhdl_sources = [
-        os.path.join(tests_dir, f"oversample_iddr.vhd"),
+        os.path.join(tests_dir, f"lt_oversampler.vhd"),
     ]
 
     os.environ["SIM"] = "ghdl"
 
-    run(
-        vhdl_sources=vhdl_sources,
+    run(vhdl_sources=vhdl_sources,
         module=module,
         toplevel="oversample",
         toplevel_lang="vhdl",
-        gui=0
-    )
-
+        compile_args=["--std=08"],
+        gui=0)
 
 if __name__ == "__main__":
     test_oversample()

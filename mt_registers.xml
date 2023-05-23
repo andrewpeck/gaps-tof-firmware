@@ -37,8 +37,7 @@
           permission="r"
           mask="0xffffffff"
           description="Feedback clock frequency"
-          fw_signal="fb_clock_rates(${FB_IDX})">
-    </node>
+          fw_signal="fb_clock_rates(${FB_IDX})"/>
 
     <node id="DSI_ON"
           address="0x7"
@@ -112,6 +111,14 @@
           description="Number of clock cycles to stretch the LT inputs by"
           fw_default="0xf"
           fw_signal="lt_input_stretch"/>
+
+    <node id="RB_INTEGRATION_WINDOW"
+          address="0xF"
+          permission="rw"
+          mask="0x1f00"
+          description="Number of 100MHz clock cycles to integrate the LTB hits to determine which MTB to read out."
+          fw_default="0x5"
+          fw_signal="rb_window"/>
 
     <node id="EVENT_QUEUE" address="0x10" description = "DAQ Buffer">
       <node id="RESET" permission="w" address="0x0" mask="0x00000001" description="DAQ Buffer Reset" fw_write_pulse_signal="daq_reset"/>

@@ -45,14 +45,16 @@ entity trigger is
     outer_tof_thresh : in std_logic_vector (7 downto 0);
     total_tof_thresh : in std_logic_vector (7 downto 0);
 
-    busy_i    : in std_logic;
-    rb_busy_i : in std_logic_vector(NUM_RBS-1 downto 0);
+    busy_i      : in std_logic;
+    rb_busy_i   : in std_logic_vector(NUM_RBS-1 downto 0);
+    rb_window_i : in std_logic_vector(4 downto 0);
 
     force_trigger_i : in std_logic;
 
     pre_trigger_o    : out std_logic;
     global_trigger_o : out std_logic;
     lost_trigger_o   : out std_logic;
+    rb_trigger_o     : out std_logic;
     rb_ch_bitmap_o   : out std_logic_vector (NUM_RBS*8-1 downto 0);
     event_cnt_o      : out std_logic_vector (31 downto 0)
     );
@@ -192,8 +194,9 @@ architecture behavioral of trigger is
 
   constant NUM_CHANNELS : integer := per_channel_triggers'length;
 
-  signal rb_triggers  : std_logic_vector (NUM_RBS-1 downto 0);
-  signal rb_ch_bitmap : std_logic_vector (NUM_RBS*8-1 downto 0);
+  signal rb_triggers      : std_logic_vector (NUM_RBS-1 downto 0);
+  signal rb_ch_bitmap     : std_logic_vector (NUM_RBS*8-1 downto 0);
+  signal rb_ch_integrated : std_logic_vector (NUM_RBS*8-1 downto 0);
 
   --------------------------------------------------------------------------------
   -- misc
@@ -557,8 +560,36 @@ begin
   rb_map_inst : entity work.rb_map
     port map (
       clock          => clk,
-      hit_bitmap_i   => hit_bitmap_dly(hit_bitmap_dly'high),
+      hits_bitmap_i  => hit_bitmap_dly(hit_bitmap_dly'high),
       rb_ch_bitmap_o => rb_ch_bitmap);
+
+  -- the nature of the GAPS trigger is that a track with good timing resolution
+  -- defines the trigger. This is the direct digitization of a particle passing
+  -- through the TOF, before decay. Because of this, the hits should happen
+  -- close together. This means that the trigger does not need to look in a very
+  -- wide time window.
+  --
+  -- When determining the channels in the RB that need to be read, however, the
+  -- MTB needs to consider a longer time window /after/ the trigger decision is
+  -- made to account for decay time, slow moving particles, etc.
+  --
+  -- the integrator module opens a time window after a hit and accumulates hits
+  -- for a programmable number of clock cycles, after which a trigger + hit mask
+  -- are sent to the readout boards
+
+  integrator_inst : entity work.integrator
+    generic map (
+      MAX   => 31,
+      WIDTH => rb_ch_bitmap'length
+      )
+    port map (
+      clk    => clk,
+      trg_i  => pre_trigger,
+      trg_o  => rb_trigger_o,
+      d      => rb_ch_bitmap,
+      q      => rb_ch_integrated,
+      window => to_integer(unsigned(rb_window_i))
+      );
 
   process (clk) is
   begin
@@ -567,14 +598,14 @@ begin
         if (read_all_channels = '1') then
           rb_ch_bitmap_o <= (others => '1');
         else
-          rb_ch_bitmap_o <= rb_ch_bitmap;
+          rb_ch_bitmap_o <= rb_ch_integrated;
         end if;
       end if;
     end if;
   end process;
 
   --------------------------------------------------------------------------------
-  -- Outputs
+  -- Outputs and Delaylines
   --------------------------------------------------------------------------------
 
   pre_trigger_o <= pre_trigger;

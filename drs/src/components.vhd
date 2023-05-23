@@ -16,6 +16,7 @@ package components is
   component drs
     port(
       clock                    : in  std_logic;
+      ila_clock                : in  std_logic;
       reset                    : in  std_logic;
       diagnostic_mode          : in  std_logic;
       trigger_i                : in  std_logic;

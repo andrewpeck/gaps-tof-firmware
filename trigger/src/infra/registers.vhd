@@ -81,6 +81,11 @@ package registers is
     constant REG_LT_INPUT_STRETCH_LSB     : integer := 4;
     constant REG_LT_INPUT_STRETCH_DEFAULT : std_logic_vector(7 downto 4) := x"f";
 
+    constant REG_RB_INTEGRATION_WINDOW_ADDR    : std_logic_vector(9 downto 0) := "00" & x"0f";
+    constant REG_RB_INTEGRATION_WINDOW_MSB    : integer := 12;
+    constant REG_RB_INTEGRATION_WINDOW_LSB     : integer := 8;
+    constant REG_RB_INTEGRATION_WINDOW_DEFAULT : std_logic_vector(12 downto 8) := '0' & x"5";
+
     constant REG_EVENT_QUEUE_RESET_ADDR    : std_logic_vector(9 downto 0) := "00" & x"10";
     constant REG_EVENT_QUEUE_RESET_BIT    : integer := 0;
 

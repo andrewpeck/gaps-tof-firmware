@@ -888,6 +888,8 @@ begin
       srout_posneg_i  => srout_posneg,
       srout_latency_i => srout_latency,
 
+      ila_clock => trg_clk_oversample,
+
       --adc_data => adc_data,
       adc_data_i => adc_data_i,
 
