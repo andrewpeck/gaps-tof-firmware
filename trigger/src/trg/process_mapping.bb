@@ -103,7 +103,7 @@
           ltb-enum (+ ltb-ch  (* 8 ltb ))
           rb-enum (+ rb-ch  (* 8 rb ))]
 
-      (format "  rb_ch_bitmap_o(%3d) <= hits_bitmap_i(%d); -- rb=%s lrb=%s"
+      (format "  rb_ch_bitmap_o(%3d) <= hits_bitmap_i(%d); -- rb=%s ltb=%s"
               rb-enum
               ltb-enum
               (:rb+channel rb-map)
