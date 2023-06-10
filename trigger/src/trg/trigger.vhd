@@ -501,38 +501,38 @@ begin
       --START: autoinsert triggers
 
       ssl_trig_top_bot <=
-        ((or_reduce(x"3F" and get_hits_from_slot(hitmask, 1, 1)) or
-          or_reduce(x"FC" and get_hits_from_slot(hitmask, 2, 2)))
+        ((or_reduce(x"3F" and get_hits_from_slot(hitmask, 2, 1)) or
+          or_reduce(x"FC" and get_hits_from_slot(hitmask, 3, 2)))
          and
-         (or_reduce(x"3F" and get_hits_from_slot(hitmask, 1, 3)) or
-          or_reduce(x"FC" and get_hits_from_slot(hitmask, 1, 4))));
+         (or_reduce(x"3F" and get_hits_from_slot(hitmask, 2, 3)) or
+          or_reduce(x"FC" and get_hits_from_slot(hitmask, 2, 4))));
 
       ssl_trig_topedge_bot <=
-        ((or_reduce(x"C0" and get_hits_from_slot(hitmask, 1, 1)) or
-          or_reduce(x"30" and get_hits_from_slot(hitmask, 1, 2)) or
-          or_reduce(x"3C" and get_hits_from_slot(hitmask, 2, 5)) or
-          or_reduce(x"03" and get_hits_from_slot(hitmask, 2, 2)) or
-          or_reduce(x"0C" and get_hits_from_slot(hitmask, 2, 1)) or
-          or_reduce(x"3C" and get_hits_from_slot(hitmask, 2, 3)))
+        ((or_reduce(x"C0" and get_hits_from_slot(hitmask, 2, 1)) or
+          or_reduce(x"30" and get_hits_from_slot(hitmask, 2, 2)) or
+          or_reduce(x"3C" and get_hits_from_slot(hitmask, 3, 5)) or
+          or_reduce(x"03" and get_hits_from_slot(hitmask, 3, 2)) or
+          or_reduce(x"0C" and get_hits_from_slot(hitmask, 3, 1)) or
+          or_reduce(x"3C" and get_hits_from_slot(hitmask, 3, 3)))
          and
-         (or_reduce(x"3F" and get_hits_from_slot(hitmask, 1, 3)) or
-          or_reduce(x"FC" and get_hits_from_slot(hitmask, 1, 4))));
+         (or_reduce(x"3F" and get_hits_from_slot(hitmask, 2, 3)) or
+          or_reduce(x"FC" and get_hits_from_slot(hitmask, 2, 4))));
 
       ssl_trig_top_botedge <=
-        ((or_reduce(x"3F" and get_hits_from_slot(hitmask, 1, 1)) or
-          or_reduce(x"FC" and get_hits_from_slot(hitmask, 2, 2)))
+        ((or_reduce(x"3F" and get_hits_from_slot(hitmask, 2, 1)) or
+          or_reduce(x"FC" and get_hits_from_slot(hitmask, 3, 2)))
          and
-         (or_reduce(x"0F" and get_hits_from_slot(hitmask, 1, 2)) or
-          or_reduce(x"C3" and get_hits_from_slot(hitmask, 2, 5)) or
-          or_reduce(x"F0" and get_hits_from_slot(hitmask, 2, 1)) or
-          or_reduce(x"C3" and get_hits_from_slot(hitmask, 2, 3))));
+         (or_reduce(x"0F" and get_hits_from_slot(hitmask, 2, 2)) or
+          or_reduce(x"C3" and get_hits_from_slot(hitmask, 3, 5)) or
+          or_reduce(x"F0" and get_hits_from_slot(hitmask, 3, 1)) or
+          or_reduce(x"C3" and get_hits_from_slot(hitmask, 3, 3))));
 
       ssl_trig_topmid_botmid <=
-        ((or_reduce(x"03" and get_hits_from_slot(hitmask, 1, 1)) or
-          or_reduce(x"C0" and get_hits_from_slot(hitmask, 2, 2)))
+        ((or_reduce(x"03" and get_hits_from_slot(hitmask, 2, 1)) or
+          or_reduce(x"C0" and get_hits_from_slot(hitmask, 3, 2)))
          and
-         (or_reduce(x"30" and get_hits_from_slot(hitmask, 1, 3)) or
-          or_reduce(x"0C" and get_hits_from_slot(hitmask, 1, 4))));
+         (or_reduce(x"30" and get_hits_from_slot(hitmask, 2, 3)) or
+          or_reduce(x"0C" and get_hits_from_slot(hitmask, 2, 4))));
 
       --END: autoinsert triggers
 

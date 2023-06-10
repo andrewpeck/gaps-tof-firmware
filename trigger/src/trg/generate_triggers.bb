@@ -6,34 +6,37 @@
 
 (def triggers
   [{:name "ssl_trig_top_bot"
-    :a [{:dsi 1 :conn 1 :ch [1 2 3 4 5 6 7 8 9 10 11 12]}
-        {:dsi 2 :conn 2 :ch [5 6 7 8 9 10 11 12 13 14 15 16]}]
-    :b [{:dsi 1 :conn 3 :ch [1 2 3 4 5 6 7 8 9 10 11 12]}
-        {:dsi 1 :conn 4 :ch [5 6 7 8 9 10 11 12 13 14 15 16]}]}
+    :a [{:dsi 2 :conn 1 :ch [1 2 3 4 5 6 7 8 9 10 11 12]}
+        {:dsi 3 :conn 2 :ch [5 6 7 8 9 10 11 12 13 14 15 16]}]
+    :b [{:dsi 2 :conn 3 :ch [1 2 3 4 5 6 7 8 9 10 11 12]}
+        {:dsi 2 :conn 4 :ch [5 6 7 8 9 10 11 12 13 14 15 16]}]}
+
 
    {:name "ssl_trig_topedge_bot"
-    :a [{:dsi 1 :conn 1 :ch [13 14 15 16]}
-        {:dsi 1 :conn 2 :ch [9 10 11 12]}
-        {:dsi 2 :conn 5 :ch [5 6 7 8 9 10 11 12]}
-        {:dsi 2 :conn 2 :ch [1 2 3 4]}
-        {:dsi 2 :conn 1 :ch [5 6 7 8]}
-        {:dsi 2 :conn 3 :ch [5 6 7 8 9 10 11 12]}]
-    :b [{:dsi 1 :conn 3 :ch [1 2 3 4 5 6 7 8 9 10 11 12]}
-        {:dsi 1 :conn 4 :ch [5 6 7 8 9 10 11 12 13 14 15 16]}]}
+    :a [{:dsi 2 :conn 1 :ch [13 14 15 16]}
+        {:dsi 2 :conn 2 :ch [9 10 11 12]}
+        {:dsi 3 :conn 5 :ch [5 6 7 8 9 10 11 12]}
+        {:dsi 3 :conn 2 :ch [1 2 3 4]}
+        {:dsi 3 :conn 1 :ch [5 6 7 8]}
+        {:dsi 3 :conn 3 :ch [5 6 7 8 9 10 11 12]}]
+    :b [{:dsi 2 :conn 3 :ch [1 2 3 4 5 6 7 8 9 10 11 12]}
+        {:dsi 2 :conn 4 :ch [5 6 7 8 9 10 11 12 13 14 15 16]}]}
+
 
    {:name "ssl_trig_top_botedge"
-    :a [{:dsi 1 :conn 1 :ch [1 2 3 4 5 6 7 8 9 10 11 12]}
-        {:dsi 2 :conn 2 :ch [5 6 7 8 9 10 11 12 13 14 15 16]}]
-    :b [{:dsi 1 :conn 2 :ch [1 2 3 4 5 6 7 8]}
-        {:dsi 2 :conn 5 :ch [1 2 3 4 13 14 15 16]}
-        {:dsi 2 :conn 1 :ch [9 10 11 12 13 14 15 16]}
-        {:dsi 2 :conn 3 :ch [1 2 3 4 13 14 15 16]}]}
+    :a [{:dsi 2 :conn 1 :ch [1 2 3 4 5 6 7 8 9 10 11 12]}
+        {:dsi 3 :conn 2 :ch [5 6 7 8 9 10 11 12 13 14 15 16]}]
+    :b [{:dsi 2 :conn 2 :ch [1 2 3 4 5 6 7 8]}
+        {:dsi 3 :conn 5 :ch [1 2 3 4 13 14 15 16]}
+        {:dsi 3 :conn 1 :ch [9 10 11 12 13 14 15 16]}
+        {:dsi 3 :conn 3 :ch [1 2 3 4 13 14 15 16]}]}
+
 
    {:name "ssl_trig_topmid_botmid"
-    :a [{:dsi 1 :conn 1 :ch [1 2 3 4]}
-        {:dsi 2 :conn 2 :ch [13 14 15 16]}]
-    :b [{:dsi 1 :conn 3 :ch [9 10 11 12]}
-        {:dsi 1 :conn 4 :ch [5 6 7 8]}]}])
+    :a [{:dsi 2 :conn 1 :ch [1 2 3 4]}
+        {:dsi 3 :conn 2 :ch [13 14 15 16]}]
+    :b [{:dsi 2 :conn 3 :ch [9 10 11 12]}
+        {:dsi 2 :conn 4 :ch [5 6 7 8]}]}])
 
 (defn list-to-mask
 
