@@ -860,7 +860,6 @@ begin
   -- TIU Interface
   --------------------------------------------------------------------------------
 
-  ext_out(0) <= tiu_serial_o;
   tiu_busy_i <= ext_in(0) when tiu_use_aux = '0' else ext_in(2);
   tiu_gps_i  <= ext_in(1) when tiu_use_aux = '0' else ext_in(3);
   ext_out(0) <= tiu_serial_o; -- pri
