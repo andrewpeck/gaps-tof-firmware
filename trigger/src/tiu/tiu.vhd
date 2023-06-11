@@ -382,7 +382,7 @@ begin
             tiu_emu_busy_cnt <= tiu_emu_busy_cnt - 1;
           elsif (tiu_emu_busy_cnt = 0) then
             tiu_busy_state   <= BUSY;
-            tiu_emu_busy_cnt <= tiu_emu_busy_cnt_i;
+            tiu_emu_busy_cnt <= to_integer(unsigned(tiu_emu_busy_cnt_i));
           end if;
 
         when BUSY =>
