@@ -302,6 +302,9 @@ def check_clocks():
 def force_trigger():
     wReg("MT.FORCE_TRIGGER", 1)
 
+def set_tiu_data_src(val):
+    wReg("MT.TIU_USE_AUX_LINK", val & 0x1)
+
 def en_ucla_trigger():
     set_trig("MT.TRIG_MASK_A", 0x000000f0)
     set_trig("MT.TRIG_MASK_B", 0x0000000f)
@@ -484,6 +487,7 @@ if __name__ == '__main__':
     argParser.add_argument('--read_daq',              action='store_true', default=False, help="Stream the DAQ data to the screen")
     argParser.add_argument('--force_trig',            action='store_true', default=False, help="Force an MTB Trigger")
     argParser.add_argument('--check_clocks',          action='store_true', default=False, help="Check DSI loopback clock frequencies")
+    argParser.add_argument('--tiu_data_src',          action='store',                     help="Set source of TIU link: 1 = J11, 0 = J3")
 
     args = argParser.parse_args()
 
@@ -497,6 +501,8 @@ if __name__ == '__main__':
 
     if args.check_clocks:
         check_clocks()
+    if args.tiu_data_src:
+        set_tiu_data_src(int(args.tiu_data_src))
     if args.ucla_trig_en:
         en_ucla_trigger()
     if args.trig_rates:

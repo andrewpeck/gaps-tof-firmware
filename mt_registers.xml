@@ -98,6 +98,14 @@
           fw_default="0x0"
           fw_signal="tiu_emulation_mode"/>
 
+    <node id="TIU_USE_AUX_LINK"
+          address="0xE"
+          permission="rw"
+          mask="0x2"
+          description="1 to use J11; 0 to use J3"
+          fw_default="0x0"
+          fw_signal="tiu_use_aux"/>
+
     <node id="TIU_BAD"
           address="0xF"
           permission="r"

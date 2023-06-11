@@ -222,6 +222,7 @@ architecture structural of gaps_mt is
   signal tiu_gps_i     : std_logic;
   signal tiu_trigger_o : std_logic;
   signal tiu_bad       : std_logic;
+  signal tiu_use_aux   : std_logic := '0';
 
   -- 1 bit trigger for rb; this is just the OR of the channel_select
   signal rb_triggers    : std_logic_vector (NUM_RBS-1 downto 0);
@@ -859,15 +860,17 @@ begin
   -- TIU Interface
   --------------------------------------------------------------------------------
 
-  tiu_busy_i <= ext_in(0);
-  tiu_gps_i  <= ext_in(1);
   ext_out(0) <= tiu_serial_o;
+  tiu_busy_i <= ext_in(0) when tiu_use_aux = '0' else ext_in(2);
+  tiu_gps_i  <= ext_in(1) when tiu_use_aux = '0' else ext_in(3);
+  ext_out(0) <= tiu_serial_o; -- pri
+  ext_out(2) <= tiu_serial_o; -- aux
 
   process (clk200) is
   begin
     if (rising_edge(clk200)) then
-      ext_out(1) <= tiu_trigger_o;
-      ext_io(10) <= tiu_trigger_o;
+      ext_out(1) <= tiu_trigger_o; -- pri
+      ext_out(3) <= tiu_trigger_o; -- aux
     end if;
   end process;
 
@@ -1704,6 +1707,7 @@ begin
   regs_read_arr(11)(REG_ANY_TRIG_EN_BIT) <= any_trig_en;
   regs_read_arr(13)(REG_EVENT_CNT_MSB downto REG_EVENT_CNT_LSB) <= event_cnt;
   regs_read_arr(14)(REG_TIU_EMULATION_MODE_BIT) <= tiu_emulation_mode;
+  regs_read_arr(14)(REG_TIU_USE_AUX_LINK_BIT) <= tiu_use_aux;
   regs_read_arr(15)(REG_TIU_BAD_BIT) <= tiu_bad;
   regs_read_arr(15)(REG_LT_INPUT_STRETCH_MSB downto REG_LT_INPUT_STRETCH_LSB) <= lt_input_stretch;
   regs_read_arr(17)(REG_EVENT_QUEUE_DATA_MSB downto REG_EVENT_QUEUE_DATA_LSB) <= daq_data_xfifo;
@@ -1854,6 +1858,7 @@ begin
   trig_gen_rate <= regs_write_arr(9)(REG_TRIG_GEN_RATE_MSB downto REG_TRIG_GEN_RATE_LSB);
   any_trig_en <= regs_write_arr(11)(REG_ANY_TRIG_EN_BIT);
   tiu_emulation_mode <= regs_write_arr(14)(REG_TIU_EMULATION_MODE_BIT);
+  tiu_use_aux <= regs_write_arr(14)(REG_TIU_USE_AUX_LINK_BIT);
   lt_input_stretch <= regs_write_arr(15)(REG_LT_INPUT_STRETCH_MSB downto REG_LT_INPUT_STRETCH_LSB);
   inner_tof_thresh <= regs_write_arr(19)(REG_INNER_TOF_THRESH_MSB downto REG_INNER_TOF_THRESH_LSB);
   outer_tof_thresh <= regs_write_arr(19)(REG_OUTER_TOF_THRESH_MSB downto REG_OUTER_TOF_THRESH_LSB);
@@ -2320,6 +2325,7 @@ begin
   regs_defaults(9)(REG_TRIG_GEN_RATE_MSB downto REG_TRIG_GEN_RATE_LSB) <= REG_TRIG_GEN_RATE_DEFAULT;
   regs_defaults(11)(REG_ANY_TRIG_EN_BIT) <= REG_ANY_TRIG_EN_DEFAULT;
   regs_defaults(14)(REG_TIU_EMULATION_MODE_BIT) <= REG_TIU_EMULATION_MODE_DEFAULT;
+  regs_defaults(14)(REG_TIU_USE_AUX_LINK_BIT) <= REG_TIU_USE_AUX_LINK_DEFAULT;
   regs_defaults(15)(REG_LT_INPUT_STRETCH_MSB downto REG_LT_INPUT_STRETCH_LSB) <= REG_LT_INPUT_STRETCH_DEFAULT;
   regs_defaults(19)(REG_INNER_TOF_THRESH_MSB downto REG_INNER_TOF_THRESH_LSB) <= REG_INNER_TOF_THRESH_DEFAULT;
   regs_defaults(19)(REG_OUTER_TOF_THRESH_MSB downto REG_OUTER_TOF_THRESH_LSB) <= REG_OUTER_TOF_THRESH_DEFAULT;

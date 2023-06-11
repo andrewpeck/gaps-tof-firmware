@@ -66,6 +66,7 @@
     EVENT\_CNT\_RESET & \texttt{0xc} & \texttt{[0:0]} & w & Pulse & Write 1 to reset the event counter \\\hline
     EVENT\_CNT & \texttt{0xd} & \texttt{[31:0]} & r & \texttt{} & Event Counter \\\hline
     TIU\_EMULATION\_MODE & \texttt{0xe} & \texttt{[0:0]} & rw & \texttt{0x0} & 1 to emulate the TIU \\\hline
+    TIU\_USE\_AUX\_LINK & \texttt{0xe} & \texttt{[1:1]} & rw & \texttt{0x0} & 1 to use J11; 0 to use J3 \\\hline
     TIU\_BAD & \texttt{0xf} & \texttt{[0:0]} & r & \texttt{} & 1 means that the tiu link is not working \\\hline
     LT\_INPUT\_STRETCH & \texttt{0xf} & \texttt{[7:4]} & rw & \texttt{0xF} & Number of clock cycles to stretch the LT inputs by \\\hline
     \end{tabularx}
