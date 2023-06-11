@@ -895,6 +895,7 @@ begin
       -- config
       send_event_cnt_on_timeout => '1',
       tiu_emulation_mode        => tiu_emulation_mode,
+      tiu_emu_busy_cnt_i        => tiu_emu_busy_cnt,
 
       -- mt trigger signals
       trigger_i         => pre_trigger or global_trigger,
