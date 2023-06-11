@@ -308,6 +308,9 @@ def set_tiu_data_src(val):
 def set_tiu_emulation_mode(val):
     wReg("MT.TIU_EMULATION_MODE", val)
 
+def set_tiu_emu_busy_cnt(val):
+    wReg("MT.TIU_EMU_BUSY_CNT", val)
+
 def en_ucla_trigger():
     set_trig("MT.TRIG_MASK_A", 0x000000f0)
     set_trig("MT.TRIG_MASK_B", 0x0000000f)
@@ -492,6 +495,7 @@ if __name__ == '__main__':
     argParser.add_argument('--check_clocks',          action='store_true', default=False, help="Check DSI loopback clock frequencies")
     argParser.add_argument('--tiu_data_src',          action='store',                     help="Set source of TIU link: 1 = J11, 0 = J3")
     argParser.add_argument('--tiu_emulation_mode',    action='store',                     help="Set TIU emulation mode; 1 = emulate, 0 = TIU")
+    argParser.add_argument('--tiu_emu_busy_cnt',      action='store',                     help="Number of 10 ns clock cycles for the TIU to be busy")
 
     args = argParser.parse_args()
 
@@ -511,6 +515,8 @@ if __name__ == '__main__':
         en_ucla_trigger()
     if args.tiu_emulation_mode:
         set_tiu_emulation_mode(args.tiu_emulation_mode)
+    if args.tiu_emu_busy_cnt:
+        set_tiu_emu_busy_cnt(args.tiu_emu_busy_cnt)
     if args.trig_rates:
         read_rates()
     if args.ltb_status:

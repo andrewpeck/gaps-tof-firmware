@@ -27,6 +27,7 @@ entity tiu is
     -- config
     send_event_cnt_on_timeout : in std_logic := '1';
     tiu_emulation_mode        : in std_logic;
+    tiu_emu_busy_cnt_i        : in std_logic_vector (17 downto 0);
 
     -- mt trigger signals
     trigger_i   : in std_logic;
@@ -52,7 +53,7 @@ architecture behavioral of tiu is
 
   constant CLK_PERIOD          : real    := 1000000.0/real(FREQ);
   constant tiu_trigger_cnt_max : integer := integer(1.05 / CLK_PERIOD);
-  constant tiu_busy_cnt_max    : integer := integer(20.0 / CLK_PERIOD);
+  constant tiu_busy_cnt_max    : integer := 2**tiu_emu_busy_cnt_i'length-1;
 
   signal tiu_busy : std_logic := '0';
   signal tiu_gps  : std_logic := '0';
@@ -381,7 +382,7 @@ begin
             tiu_emu_busy_cnt <= tiu_emu_busy_cnt - 1;
           elsif (tiu_emu_busy_cnt = 0) then
             tiu_busy_state   <= BUSY;
-            tiu_emu_busy_cnt <= 2000;
+            tiu_emu_busy_cnt <= tiu_emu_busy_cnt_i;
           end if;
 
         when BUSY =>

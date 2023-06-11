@@ -106,6 +106,14 @@
           fw_default="0x0"
           fw_signal="tiu_use_aux"/>
 
+    <node id="TIU_EMU_BUSY_CNT"
+          address="0xE"
+          permission="rw"
+          mask="0xffffC000"
+          description="Number of 10 ns clock cyles that the emulator will remain busy"
+          fw_default="50000"
+          fw_signal="tiu_emu_busy_cnt"/>
+
     <node id="TIU_BAD"
           address="0xF"
           permission="r"

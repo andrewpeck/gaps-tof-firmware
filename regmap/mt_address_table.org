@@ -49,6 +49,8 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |TIU_USE_AUX_LINK | ~0xe~ | ~0x38~ | ~1~ | rw | ~0x0~ | 1 to use J11; 0 to use J3 | 
 |------------+---+---+---------+-----+-----+----------------------------|
+|TIU_EMU_BUSY_CNT | ~0xe~ | ~0x38~ | ~[31:14]~ | rw | ~0xC350~ | Number of 10 ns clock cyles that the emulator will remain busy | 
+|------------+---+---+---------+-----+-----+----------------------------|
 |TIU_BAD | ~0xf~ | ~0x3c~ | ~0~ | r |  | 1 means that the tiu link is not working | 
 |------------+---+---+---------+-----+-----+----------------------------|
 |LT_INPUT_STRETCH | ~0xf~ | ~0x3c~ | ~[7:4]~ | rw | ~0xF~ | Number of clock cycles to stretch the LT inputs by | 
