@@ -305,6 +305,9 @@ def force_trigger():
 def set_tiu_data_src(val):
     wReg("MT.TIU_USE_AUX_LINK", val & 0x1)
 
+def set_tiu_emulation_mode(val):
+    wReg("MT.TIU_EMULATION_MODE", val)
+
 def en_ucla_trigger():
     set_trig("MT.TRIG_MASK_A", 0x000000f0)
     set_trig("MT.TRIG_MASK_B", 0x0000000f)
@@ -488,6 +491,7 @@ if __name__ == '__main__':
     argParser.add_argument('--force_trig',            action='store_true', default=False, help="Force an MTB Trigger")
     argParser.add_argument('--check_clocks',          action='store_true', default=False, help="Check DSI loopback clock frequencies")
     argParser.add_argument('--tiu_data_src',          action='store',                     help="Set source of TIU link: 1 = J11, 0 = J3")
+    argParser.add_argument('--tiu_emulation_mode',    action='store',                     help="Set TIU emulation mode; 1 = emulate, 0 = TIU")
 
     args = argParser.parse_args()
 
@@ -505,6 +509,8 @@ if __name__ == '__main__':
         set_tiu_data_src(int(args.tiu_data_src))
     if args.ucla_trig_en:
         en_ucla_trigger()
+    if args.tiu_emulation_mode:
+        set_tiu_emulation_mode(args.tiu_emulation_mode)
     if args.trig_rates:
         read_rates()
     if args.ltb_status:
