@@ -4,13 +4,12 @@ import socket
 import sys
 import random
 import select
-import time
 import json
 import math
 
-from enum import Enum
+from typing import Dict, List
 
-regs = None
+regs : Dict = {}
 
 PACKET_ID = 0
 #IPADDR = "192.168.36.121"
@@ -39,7 +38,7 @@ def get_lsb(n):
     return int(math.log2(n & -n))
 
 # Recieve
-def decode_ipbus(message, verbose=False):
+def decode_ipbus(message, verbose=False) -> List[int]:
 
     # Response
     ipbus_version = message[0] >> 4
@@ -55,8 +54,12 @@ def decode_ipbus(message, verbose=False):
             data[i]=((message[8 + i * 4] << 24) | (message[9 + i * 4] << 16) | (message[10 + i * 4] << 8) | message[11 + i * 4])
 
     # Write
-    if type==WRITE:
+    elif type==WRITE:
         data = [0]
+
+    # Unknown
+    else:
+        raise ValueError(f"Unknown data type {type=} in decode ipbus")
 
     if (verbose):
         print("Decoding IPBus Packet:")
@@ -70,7 +73,7 @@ def decode_ipbus(message, verbose=False):
 
     return (data)
 
-def encode_ipbus(addr, packet_type, data):
+def encode_ipbus(addr : int, packet_type : int, data : List[int]) -> bytes:
 
     size = len(data)
 
@@ -101,42 +104,42 @@ def encode_ipbus(addr, packet_type, data):
 
     return bytes(udp_data)
 
-def wReg(reg, data, verify=False):
+def wReg(reg : str, data : int, verify : bool = False):
     node = regs[reg]
     adr = node["adr"]
     mask = node["mask"]
     shift = get_lsb(mask)
     r = (0xffffffff ^ mask) & rAdr(adr)
     r |= data << shift
-    wAdr(adr, r)
+    wAdr(adr, r, verify=verify)
 
-def rReg(reg, verify=False):
+def rReg(reg : str):
     node = regs[reg]
     adr = node["adr"]
     mask = node["mask"]
     shift = get_lsb(mask)
     return (rAdr(adr) & mask) >> shift
 
-def wAdr(address, data, verify=False):
+def wAdr(address : int, data : int, verify : bool = False):
     s.sendto(encode_ipbus(addr=address, packet_type=WRITE, data=[data]), target_address)
     ready = select.select([s], [], [], 1)
     if ready[0]:
-        data = s.recvfrom(4096)
+        (rd, _) = s.recvfrom(4096)
         if verify:
             rdback = rAdr(address)
             if rdback != data:
                 print("Readback error in wAdr!")
             return rdback
-        return data
+        return rd
     else:
         print("timeout in wreg 0x%08X" % data)
         return wAdr(address, data, verify)
 
-def rAdr(address):
+def rAdr(address : int) -> int:
     s.sendto(encode_ipbus(addr=address, packet_type=READ, data=[0x0]), target_address)
     ready = select.select([s], [], [], 1)
     if ready[0]:
-        data, adr = s.recvfrom(4096)
+        data, _ = s.recvfrom(4096)
         dec = decode_ipbus(data,False)
         if (len(dec) > 0):
             return dec[0]
@@ -211,7 +214,7 @@ def read_event_cnt(output=False):
 
     return cnt
 
-def reset_hit_cnt(output=False):
+def reset_hit_cnt():
     wReg("MT.HIT_COUNTERS.RESET", 1)
 
 def read_hit_cnt():
@@ -302,10 +305,10 @@ def check_clocks():
 def force_trigger():
     wReg("MT.FORCE_TRIGGER", 1)
 
-def set_tiu_data_src(val):
+def set_tiu_data_src(val : int):
     wReg("MT.TIU_USE_AUX_LINK", val & 0x1)
 
-def set_tiu_emulation_mode(val):
+def set_tiu_emulation_mode(val : int):
     wReg("MT.TIU_EMULATION_MODE", val)
 
 def en_ucla_trigger():
@@ -316,19 +319,19 @@ def en_ssl_trigger():
     set_trig("MT.TRIG_MASK_A", 0xfc3f0000)
     set_trig("MT.TRIG_MASK_B", 0x0000fc3f)
 
-def set_any_trigger(val):
+def set_any_trigger(val : int):
     wReg("MT.ANY_TRIG_EN", val)
     rd = rReg("MT.ANY_TRIG_EN")
     print("Any trigger mode set to %d" % rd)
 
-def set_ssl_trig(trg, val):
+def set_ssl_trig(trg : str, val : int):
     wReg("MT.SSL_TRIG_%s_EN" % trg, val)
 
 def trig_stop():
     set_trig("MT.TRIG_MASK_A", 0x00000000)
     set_trig("MT.TRIG_MASK_B", 0x00000000)
 
-def set_trig(reg, val):
+def set_trig(reg : str, val : int):
 
     if not (reg == "MT.TRIG_MASK_A" or reg == "MT.TRIG_MASK_B"):
         raise Exception("invalid Trigger mask register!")
@@ -338,10 +341,10 @@ def set_trig(reg, val):
 
     wReg(reg, val)
 
-def set_trig_generate(val):
+def set_trig_generate(val : int):
     wReg("MT.TRIG_GEN_RATE", val)
 
-def set_trig_hz(rate):
+def set_trig_hz(rate : int):
     # rate = f_trig / 1E8 * 0xffffffff
     set_trig_generate(int((rate*0xffffffff)/1E8))
 
@@ -423,7 +426,7 @@ def read_daq():
 def loopback(nreads=100000):
     print(" > Running loopback test")
     from tqdm import tqdm
-    for i in tqdm(range(nreads), colour='green'):
+    for _ in tqdm(range(nreads), colour='green'):
         write = random.randint(0, 0xffffffff)
         wAdr(0,write)
         read = rAdr(0)
