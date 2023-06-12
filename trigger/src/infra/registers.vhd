@@ -77,6 +77,11 @@ package registers is
     constant REG_TIU_USE_AUX_LINK_BIT    : integer := 1;
     constant REG_TIU_USE_AUX_LINK_DEFAULT : std_logic := '0';
 
+    constant REG_TIU_EMU_BUSY_CNT_ADDR    : std_logic_vector(9 downto 0) := "00" & x"0e";
+    constant REG_TIU_EMU_BUSY_CNT_MSB    : integer := 31;
+    constant REG_TIU_EMU_BUSY_CNT_LSB     : integer := 14;
+    constant REG_TIU_EMU_BUSY_CNT_DEFAULT : std_logic_vector(31 downto 14) := "00" & x"c350";
+
     constant REG_TIU_BAD_ADDR    : std_logic_vector(9 downto 0) := "00" & x"0f";
     constant REG_TIU_BAD_BIT    : integer := 0;
 

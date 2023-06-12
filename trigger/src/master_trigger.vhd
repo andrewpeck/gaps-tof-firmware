@@ -216,6 +216,7 @@ architecture structural of gaps_mt is
   signal tiu_gps_valid     : std_logic;
 
   signal tiu_emulation_mode : std_logic;
+  signal tiu_emu_busy_cnt   : std_logic_vector (17 downto 0);
 
   signal tiu_busy_i    : std_logic;
   signal tiu_serial_o  : std_logic;
@@ -894,6 +895,7 @@ begin
       -- config
       send_event_cnt_on_timeout => '1',
       tiu_emulation_mode        => tiu_emulation_mode,
+      tiu_emu_busy_cnt_i        => tiu_emu_busy_cnt,
 
       -- mt trigger signals
       trigger_i         => pre_trigger or global_trigger,
@@ -1707,6 +1709,7 @@ begin
   regs_read_arr(13)(REG_EVENT_CNT_MSB downto REG_EVENT_CNT_LSB) <= event_cnt;
   regs_read_arr(14)(REG_TIU_EMULATION_MODE_BIT) <= tiu_emulation_mode;
   regs_read_arr(14)(REG_TIU_USE_AUX_LINK_BIT) <= tiu_use_aux;
+  regs_read_arr(14)(REG_TIU_EMU_BUSY_CNT_MSB downto REG_TIU_EMU_BUSY_CNT_LSB) <= tiu_emu_busy_cnt;
   regs_read_arr(15)(REG_TIU_BAD_BIT) <= tiu_bad;
   regs_read_arr(15)(REG_LT_INPUT_STRETCH_MSB downto REG_LT_INPUT_STRETCH_LSB) <= lt_input_stretch;
   regs_read_arr(17)(REG_EVENT_QUEUE_DATA_MSB downto REG_EVENT_QUEUE_DATA_LSB) <= daq_data_xfifo;
@@ -1858,6 +1861,7 @@ begin
   any_trig_en <= regs_write_arr(11)(REG_ANY_TRIG_EN_BIT);
   tiu_emulation_mode <= regs_write_arr(14)(REG_TIU_EMULATION_MODE_BIT);
   tiu_use_aux <= regs_write_arr(14)(REG_TIU_USE_AUX_LINK_BIT);
+  tiu_emu_busy_cnt <= regs_write_arr(14)(REG_TIU_EMU_BUSY_CNT_MSB downto REG_TIU_EMU_BUSY_CNT_LSB);
   lt_input_stretch <= regs_write_arr(15)(REG_LT_INPUT_STRETCH_MSB downto REG_LT_INPUT_STRETCH_LSB);
   inner_tof_thresh <= regs_write_arr(19)(REG_INNER_TOF_THRESH_MSB downto REG_INNER_TOF_THRESH_LSB);
   outer_tof_thresh <= regs_write_arr(19)(REG_OUTER_TOF_THRESH_MSB downto REG_OUTER_TOF_THRESH_LSB);
@@ -2325,6 +2329,7 @@ begin
   regs_defaults(11)(REG_ANY_TRIG_EN_BIT) <= REG_ANY_TRIG_EN_DEFAULT;
   regs_defaults(14)(REG_TIU_EMULATION_MODE_BIT) <= REG_TIU_EMULATION_MODE_DEFAULT;
   regs_defaults(14)(REG_TIU_USE_AUX_LINK_BIT) <= REG_TIU_USE_AUX_LINK_DEFAULT;
+  regs_defaults(14)(REG_TIU_EMU_BUSY_CNT_MSB downto REG_TIU_EMU_BUSY_CNT_LSB) <= REG_TIU_EMU_BUSY_CNT_DEFAULT;
   regs_defaults(15)(REG_LT_INPUT_STRETCH_MSB downto REG_LT_INPUT_STRETCH_LSB) <= REG_LT_INPUT_STRETCH_DEFAULT;
   regs_defaults(19)(REG_INNER_TOF_THRESH_MSB downto REG_INNER_TOF_THRESH_LSB) <= REG_INNER_TOF_THRESH_DEFAULT;
   regs_defaults(19)(REG_OUTER_TOF_THRESH_MSB downto REG_OUTER_TOF_THRESH_LSB) <= REG_OUTER_TOF_THRESH_DEFAULT;
