@@ -311,7 +311,7 @@ def set_tiu_data_src(val : int):
 def set_tiu_emulation_mode(val : int):
     wReg("MT.TIU_EMULATION_MODE", val)
 
-def set_tiu_emu_busy_cnt(val):
+def set_tiu_emu_busy_cnt(val : int):
     wReg("MT.TIU_EMU_BUSY_CNT", val)
 
 def en_ucla_trigger():
@@ -519,7 +519,7 @@ if __name__ == '__main__':
     if args.tiu_emulation_mode:
         set_tiu_emulation_mode(int(args.tiu_emulation_mode))
     if args.tiu_emu_busy_cnt:
-        set_tiu_emu_busy_cnt(args.tiu_emu_busy_cnt)
+        set_tiu_emu_busy_cnt(int(args.tiu_emu_busy_cnt))
     if args.trig_rates:
         read_rates()
     if args.ltb_status:
