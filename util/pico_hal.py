@@ -510,7 +510,7 @@ if __name__ == '__main__':
     if args.ucla_trig_en:
         en_ucla_trigger()
     if args.tiu_emulation_mode:
-        set_tiu_emulation_mode(args.tiu_emulation_mode)
+        set_tiu_emulation_mode(int(args.tiu_emulation_mode))
     if args.trig_rates:
         read_rates()
     if args.ltb_status:
