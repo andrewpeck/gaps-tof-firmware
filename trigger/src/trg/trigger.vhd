@@ -192,11 +192,6 @@ architecture behavioral of trigger is
   -- there will be some non-trivial mapping where each RB paddle trigger is sourced by
   -- some LTB channel, and each LTB channel corresponds to 2 different RB channels
 
-  signal per_channel_triggers : channel_bitmask_t := (others => '0');
-
-  constant NUM_CHANNELS : integer := per_channel_triggers'length;
-
-  signal rb_triggers      : std_logic_vector (NUM_RBS-1 downto 0);
   signal rb_ch_bitmap     : std_logic_vector (NUM_RBS*8-1 downto 0);
   signal rb_ch_integrated : std_logic_vector (NUM_RBS*8-1 downto 0);
 
