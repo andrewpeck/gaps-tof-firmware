@@ -97,6 +97,22 @@
           fw_default="0x0"
           fw_signal="tiu_emulation_mode"/>
 
+    <node id="TIU_USE_AUX_LINK"
+          address="0xE"
+          permission="rw"
+          mask="0x2"
+          description="1 to use J11; 0 to use J3"
+          fw_default="0x0"
+          fw_signal="tiu_use_aux"/>
+
+    <node id="TIU_EMU_BUSY_CNT"
+          address="0xE"
+          permission="rw"
+          mask="0xffffC000"
+          description="Number of 10 ns clock cyles that the emulator will remain busy"
+          fw_default="50000"
+          fw_signal="tiu_emu_busy_cnt"/>
+
     <node id="TIU_BAD"
           address="0xF"
           permission="r"
@@ -160,6 +176,11 @@
           description="Require beta in the gaps trigger"
           fw_default="0x1"
           fw_signal="require_beta"/>
+    <node id="HIT_THRESH" address="0x14" permission="rw"
+          mask="0x30000000"
+          description="Threshold for the hit bitmap. Threshold must be > this number."
+          fw_default="0x0"
+          fw_signal="hit_thresh"/>
 
     <node id="TRIG_MASK_A" address="0x15" permission="rw"
           mask="0xffffffff"

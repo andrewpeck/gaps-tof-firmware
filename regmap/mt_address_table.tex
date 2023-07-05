@@ -66,6 +66,8 @@
     EVENT\_CNT\_RESET & \texttt{0xc} & \texttt{[0:0]} & w & Pulse & Write 1 to reset the event counter \\\hline
     EVENT\_CNT & \texttt{0xd} & \texttt{[31:0]} & r & \texttt{} & Event Counter \\\hline
     TIU\_EMULATION\_MODE & \texttt{0xe} & \texttt{[0:0]} & rw & \texttt{0x0} & 1 to emulate the TIU \\\hline
+    TIU\_USE\_AUX\_LINK & \texttt{0xe} & \texttt{[1:1]} & rw & \texttt{0x0} & 1 to use J11; 0 to use J3 \\\hline
+    TIU\_EMU\_BUSY\_CNT & \texttt{0xe} & \texttt{[31:14]} & rw & \texttt{0xC350} & Number of 10 ns clock cyles that the emulator will remain busy \\\hline
     TIU\_BAD & \texttt{0xf} & \texttt{[0:0]} & r & \texttt{} & 1 means that the tiu link is not working \\\hline
     LT\_INPUT\_STRETCH & \texttt{0xf} & \texttt{[7:4]} & rw & \texttt{0xF} & Number of clock cycles to stretch the LT inputs by \\\hline
     RB\_INTEGRATION\_WINDOW & \texttt{0xf} & \texttt{[12:8]} & rw & \texttt{0x5} & Number of 100MHz clock cycles to integrate the LTB hits to determine which MTB to read out. \\\hline
@@ -113,6 +115,7 @@
     TOTAL\_TOF\_THRESH & \texttt{0x14} & \texttt{[23:16]} & rw & \texttt{0x8} & Outer TOF hit threshold \\\hline
     GAPS\_TRIGGER\_EN & \texttt{0x14} & \texttt{[24:24]} & rw & \texttt{0x0} & Enable the gaps trigger. \\\hline
     REQUIRE\_BETA & \texttt{0x14} & \texttt{[25:25]} & rw & \texttt{0x1} & Require beta in the gaps trigger \\\hline
+    HIT\_THRESH & \texttt{0x14} & \texttt{[29:28]} & rw & \texttt{0x0} & Threshold for the hit bitmap. Threshold must be > this number. \\\hline
     TRIG\_MASK\_A & \texttt{0x15} & \texttt{[31:0]} & rw & \texttt{0x0} & Bitmask for the A trigger \\\hline
     TRIG\_MASK\_B & \texttt{0x16} & \texttt{[31:0]} & rw & \texttt{0x0} & Bitmask for the B trigger \\\hline
     TRIGGER\_RATE & \texttt{0x17} & \texttt{[23:0]} & r & \texttt{} & Rate of triggers in Hz \\\hline

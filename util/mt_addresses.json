@@ -89,6 +89,18 @@
         "mask": 1,
         "description": "1 to emulate the TIU"
     },
+    "MT.TIU_USE_AUX_LINK": {
+        "adr": 14,
+        "permission": "rw",
+        "mask": 2,
+        "description": "1 to use J11; 0 to use J3"
+    },
+    "MT.TIU_EMU_BUSY_CNT": {
+        "adr": 14,
+        "permission": "rw",
+        "mask": 4294950912,
+        "description": "Number of 10 ns clock cyles that the emulator will remain busy"
+    },
     "MT.TIU_BAD": {
         "adr": 15,
         "permission": "r",
@@ -166,6 +178,12 @@
         "permission": "rw",
         "mask": 33554432,
         "description": "Require beta in the gaps trigger"
+    },
+    "MT.HIT_THRESH": {
+        "adr": 20,
+        "permission": "rw",
+        "mask": 805306368,
+        "description": "Threshold for the hit bitmap. Threshold must be > this number."
     },
     "MT.TRIG_MASK_A": {
         "adr": 21,

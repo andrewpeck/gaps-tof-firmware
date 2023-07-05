@@ -196,8 +196,9 @@ architecture structural of gaps_mt is
   signal ext_trigger_r1  : std_logic := '0';
   signal ext_trigger_r2  : std_logic := '0';
 
-  signal trig_mask_a  : std_logic_vector (31 downto 0) := (others => '0');
-  signal trig_mask_b  : std_logic_vector (31 downto 0) := (others => '0');
+  signal hit_thresh   : std_logic_vector (1 downto 0);
+  signal trig_mask_a  : std_logic_vector (31 downto 0);
+  signal trig_mask_b  : std_logic_vector (31 downto 0);
   signal any_trig_en  : std_logic;
 
   signal ssl_trig_top_bot_en       : std_logic;
@@ -217,12 +218,14 @@ architecture structural of gaps_mt is
   signal tiu_gps_valid     : std_logic;
 
   signal tiu_emulation_mode : std_logic;
+  signal tiu_emu_busy_cnt   : std_logic_vector (17 downto 0);
 
   signal tiu_busy_i    : std_logic;
   signal tiu_serial_o  : std_logic;
   signal tiu_gps_i     : std_logic;
   signal tiu_trigger_o : std_logic;
   signal tiu_bad       : std_logic;
+  signal tiu_use_aux   : std_logic := '0';
 
   -- 1 bit trigger for rb; this is just the OR of the channel_select
   signal rb_triggers    : std_logic_vector (NUM_RBS-1 downto 0);
@@ -717,6 +720,7 @@ begin
       single_hit_en_i => any_trig_en,
       trig_mask_a     => trig_mask_a,
       trig_mask_b     => trig_mask_b,
+      hit_thresh      => hit_thresh,
 
       force_trigger_i => trigger_ipb or trig_gen, -- or ext_trigger
 
@@ -907,15 +911,16 @@ begin
   -- TIU Interface
   --------------------------------------------------------------------------------
 
-  tiu_busy_i <= ext_in(0);
-  tiu_gps_i  <= ext_in(1);
-  ext_out(0) <= tiu_serial_o;
+  tiu_busy_i <= ext_in(0) when tiu_use_aux = '0' else ext_in(2);
+  tiu_gps_i  <= ext_in(1) when tiu_use_aux = '0' else ext_in(3);
+  ext_out(0) <= tiu_serial_o; -- pri
+  ext_out(2) <= tiu_serial_o; -- aux
 
   process (clk200) is
   begin
     if (rising_edge(clk200)) then
-      ext_out(1) <= tiu_trigger_o;
-      ext_io(10) <= tiu_trigger_o;
+      ext_out(1) <= tiu_trigger_o; -- pri
+      ext_out(3) <= tiu_trigger_o; -- aux
     end if;
   end process;
 
@@ -940,6 +945,7 @@ begin
       -- config
       send_event_cnt_on_timeout => '1',
       tiu_emulation_mode        => tiu_emulation_mode,
+      tiu_emu_busy_cnt_i        => tiu_emu_busy_cnt,
 
       -- mt trigger signals
       trigger_i         => pre_trigger or global_trigger,
@@ -1752,6 +1758,8 @@ begin
   regs_read_arr(11)(REG_ANY_TRIG_EN_BIT) <= any_trig_en;
   regs_read_arr(13)(REG_EVENT_CNT_MSB downto REG_EVENT_CNT_LSB) <= event_cnt;
   regs_read_arr(14)(REG_TIU_EMULATION_MODE_BIT) <= tiu_emulation_mode;
+  regs_read_arr(14)(REG_TIU_USE_AUX_LINK_BIT) <= tiu_use_aux;
+  regs_read_arr(14)(REG_TIU_EMU_BUSY_CNT_MSB downto REG_TIU_EMU_BUSY_CNT_LSB) <= tiu_emu_busy_cnt;
   regs_read_arr(15)(REG_TIU_BAD_BIT) <= tiu_bad;
   regs_read_arr(15)(REG_LT_INPUT_STRETCH_MSB downto REG_LT_INPUT_STRETCH_LSB) <= lt_input_stretch;
   regs_read_arr(15)(REG_RB_INTEGRATION_WINDOW_MSB downto REG_RB_INTEGRATION_WINDOW_LSB) <= rb_window;
@@ -1764,6 +1772,7 @@ begin
   regs_read_arr(19)(REG_TOTAL_TOF_THRESH_MSB downto REG_TOTAL_TOF_THRESH_LSB) <= total_tof_thresh;
   regs_read_arr(19)(REG_GAPS_TRIGGER_EN_BIT) <= gaps_trigger_en;
   regs_read_arr(19)(REG_REQUIRE_BETA_BIT) <= require_beta;
+  regs_read_arr(19)(REG_HIT_THRESH_MSB downto REG_HIT_THRESH_LSB) <= hit_thresh;
   regs_read_arr(20)(REG_TRIG_MASK_A_MSB downto REG_TRIG_MASK_A_LSB) <= trig_mask_a;
   regs_read_arr(21)(REG_TRIG_MASK_B_MSB downto REG_TRIG_MASK_B_LSB) <= trig_mask_b;
   regs_read_arr(22)(REG_TRIGGER_RATE_MSB downto REG_TRIGGER_RATE_LSB) <= trig_rate;
@@ -1903,6 +1912,8 @@ begin
   trig_gen_rate <= regs_write_arr(9)(REG_TRIG_GEN_RATE_MSB downto REG_TRIG_GEN_RATE_LSB);
   any_trig_en <= regs_write_arr(11)(REG_ANY_TRIG_EN_BIT);
   tiu_emulation_mode <= regs_write_arr(14)(REG_TIU_EMULATION_MODE_BIT);
+  tiu_use_aux <= regs_write_arr(14)(REG_TIU_USE_AUX_LINK_BIT);
+  tiu_emu_busy_cnt <= regs_write_arr(14)(REG_TIU_EMU_BUSY_CNT_MSB downto REG_TIU_EMU_BUSY_CNT_LSB);
   lt_input_stretch <= regs_write_arr(15)(REG_LT_INPUT_STRETCH_MSB downto REG_LT_INPUT_STRETCH_LSB);
   rb_window <= regs_write_arr(15)(REG_RB_INTEGRATION_WINDOW_MSB downto REG_RB_INTEGRATION_WINDOW_LSB);
   read_all_channels <= regs_write_arr(15)(REG_RB_READ_ALL_CHANNELS_BIT);
@@ -1911,6 +1922,7 @@ begin
   total_tof_thresh <= regs_write_arr(19)(REG_TOTAL_TOF_THRESH_MSB downto REG_TOTAL_TOF_THRESH_LSB);
   gaps_trigger_en <= regs_write_arr(19)(REG_GAPS_TRIGGER_EN_BIT);
   require_beta <= regs_write_arr(19)(REG_REQUIRE_BETA_BIT);
+  hit_thresh <= regs_write_arr(19)(REG_HIT_THRESH_MSB downto REG_HIT_THRESH_LSB);
   trig_mask_a <= regs_write_arr(20)(REG_TRIG_MASK_A_MSB downto REG_TRIG_MASK_A_LSB);
   trig_mask_b <= regs_write_arr(21)(REG_TRIG_MASK_B_MSB downto REG_TRIG_MASK_B_LSB);
   ssl_trig_top_bot_en <= regs_write_arr(24)(REG_SSL_TRIG_TOP_BOT_EN_BIT);
@@ -2370,6 +2382,8 @@ begin
   regs_defaults(9)(REG_TRIG_GEN_RATE_MSB downto REG_TRIG_GEN_RATE_LSB) <= REG_TRIG_GEN_RATE_DEFAULT;
   regs_defaults(11)(REG_ANY_TRIG_EN_BIT) <= REG_ANY_TRIG_EN_DEFAULT;
   regs_defaults(14)(REG_TIU_EMULATION_MODE_BIT) <= REG_TIU_EMULATION_MODE_DEFAULT;
+  regs_defaults(14)(REG_TIU_USE_AUX_LINK_BIT) <= REG_TIU_USE_AUX_LINK_DEFAULT;
+  regs_defaults(14)(REG_TIU_EMU_BUSY_CNT_MSB downto REG_TIU_EMU_BUSY_CNT_LSB) <= REG_TIU_EMU_BUSY_CNT_DEFAULT;
   regs_defaults(15)(REG_LT_INPUT_STRETCH_MSB downto REG_LT_INPUT_STRETCH_LSB) <= REG_LT_INPUT_STRETCH_DEFAULT;
   regs_defaults(15)(REG_RB_INTEGRATION_WINDOW_MSB downto REG_RB_INTEGRATION_WINDOW_LSB) <= REG_RB_INTEGRATION_WINDOW_DEFAULT;
   regs_defaults(15)(REG_RB_READ_ALL_CHANNELS_BIT) <= REG_RB_READ_ALL_CHANNELS_DEFAULT;
@@ -2378,6 +2392,7 @@ begin
   regs_defaults(19)(REG_TOTAL_TOF_THRESH_MSB downto REG_TOTAL_TOF_THRESH_LSB) <= REG_TOTAL_TOF_THRESH_DEFAULT;
   regs_defaults(19)(REG_GAPS_TRIGGER_EN_BIT) <= REG_GAPS_TRIGGER_EN_DEFAULT;
   regs_defaults(19)(REG_REQUIRE_BETA_BIT) <= REG_REQUIRE_BETA_DEFAULT;
+  regs_defaults(19)(REG_HIT_THRESH_MSB downto REG_HIT_THRESH_LSB) <= REG_HIT_THRESH_DEFAULT;
   regs_defaults(20)(REG_TRIG_MASK_A_MSB downto REG_TRIG_MASK_A_LSB) <= REG_TRIG_MASK_A_DEFAULT;
   regs_defaults(21)(REG_TRIG_MASK_B_MSB downto REG_TRIG_MASK_B_LSB) <= REG_TRIG_MASK_B_DEFAULT;
   regs_defaults(24)(REG_SSL_TRIG_TOP_BOT_EN_BIT) <= REG_SSL_TRIG_TOP_BOT_EN_DEFAULT;

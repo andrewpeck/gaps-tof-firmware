@@ -47,6 +47,10 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |TIU_EMULATION_MODE | ~0xe~ | ~0x38~ | ~0~ | rw | ~0x0~ | 1 to emulate the TIU | 
 |------------+---+---+---------+-----+-----+----------------------------|
+|TIU_USE_AUX_LINK | ~0xe~ | ~0x38~ | ~1~ | rw | ~0x0~ | 1 to use J11; 0 to use J3 | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|TIU_EMU_BUSY_CNT | ~0xe~ | ~0x38~ | ~[31:14]~ | rw | ~0xC350~ | Number of 10 ns clock cyles that the emulator will remain busy | 
+|------------+---+---+---------+-----+-----+----------------------------|
 |TIU_BAD | ~0xf~ | ~0x3c~ | ~0~ | r |  | 1 means that the tiu link is not working | 
 |------------+---+---+---------+-----+-----+----------------------------|
 |LT_INPUT_STRETCH | ~0xf~ | ~0x3c~ | ~[7:4]~ | rw | ~0xF~ | Number of clock cycles to stretch the LT inputs by | 
@@ -88,6 +92,8 @@ Implements various control and monitoring functions of the DRS Logic
 |GAPS_TRIGGER_EN | ~0x14~ | ~0x50~ | ~24~ | rw | ~0x0~ | Enable the gaps trigger. | 
 |------------+---+---+---------+-----+-----+----------------------------|
 |REQUIRE_BETA | ~0x14~ | ~0x50~ | ~25~ | rw | ~0x1~ | Require beta in the gaps trigger | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|HIT_THRESH | ~0x14~ | ~0x50~ | ~[29:28]~ | rw | ~0x0~ | Threshold for the hit bitmap. Threshold must be > this number. | 
 |------------+---+---+---------+-----+-----+----------------------------|
 |TRIG_MASK_A | ~0x15~ | ~0x54~ | ~[31:0]~ | rw | ~0x0~ | Bitmask for the A trigger | 
 |------------+---+---+---------+-----+-----+----------------------------|
