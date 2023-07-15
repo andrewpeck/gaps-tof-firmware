@@ -9,15 +9,15 @@
   (with-open [reader (io/reader file)]
     (doall (csv/read-csv reader))))
 
-(def columns {:paddle-number 0 ;; A Paddle Number
-              :paddle-end 1    ;; B Paddle End
-              :panel-number 3  ;; D Panel Number
-              :rat-number 7    ;; H Rat Number
-              :ltb+channel 8   ;; I LTB Number-Channel
-              :dsi-slot 10     ;; K DSI Card Slot
-              :ltb-harting 11  ;; L LTB Harting Connection
-              :rb+channel 9    ;; J RB Number-Channel
-              :rb-harting 12}) ;; M RB Harting Connection
+(def columns {:paddle-number 0   ;; A Paddle Number
+              :paddle-end 1      ;; B Paddle End
+              :panel-number 3    ;; D Panel Number
+              :rat-number 7      ;; H Rat Number
+              :ltb-num+channel 8 ;; I LTB Number-Channel
+              :dsi-slot 10       ;; K DSI Card Slot
+              :ltb-harting 11    ;; L LTB Harting Connection
+              :rb-num+channel 9  ;; J RB Number-Channel
+              :rb-harting 12})   ;; M RB Harting Connection
 
 (def rows (keys columns))
 
@@ -38,8 +38,6 @@
 
           (and (>= index 14)
                (<= index 21)) "cortina"
-
-
 
           :else (throw (Exception. (format "Invalid numerical panel index specified %s" index))))
 
@@ -70,6 +68,9 @@
               :ch (convert (last x))})
      (str/split field #"[-]"))
 
+    ;; Things of the form J3, extract as J3 -> 3 -> 2 so that we count from zero
+    (re-matches #"J[0-9]" field) (dec (Integer/parseInt (apply str (rest field))))
+
     ;; Numbers
     :else (try (Integer/parseInt field)
                (catch NumberFormatException _ (format  "Error parsing int!! %s" field) field))))
@@ -96,34 +97,41 @@
          (map (fn [x] (assoc x :station (panel-name (:panel-number x))))))))
 
 (defn format-ltb-map [ltb cnt]
-  (format "    %s(%d) <= hits_i(%d); -- panel=%s paddle=%s station=%s"
+  (format "    %s(%2d) <= hits_i(%3d); -- panel=%s paddle=%s station=%s; LTB DSI%s J%s CH%s"
           (:station ltb)
           cnt
-          (dec (:paddle-number ltb)) ;; (dec (:channel (:ltb-harting ltb))) ; FIXME: update when map is done
+          (+  (dec (:ch (:ltb-num+channel ltb)))
+              (* 8 (:ltb-harting ltb))
+              (* 8 5 (:dsi-slot ltb)))
           (:panel-number ltb)
           (:paddle-number ltb)
-          (:station ltb)))
+          (:station ltb)
+          (:dsi-slot ltb)
+          (inc (:ltb-harting ltb))
+          (:ch (:ltb-num+channel ltb))))
+
+(defn get-global-ltb-index [data-map]
+  (+ (dec (:ch (:ltb-num+channel data-map)))
+     (* 8 (:ltb-harting data-map))
+     (* 8 5 (:dsi-slot data-map))))
+
+(defn get-global-rb-index [data-map]
+  (+ (dec (:ch (:rb-num+channel data-map))) ; channel within the RB; 0-7
+     0                                      ; FIXME: which 1/2 of the harting connector?
+     (* 16 (:rb-harting data-map))          ; which harting connector?
+     (* 16 5 (:dsi-slot data-map))))        ; which DSI?
 
 (defn format-rb-map [rb-map]
 
-  (letfn [(get-ch    [key] (dec (:ch (key rb-map))))
-          (get-board [key] (dec (:board (key rb-map))))]
+  (if (= :N/A (:rb-num+channel rb-map))
 
-    ;; FIXME: this should be replaced with ltb+harting when it is available
-    (let [rb  (get-board :rb+channel)
-          rb-ch (get-ch :rb+channel)
+    ;; Emit a warning comment for N/A mappings
+    (format "-- Failed to map                             -- %s" rb-map)
 
-          ltb  (get-board :ltb+channel)
-          ltb-ch (get-ch :ltb+channel)
-
-          ltb-enum (+ ltb-ch  (* 8 ltb ))
-          rb-enum (+ rb-ch  (* 8 rb ))]
-
-      (format "  rb_ch_bitmap_o(%3d) <= hits_bitmap_i(%3d); -- rb=%s ltb=%s"
-              rb-enum
-              ltb-enum
-              (:rb+channel rb-map)
-              (:ltb+channel rb-map)))))
+    (format "  rb_ch_bitmap_o(%3d) <= hits_bitmap_i(%3d); -- %s"
+            (get-global-rb-index rb-map)
+            (get-global-ltb-index rb-map)
+            rb-map)))
 
 ;;------------------------------------------------------------------------------
 ;; Runtime
@@ -143,9 +151,7 @@
         (println ""))))
 
   (when (:map-rb args)
-    (let [datamap (sort-by
-                   ;; FIXME: this should be replaced with ltb+harting when it is available
-                   (fn [x] (+ (* 8 (dec (:board  (:ltb+channel x))))
-                              (dec (:ch  (:ltb+channel x))))) data-map)]
+    ;; sort the datamap by the ltb number to put it in some order
+    (let [datamap (sort-by 'get-global-ltb-index data-map)]
       (doseq [rbmap datamap]
         (println (format-rb-map rbmap))))))

@@ -109,7 +109,7 @@ architecture behavioral of trigger is
   constant N_UMBRELLA    : integer := 48;
   constant N_CUBE_BOT    : integer := 12;
   constant N_CUBE        : integer := 44;
-  constant N_CORTINA     : integer := 9;
+  constant N_CORTINA     : integer := 52;
   constant N_CUBE_CORNER : integer := 4;
 
   constant N_OUTER_TOF : integer := N_UMBRELLA + N_CORTINA;
@@ -224,7 +224,7 @@ begin
     begin
       if (rising_edge(clk)) then
         if (unsigned(hits_i(I)) > unsigned(hit_thresh)) then
-          hitmask(I) <= '1';
+          hit_bitmap(I) <= '1';
         else
           hit_bitmap(I) <= '0';
         end if;
@@ -342,130 +342,172 @@ begin
 
     --START: autoinsert mapping
 
-    cube(0)  <= hits_i(0);              -- panel=1 paddle=1 station=cube
-    cube(1)  <= hits_i(1);              -- panel=1 paddle=2 station=cube
-    cube(2)  <= hits_i(2);              -- panel=1 paddle=3 station=cube
-    cube(3)  <= hits_i(3);              -- panel=1 paddle=4 station=cube
-    cube(4)  <= hits_i(4);              -- panel=1 paddle=5 station=cube
-    cube(5)  <= hits_i(5);              -- panel=1 paddle=6 station=cube
-    cube(6)  <= hits_i(6);              -- panel=1 paddle=7 station=cube
-    cube(7)  <= hits_i(7);              -- panel=1 paddle=8 station=cube
-    cube(8)  <= hits_i(8);              -- panel=1 paddle=9 station=cube
-    cube(9)  <= hits_i(9);              -- panel=1 paddle=10 station=cube
-    cube(10) <= hits_i(10);             -- panel=1 paddle=11 station=cube
-    cube(11) <= hits_i(11);             -- panel=1 paddle=12 station=cube
-    cube(12) <= hits_i(24);             -- panel=3 paddle=25 station=cube
-    cube(13) <= hits_i(25);             -- panel=3 paddle=26 station=cube
-    cube(14) <= hits_i(26);             -- panel=3 paddle=27 station=cube
-    cube(15) <= hits_i(27);             -- panel=3 paddle=28 station=cube
-    cube(16) <= hits_i(28);             -- panel=3 paddle=29 station=cube
-    cube(17) <= hits_i(29);             -- panel=3 paddle=30 station=cube
-    cube(18) <= hits_i(30);             -- panel=3 paddle=31 station=cube
-    cube(19) <= hits_i(31);             -- panel=3 paddle=32 station=cube
-    cube(20) <= hits_i(32);             -- panel=4 paddle=33 station=cube
-    cube(21) <= hits_i(33);             -- panel=4 paddle=34 station=cube
-    cube(22) <= hits_i(34);             -- panel=4 paddle=35 station=cube
-    cube(23) <= hits_i(35);             -- panel=4 paddle=36 station=cube
-    cube(24) <= hits_i(36);             -- panel=4 paddle=37 station=cube
-    cube(25) <= hits_i(37);             -- panel=4 paddle=38 station=cube
-    cube(26) <= hits_i(38);             -- panel=4 paddle=39 station=cube
-    cube(27) <= hits_i(39);             -- panel=4 paddle=40 station=cube
-    cube(28) <= hits_i(40);             -- panel=5 paddle=41 station=cube
-    cube(29) <= hits_i(41);             -- panel=5 paddle=42 station=cube
-    cube(30) <= hits_i(42);             -- panel=5 paddle=43 station=cube
-    cube(31) <= hits_i(43);             -- panel=5 paddle=44 station=cube
-    cube(32) <= hits_i(44);             -- panel=5 paddle=45 station=cube
-    cube(33) <= hits_i(45);             -- panel=5 paddle=46 station=cube
-    cube(34) <= hits_i(46);             -- panel=5 paddle=47 station=cube
-    cube(35) <= hits_i(47);             -- panel=5 paddle=48 station=cube
-    cube(36) <= hits_i(48);             -- panel=6 paddle=49 station=cube
-    cube(37) <= hits_i(49);             -- panel=6 paddle=50 station=cube
-    cube(38) <= hits_i(50);             -- panel=6 paddle=51 station=cube
-    cube(39) <= hits_i(51);             -- panel=6 paddle=52 station=cube
-    cube(40) <= hits_i(52);             -- panel=6 paddle=53 station=cube
-    cube(41) <= hits_i(53);             -- panel=6 paddle=54 station=cube
-    cube(42) <= hits_i(54);             -- panel=6 paddle=55 station=cube
-    cube(43) <= hits_i(55);             -- panel=6 paddle=56 station=cube
+    cube(0)  <= hits_i(106);  -- panel=1 paddle=1 station=cube; LTB DSI2 J3 CH11
+    cube(1)  <= hits_i(104);  -- panel=1 paddle=2 station=cube; LTB DSI2 J3 CH9
+    cube(2)  <= hits_i(102);  -- panel=1 paddle=3 station=cube; LTB DSI2 J3 CH7
+    cube(3)  <= hits_i(100);  -- panel=1 paddle=4 station=cube; LTB DSI2 J3 CH5
+    cube(4)  <= hits_i(98);   -- panel=1 paddle=5 station=cube; LTB DSI2 J3 CH3
+    cube(5)  <= hits_i(96);   -- panel=1 paddle=6 station=cube; LTB DSI2 J3 CH1
+    cube(6)  <= hits_i(175);  -- panel=1 paddle=7 station=cube; LTB DSI4 J1 CH16
+    cube(7)  <= hits_i(173);  -- panel=1 paddle=8 station=cube; LTB DSI4 J1 CH14
+    cube(8)  <= hits_i(171);  -- panel=1 paddle=9 station=cube; LTB DSI4 J1 CH12
+    cube(9)  <= hits_i(169);  -- panel=1 paddle=10 station=cube; LTB DSI4 J1 CH10
+    cube(10) <= hits_i(167);  -- panel=1 paddle=11 station=cube; LTB DSI4 J1 CH8
+    cube(11) <= hits_i(165);  -- panel=1 paddle=12 station=cube; LTB DSI4 J1 CH6
+    cube(12) <= hits_i(109);  -- panel=3 paddle=25 station=cube; LTB DSI2 J3 CH14
+    cube(13) <= hits_i(111);  -- panel=3 paddle=26 station=cube; LTB DSI2 J3 CH16
+    cube(14) <= hits_i(115);  -- panel=3 paddle=27 station=cube; LTB DSI2 J4 CH12
+    cube(15) <= hits_i(113);  -- panel=3 paddle=28 station=cube; LTB DSI2 J4 CH10
+    cube(16) <= hits_i(111);  -- panel=3 paddle=29 station=cube; LTB DSI2 J4 CH8
+    cube(17) <= hits_i(109);  -- panel=3 paddle=30 station=cube; LTB DSI2 J4 CH6
+    cube(18) <= hits_i(107);  -- panel=3 paddle=31 station=cube; LTB DSI2 J4 CH4
+    cube(19) <= hits_i(105);  -- panel=3 paddle=32 station=cube; LTB DSI2 J4 CH2
+    cube(20) <= hits_i(137);  -- panel=4 paddle=33 station=cube; LTB DSI3 J2 CH10
+    cube(21) <= hits_i(135);  -- panel=4 paddle=34 station=cube; LTB DSI3 J2 CH8
+    cube(22) <= hits_i(139);  -- panel=4 paddle=35 station=cube; LTB DSI3 J2 CH12
+    cube(23) <= hits_i(133);  -- panel=4 paddle=36 station=cube; LTB DSI3 J2 CH6
+    cube(24) <= hits_i(141);  -- panel=4 paddle=37 station=cube; LTB DSI3 J2 CH14
+    cube(25) <= hits_i(131);  -- panel=4 paddle=38 station=cube; LTB DSI3 J2 CH4
+    cube(26) <= hits_i(143);  -- panel=4 paddle=39 station=cube; LTB DSI3 J2 CH16
+    cube(27) <= hits_i(129);  -- panel=4 paddle=40 station=cube; LTB DSI3 J2 CH2
+    cube(28) <= hits_i(163);  -- panel=5 paddle=41 station=cube; LTB DSI4 J1 CH4
+    cube(29) <= hits_i(161);  -- panel=5 paddle=42 station=cube; LTB DSI4 J1 CH2
+    cube(30) <= hits_i(157);  -- panel=5 paddle=43 station=cube; LTB DSI3 J5 CH6
+    cube(31) <= hits_i(159);  -- panel=5 paddle=44 station=cube; LTB DSI3 J5 CH8
+    cube(32) <= hits_i(161);  -- panel=5 paddle=45 station=cube; LTB DSI3 J5 CH10
+    cube(33) <= hits_i(163);  -- panel=5 paddle=46 station=cube; LTB DSI3 J5 CH12
+    cube(34) <= hits_i(165);  -- panel=5 paddle=47 station=cube; LTB DSI3 J5 CH14
+    cube(35) <= hits_i(167);  -- panel=5 paddle=48 station=cube; LTB DSI3 J5 CH16
+    cube(36) <= hits_i(193);  -- panel=6 paddle=49 station=cube; LTB DSI4 J4 CH10
+    cube(37) <= hits_i(191);  -- panel=6 paddle=50 station=cube; LTB DSI4 J4 CH8
+    cube(38) <= hits_i(195);  -- panel=6 paddle=51 station=cube; LTB DSI4 J4 CH12
+    cube(39) <= hits_i(189);  -- panel=6 paddle=52 station=cube; LTB DSI4 J4 CH6
+    cube(40) <= hits_i(197);  -- panel=6 paddle=53 station=cube; LTB DSI4 J4 CH14
+    cube(41) <= hits_i(187);  -- panel=6 paddle=54 station=cube; LTB DSI4 J4 CH4
+    cube(42) <= hits_i(199);  -- panel=6 paddle=55 station=cube; LTB DSI4 J4 CH16
+    cube(43) <= hits_i(185);  -- panel=6 paddle=56 station=cube; LTB DSI4 J4 CH2
 
-    umbrella(0)  <= hits_i(60);         -- panel=7 paddle=61 station=umbrella
-    umbrella(1)  <= hits_i(61);         -- panel=7 paddle=62 station=umbrella
-    umbrella(2)  <= hits_i(62);         -- panel=7 paddle=63 station=umbrella
-    umbrella(3)  <= hits_i(63);         -- panel=7 paddle=64 station=umbrella
-    umbrella(4)  <= hits_i(64);         -- panel=7 paddle=65 station=umbrella
-    umbrella(5)  <= hits_i(65);         -- panel=7 paddle=66 station=umbrella
-    umbrella(6)  <= hits_i(66);         -- panel=7 paddle=67 station=umbrella
-    umbrella(7)  <= hits_i(67);         -- panel=7 paddle=68 station=umbrella
-    umbrella(8)  <= hits_i(68);         -- panel=7 paddle=69 station=umbrella
-    umbrella(9)  <= hits_i(69);         -- panel=7 paddle=70 station=umbrella
-    umbrella(10) <= hits_i(70);         -- panel=7 paddle=71 station=umbrella
-    umbrella(11) <= hits_i(71);         -- panel=7 paddle=72 station=umbrella
-    umbrella(12) <= hits_i(72);         -- panel=8 paddle=73 station=umbrella
-    umbrella(13) <= hits_i(73);         -- panel=8 paddle=74 station=umbrella
-    umbrella(14) <= hits_i(74);         -- panel=8 paddle=75 station=umbrella
-    umbrella(15) <= hits_i(75);         -- panel=8 paddle=76 station=umbrella
-    umbrella(16) <= hits_i(76);         -- panel=8 paddle=77 station=umbrella
-    umbrella(17) <= hits_i(77);         -- panel=8 paddle=78 station=umbrella
-    umbrella(18) <= hits_i(78);         -- panel=9 paddle=79 station=umbrella
-    umbrella(19) <= hits_i(79);         -- panel=9 paddle=80 station=umbrella
-    umbrella(20) <= hits_i(80);         -- panel=9 paddle=81 station=umbrella
-    umbrella(21) <= hits_i(81);         -- panel=9 paddle=82 station=umbrella
-    umbrella(22) <= hits_i(82);         -- panel=9 paddle=83 station=umbrella
-    umbrella(23) <= hits_i(83);         -- panel=9 paddle=84 station=umbrella
-    umbrella(24) <= hits_i(84);         -- panel=10 paddle=85 station=umbrella
-    umbrella(25) <= hits_i(85);         -- panel=10 paddle=86 station=umbrella
-    umbrella(26) <= hits_i(86);         -- panel=10 paddle=87 station=umbrella
-    umbrella(27) <= hits_i(87);         -- panel=10 paddle=88 station=umbrella
-    umbrella(28) <= hits_i(88);         -- panel=10 paddle=89 station=umbrella
-    umbrella(29) <= hits_i(89);         -- panel=10 paddle=90 station=umbrella
-    umbrella(30) <= hits_i(90);         -- panel=11 paddle=91 station=umbrella
-    umbrella(31) <= hits_i(91);         -- panel=11 paddle=92 station=umbrella
-    umbrella(32) <= hits_i(92);         -- panel=11 paddle=93 station=umbrella
-    umbrella(33) <= hits_i(93);         -- panel=11 paddle=94 station=umbrella
-    umbrella(34) <= hits_i(94);         -- panel=11 paddle=95 station=umbrella
-    umbrella(35) <= hits_i(95);         -- panel=11 paddle=96 station=umbrella
-    umbrella(36) <= hits_i(96);         -- panel=12 paddle=97 station=umbrella
-    umbrella(37) <= hits_i(97);         -- panel=12 paddle=98 station=umbrella
-    umbrella(38) <= hits_i(98);         -- panel=12 paddle=99 station=umbrella
-    umbrella(39) <= hits_i(99);         -- panel=12 paddle=100 station=umbrella
-    umbrella(40) <= hits_i(100);        -- panel=12 paddle=101 station=umbrella
-    umbrella(41) <= hits_i(101);        -- panel=12 paddle=102 station=umbrella
-    umbrella(42) <= hits_i(102);        -- panel=13 paddle=103 station=umbrella
-    umbrella(43) <= hits_i(103);        -- panel=13 paddle=104 station=umbrella
-    umbrella(44) <= hits_i(104);        -- panel=13 paddle=105 station=umbrella
-    umbrella(45) <= hits_i(105);        -- panel=13 paddle=106 station=umbrella
-    umbrella(46) <= hits_i(106);        -- panel=13 paddle=107 station=umbrella
-    umbrella(47) <= hits_i(107);        -- panel=13 paddle=108 station=umbrella
+    umbrella(0)  <= hits_i(50);  -- panel=7 paddle=61 station=umbrella; LTB DSI1 J1 CH11
+    umbrella(1)  <= hits_i(48);  -- panel=7 paddle=62 station=umbrella; LTB DSI1 J1 CH9
+    umbrella(2)  <= hits_i(46);  -- panel=7 paddle=63 station=umbrella; LTB DSI1 J1 CH7
+    umbrella(3)  <= hits_i(44);  -- panel=7 paddle=64 station=umbrella; LTB DSI1 J1 CH5
+    umbrella(4)  <= hits_i(42);  -- panel=7 paddle=65 station=umbrella; LTB DSI1 J1 CH3
+    umbrella(5)  <= hits_i(40);  -- panel=7 paddle=66 station=umbrella; LTB DSI1 J1 CH1
+    umbrella(6)  <= hits_i(49);  -- panel=7 paddle=67 station=umbrella; LTB DSI1 J2 CH2
+    umbrella(7)  <= hits_i(51);  -- panel=7 paddle=68 station=umbrella; LTB DSI1 J2 CH4
+    umbrella(8)  <= hits_i(53);  -- panel=7 paddle=69 station=umbrella; LTB DSI1 J2 CH6
+    umbrella(9)  <= hits_i(55);  -- panel=7 paddle=70 station=umbrella; LTB DSI1 J2 CH8
+    umbrella(10) <= hits_i(57);  -- panel=7 paddle=71 station=umbrella; LTB DSI1 J2 CH10
+    umbrella(11) <= hits_i(59);  -- panel=7 paddle=72 station=umbrella; LTB DSI1 J2 CH12
+    umbrella(12) <= hits_i(52);  -- panel=8 paddle=73 station=umbrella; LTB DSI1 J1 CH13
+    umbrella(13) <= hits_i(54);  -- panel=8 paddle=74 station=umbrella; LTB DSI1 J1 CH15
+    umbrella(14) <= hits_i(56);  -- panel=8 paddle=75 station=umbrella; LTB DSI1 J3 CH1
+    umbrella(15) <= hits_i(58);  -- panel=8 paddle=76 station=umbrella; LTB DSI1 J3 CH3
+    umbrella(16) <= hits_i(60);  -- panel=8 paddle=77 station=umbrella; LTB DSI1 J3 CH5
+    umbrella(17) <= hits_i(62);  -- panel=8 paddle=78 station=umbrella; LTB DSI1 J3 CH7
+    umbrella(18) <= hits_i(86);  -- panel=9 paddle=79 station=umbrella; LTB DSI1 J5 CH15
+    umbrella(19) <= hits_i(84);  -- panel=9 paddle=80 station=umbrella; LTB DSI1 J5 CH13
+    umbrella(20) <= hits_i(82);  -- panel=9 paddle=81 station=umbrella; LTB DSI1 J5 CH11
+    umbrella(21) <= hits_i(80);  -- panel=9 paddle=82 station=umbrella; LTB DSI1 J5 CH9
+    umbrella(22) <= hits_i(78);  -- panel=9 paddle=83 station=umbrella; LTB DSI1 J5 CH7
+    umbrella(23) <= hits_i(76);  -- panel=9 paddle=84 station=umbrella; LTB DSI1 J5 CH5
+    umbrella(24) <= hits_i(74);  -- panel=10 paddle=85 station=umbrella; LTB DSI1 J5 CH3
+    umbrella(25) <= hits_i(72);  -- panel=10 paddle=86 station=umbrella; LTB DSI1 J5 CH1
+    umbrella(26) <= hits_i(78);  -- panel=10 paddle=87 station=umbrella; LTB DSI1 J4 CH15
+    umbrella(27) <= hits_i(76);  -- panel=10 paddle=88 station=umbrella; LTB DSI1 J4 CH13
+    umbrella(28) <= hits_i(74);  -- panel=10 paddle=89 station=umbrella; LTB DSI1 J4 CH11
+    umbrella(29) <= hits_i(72);  -- panel=10 paddle=90 station=umbrella; LTB DSI1 J4 CH9
+    umbrella(30) <= hits_i(61);  -- panel=11 paddle=91 station=umbrella; LTB DSI1 J2 CH14
+    umbrella(31) <= hits_i(63);  -- panel=11 paddle=92 station=umbrella; LTB DSI1 J2 CH16
+    umbrella(32) <= hits_i(64);  -- panel=11 paddle=93 station=umbrella; LTB DSI1 J4 CH1
+    umbrella(33) <= hits_i(66);  -- panel=11 paddle=94 station=umbrella; LTB DSI1 J4 CH3
+    umbrella(34) <= hits_i(68);  -- panel=11 paddle=95 station=umbrella; LTB DSI1 J4 CH5
+    umbrella(35) <= hits_i(70);  -- panel=11 paddle=96 station=umbrella; LTB DSI1 J4 CH7
+    umbrella(36) <= hits_i(94);  -- panel=12 paddle=97 station=umbrella; LTB DSI2 J1 CH15
+    umbrella(37) <= hits_i(92);  -- panel=12 paddle=98 station=umbrella; LTB DSI2 J1 CH13
+    umbrella(38) <= hits_i(90);  -- panel=12 paddle=99 station=umbrella; LTB DSI2 J1 CH11
+    umbrella(39) <= hits_i(88);  -- panel=12 paddle=100 station=umbrella; LTB DSI2 J1 CH9
+    umbrella(40) <= hits_i(86);  -- panel=12 paddle=101 station=umbrella; LTB DSI2 J1 CH7
+    umbrella(41) <= hits_i(84);  -- panel=12 paddle=102 station=umbrella; LTB DSI2 J1 CH5
+    umbrella(42) <= hits_i(82);  -- panel=13 paddle=103 station=umbrella; LTB DSI2 J1 CH3
+    umbrella(43) <= hits_i(80);  -- panel=13 paddle=104 station=umbrella; LTB DSI2 J1 CH1
+    umbrella(44) <= hits_i(70);  -- panel=13 paddle=105 station=umbrella; LTB DSI1 J3 CH15
+    umbrella(45) <= hits_i(68);  -- panel=13 paddle=106 station=umbrella; LTB DSI1 J3 CH13
+    umbrella(46) <= hits_i(66);  -- panel=13 paddle=107 station=umbrella; LTB DSI1 J3 CH11
+    umbrella(47) <= hits_i(64);  -- panel=13 paddle=108 station=umbrella; LTB DSI1 J3 CH9
 
-    cube_bot(0)  <= hits_i(12);         -- panel=2 paddle=13 station=cube_bot
-    cube_bot(1)  <= hits_i(13);         -- panel=2 paddle=14 station=cube_bot
-    cube_bot(2)  <= hits_i(14);         -- panel=2 paddle=15 station=cube_bot
-    cube_bot(3)  <= hits_i(15);         -- panel=2 paddle=16 station=cube_bot
-    cube_bot(4)  <= hits_i(16);         -- panel=2 paddle=17 station=cube_bot
-    cube_bot(5)  <= hits_i(17);         -- panel=2 paddle=18 station=cube_bot
-    cube_bot(6)  <= hits_i(18);         -- panel=2 paddle=19 station=cube_bot
-    cube_bot(7)  <= hits_i(19);         -- panel=2 paddle=20 station=cube_bot
-    cube_bot(8)  <= hits_i(20);         -- panel=2 paddle=21 station=cube_bot
-    cube_bot(9)  <= hits_i(21);         -- panel=2 paddle=22 station=cube_bot
-    cube_bot(10) <= hits_i(22);         -- panel=2 paddle=23 station=cube_bot
-    cube_bot(11) <= hits_i(23);         -- panel=2 paddle=24 station=cube_bot
+    cube_bot(0)  <= hits_i(113);  -- panel=2 paddle=13 station=cube_bot; LTB DSI2 J5 CH2
+    cube_bot(1)  <= hits_i(115);  -- panel=2 paddle=14 station=cube_bot; LTB DSI2 J5 CH4
+    cube_bot(2)  <= hits_i(117);  -- panel=2 paddle=15 station=cube_bot; LTB DSI2 J5 CH6
+    cube_bot(3)  <= hits_i(119);  -- panel=2 paddle=16 station=cube_bot; LTB DSI2 J5 CH8
+    cube_bot(4)  <= hits_i(121);  -- panel=2 paddle=17 station=cube_bot; LTB DSI2 J5 CH10
+    cube_bot(5)  <= hits_i(123);  -- panel=2 paddle=18 station=cube_bot; LTB DSI2 J5 CH12
+    cube_bot(6)  <= hits_i(148);  -- panel=2 paddle=19 station=cube_bot; LTB DSI3 J4 CH5
+    cube_bot(7)  <= hits_i(150);  -- panel=2 paddle=20 station=cube_bot; LTB DSI3 J4 CH7
+    cube_bot(8)  <= hits_i(152);  -- panel=2 paddle=21 station=cube_bot; LTB DSI3 J4 CH9
+    cube_bot(9)  <= hits_i(154);  -- panel=2 paddle=22 station=cube_bot; LTB DSI3 J4 CH11
+    cube_bot(10) <= hits_i(156);  -- panel=2 paddle=23 station=cube_bot; LTB DSI3 J4 CH13
+    cube_bot(11) <= hits_i(158);  -- panel=2 paddle=24 station=cube_bot; LTB DSI3 J4 CH15
 
-    cube_corner(0) <= hits_i(56);  -- panel=:N/A paddle=57 station=cube_corner
-    cube_corner(1) <= hits_i(57);  -- panel=:N/A paddle=58 station=cube_corner
-    cube_corner(2) <= hits_i(58);  -- panel=:N/A paddle=59 station=cube_corner
-    cube_corner(3) <= hits_i(59);  -- panel=:N/A paddle=60 station=cube_corner
+    cube_corner(0) <= hits_i(123);  -- panel=E-X045 paddle=57 station=cube_corner; LTB DSI3 J1 CH4
+    cube_corner(1) <= hits_i(149);  -- panel=E-X135 paddle=58 station=cube_corner; LTB DSI3 J3 CH14
+    cube_corner(2) <= hits_i(171);  -- panel=E-X225 paddle=59 station=cube_corner; LTB DSI4 J2 CH4
+    cube_corner(3) <= hits_i(101);  -- panel=E-X315 paddle=60 station=cube_corner; LTB DSI2 J2 CH14
 
+    cortina(0)  <= hits_i(119);  -- panel=14 paddle=109 station=cortina; LTB DSI2 J4 CH16
+    cortina(1)  <= hits_i(117);  -- panel=14 paddle=110 station=cortina; LTB DSI2 J4 CH14
+    cortina(2)  <= hits_i(127);  -- panel=14 paddle=111 station=cortina; LTB DSI2 J5 CH16
+    cortina(3)  <= hits_i(125);  -- panel=14 paddle=112 station=cortina; LTB DSI2 J5 CH14
+    cortina(4)  <= hits_i(129);  -- panel=14 paddle=113 station=cortina; LTB DSI3 J1 CH10
+    cortina(5)  <= hits_i(127);  -- panel=14 paddle=114 station=cortina; LTB DSI3 J1 CH8
+    cortina(6)  <= hits_i(125);  -- panel=14 paddle=115 station=cortina; LTB DSI3 J1 CH6
+    cortina(7)  <= hits_i(89);  -- panel=14 paddle=116 station=cortina; LTB DSI2 J2 CH2
+    cortina(8)  <= hits_i(91);  -- panel=14 paddle=117 station=cortina; LTB DSI2 J2 CH4
+    cortina(9)  <= hits_i(93);  -- panel=14 paddle=118 station=cortina; LTB DSI2 J2 CH6
+    cortina(10) <= hits_i(207);  -- panel=15 paddle=119 station=cortina; LTB DSI4 J5 CH16
+    cortina(11) <= hits_i(205);  -- panel=15 paddle=120 station=cortina; LTB DSI4 J5 CH14
+    cortina(12) <= hits_i(203);  -- panel=15 paddle=121 station=cortina; LTB DSI4 J5 CH12
+    cortina(13) <= hits_i(201);  -- panel=15 paddle=122 station=cortina; LTB DSI4 J5 CH10
+    cortina(14) <= hits_i(199);  -- panel=15 paddle=123 station=cortina; LTB DSI4 J5 CH8
+    cortina(15) <= hits_i(197);  -- panel=15 paddle=124 station=cortina; LTB DSI4 J5 CH6
+    cortina(16) <= hits_i(195);  -- panel=15 paddle=125 station=cortina; LTB DSI4 J5 CH4
+    cortina(17) <= hits_i(193);  -- panel=15 paddle=126 station=cortina; LTB DSI4 J5 CH2
+    cortina(18) <= hits_i(151);  -- panel=15 paddle=127 station=cortina; LTB DSI3 J3 CH16
+    cortina(19) <= hits_i(121);  -- panel=15 paddle=128 station=cortina; LTB DSI3 J1 CH2
+    cortina(20) <= hits_i(153);  -- panel=16 paddle=129 station=cortina; LTB DSI3 J5 CH2
+    cortina(21) <= hits_i(155);  -- panel=16 paddle=130 station=cortina; LTB DSI3 J5 CH4
+    cortina(22) <= hits_i(145);  -- panel=16 paddle=131 station=cortina; LTB DSI3 J4 CH2
+    cortina(23) <= hits_i(147);  -- panel=16 paddle=132 station=cortina; LTB DSI3 J4 CH4
+    cortina(24) <= hits_i(143);  -- panel=16 paddle=133 station=cortina; LTB DSI3 J3 CH8
+    cortina(25) <= hits_i(145);  -- panel=16 paddle=134 station=cortina; LTB DSI3 J3 CH10
+    cortina(26) <= hits_i(147);  -- panel=16 paddle=135 station=cortina; LTB DSI3 J3 CH12
+    cortina(27) <= hits_i(183);  -- panel=16 paddle=136 station=cortina; LTB DSI4 J2 CH16
+    cortina(28) <= hits_i(181);  -- panel=16 paddle=137 station=cortina; LTB DSI4 J2 CH14
+    cortina(29) <= hits_i(179);  -- panel=16 paddle=138 station=cortina; LTB DSI4 J2 CH12
+    cortina(30) <= hits_i(177);  -- panel=17 paddle=139 station=cortina; LTB DSI4 J3 CH2
+    cortina(31) <= hits_i(179);  -- panel=17 paddle=140 station=cortina; LTB DSI4 J3 CH4
+    cortina(32) <= hits_i(181);  -- panel=17 paddle=141 station=cortina; LTB DSI4 J3 CH6
+    cortina(33) <= hits_i(183);  -- panel=17 paddle=142 station=cortina; LTB DSI4 J3 CH8
+    cortina(34) <= hits_i(185);  -- panel=17 paddle=143 station=cortina; LTB DSI4 J3 CH10
+    cortina(35) <= hits_i(187);  -- panel=17 paddle=144 station=cortina; LTB DSI4 J3 CH12
+    cortina(36) <= hits_i(189);  -- panel=17 paddle=145 station=cortina; LTB DSI4 J3 CH14
+    cortina(37) <= hits_i(191);  -- panel=17 paddle=146 station=cortina; LTB DSI4 J3 CH16
+    cortina(38) <= hits_i(169);  -- panel=17 paddle=147 station=cortina; LTB DSI4 J2 CH2
+    cortina(39) <= hits_i(103);  -- panel=17 paddle=148 station=cortina; LTB DSI2 J2 CH16
+    cortina(40) <= hits_i(131);  -- panel=18 paddle=149 station=cortina; LTB DSI3 J1 CH12
+    cortina(41) <= hits_i(133);  -- panel=18 paddle=150 station=cortina; LTB DSI3 J1 CH14
+    cortina(42) <= hits_i(135);  -- panel=18 paddle=151 station=cortina; LTB DSI3 J1 CH16
+    cortina(43) <= hits_i(136);  -- panel=19 paddle=152 station=cortina; LTB DSI3 J3 CH1
+    cortina(44) <= hits_i(138);  -- panel=19 paddle=153 station=cortina; LTB DSI3 J3 CH3
+    cortina(45) <= hits_i(140);  -- panel=19 paddle=154 station=cortina; LTB DSI3 J3 CH5
+    cortina(46) <= hits_i(172);  -- panel=20 paddle=155 station=cortina; LTB DSI4 J2 CH5
+    cortina(47) <= hits_i(174);  -- panel=20 paddle=156 station=cortina; LTB DSI4 J2 CH7
+    cortina(48) <= hits_i(176);  -- panel=20 paddle=157 station=cortina; LTB DSI4 J2 CH9
+    cortina(49) <= hits_i(95);  -- panel=21 paddle=158 station=cortina; LTB DSI2 J2 CH8
+    cortina(50) <= hits_i(97);  -- panel=21 paddle=159 station=cortina; LTB DSI2 J2 CH10
+    cortina(51) <= hits_i(99);  -- panel=21 paddle=160 station=cortina; LTB DSI2 J2 CH12
 
     --END: autoinsert mapping
-
-    cortina(0) <= hits_i(108);
-    cortina(1) <= hits_i(109);
-    cortina(2) <= hits_i(110);
-    cortina(3) <= hits_i(111);
-    cortina(4) <= hits_i(112);
-    cortina(5) <= hits_i(113);
-    cortina(6) <= hits_i(114);
-    cortina(7) <= hits_i(115);
-    cortina(8) <= hits_i(116);
 
   end process;
 
@@ -492,38 +534,38 @@ begin
       --START: autoinsert triggers
 
       ssl_trig_top_bot <=
-        ((or_reduce(x"3F" and get_hits_from_slot(hitmask, 2, 1)) or
-          or_reduce(x"FC" and get_hits_from_slot(hitmask, 3, 2)))
+        ((or_reduce(x"3F" and get_hits_from_slot(hit_bitmap, 2, 1)) or
+          or_reduce(x"FC" and get_hits_from_slot(hit_bitmap, 3, 2)))
          and
-         (or_reduce(x"3F" and get_hits_from_slot(hitmask, 2, 3)) or
-          or_reduce(x"FC" and get_hits_from_slot(hitmask, 2, 4))));
+         (or_reduce(x"3F" and get_hits_from_slot(hit_bitmap, 2, 3)) or
+          or_reduce(x"FC" and get_hits_from_slot(hit_bitmap, 2, 4))));
 
       ssl_trig_topedge_bot <=
-        ((or_reduce(x"C0" and get_hits_from_slot(hitmask, 2, 1)) or
-          or_reduce(x"30" and get_hits_from_slot(hitmask, 2, 2)) or
-          or_reduce(x"3C" and get_hits_from_slot(hitmask, 3, 5)) or
-          or_reduce(x"03" and get_hits_from_slot(hitmask, 3, 2)) or
-          or_reduce(x"0C" and get_hits_from_slot(hitmask, 3, 1)) or
-          or_reduce(x"3C" and get_hits_from_slot(hitmask, 3, 3)))
+        ((or_reduce(x"C0" and get_hits_from_slot(hit_bitmap, 2, 1)) or
+          or_reduce(x"30" and get_hits_from_slot(hit_bitmap, 2, 2)) or
+          or_reduce(x"3C" and get_hits_from_slot(hit_bitmap, 3, 5)) or
+          or_reduce(x"03" and get_hits_from_slot(hit_bitmap, 3, 2)) or
+          or_reduce(x"0C" and get_hits_from_slot(hit_bitmap, 3, 1)) or
+          or_reduce(x"3C" and get_hits_from_slot(hit_bitmap, 3, 3)))
          and
-         (or_reduce(x"3F" and get_hits_from_slot(hitmask, 2, 3)) or
-          or_reduce(x"FC" and get_hits_from_slot(hitmask, 2, 4))));
+         (or_reduce(x"3F" and get_hits_from_slot(hit_bitmap, 2, 3)) or
+          or_reduce(x"FC" and get_hits_from_slot(hit_bitmap, 2, 4))));
 
       ssl_trig_top_botedge <=
-        ((or_reduce(x"3F" and get_hits_from_slot(hitmask, 2, 1)) or
-          or_reduce(x"FC" and get_hits_from_slot(hitmask, 3, 2)))
+        ((or_reduce(x"3F" and get_hits_from_slot(hit_bitmap, 2, 1)) or
+          or_reduce(x"FC" and get_hits_from_slot(hit_bitmap, 3, 2)))
          and
-         (or_reduce(x"0F" and get_hits_from_slot(hitmask, 2, 2)) or
-          or_reduce(x"C3" and get_hits_from_slot(hitmask, 3, 5)) or
-          or_reduce(x"F0" and get_hits_from_slot(hitmask, 3, 1)) or
-          or_reduce(x"C3" and get_hits_from_slot(hitmask, 3, 3))));
+         (or_reduce(x"0F" and get_hits_from_slot(hit_bitmap, 2, 2)) or
+          or_reduce(x"C3" and get_hits_from_slot(hit_bitmap, 3, 5)) or
+          or_reduce(x"F0" and get_hits_from_slot(hit_bitmap, 3, 1)) or
+          or_reduce(x"C3" and get_hits_from_slot(hit_bitmap, 3, 3))));
 
       ssl_trig_topmid_botmid <=
-        ((or_reduce(x"03" and get_hits_from_slot(hitmask, 2, 1)) or
-          or_reduce(x"C0" and get_hits_from_slot(hitmask, 3, 2)))
+        ((or_reduce(x"03" and get_hits_from_slot(hit_bitmap, 2, 1)) or
+          or_reduce(x"C0" and get_hits_from_slot(hit_bitmap, 3, 2)))
          and
-         (or_reduce(x"30" and get_hits_from_slot(hitmask, 2, 3)) or
-          or_reduce(x"0C" and get_hits_from_slot(hitmask, 2, 4))));
+         (or_reduce(x"30" and get_hits_from_slot(hit_bitmap, 2, 3)) or
+          or_reduce(x"0C" and get_hits_from_slot(hit_bitmap, 2, 4))));
 
       --END: autoinsert triggers
 

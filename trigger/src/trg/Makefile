@@ -18,7 +18,7 @@ rbmap:
 
 update_mapping:
 	wget --output-document="mapping.csv" \
-		https://docs.google.com/spreadsheets/d/1i41fsmLf7IjfYbr1coTo9V4uk3t1GXAGgt0aOeCkeeA/gviz/tq?tqx=out:csv
+		"https://docs.google.com/spreadsheets/d/1i41fsmLf7IjfYbr1coTo9V4uk3t1GXAGgt0aOeCkeeA/export?format=csv&gid=0"
 
 process_mapping:
 	bb process_mapping.bb --map-ltb
