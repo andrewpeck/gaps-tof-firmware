@@ -75,6 +75,28 @@
     :else (try (Integer/parseInt field)
                (catch NumberFormatException _ (format  "Error parsing int!! %s" field) field))))
 
+(defn validate-headings [file]
+
+  (let [headings (first (read-csv file))]
+
+    (letfn [(validate-heading [key re]
+              (assert (re-matches re (nth headings (key columns)))
+                      (format
+                       "Heading #%s does not match expected format: expect \"%s\" found \"%s\""
+                       (key columns)
+                       re
+                       (nth headings (key columns)))))]
+
+      (validate-heading :paddle-number #"Paddle Number")
+      (validate-heading :paddle-end    #"Paddle End \(A/B\)")
+      (validate-heading :panel-number #"Panel Number")
+      (validate-heading :rat-number #"RAT Number")
+      (validate-heading :ltb-num+channel #"LTB Number-Channel")
+      (validate-heading :dsi-slot #"DSI Card Slot")
+      (validate-heading :ltb-harting #"LTB Harting Connection")
+      (validate-heading :rb-num+channel #"RB Number-Channel")
+      (validate-heading :rb-harting #"RB Harting Connection"))))
+
 (defn read-mapping-csv [file]
 
   (letfn [(get-fields [row]
@@ -140,6 +162,9 @@
 (def args
   (cli/parse-opts *command-line-args*
                   {:coerce {:map-rb :boolean :map-ltb :boolean}}))
+
+
+(validate-headings "mapping.csv")
 
 (let [data-map (read-mapping-csv "mapping.csv")]
 
