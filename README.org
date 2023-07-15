@@ -319,6 +319,16 @@ Some simple instructions for registering a Gitlab runner
 Now you can simply start the runner (=gitlab-runner run=). Make sure
 Vivado is in the path.
 
+** Updating trigger
+
+If you send me a new version of the trigger definitions it is trivial to recompile firmware with whatever you want. The current definitions I got from you are here: https://gitlab.com/ucla-gaps-tof/firmware/-/blob/develop/trigger/src/trg/generate_triggers.bb
+For reference in case I am not available sometime and you need things in a rush the to update the new firmware is:
+
+1) clone the firmware
+2) edit generate_triggers.bb to your liking
+3) run Make in the same directory. You need awk and babashka installed4) Commit the updated files, push to devel of the repo
+5) Open a merge request from devel -> master
+
 * Local Variables :noexport:
 # Local Variables:
 # fill-column: 80

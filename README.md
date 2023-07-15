@@ -1,22 +1,21 @@
 ## Table of Contents <span class="tag" tag-name="TOC_4"><span class="smallcaps">TOC_4</span></span>
 
--   [Organization](#organization)
--   [Software dependencies](#software-dependencies)
--   [Register Access](#register-access)
-    -   [Address Table](#address-table)
--   [Building the Firmware](#building-the-firmware)
-    -   [Special note for 2020.1 and hardware
-        generation](#special-note-for-20201-and-hardware-generation)
-    -   [Build instructions](#build-instructions)
--   [DRS Data Flow](#drs-data-flow)
--   [RB Dataformat](#rb-dataformat)
--   [Master Trigger to RB Data
-    Format](#master-trigger-to-rb-data-format)
--   [Local Trigger Data Format](#local-trigger-data-format)
--   [Master Trigger DAQ Data Format](#master-trigger-daq-data-format)
--   [Master Trigger External IO](#master-trigger-external-io)
--   [Trigger Latency](#trigger-latency)
--   [Gitlab runner registration](#gitlab-runner-registration)
+- [Organization](#organization)
+- [Software dependencies](#software-dependencies)
+- [Register Access](#register-access)
+  - [Address Table](#address-table)
+- [Building the Firmware](#building-the-firmware)
+  - [Special note for 2020.1 and hardware
+    generation](#special-note-for-20201-and-hardware-generation)
+  - [Build instructions](#build-instructions)
+- [DRS Data Flow](#drs-data-flow)
+- [RB Dataformat](#rb-dataformat)
+- [Master Trigger to RB Data Format](#master-trigger-to-rb-data-format)
+- [Local Trigger Data Format](#local-trigger-data-format)
+- [Master Trigger DAQ Data Format](#master-trigger-daq-data-format)
+- [Master Trigger External IO](#master-trigger-external-io)
+- [Trigger Latency](#trigger-latency)
+- [Gitlab runner registration](#gitlab-runner-registration)
 
 ## Organization
 
@@ -41,14 +40,14 @@
 
 ## Software dependencies
 
--   Xilinx tools
-    -   Vivado 2020.1
--   Build system
-    -   git
-    -   make
-    -   python3.6+
--   Optional
-    -   emacs
+- Xilinx tools
+  - Vivado 2020.1
+- Build system
+  - git
+  - make
+  - python3.6+
+- Optional
+  - emacs
 
 ## Register Access
 
@@ -71,8 +70,8 @@ The address table is defined in a "templated" XML file: *registers.xml*
 
 A convenient document describing the address table can be seen at:
 
--   [Readout Board Address Table](regmap/rb_address_table.org)
--   [Master Trigger Address Table](regmap/mt_address_table.org)
+- [Readout Board Address Table](regmap/rb_address_table.org)
+- [Master Trigger Address Table](regmap/mt_address_table.org)
 
 To update the address table in the project, make edits directly to
 `rb_registers.xml` or `mt_registers.xml`, then build using
@@ -90,9 +89,9 @@ the box due to a bug Xilinx shipped in that version. Implement either of
 two work arounds below.
 
 1.  Stock 2020.1: ensure bitstream successfully generated. Open BD or
-    Implemented Design: File->Export->Export Hardware (Platform
-    type=Fixed), next-> Check include bitstream, next->set file
-    name/path->finish.
+    Implemented Design: File-\>Export-\>Export Hardware (Platform
+    type=Fixed), next-\> Check include bitstream, next-\>set file
+    name/path-\>finish.
 2.  Fix 2020.1 with Xilinx "tactical patch". See
     <https://www.xilinx.com/support/answers/75210.html>. If using this
     option, no further steps are required when using the Hog build
@@ -102,8 +101,8 @@ two work arounds below.
 
 This firmware is using the HOG framework as a build system:
 
--   HOG Documentation: <http://hog-user-docs.web.cern.ch>
--   HOG Source Code: <https://gitlab.cern.ch/hog/Hog>
+- HOG Documentation: <http://hog-user-docs.web.cern.ch>
+- HOG Source Code: <https://gitlab.cern.ch/hog/Hog>
 
 Clone project recursively to pull all HOG scripts
 
@@ -172,7 +171,7 @@ no files are missing, the build directory is clean, and so on.
 | EVENT_CNT | `[31:0]`        | Event ID Received From Trigger                                        |
 | DTAP      | `[15:0]`        | DTAP Frequency in 100Hz                                               |
 | DRS_TEMP  | `[15:0]`        | DRS temperature, written by software                                  |
-| TIMESTAMP | `[47:0]`        | # of 33MHz clocks elapsed since resync                                |
+| TIMESTAMP | `[47:0]`        | \# of 33MHz clocks elapsed since resync                               |
 | PAYLOAD   | 0 to XXXX words | `HEADER[15:0]` = Channel ID                                           |
 |           |                 | —– begin block data —–                                                |
 |           |                 | `DATA[13:0]` = ADC data `DATA[15:14]` parity                          |
@@ -235,7 +234,7 @@ bits per trigger.
 | RESERVED      | `[15:0]` | Reserved                                                   |
 | BOARD_MASK    | `[31:0]` | 25 bits indicating boards which are read out               |
 | HITS          | –        | Variable sized, 16 bits / board \* n_boards                |
-| PAD           | `[15:0]` | Optional, only here if the # of boards read is odd         |
+| PAD           | `[15:0]` | Optional, only here if the \# of boards read is odd        |
 | CRC           | `[31:0]` | CRC32, same polynomial as the RB                           |
 | TRAILER       | `[15:0]` | 0x5555                                                     |
 
@@ -292,7 +291,7 @@ Some simple instructions for registering a Gitlab runner
 
 1.  Install gitlab-runner
 
-    -   <https://docs.gitlab.com/runner/install/>
+    - <https://docs.gitlab.com/runner/install/>
 
 2.  Execute `gitlab-runner register`
 
@@ -300,8 +299,8 @@ Some simple instructions for registering a Gitlab runner
     <https://gitlab.com/>):", enter: `https://gitlab.com/`
 
 4.  At the prompt of "Please enter the gitlab-ci token for this
-    runner:", enter the token that you get from Settings -> CI/CD ->
-    Runners –> Set up a specific Runner manually.
+    runner:", enter the token that you get from Settings -\> CI/CD -\>
+    Runners –\> Set up a specific Runner manually.
 
 5.  At the prompt of "Please enter the gitlab-ci description for this
     runner:", give it a name:
@@ -315,3 +314,18 @@ Some simple instructions for registering a Gitlab runner
 
 Now you can simply start the runner (`gitlab-runner run`). Make sure
 Vivado is in the path.
+
+## Updating trigger
+
+If you send me a new version of the trigger definitions it is trivial to
+recompile firmware with whatever you want. The current definitions I got
+from you are here:
+<https://gitlab.com/ucla-gaps-tof/firmware/-/blob/develop/trigger/src/trg/generate_triggers.bb>
+For reference in case I am not available sometime and you need things in
+a rush the to update the new firmware is:
+
+1.  clone the firmware
+2.  edit generate_triggers.bb to your liking
+3.  run Make in the same directory. You need awk and babashka
+    installed4) Commit the updated files, push to devel of the repo
+4.  Open a merge request from devel -\> master
