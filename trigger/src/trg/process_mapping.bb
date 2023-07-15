@@ -9,36 +9,49 @@
   (with-open [reader (io/reader file)]
     (doall (csv/read-csv reader))))
 
-(def columns {:paddle-number 0
-              :paddle-end 2
-              :panel-number 4
-              :rat-number 8
-              :ltb+channel 9
-              :ltb-harting 10
-              :rb+channel 11
-              :rb-harting 12})
+(def columns {:paddle-number 0 ;; A Paddle Number
+              :paddle-end 1    ;; B Paddle End
+              :panel-number 3  ;; D Panel Number
+              :rat-number 7    ;; H Rat Number
+              :ltb+channel 8   ;; I LTB Number-Channel
+              :dsi-slot 10     ;; K DSI Card Slot
+              :ltb-harting 11  ;; L LTB Harting Connection
+              :rb+channel 9    ;; J RB Number-Channel
+              :rb-harting 12}) ;; M RB Harting Connection
 
 (def rows (keys columns))
 
 (defn panel-name [index]
 
-  (cond (= index :N/A) "cube_corner"
+  (if (number? index)
 
-        (= index 2) "cube_bot"
+    ;; Convert numerical indexes
+    (cond (= index :N/A) "cube_corner"
 
-        (and (>= index 1)
-             (<= index 6)) "cube"
+          (= index 2) "cube_bot"
 
-        (and (>= index 7)
-             (<= index 13)) "umbrella"
+          (and (>= index 1)
+               (<= index 6)) "cube"
 
-        (and (>= index 14)
-             (<= index 21)) "cortina"
+          (and (>= index 7)
+               (<= index 13)) "umbrella"
 
-        :else (throw (Exception. (format "Invalid panel index specified %s" index)))))
+          (and (>= index 14)
+               (<= index 21)) "cortina"
+
+
+
+          :else (throw (Exception. (format "Invalid numerical panel index specified %s" index))))
+
+    ;; Convert string indexes
+    (cond
+      (re-matches #"E-X[0-9][0-9][0-9]" index) "cube_corner"
+      :else (throw (Exception. (format "Invalid string panel index specified %s" index))))))
 
 (defn convert
+
   "Converts a field of the mapping spreadsheet from string to something more useful."
+
   [field]
 
   (cond
@@ -47,7 +60,7 @@
 
     ;; Not available
     (= field "") :N/A
-    ;;
+
     ;; Things of the form A or B
     (re-matches #"[AB]" field) (keyword field)
 
@@ -59,7 +72,7 @@
 
     ;; Numbers
     :else (try (Integer/parseInt field)
-               (catch NumberFormatException _ (format  "Error parsing int!! %s" field)))))
+               (catch NumberFormatException _ (format  "Error parsing int!! %s" field) field))))
 
 (defn read-mapping-csv [file]
 
@@ -68,6 +81,9 @@
 
     ;;  strip the header from the CSV
     (->> (rest (read-csv file))
+
+         ;; strip the NEW SECOND HEADER uhg from the spreadsheet
+         rest
 
          ;; convert from vec to map
          (map (fn [row] (apply hash-map (interleave rows (get-fields row)))))
