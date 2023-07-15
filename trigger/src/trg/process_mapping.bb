@@ -21,7 +21,11 @@
 
 (def rows (keys columns))
 
-(defn panel-name [index]
+(defn panel-name
+
+  "Return a panel name given a panel number."
+
+  [index]
 
   (if (number? index)
 
@@ -48,12 +52,14 @@
 
 (defn convert
 
-  "Converts a field of the mapping spreadsheet from string to something more useful."
+  "Converts a field of the mapping spreadsheet from string to something more
+  useful."
 
   [field]
 
   (cond
 
+    ;; Already a number, just return it
     (number? field) field
 
     ;; Not available
@@ -71,11 +77,21 @@
     ;; Things of the form J3, extract as J3 -> 3 -> 2 so that we count from zero
     (re-matches #"J[0-9]" field) (dec (Integer/parseInt (apply str (rest field))))
 
-    ;; Numbers
-    :else (try (Integer/parseInt field)
-               (catch NumberFormatException _ (format  "Error parsing int!! %s" field) field))))
+    ;; Strings that can be converted to numbers
+    (re-matches #"[0-9]*" field) (Integer/parseInt field)
 
-(defn validate-headings [file]
+    ;; E-X045 etc
+    (re-matches #"E-X[0-9][0-9][0-9]" field) field
+
+    ;; Fail
+    :else (throw (Exception. (format  "Convert failed to process field \"%s\"" field)))))
+
+(defn validate-headings
+
+  "Validate the headings of the CSV file to make sure that the assigned row
+  numbers match the expected headings."
+
+  [file]
 
   (let [headings (first (read-csv file))]
 
@@ -97,7 +113,11 @@
       (validate-heading :rb-num+channel #"RB Number-Channel")
       (validate-heading :rb-harting #"RB Harting Connection"))))
 
-(defn read-mapping-csv [file]
+(defn csv-to-map
+
+  "Read in a csv FILE and turn it into a map."
+
+  [file]
 
   (letfn [(get-fields [row]
             (map (fn [key] (convert (nth row (key columns)))) rows))]
@@ -118,7 +138,39 @@
          ;; add the station number in
          (map (fn [x] (assoc x :station (panel-name (:panel-number x))))))))
 
-(defn format-ltb-map [ltb cnt]
+(defn get-global-ltb-index
+
+  "Return the global enumerated bit index for a given LTB channel.
+
+  There are 8 channels per harting connector, 5 hartings per DSI."
+
+  [data-map]
+
+  (+ (dec (:ch (:ltb-num+channel data-map)))
+     (* 8 (:ltb-harting data-map))
+     (* 8 5 (:dsi-slot data-map))))
+
+(defn get-global-rb-index
+
+  "Return the global enumerated bit index for a given RB channel.
+
+  There are 16 channels per harting connector, 5 hartings per DSI.
+
+  Each harting connector corresponds to two different RBs (8 channels each)."
+
+  [data-map]
+
+  (+ (dec (:ch (:rb-num+channel data-map))) ; channel within the RB; 0-7
+     0                              ; FIXME: which 1/2 of the harting connector?
+     (* 16 (:rb-harting data-map))  ; which harting connector?
+     (* 16 5 (:dsi-slot data-map))))        ; which DSI?
+
+(defn format-ltb-map
+
+  "Format a single instance of an LTB data map and return a VHDL bit assignment string."
+
+  [ltb cnt]
+
   (format "    %s(%2d) <= hits_i(%3d); -- panel=%s paddle=%s station=%s; LTB DSI%s J%s CH%s"
           (:station ltb)
           cnt
@@ -132,18 +184,12 @@
           (inc (:ltb-harting ltb))
           (:ch (:ltb-num+channel ltb))))
 
-(defn get-global-ltb-index [data-map]
-  (+ (dec (:ch (:ltb-num+channel data-map)))
-     (* 8 (:ltb-harting data-map))
-     (* 8 5 (:dsi-slot data-map))))
 
-(defn get-global-rb-index [data-map]
-  (+ (dec (:ch (:rb-num+channel data-map))) ; channel within the RB; 0-7
-     0                                      ; FIXME: which 1/2 of the harting connector?
-     (* 16 (:rb-harting data-map))          ; which harting connector?
-     (* 16 5 (:dsi-slot data-map))))        ; which DSI?
+(defn format-rb-map
 
-(defn format-rb-map [rb-map]
+  "Format a single instance of an RB data map and return a VHDL bit assignment string."
+
+  [rb-map]
 
   (if (= :N/A (:rb-num+channel rb-map))
 
@@ -166,7 +212,7 @@
 
 (validate-headings "mapping.csv")
 
-(let [data-map (read-mapping-csv "mapping.csv")]
+(let [data-map (csv-to-map "mapping.csv")]
 
   (when (:map-ltb args)
     (doseq [station [ "cube" "umbrella" "cube_bot" "cube_corner" "cortina"]]
