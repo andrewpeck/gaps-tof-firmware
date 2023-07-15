@@ -161,8 +161,8 @@
   [data-map]
 
   (+ (dec (:ch (:rb-num+channel data-map))) ; channel within the RB; 0-7
-     0                              ; FIXME: which 1/2 of the harting connector?
-     (* 16 (:rb-harting data-map))  ; which harting connector?
+     0                                      ; FIXME: which 1/2 of the harting connector?
+     (* 16 (:rb-harting data-map))          ; which harting connector?
      (* 16 5 (:dsi-slot data-map))))        ; which DSI?
 
 (defn format-ltb-map
@@ -174,9 +174,7 @@
   (format "    %s(%2d) <= hits_i(%3d); -- panel=%s paddle=%s station=%s; LTB DSI%s J%s CH%s"
           (:station ltb)
           cnt
-          (+  (dec (:ch (:ltb-num+channel ltb)))
-              (* 8 (:ltb-harting ltb))
-              (* 8 5 (:dsi-slot ltb)))
+          (get-global-ltb-index ltb)
           (:panel-number ltb)
           (:paddle-number ltb)
           (:station ltb)
