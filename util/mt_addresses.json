@@ -1028,31 +1028,31 @@
     "I2C.ps_lo": {
         "adr": 0,
         "permission": "rw",
-        "mask": 4294967295,
+        "mask": 255,
         "description": "Prescale low byte"
     },
     "I2C.ps_hi": {
         "adr": 1,
         "permission": "rw",
-        "mask": 4294967295,
+        "mask": 255,
         "description": "Prescale low byte"
     },
     "I2C.ctrl": {
         "adr": 2,
         "permission": "rw",
-        "mask": 4294967295,
+        "mask": 255,
         "description": "Control"
     },
     "I2C.data": {
         "adr": 3,
         "permission": "rw",
-        "mask": 4294967295,
+        "mask": 255,
         "description": "Data"
     },
     "I2C.cmd_stat": {
         "adr": 4,
         "permission": "rw",
-        "mask": 4294967295,
+        "mask": 255,
         "description": "Command / status"
     }
 }
