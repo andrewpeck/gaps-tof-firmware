@@ -13,7 +13,7 @@ mapping:
 	@mv tmp.vhd trigger.vhd
 
 rbmap:
-	@awk -v heading="mapping" -v cmd='make --silent process_rbmap' -f insert.awk rb_map.vhd > tmp.vhd
+	@awk -v heading="mapping" -v cmd='make --silent process_rbmap | sort -n -t "(" -k2' -f insert.awk rb_map.vhd > tmp.vhd
 	@mv tmp.vhd rb_map.vhd
 
 update_mapping:

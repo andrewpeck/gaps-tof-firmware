@@ -141,6 +141,10 @@
          ;; add the station number in
          (map (fn [x] (assoc x :station (panel-name (:panel-number x))))))))
 
+(defn bounds-check [val min max name map]
+  (assert (<= min val max)
+          (format "%s %d out of range (%d to %d) in %s" name val min max map)))
+
 (defn get-global-ltb-index
 
   "Return the global enumerated bit index for a given LTB channel.
@@ -163,10 +167,21 @@
 
   [data-map]
 
-  (+ (dec (:ch (:rb-num+channel data-map))) ; channel within the RB; 0-7
-     0                                      ; FIXME: which 1/2 of the harting connector?
-     (* 16 (:rb-harting data-map))          ; which harting connector?
-     (* 16 5 (:dsi-slot data-map))))        ; which DSI?
+  (let [ch (dec (:ch (:rb-num+channel data-map))) ; channel within the RB; 0-7
+        half 0                      ; FIXME: which 1/2 of the harting connector?
+        harting (:rb-harting data-map)  ; which harting connector?
+        dsi (dec (:dsi-slot data-map))  ; which DSI?
+        index (+ ch half
+                 (* 16 harting)         ; 16 RB channels per harting
+                 (* 16 5 dsi))]         ; 80 RB channels per DSI
+
+    (bounds-check ch 0 7 "RB Channel" data-map)
+    (bounds-check half 0 1 "RB Half A/B" data-map)
+    (bounds-check harting 0 5 "RB Harting" data-map)
+    (bounds-check dsi 0 5 "DSI" data-map)
+    (bounds-check index 0 399 "RB Index" data-map)
+
+    index))
 
 (defn format-ltb-map
 
@@ -175,13 +190,9 @@
   [ltb cnt]
 
   ;; error checking
-  (letfn [(bounds-check [val min max name]
-            (assert (<= min val max)
-                    (format "%s %d out of range (%d to %d) in %s" name val min max ltb)))]
-
-    (bounds-check (:dsi-slot ltb) 1 5 "Dsi Slot")
-    (bounds-check (:ch (:ltb-num+channel ltb)) 1 16 "LTB Channel")
-    (bounds-check (get-global-ltb-index ltb) 0 199 "LTB Index"))
+  (bounds-check (:dsi-slot ltb) 1 5 "Dsi Slot" ltb)
+  (bounds-check (:ch (:ltb-num+channel ltb)) 1 16 "LTB Channel" ltb)
+  (bounds-check (get-global-ltb-index ltb) 0 199 "LTB Index" ltb)
 
   ;; formatting
   (format "    %s(%2d) <= hits_i(%3d); -- panel=%2s paddle=%3s station=%s; LTB DSI%s J%s Ch%2s Bit%s"
@@ -194,8 +205,7 @@
           (:dsi-slot ltb)
           (inc (:ltb-harting ltb))
           (:ch (:ltb-num+channel ltb))
-          (int (/ (dec (:ch (:ltb-num+channel ltb))) 2))
-          ))
+          (int (/ (dec (:ch (:ltb-num+channel ltb))) 2))))
 
 
 (defn format-rb-map
