@@ -1,5 +1,10 @@
 #!/usr/bin/env bb
 
+;; This script parses a static set of trigger definitions (defined here in EDN
+;; format), and generates the VHDL for those trigger combinations. This is used
+;; for the SSL triggers and similar combinations which are simple and hand
+;; defined.
+
 (require '[clojure.string :as str])
 
 (def all-paddles (range 1 17))

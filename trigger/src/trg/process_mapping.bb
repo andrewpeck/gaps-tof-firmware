@@ -1,5 +1,8 @@
 #!/usr/bin/env bb
 
+;; This script is responsible for parsing the master definition spreadsheet and
+;; extracting the channel mappings for the MT module.
+
 (require '[clojure.string :as str])
 (require '[clojure.data.csv :as csv])
 (require '[clojure.java.io :as io])
@@ -146,9 +149,9 @@
 
   [data-map]
 
-  (+ (dec (:ch (:ltb-num+channel data-map)))
+  (+ (int (/ (dec (:ch (:ltb-num+channel data-map))) 2)) ; transform 1-16 --> 0-7
      (* 8 (:ltb-harting data-map))
-     (* 8 5 (:dsi-slot data-map))))
+     (* 8 5 (dec (:dsi-slot data-map)))))
 
 (defn get-global-rb-index
 
@@ -171,7 +174,17 @@
 
   [ltb cnt]
 
-  (format "    %s(%2d) <= hits_i(%3d); -- panel=%s paddle=%s station=%s; LTB DSI%s J%s CH%s"
+  ;; error checking
+  (letfn [(bounds-check [val min max name]
+            (assert (<= min val max)
+                    (format "%s %d out of range (%d to %d) in %s" name val min max ltb)))]
+
+    (bounds-check (:dsi-slot ltb) 1 5 "Dsi Slot")
+    (bounds-check (:ch (:ltb-num+channel ltb)) 1 16 "LTB Channel")
+    (bounds-check (get-global-ltb-index ltb) 0 199 "LTB Index"))
+
+  ;; formatting
+  (format "    %s(%2d) <= hits_i(%3d); -- panel=%2s paddle=%3s station=%s; LTB DSI%s J%s Ch%2s Bit%s"
           (:station ltb)
           cnt
           (get-global-ltb-index ltb)
@@ -180,7 +193,9 @@
           (:station ltb)
           (:dsi-slot ltb)
           (inc (:ltb-harting ltb))
-          (:ch (:ltb-num+channel ltb))))
+          (:ch (:ltb-num+channel ltb))
+          (int (/ (dec (:ch (:ltb-num+channel ltb))) 2))
+          ))
 
 
 (defn format-rb-map
