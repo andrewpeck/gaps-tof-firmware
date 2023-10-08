@@ -134,10 +134,6 @@
          ;; convert from vec to map
          (map (fn [row] (apply hash-map (interleave rows (get-fields row)))))
 
-         ;; remove the B ends of the paddle; they are not needed for our purposes
-         ;; since they are ORed in the LTB
-         (remove #(= :B (:paddle-end %)))
-
          ;; add the station number in
          (map (fn [x] (assoc x :station (panel-name (:panel-number x))))))))
 
@@ -167,14 +163,16 @@
 
   [data-map]
 
-  (let [ch (dec (:ch (:rb-num+channel data-map))) ; channel within the RB; 0-7
-        half 0                      ; FIXME: which 1/2 of the harting connector?
-        harting (:rb-harting data-map)  ; which harting connector?
-        dsi (dec (:dsi-slot data-map))  ; which DSI?
+  (let [ch (dec (:ch (:rb-num+channel data-map)))    ; channel within the RB; 0-7
+        half (if  (= :B (:paddle-end data-map)) 1 0) ; which 1/2 of the harting connector?
+        harting (:rb-harting data-map)               ; which harting connector?
+        dsi (dec (:dsi-slot data-map))               ; which DSI?
         index (+ ch half
                  (* 16 harting)         ; 16 RB channels per harting
                  (* 16 5 dsi))]         ; 80 RB channels per DSI
 
+    (assert (or  (= :A (:paddle-end data-map))
+                 (= :B (:paddle-end data-map))))
     (bounds-check ch 0 7 "RB Channel" data-map)
     (bounds-check half 0 1 "RB Half A/B" data-map)
     (bounds-check harting 0 5 "RB Harting" data-map)
@@ -239,7 +237,9 @@
 
   (when (:map-ltb args)
     (doseq [station [ "cube" "umbrella" "cube_bot" "cube_corner" "cortina"]]
-      (let [paddles (filter #(= (:station %) station) data-map)]
+      (let [paddles (->> data-map
+                         (remove #(= :B (:paddle-end %)))
+                         (filter #(= (:station %) station)))]
         (doseq [ltbmap (map vector  paddles (range (count paddles)))]
           (println (format-ltb-map (first ltbmap) (last ltbmap))))
         (println ""))))
