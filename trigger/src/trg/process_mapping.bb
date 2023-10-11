@@ -163,24 +163,26 @@
 
   [data-map]
 
-  (let [ch (dec (:ch (:rb-num+channel data-map)))    ; channel within the RB; 0-7
-        half (if  (= :B (:paddle-end data-map)) 1 0) ; which 1/2 of the harting connector?
-        harting (:rb-harting data-map)               ; which harting connector?
-        dsi (dec (:dsi-slot data-map))               ; which DSI?
-        index (+ ch
-                 (* 8  half)            ; 8 RB channels per harting split half
-                 (* 16 harting)         ; 16 RB channels per harting
-                 (* 16 5 dsi))]         ; 80 RB channels per DSI
+  (try (let [ch (dec (:ch (:rb-num+channel data-map))) ; channel within the RB; 0-7
+             half (if  (= :B (:paddle-end data-map)) 1 0) ; which 1/2 of the harting connector?
+             harting (:rb-harting data-map) ; which harting connector?
+             dsi (dec (:dsi-slot data-map)) ; which DSI?
+             index (+ ch
+                      (* 8  half)       ; 8 RB channels per harting split half
+                      (* 16 harting)    ; 16 RB channels per harting
+                      (* 16 5 dsi))]    ; 80 RB channels per DSI
 
-    (assert (or  (= :A (:paddle-end data-map))
-                 (= :B (:paddle-end data-map))))
-    (bounds-check ch 0 7 "RB Channel" data-map)
-    (bounds-check half 0 8 "RB Half A/B" data-map)
-    (bounds-check harting 0 5 "RB Harting" data-map)
-    (bounds-check dsi 0 5 "DSI" data-map)
-    (bounds-check index 0 399 "RB Index" data-map)
+         (assert (or  (= :A (:paddle-end data-map))
+                      (= :B (:paddle-end data-map))))
+         (bounds-check ch 0 7 "RB Channel" data-map)
+         (bounds-check half 0 1 "RB Half A/B" data-map)
+         (bounds-check harting 0 5 "RB Harting" data-map)
+         (bounds-check dsi 0 5 "DSI" data-map)
+         (bounds-check index 0 399 "RB Index" data-map)
 
-    index))
+         index)
+       ;; java.lang.NullPointerException
+       (catch Exception e (str "caught exception: " (.getMessage e)) -1)))
 
 (defn format-ltb-map
 
@@ -211,21 +213,31 @@
 
   "Format a single instance of an RB data map and return a VHDL bit assignment string."
 
-  [rb-map]
+  [rb-map short-circuits]
 
   (if (= :N/A (:rb-num+channel rb-map))
 
     ;; Emit a warning comment for N/A mappings
     (format "-- Failed to map                             -- %s" rb-map)
 
-    (format "  rb_ch_bitmap_o(%3d) <= hits_bitmap_i(%3d); -- %s"
-            (get-global-rb-index rb-map)
-            (get-global-ltb-index rb-map)
-            rb-map)))
+
+    (let [rb-idx (get-global-rb-index rb-map)
+          ltb-idx (get-global-ltb-index rb-map)
+          is-dup (if  (some #{rb-idx} short-circuits) " [Short Circuit]" "")]
+
+      (format "  rb_ch_bitmap_o(%3d) <= hits_bitmap_i(%3d); -- %s%s"
+              rb-idx
+              ltb-idx
+              rb-map
+              is-dup))))
 
 ;;------------------------------------------------------------------------------
 ;; Runtime
 ;;------------------------------------------------------------------------------
+
+(defn dups [seq]
+  (for [[id freq] (frequencies seq)  ;; get the frequencies, destructure
+        :when (> freq 1)] id)) ;; this is the filter condition
 
 (def args
   (cli/parse-opts *command-line-args*
@@ -246,7 +258,12 @@
         (println ""))))
 
   (when (:map-rb args)
+
     ;; sort the datamap by the ltb number to put it in some order
-    (let [datamap (sort-by 'get-global-ltb-index data-map)]
+
+    (let [datamap (sort-by 'get-global-ltb-index data-map)
+          rb-indexes (mapv get-global-rb-index datamap)
+          short-circuits (dups rb-indexes)]
+
       (doseq [rbmap datamap]
-        (println (format-rb-map rbmap))))))
+        (println (format-rb-map rbmap short-circuits))))))
