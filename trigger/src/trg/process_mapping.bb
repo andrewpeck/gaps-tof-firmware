@@ -167,14 +167,15 @@
         half (if  (= :B (:paddle-end data-map)) 1 0) ; which 1/2 of the harting connector?
         harting (:rb-harting data-map)               ; which harting connector?
         dsi (dec (:dsi-slot data-map))               ; which DSI?
-        index (+ ch half
+        index (+ ch
+                 (* 8  half)            ; 8 RB channels per harting split half
                  (* 16 harting)         ; 16 RB channels per harting
                  (* 16 5 dsi))]         ; 80 RB channels per DSI
 
     (assert (or  (= :A (:paddle-end data-map))
                  (= :B (:paddle-end data-map))))
     (bounds-check ch 0 7 "RB Channel" data-map)
-    (bounds-check half 0 1 "RB Half A/B" data-map)
+    (bounds-check half 0 8 "RB Half A/B" data-map)
     (bounds-check harting 0 5 "RB Harting" data-map)
     (bounds-check dsi 0 5 "DSI" data-map)
     (bounds-check index 0 399 "RB Index" data-map)
