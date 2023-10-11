@@ -134,6 +134,7 @@
       <node id="DATA"  permission="r" address="0x1" mask="0xFFFFFFFF" description="DAQ Read Data"    fw_signal="daq_data_xfifo" fw_read_pulse_signal="daq_rd_en" fw_read_ready_signal="daq_valid_xfifo"/>
       <node id="FULL"  permission="r" address="0x2" mask="0x00000001" description="DAQ Buffer Full"  fw_signal="daq_full"/>
       <node id="EMPTY" permission="r" address="0x2" mask="0x00000002" description="DAQ Buffer Empty" fw_signal="daq_empty"/>
+      <node id="SIZE"  permission="r" address="0x3" mask="0xFFFF0000" description="DAQ Buffer Head Event Size" fw_signal="daq_pkt_size_xfifo" fw_read_pulse_signal="daq_pkt_size_rd_en" fw_read_ready_signal="daq_pkt_size_rd_done"/>
     </node>
 
     <node id="INNER_TOF_THRESH" address="0x14" permission="rw"
