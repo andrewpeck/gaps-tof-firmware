@@ -12,7 +12,7 @@ entity rb_map is
   port(
     clock          : in  std_logic;
     hits_bitmap_i  : in  channel_bitmask_t := (others => '0');
-    rb_ch_bitmap_o : out std_logic_vector (NUM_RBS*8-1 downto 0) -- 399 downto 0
+    rb_ch_bitmap_o : out std_logic_vector (NUM_RBS*8-1 downto 0) := (others => '0') -- 399 downto 0
     );
 end rb_map;
 
