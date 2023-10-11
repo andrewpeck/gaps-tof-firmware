@@ -26,6 +26,15 @@ begin
   --
   -- so e.g. LTB input 0 (DSI1, J1, BIT1) is represented by hits_bitmap_i(0)
   --
+  -- the input should be determined by:
+  --
+  --     CH[0-7] + Harting[0-4]  + DSI[0-5]
+  --      * 1         * 8            * 40
+  --
+  -- the output index should be determined by
+  --
+  --     CH[0-7]  + Harting Half[0-1] + Harting Number[0-4] + DSI[0-5]
+  --      * 1           * 8                  * 16                * 80
 
   --START: autoinsert mapping
 
