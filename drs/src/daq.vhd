@@ -11,8 +11,8 @@ entity daq is
   generic(
     g_PACKET_PAD    : positive := 32;
     g_WORD_SIZE     : positive := 16;
-    g_MSB_FIRST     : boolean  := true;
-    g_LITTLE_ENDIAN : boolean  := true
+    g_MSB_FIRST     : boolean  := false;
+    g_BIG_ENDIAN : boolean  := false
     );
   port(
     clock : in std_logic;               -- clock of arbitrary frequency
@@ -260,7 +260,7 @@ begin
   packet_crc32 : entity work.crc32
     port map (
       clock  => clock,
-      data   => swap_data_bytes(g_LITTLE_ENDIAN, data),
+      data   => swap_data_bytes(g_BIG_ENDIAN, data),
       reset  => packet_crc_rst,
       enable => packet_crc_en,
       crc    => packet_crc
@@ -269,7 +269,7 @@ begin
   channel_crc32 : entity work.crc32
     port map (
       clock  => clock,
-      data   => swap_data_bytes(g_LITTLE_ENDIAN, data),
+      data   => swap_data_bytes(g_BIG_ENDIAN, data),
       enable => channel_crc_en,
       reset  => channel_crc_rst,
       crc    => channel_crc
