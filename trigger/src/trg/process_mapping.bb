@@ -227,9 +227,11 @@
           ltb-idx (get-global-ltb-index rb-map)
           is-dup (if  (some #{rb-idx} short-circuits) " [Short Circuit]" "")]
 
-      (format "  rb_ch_bitmap_o(%3d) <= hits_bitmap_i(%3d); -- %s%s"
+      (format "  rb_ch_bitmap_o(%3d) <= hits_bitmap_i(%3d); -- %s <- %s ::: %s%s"
               rb-idx
               ltb-idx
+              (format "rb %s" (:rb-num+channel rb-map))
+              (format "ltb %s" (:ltb-num+channel rb-map))
               rb-map
               is-dup))))
 
