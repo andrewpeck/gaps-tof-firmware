@@ -613,7 +613,7 @@ begin
   -- MTB needs to consider a longer time window /after/ the trigger decision is
   -- made to account for decay time, slow moving particles, etc.
   --
-  -- the integrator module opens a time window after a hit and accumulates hits
+  -- the integrator module opens a time window after a trigger and accumulates hits
   -- for a programmable number of clock cycles, after which a trigger + hit mask
   -- are sent to the readout boards
 
