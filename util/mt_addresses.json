@@ -149,6 +149,12 @@
         "mask": 2,
         "description": "DAQ Buffer Empty"
     },
+    "MT.EVENT_QUEUE.SIZE": {
+        "adr": 19,
+        "permission": "r",
+        "mask": 4294901760,
+        "description": "DAQ Buffer Head Event Size"
+    },
     "MT.INNER_TOF_THRESH": {
         "adr": 20,
         "permission": "rw",

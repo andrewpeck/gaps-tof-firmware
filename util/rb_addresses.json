@@ -405,6 +405,13 @@
         "description": "Recevied event counter",
         "adr8": 288
     },
+    "DRS.TRIGGER.MT_TRIGGER_RATE": {
+        "adr": 73,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "Rate of triggers received from the MTB in Hz",
+        "adr8": 292
+    },
     "DRS.COUNTERS.CNT_SEM_CORRECTION": {
         "adr": 80,
         "permission": "r",

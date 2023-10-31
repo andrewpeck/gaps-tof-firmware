@@ -35,7 +35,10 @@ entity mtb_daq is
 
     -- daq outputs
     data_o       : out std_logic_vector (15 downto 0);
-    data_valid_o : out std_logic
+    data_valid_o : out std_logic;
+
+    data_last_o : out std_logic;
+    data_size_o : out std_logic_vector (15 downto 0)
 
     );
 end mtb_daq;
@@ -87,6 +90,8 @@ architecture behavioral of mtb_daq is
   signal next_board_mask : std_logic_vector (hits_i'length/8-1 downto 0) := (others => '0');
 
   signal ltb_sel : natural range 0 to hits_i'length/8 := 0;
+
+  signal packet_size : natural range 0 to 2**data_size_o'length-1;
 
   --------------------------------------------------------------------------------
   -- CRC
@@ -221,6 +226,8 @@ begin
   assert swap_data_bytes(false, x"ff00") = x"ff00" severity error;
   assert swap_data_bytes(false, x"00ff") = x"00ff" severity error;
 
+  data_size_o <= std_logic_vector(to_unsigned(packet_size, data_size_o'length));
+
   --------------------------------------------------------------------------------
   -- Delay Line
   --------------------------------------------------------------------------------
@@ -249,6 +256,7 @@ begin
       crc_rst      <= '0';
       data_valid_o <= '0';
       data_o       <= (others => '0');
+      data_last_o  <= '0';
 
       case state is
 
@@ -267,6 +275,7 @@ begin
             tiu_gps       <= tiu_gps_i;
             timestamp     <= timestamp_i;
             tiu_timestamp <= tiu_timestamp_i;
+            packet_size   <= 0;
           end if;
 
         when HEADER_state =>
@@ -275,6 +284,7 @@ begin
           data_o       <= x"AAAA";
           data_valid_o <= '1';
           crc_en       <= '1';
+          packet_size  <= packet_size + 1;
 
           -- pre-calculate the hitmask, will get reduced to the board_mask
           for I in hits_i'range loop
@@ -298,6 +308,7 @@ begin
           data_o       <= data_sel(g_MSB_FIRST, g_WORD_SIZE, event_cnt'length/g_WORD_SIZE, state_word_cnt, event_cnt);
           data_valid_o <= '1';
           crc_en       <= '1';
+          packet_size  <= packet_size + 1;
 
           -- pre-calculate the board mask
           for I in board_mask'range loop
@@ -316,6 +327,7 @@ begin
           data_o       <= data_sel(g_MSB_FIRST, g_WORD_SIZE, timestamp'length/g_WORD_SIZE, state_word_cnt, timestamp);
           data_valid_o <= '1';
           crc_en       <= '1';
+          packet_size  <= packet_size + 1;
 
           -- pre-calculate the next_board_mask
           next_board_mask  <= calc_next_mask(board_mask);
@@ -333,6 +345,7 @@ begin
           data_o       <= data_sel(g_MSB_FIRST, g_WORD_SIZE, tiu_timestamp'length/g_WORD_SIZE, state_word_cnt, tiu_timestamp);
           data_valid_o <= '1';
           crc_en       <= '1';
+          packet_size  <= packet_size + 1;
 
           -- pre-calculate the next_board_mask
           next_board_mask  <= calc_next_mask(board_mask);
@@ -350,6 +363,7 @@ begin
           data_o       <= data_sel(g_MSB_FIRST, g_WORD_SIZE, tiu_gps'length/g_WORD_SIZE, state_word_cnt, tiu_gps);
           data_valid_o <= '1';
           crc_en       <= '1';
+          packet_size  <= packet_size + 1;
 
           -- pre-calculate the first ltb to read out
           ltb_sel <= calc_ltb_sel(board_mask);
@@ -361,6 +375,7 @@ begin
           data_o       <= (others => '0');
           data_valid_o <= '1';
           crc_en       <= '1';
+          packet_size  <= packet_size + 1;
           state        <= BOARD_MASK_state;
 
         when BOARD_MASK_state =>
@@ -376,6 +391,7 @@ begin
           data_o       <= data_sel(g_MSB_FIRST, g_WORD_SIZE, 2, state_word_cnt, board_mask);
           data_valid_o <= '1';
           crc_en       <= '1';
+          packet_size  <= packet_size + 1;
 
         when HITS_state =>
 
@@ -392,6 +408,7 @@ begin
                       hits(ltb_sel*8+3) & hits(ltb_sel*8+2) & hits(ltb_sel*8+1) & hits(ltb_sel*8);
             data_valid_o <= '1';
             crc_en       <= '1';
+            packet_size  <= packet_size + 1;
 
             ltb_sel         <= calc_ltb_sel(next_board_mask);
             board_mask      <= calc_next_mask(board_mask);
@@ -406,6 +423,7 @@ begin
           data_o       <= (others => '0');
           data_valid_o <= '1';
           crc_en       <= '1';
+          packet_size  <= packet_size + 1;
           state        <= CRC_CALC_state;
 
         when CRC_CALC_state =>
@@ -426,12 +444,14 @@ begin
           data_o       <= data_sel(g_MSB_FIRST, g_WORD_SIZE, crc'length/g_WORD_SIZE, state_word_cnt, crc);
           data_valid_o <= '1';
           crc_rst      <= '1';
+          packet_size  <= packet_size + 1;
 
         when TRAILER_state =>
 
           if (state_word_cnt = 1) then
             state          <= IDLE_state;
             state_word_cnt <= 0;
+            data_last_o    <= '1';
           else
 
             state_word_cnt <= state_word_cnt + 1;
@@ -442,6 +462,7 @@ begin
           data_o       <= x"5555";
           data_valid_o <= '1';
           crc_en       <= '1';
+          packet_size  <= packet_size + 1;
 
         when others =>
 

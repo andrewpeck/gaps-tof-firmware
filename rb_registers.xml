@@ -330,6 +330,10 @@
                 description="Recevied event counter"
                 mask="0xffffffff"
                 fw_signal="mt_event_cnt" />
+            <node id="MT_TRIGGER_RATE" address="0x9" permission="r"
+                description="Rate of triggers received from the MTB in Hz"
+                mask="0xffffffff"
+                fw_signal="mt_trigger_rate"/>
         </node> <!--TRIGGER-->
 
         <node id="COUNTERS" address="0x50" description="Counters">

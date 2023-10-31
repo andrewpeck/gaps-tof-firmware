@@ -9,7 +9,8 @@ entity fifo_sync is
     DEPTH     : integer := 512;
     WR_WIDTH  : integer := 64;
     RD_WIDTH  : integer := 64;
-    read_mode : string  := "std"
+    READ_MODE : string  := "std";
+    RD_LATENCY : integer := 2
     );
   port (
     rst     : in  std_logic;
@@ -32,7 +33,7 @@ begin
       DOUT_RESET_VALUE    => "0",       -- String
       ECC_MODE            => "no_ecc",  -- String
       FIFO_MEMORY_TYPE    => "block",   -- String
-      FIFO_READ_LATENCY   => 2,         -- DECIMAL
+      FIFO_READ_LATENCY   => RD_LATENCY,-- DECIMAL
       FULL_RESET_VALUE    => 0,         -- DECIMAL
       PROG_EMPTY_THRESH   => 3,         -- DECIMAL
       PROG_FULL_THRESH    => 3,         -- DECIMAL
