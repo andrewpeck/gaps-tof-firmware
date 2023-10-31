@@ -634,7 +634,7 @@ begin
   process (clk) is
   begin
     if (rising_edge(clk)) then
-      if (pre_trigger = '1') then
+      if (rb_trigger_o = '1') then
         if (read_all_channels = '1') then
           rb_ch_bitmap_o <= (others => '1');
         else
