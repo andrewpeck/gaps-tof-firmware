@@ -171,12 +171,7 @@ begin
           when RST =>
             ipb_miso.ipb_ack <= '0';
             ipb_miso.ipb_err <= '0';
-            -- wait for the strobe to go down before returning to idle
-            if (ipb_mosi.ipb_strobe = '0') or (ipb_timer > ipb_timeout) then
-              ipb_state <= IDLE;
-            else
-              ipb_timer <= ipb_timer + 1;
-            end if;
+            ipb_state <= IDLE;
           when others =>
             ipb_miso        <= (ipb_ack => '0', ipb_err => '0', ipb_rdata => (others => '0'));
             ipb_state       <= IDLE;
