@@ -69,7 +69,7 @@ def decode_ipbus(message, verbose=False) -> List[int]:
         print(f" > Size = {size}")
         print(f" > Type = {type} %s" % typedef[type])
         print(f" > Info = {info_code}")
-        print(f" > data = {data}")
+        print(" > data = %s" % (["%08X" % x for x in data]))
 
     return (data)
 
@@ -151,8 +151,6 @@ def rAdr(address : int) -> int:
 
 def rBlock(address : int, size : int) -> List[int]:
     pkt = encode_ipbus(addr=address, packet_type=READ_NON_INCR, data=[0]*size)
-    # print(len(pkt))
-    # print(pkt)
     s.sendto(pkt, target_address)
     ready = select.select([s], [], [], 1)
     if ready[0]:
