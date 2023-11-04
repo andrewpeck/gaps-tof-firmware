@@ -149,6 +149,23 @@ def rAdr(address : int) -> int:
         print("timeout in rreg")
         return rAdr(address)
 
+def rBlock(address : int, size : int) -> List[int]:
+    pkt = encode_ipbus(addr=address, packet_type=READ_NON_INCR, data=[0]*size)
+    # print(len(pkt))
+    # print(pkt)
+    s.sendto(pkt, target_address)
+    ready = select.select([s], [], [], 1)
+    if ready[0]:
+        data, _ = s.recvfrom(4096)
+        dec = decode_ipbus(data,True)
+        if (len(dec) > 0):
+            return dec[0]
+        else:
+            return rAdr(address)
+    else:
+        print("timeout in rreg")
+        return rAdr(address)
+
 c_addr = 0x1004
 div_addr = 0x1005
 ss_addr = 0x1006
