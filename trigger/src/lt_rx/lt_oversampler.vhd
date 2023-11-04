@@ -37,6 +37,15 @@ architecture behavioral of oversample is
   constant deadcnt_max : integer                        := 8;
   signal deadcnt       : natural range 0 to deadcnt_max := 0;
 
+  attribute KEEP: string;
+  attribute KEEP of d : signal is "true";
+
+  attribute SHREG_EXTRACT         : string;
+  attribute SHREG_EXTRACT of d    : signal is "no";
+  attribute SHREG_EXTRACT of dd   : signal is "no";
+  attribute SHREG_EXTRACT of ddd  : signal is "no";
+  attribute SHREG_EXTRACT of dddd : signal is "no";
+
 begin
 
   e4_o  <= e30 & e23 & e12 & e01;
