@@ -1757,7 +1757,7 @@ begin
   regs_read_arr(17)(REG_EVENT_QUEUE_DATA_MSB downto REG_EVENT_QUEUE_DATA_LSB) <= daq_data_xfifo;
   regs_read_arr(18)(REG_EVENT_QUEUE_FULL_BIT) <= daq_full;
   regs_read_arr(18)(REG_EVENT_QUEUE_EMPTY_BIT) <= daq_empty;
-  regs_read_arr(19)(REG_EVENT_QUEUE_SIZE_MSB downto REG_EVENT_QUEUE_SIZE_LSB) <= daq_pkt_size_xfifo;
+  regs_read_arr(19)(REG_EVENT_QUEUE_SIZE_MSB downto REG_EVENT_QUEUE_SIZE_LSB) <= daq_pkt_size_masked;
   regs_read_arr(20)(REG_INNER_TOF_THRESH_MSB downto REG_INNER_TOF_THRESH_LSB) <= inner_tof_thresh;
   regs_read_arr(20)(REG_OUTER_TOF_THRESH_MSB downto REG_OUTER_TOF_THRESH_LSB) <= outer_tof_thresh;
   regs_read_arr(20)(REG_TOTAL_TOF_THRESH_MSB downto REG_TOTAL_TOF_THRESH_LSB) <= total_tof_thresh;
