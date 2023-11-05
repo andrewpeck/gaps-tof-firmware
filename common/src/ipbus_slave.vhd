@@ -158,11 +158,13 @@ begin
               ipb_miso       <= (ipb_ack => '1', ipb_err => '0', ipb_rdata => reg_read_data);
               regs_read_strb <= '0';
               ipb_state      <= RST;
+              ipb_timer      <= (others => '0');
             -- Timeout (useful if user clock is not available)
             elsif (ipb_timer > ipb_timeout) then
               ipb_miso       <= (ipb_ack => '1', ipb_err => '1', ipb_rdata => x"baadbaad");
               regs_read_strb <= '0';
               ipb_state      <= RST;
+              ipb_timer      <= (others => '0');
               ipb_timer      <= (others  => '0');
             -- still waiting for IPbus
             else
@@ -171,7 +173,13 @@ begin
           when RST =>
             ipb_miso.ipb_ack <= '0';
             ipb_miso.ipb_err <= '0';
-            ipb_state <= IDLE;
+            -- wait for the strobe to go down before returning to idle
+            if (ipb_mosi.ipb_strobe = '0') or (ipb_timer > 6) then
+              ipb_state <= IDLE;
+              ipb_timer       <= (others  => '0');
+            else
+              ipb_timer <= ipb_timer + 1;
+            end if;
           when others =>
             ipb_miso        <= (ipb_ack => '0', ipb_err => '0', ipb_rdata => (others => '0'));
             ipb_state       <= IDLE;
