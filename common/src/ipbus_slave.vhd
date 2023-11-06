@@ -174,9 +174,9 @@ begin
             ipb_miso.ipb_ack <= '0';
             ipb_miso.ipb_err <= '0';
             -- wait for the strobe to go down before returning to idle
-            if (ipb_mosi.ipb_strobe = '0') or (ipb_timer > 6) then
+            if (ipb_mosi.ipb_strobe = '0') or (ipb_timer > 10) then
               ipb_state <= IDLE;
-              ipb_timer       <= (others  => '0');
+              ipb_timer <= (others  => '0');
             else
               ipb_timer <= ipb_timer + 1;
             end if;
