@@ -28,6 +28,17 @@ end fifo_sync;
 architecture Behavioral of fifo_sync is
 begin
 
+  -- Setting USE_ADV_FEATURES[0] to 1 enables overflow flag; Default value of this bit is 1
+  -- Setting USE_ADV_FEATURES[1] to 1 enables prog_full flag; Default value of this bit is 1
+  -- Setting USE_ADV_FEATURES[2] to 1 enables wr_data_count; Default value of this bit is 1
+  -- Setting USE_ADV_FEATURES[3] to 1 enables almost_full flag; Default value of this bit is 0
+  -- Setting USE_ADV_FEATURES[4] to 1 enables wr_ack flag; Default value of this bit is 0
+  -- Setting USE_ADV_FEATURES[8] to 1 enables underflow flag; Default value of this bit is 1
+  -- Setting USE_ADV_FEATURES[9] to 1 enables prog_empty flag; Default value of this bit is 1
+  -- Setting USE_ADV_FEATURES[10] to 1 enables rd_data_count; Default value of this bit is 1
+  -- Setting USE_ADV_FEATURES[11] to 1 enables almost_empty flag; Default value of this bit is 0
+  -- Setting USE_ADV_FEATURES[12] to 1 enables data_valid flag; Default value of this bit is 0
+
   xpm_fifo_sync_inst : xpm_fifo_sync
     generic map (
       DOUT_RESET_VALUE    => "0",       -- String
@@ -38,7 +49,7 @@ begin
       PROG_EMPTY_THRESH   => 3,         -- DECIMAL
       PROG_FULL_THRESH    => 3,         -- DECIMAL
       read_mode           => read_mode, -- String
-      USE_ADV_FEATURES    => "1000",    -- String
+      USE_ADV_FEATURES    => "1000",    -- enable data_valid
       WAKEUP_TIME         => 0,         -- DECIMAL
       FIFO_WRITE_DEPTH    => DEPTH,     -- DECIMAL
       READ_DATA_WIDTH     => RD_WIDTH,  -- DECIMAL

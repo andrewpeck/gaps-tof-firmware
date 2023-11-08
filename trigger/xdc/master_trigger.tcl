@@ -186,7 +186,7 @@ set input_ports             [list rgmii_rx_ctl {rgmii_rxd[0]} {rgmii_rxd[1]} {rg
 
 # transmitter
 create_generated_clock -name rgmii_tx_clk -multiply_by 1 \
-    -source [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/*/rgmii_phy_if_inst/clk_oddr_inst/oddr[0].oddr_inst/C].oddr_inst/C] [get_ports rgmii_tx_clk]
+    -source [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/*/rgmii_phy_if_inst/clk_oddr_inst/oddr[0].oddr_inst/C] [get_ports rgmii_tx_clk]
 
 set fwclk        rgmii_tx_clk;     # forwarded clock name (generated using create_generated_clock at output clock port)
 set tsu_r        1.000;            # destination device setup time requirement for rising edge
@@ -343,17 +343,12 @@ for {set i 0} {$i < 50} {incr i} {
     }
 
 
-    set_max_delay -datapath_only \
+    set_max_delay 1.9 -datapath_only \
         -from [get_ports lt_data_i_p[$input]] \
-        -to [get_pins noloop_r.lt_rx/genloop[$i].lt_input_processor_inst/oversample_inst/d*_reg/D] 1.9
+        -to [get_pins noloop_r.lt_rx/genloop[0].lt_input_processor_inst/oversample_inst/iddr_gen.id/D]
 }
 
 # trigger output
 set_max_delay -datapath_only \
-    -from [get_pins {ext_out_reg[1]/C}] \
+    -from [get_pins {ext_out_reg*/Q}] \
     -to [get_ports {ext_out[1]}] 3.9
-
-# trigger output mirror
-set_max_delay -datapath_only \
-    -from [get_pins {ext_io_reg[10]/C}] \
-    -to [get_ports {ext_io[10]}] 4.8

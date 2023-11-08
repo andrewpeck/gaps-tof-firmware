@@ -270,8 +270,10 @@ architecture structural of gaps_mt is
   signal daq_pkt_size_xfifo   : std_logic_vector (15 downto 0) := (others => '0');
   signal daq_pkt_size_masked  : std_logic_vector (15 downto 0) := (others => '0');
   signal daq_pkt_size_rd_en   : std_logic                      := '0';
+  signal daq_pkt_size_rd_en_r : std_logic                      := '0';
   signal daq_pkt_size_rd_done : std_logic                      := '0';
   signal daq_pkt_size_valid   : std_logic                      := '0';
+  signal daq_pkt_size_empty   : std_logic                      := '0';
 
   --------------------------------------------------------------------------------
   -- IPbus / wishbone
@@ -1085,14 +1087,14 @@ begin
 
   mtb_event_fifo_inst : entity work.fifo_sync
     generic map (
-      DEPTH     => 512,
+      DEPTH     => 8192,
       WR_WIDTH  => 16,
       RD_WIDTH  => 16,
-      READ_MODE => "fwft",
+      READ_MODE => "std",
       RD_LATENCY => 1
       )
     port map (
-      rst    => reset or daq_reset,
+      rst    => reset or daq_reset or daq_empty,
       clk    => clock,
 
       -- in
@@ -1106,18 +1108,27 @@ begin
 
       -- status
       full   => open,
-      empty  => open
+      empty  => daq_pkt_size_empty
       );
 
-  -- make sure the size reads zero when the fifo is empty
-
-  daq_pkt_size_masked <= daq_pkt_size_xfifo when daq_pkt_size_valid = '1' else (others => '0');
 
   -- give the fifo a clock to read out
   process (clock) is
   begin
     if (rising_edge(clock)) then
-      daq_pkt_size_rd_done <= daq_pkt_size_rd_en;
+
+      daq_pkt_size_rd_en_r <= daq_pkt_size_rd_en;
+      daq_pkt_size_rd_done <= daq_pkt_size_rd_en_r;
+
+      if (daq_pkt_size_rd_en_r='1') then
+        -- make sure the size reads zero when the fifo is empty
+        if (daq_pkt_size_valid='1') then
+          daq_pkt_size_masked <= daq_pkt_size_xfifo;
+        else
+          daq_pkt_size_masked <= (others => '0');
+        end if;
+      end if;
+
     end if;
   end process;
 
@@ -1809,7 +1820,7 @@ begin
   regs_read_arr(17)(REG_EVENT_QUEUE_DATA_MSB downto REG_EVENT_QUEUE_DATA_LSB) <= daq_data_xfifo;
   regs_read_arr(18)(REG_EVENT_QUEUE_FULL_BIT) <= daq_full;
   regs_read_arr(18)(REG_EVENT_QUEUE_EMPTY_BIT) <= daq_empty;
-  regs_read_arr(19)(REG_EVENT_QUEUE_SIZE_MSB downto REG_EVENT_QUEUE_SIZE_LSB) <= daq_pkt_size_xfifo;
+  regs_read_arr(19)(REG_EVENT_QUEUE_SIZE_MSB downto REG_EVENT_QUEUE_SIZE_LSB) <= daq_pkt_size_masked;
   regs_read_arr(20)(REG_INNER_TOF_THRESH_MSB downto REG_INNER_TOF_THRESH_LSB) <= inner_tof_thresh;
   regs_read_arr(20)(REG_OUTER_TOF_THRESH_MSB downto REG_OUTER_TOF_THRESH_LSB) <= outer_tof_thresh;
   regs_read_arr(20)(REG_TOTAL_TOF_THRESH_MSB downto REG_TOTAL_TOF_THRESH_LSB) <= total_tof_thresh;

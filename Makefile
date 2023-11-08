@@ -17,7 +17,7 @@ TIMECMD = time -p
 endif
 
 list:
-	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$'
+	@make -qp | awk -v RS="" '!/Not a target/{if ($$0 ~ /^[^ %]+:/) {split($$0, A, ":"); print A[1];}}' | sort -u | grep -v ".PHONY"
 
 all: autogen_dma_mem create synth impl
 

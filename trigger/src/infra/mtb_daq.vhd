@@ -275,7 +275,7 @@ begin
             tiu_gps       <= tiu_gps_i;
             timestamp     <= timestamp_i;
             tiu_timestamp <= tiu_timestamp_i;
-            packet_size   <= 0;
+            packet_size   <= 1;
           end if;
 
         when HEADER_state =>
