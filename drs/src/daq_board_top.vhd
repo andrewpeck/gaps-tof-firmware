@@ -786,7 +786,7 @@ begin
       ext_trigger_en        => ext_trigger_en,
       ext_trigger_active_hi => ext_trigger_active_hi,
 
-      force_trig => force_trig or trig_gen,
+      force_trig => force_trig or (trig_gen and not drs_busy),
 
       delay_i => drs_dwrite_delay_sel,
 
