@@ -185,8 +185,11 @@ architecture Behavioral of top_readout_board is
   signal lost_trigger_rate : std_logic_vector (31 downto 0) := (others => '0');
   signal mt_trigger_rate   : std_logic_vector (31 downto 0) := (others => '0');
 
+  signal trig_deadcnt    : std_logic_vector (3 downto 0)  := (others => '0');
   signal trig_gen_rate   : std_logic_vector (31 downto 0) := (others => '0');
   signal trig_gen        : std_logic                      := '0';
+  signal trig_gen_gated  : std_logic                      := '0';
+
   signal mt_trigger      : std_logic                      := '0';
   signal mt_trigger_fast : std_logic                      := '0';
   signal mt_fragment     : std_logic                      := '0';
@@ -786,7 +789,7 @@ begin
       ext_trigger_en        => ext_trigger_en,
       ext_trigger_active_hi => ext_trigger_active_hi,
 
-      force_trig => force_trig or (trig_gen and not drs_busy),
+      force_trig => force_trig or (trig_gen_gated and not drs_busy),
 
       delay_i => drs_dwrite_delay_sel,
 
@@ -1139,6 +1142,22 @@ begin
   --------------------------------------------------------------------------------
   -- Trigger generator
   --------------------------------------------------------------------------------
+
+  -- enforce a few clock cycles minimum separation;
+  -- give time for the drs to go busy
+  process (clock) is
+  begin
+    if (rising_edge(clock)) then
+      if (trig_deadcnt = 0 and trig_gen = '1') then
+        trig_deadcnt   <= (others => '1');
+        trig_gen_gated <= '1';
+      elsif (trig_deadcnt > 0) then
+        trig_deadcnt   <= trig_deadcnt - 1;
+        trig_gen_gated <= '0';
+      end if;
+    end if;
+  end process;
+
 
   trig_gen_inst : entity work.trig_gen
     port map (
