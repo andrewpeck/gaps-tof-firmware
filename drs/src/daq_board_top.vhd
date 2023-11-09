@@ -185,7 +185,7 @@ architecture Behavioral of top_readout_board is
   signal lost_trigger_rate : std_logic_vector (31 downto 0) := (others => '0');
   signal mt_trigger_rate   : std_logic_vector (31 downto 0) := (others => '0');
 
-  signal trig_deadcnt    : integer range 0 to 15          := (others => '0');
+  signal trig_deadcnt    : integer range 0 to 15          := 0;
   signal trig_gen_rate   : std_logic_vector (31 downto 0) := (others => '0');
   signal trig_gen        : std_logic                      := '0';
   signal trig_gen_gated  : std_logic                      := '0';
