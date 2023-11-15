@@ -53,6 +53,7 @@ entity trigger is
 
     force_trigger_i : in std_logic;
 
+    trig_sources_o   : out std_logic_vector(15 downto 0);
     pre_trigger_o    : out std_logic;
     global_trigger_o : out std_logic;
     lost_trigger_o   : out std_logic;
@@ -135,6 +136,8 @@ architecture behavioral of trigger is
 
   signal or_inner_tof_beta : std_logic;
   signal or_outer_tof_beta : std_logic;
+
+  signal trig_sources : std_logic_vector(15 downto 0);
 
   signal cube_cnts        : integer range 0 to N_CUBE;
   signal cube_bot_cnts    : integer range 0 to N_CUBE_BOT;
@@ -576,19 +579,23 @@ begin
   -- Trigger Source OR
   --------------------------------------------------------------------------------
 
+
+  trig_sources <= "00000000"
+                  & force_trigger_i
+                  & (or_reduce(hit_bitmap) and single_hit_en_i)
+                  & (gaps_trigger_en and gaps_trigger)
+                  & (ssl_trig_top_bot_en and ssl_trig_top_bot)
+                  & (ssl_trig_topedge_bot_en and ssl_trig_topedge_bot)
+                  & (ssl_trig_top_botedge_en and ssl_trig_top_botedge)
+                  & (ssl_trig_topmid_botmid_en and ssl_trig_topmid_botmid)
+                  & programmable_trigger;
+
   process (clk) is
   begin
     if (rising_edge(clk)) then
       pre_trigger <= not busy_i
                      and not dead
-                     and (force_trigger_i
-                          or (or_reduce(hit_bitmap) and single_hit_en_i)
-                          or (gaps_trigger_en and gaps_trigger)
-                          or (ssl_trig_top_bot_en and ssl_trig_top_bot)
-                          or (ssl_trig_topedge_bot_en and ssl_trig_topedge_bot)
-                          or (ssl_trig_top_botedge_en and ssl_trig_top_botedge)
-                          or (ssl_trig_topmid_botmid_en and ssl_trig_topmid_botmid)
-                          or programmable_trigger);
+                     and or_reduce(trig_sources);
     end if;
   end process;
 
@@ -670,6 +677,10 @@ begin
 
       lost_trigger_o   <= busy_i and pre_trigger;
       global_trigger_o <= pre_trigger;  -- delay by 1 clock to align with event count
+
+      if (pre_trigger) then
+        trig_sources_o <= trig_sources;
+      end if;
 
     end if;
   end process;

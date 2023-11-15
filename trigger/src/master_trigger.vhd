@@ -179,10 +179,11 @@ architecture structural of gaps_mt is
   signal rb_window    : std_logic_vector (4 downto 0);
 
   signal lost_trigger   : std_logic;
-  signal global_trigger : std_logic;  -- single bit == the baloon triggered somewhere
-  signal rb_trigger     : std_logic;  --
-  signal pre_trigger    : std_logic;  -- 1 clock cycle earlier than global_trigger
+  signal global_trigger : std_logic;    -- single bit == the baloon triggered somewhere
+  signal rb_trigger     : std_logic;    --
+  signal pre_trigger    : std_logic;    -- 1 clock cycle earlier than global_trigger
   signal global_busy    : std_logic;
+  signal trig_sources   : std_logic_vector(15 downto 0);
 
   signal read_all_channels : std_logic := '0';
 
@@ -768,6 +769,7 @@ begin
       rb_window_i => rb_window,
 
       -- Trigger ouptut + event count from trigger logic
+      trig_sources_o   => trig_sources,
       global_trigger_o => global_trigger,
       rb_trigger_o     => rb_trigger,
       event_cnt_o      => event_cnt,
@@ -1043,6 +1045,7 @@ begin
     port map (
       clock           => clock,
       reset_i         => reset,
+      trig_sources_i  => trig_sources,
       trigger_i       => global_trigger,
       event_cnt_i     => event_cnt,
       timestamp_i     => std_logic_vector(timestamp),

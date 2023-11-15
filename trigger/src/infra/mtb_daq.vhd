@@ -30,6 +30,7 @@ entity mtb_daq is
     tiu_gps_i       : in std_logic_vector (47 downto 0);
     tiu_timestamp_i : in std_logic_vector (31 downto 0);
     timestamp_i     : in std_logic_vector (31 downto 0);
+    trig_sources_i  : in std_logic_vector (15 downto 0);
 
     ignore_tiu_i : in std_logic := '1';
 
@@ -47,7 +48,7 @@ architecture behavioral of mtb_daq is
 
   type state_t is (IDLE_state, HEADER_state, EVENT_CNT_state,
                    TIU_TIMESTAMP_state, TIMESTAMP_state, TIU_GPS_state,
-                   RSVD_state, BOARD_MASK_state, HITS_state, PAD_state, CRC_CALC_state,
+                   TRIG_SOURCE_state, BOARD_MASK_state, HITS_state, PAD_state, CRC_CALC_state,
                    CRC_state, TRAILER_state);
 
   signal state : state_t := IDLE_state;
@@ -354,7 +355,7 @@ begin
         when TIU_GPS_state =>
 
           if (state_word_cnt = tiu_gps'length / g_WORD_SIZE - 1) then
-            state          <= RSVD_state;
+            state          <= TRIG_SOURCE_state;
             state_word_cnt <= 0;
           else
             state_word_cnt <= state_word_cnt + 1;
@@ -368,11 +369,11 @@ begin
           -- pre-calculate the first ltb to read out
           ltb_sel <= calc_ltb_sel(board_mask);
 
-        when RSVD_state =>
+        when TRIG_SOURCE_state =>
 
           -- add a reserved state to make the tiu_gps round up to 64 bits so
           -- it goes nicely into the 32 bit fifo
-          data_o       <= (others => '0');
+          data_o       <= trig_sources_i;
           data_valid_o <= '1';
           crc_en       <= '1';
           packet_size  <= packet_size + 1;

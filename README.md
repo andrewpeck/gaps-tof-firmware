@@ -231,7 +231,15 @@ bits per trigger.
 | TIMESTAMP     | `[31:0]` | Internal timestamp at the time of trigger (1 unit = 10 ns) |
 | TIU_TIMESTAMP | `[31:0]` | Timestamp at the edge of the TIU GPS (1 unit = 10 ns)      |
 | TIU_GPS       | `[47:0]` | Second received from the TIU (format?)                     |
-| RESERVED      | `[15:0]` | Reserved                                                   |
+| TRIG_SOURCE   | `[15:0]` | Bitmask showing all trigger sources                        |
+|               |          | 0: programmable trigger                                    |
+|               |          | 1: ssl topmid/botmid                                       |
+|               |          | 2: ssl botedge                                             |
+|               |          | 3: ssl topedge bot                                         |
+|               |          | 4: ssl top bot                                             |
+|               |          | 5: gaps trigger                                            |
+|               |          | 6: any trigger                                             |
+|               |          | 7: forced trigger                                          |
 | BOARD_MASK    | `[31:0]` | 25 bits indicating boards which are read out               |
 | HITS          | –        | Variable sized, 16 bits / board \* n_boards                |
 | PAD           | `[15:0]` | Optional, only here if the \# of boards read is odd        |
