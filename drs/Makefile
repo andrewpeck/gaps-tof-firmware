@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 .PHONY: check_output
 
-DAQ_FILES=src/crc32.vhd src/types_pkg.vhd src/daq.vhd sim/daq_tb.vhd
+DAQ_FILES=../common/src/crc32.vhd ../common/src/types_pkg.vhd src/daq.vhd sim/daq_tb.vhd
 ANALYZE=ghdl -a --std=08 --ieee=synopsys -Wunused --warn-runtime-error --warn-body --warn-parenthesis --warn-reserved
 RUN=ghdl -r --std=08
 
@@ -21,12 +21,12 @@ daq_packet.dat:  daq_tb
 	#cat example_packet.txt >> daq_packet.txt
 	@python3 hex_to_bin.py
 
-daq_tb: $(DAQ_FILES)
+daq_tb:
 	@ghdl -a --std=08 --ieee=synopsys $(DAQ_FILES)
 	@ghdl -r --std=08 --ieee=synopsys daq_tb --wave=daq_tb.ghw
 
 dump: daq_packet.dat
-	@od --width=2 -t x2 --endian big  daq_packet.dat
+	@od -v --width=2 -t x2 --endian little  event.dat | awk -F" " '{if (length($2) > 0) print $2}' > daq_packet.txt
 
 clean:
 	rm -f *.o *.ghw *.cf daq_tb daq_packet.txt daq_packet.dat
