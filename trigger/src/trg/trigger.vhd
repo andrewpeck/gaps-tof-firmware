@@ -137,7 +137,9 @@ architecture behavioral of trigger is
   signal or_inner_tof_beta : std_logic;
   signal or_outer_tof_beta : std_logic;
 
-  signal trig_sources : std_logic_vector(15 downto 0);
+  signal trig_sources        : std_logic_vector(15 downto 0);
+  signal pedestal_trig       : std_logic;
+  signal pedestal_trig_latch : std_logic;
 
   signal cube_cnts        : integer range 0 to N_CUBE;
   signal cube_bot_cnts    : integer range 0 to N_CUBE_BOT;
@@ -579,7 +581,6 @@ begin
   -- Trigger Source OR
   --------------------------------------------------------------------------------
 
-
   trig_sources <= "00000000"
                   & force_trigger_i
                   & (or_reduce(hit_bitmap) and single_hit_en_i)
@@ -593,6 +594,9 @@ begin
   process (clk) is
   begin
     if (rising_edge(clk)) then
+
+      pedestal_trig <= force_trigger_i or read_all_channels;
+
       pre_trigger <= not busy_i
                      and not dead
                      and or_reduce(trig_sources);
@@ -642,7 +646,7 @@ begin
   begin
     if (rising_edge(clk)) then
       if (rb_trigger_o = '1') then
-        if (read_all_channels = '1') then
+        if (pedestal_trig_latch = '1') then
           rb_ch_bitmap_o <= (others => '1');
         else
           rb_ch_bitmap_o <= rb_ch_integrated;
@@ -679,7 +683,8 @@ begin
       global_trigger_o <= pre_trigger;  -- delay by 1 clock to align with event count
 
       if (pre_trigger) then
-        trig_sources_o <= trig_sources;
+        trig_sources_o      <= trig_sources;
+        pedestal_trig_latch <= pedestal_trig;
       end if;
 
     end if;
