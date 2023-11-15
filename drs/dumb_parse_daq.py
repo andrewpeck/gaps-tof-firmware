@@ -25,14 +25,19 @@ def read_test_packet():
         IDLE = auto()
         ERR = auto()
         HEAD = auto()
-        HASH = auto()
         STATUS = auto()
         LENGTH = auto()
         ROI = auto()
         DNA = auto()
+        RSVD0 = auto()
+        RSVD1 = auto()
+        RSVD2 = auto()
+        HASH = auto()
         ID = auto()
         CHMASK = auto()
         EVENT_CNT = auto()
+        DTAP = auto()
+        TEMPERATURE = auto()
         TIMESTAMP = auto()
         CALC_CH_CRC = auto()
         CH_CRC = auto()
@@ -52,7 +57,7 @@ def read_test_packet():
         data = int(line, 16)
 
         if state not in (State.CRC32, State.TAIL):
-            packet_crc_calc = libscrc.crc32((data).to_bytes(2, byteorder='big'), packet_crc_calc)
+            packet_crc_calc = libscrc.crc32((data).to_bytes(2, byteorder='little'), packet_crc_calc)
             #print("      > data = 0x%04X, Calculate crc = 0x%08X" % (data,packet_crc_calc))
 
         if state == State.HEAD:
@@ -78,15 +83,21 @@ def read_test_packet():
             continue
 
         if state == State.DNA:
-            if state_word_cnt == 0:
-                dna = 0
-            dna |= (data << (16*(dna_length-state_word_cnt-1)))
-            if state_word_cnt == dna_length-1:
-                print("DNA       : 0x%0*X" % (16, dna))
-                state = State.HASH
-                state_word_cnt = 0
-                continue
-            state_word_cnt += 1
+            dna = data
+            state = State.RSVD0
+            continue
+
+        if state == State.RSVD0:
+            state = State.RSVD1
+            continue
+
+        if state == State.RSVD1:
+            state = State.RSVD2
+            continue
+
+        if state == State.RSVD2:
+            state = State.HASH
+            continue
 
         if state == State.HASH:
             print("HASH      : 0x%X" % data)
@@ -100,14 +111,14 @@ def read_test_packet():
             continue
 
         if state == State.CHMASK:
-            for i in range(16):
+            for i in range(8):
                 if 0x1&(data>>i):
                     num_channels += 1
             if num_channels > 0:
                 num_channels += 1
 
             state = State.EVENT_CNT
-            print("CHMASK    : 0x%X" % (data))
+            print("CHMASK    : 0x%X (%d channels)" % (data, num_channels))
             continue
 
         if state == State.EVENT_CNT:
@@ -118,9 +129,20 @@ def read_test_packet():
 
             if state_word_cnt == event_cnt_length:
                 print("EVENT_CNT : 0x%0*X" % (8, event_cnt))
-                state = State.TIMESTAMP
+                state = State.DTAP
                 state_word_cnt = 0
                 continue
+
+        if state == State.DTAP:
+            print("DTAP      : 0x%X" % data)
+            state = State.TEMPERATURE
+            dtap = data
+            continue
+
+        if state == State.TEMPERATURE:
+            print("TEMPERATUR: 0x%X" % data)
+            state = State.TIMESTAMP
+            continue
 
         if state == State.TIMESTAMP:
             if state_word_cnt == 0:
@@ -140,13 +162,15 @@ def read_test_packet():
             continue
 
         if state == State.PAYLOAD:
-            #print("Ch%d %04X!=%04X" % (ch_cnt+1, data, state_word_cnt))
-            if data != state_word_cnt:
-                print("Ch%d ERROR %04X!=%04X" % (ch_cnt+1, data, state_word_cnt))
-                return
-            state_word_cnt += 1
 
-            ch_crc_calc = libscrc.crc32((data).to_bytes(2, byteorder='big'), ch_crc_calc)
+            #print("Ch%d %04X!=%04X" % (ch_cnt+1, data, state_word_cnt))
+            # if data != state_word_cnt:
+            #     print("Ch%d ERROR %04X!=%04X" % (ch_cnt+1, data, state_word_cnt))
+            #     return
+            #print("%04x" % data)
+
+            state_word_cnt += 1
+            ch_crc_calc = libscrc.crc32((data).to_bytes(2, byteorder='little'), ch_crc_calc)
 
             if state_word_cnt >= (roi_size):
                 state = State.CH_CRC
@@ -164,7 +188,7 @@ def read_test_packet():
                     print("    > Ch%d Payload CRC Fail" % (ch_cnt+1))
                     print("      > Calculate crc = 0x%08X" % ch_crc_calc)
                     print("      > Received  crc = 0x%0*X" % (8, ch_crc))
-                if ch_cnt == num_channels-1:
+                if ch_cnt == num_channels - 1:
                     state = State.STOPCELL
                     ch_cnt = 0
                 else:
