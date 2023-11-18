@@ -39,8 +39,6 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |RESYNC | ~0xa~ | ~0x28~ | ~0~ | w | Pulse | Write 1 to resync | 
 |------------+---+---+---------+-----+-----+----------------------------|
-|ANY_TRIG_EN | ~0xb~ | ~0x2c~ | ~2~ | rw | ~0x0~ | 1 to enable the ANY trigger | 
-|------------+---+---+---------+-----+-----+----------------------------|
 |EVENT_CNT_RESET | ~0xc~ | ~0x30~ | ~0~ | w | Pulse | Write 1 to reset the event counter | 
 |------------+---+---+---------+-----+-----+----------------------------|
 |EVENT_CNT | ~0xd~ | ~0x34~ | ~[31:0]~ | r |  | Event Counter | 
@@ -196,6 +194,10 @@ Implements various control and monitoring functions of the DRS Logic
 |ETH_RX_BAD_FRAME_CNT | ~0x3d~ | ~0xf4~ | ~[15:0]~ | r |  | Ethernet MAC bad frame error | 
 |------------+---+---+---------+-----+-----+----------------------------|
 |ETH_RX_BAD_FCS_CNT | ~0x3d~ | ~0xf4~ | ~[31:16]~ | r |  | Ethernet MAC bad fcs | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|ANY_TRIG_PRESCALE | ~0x40~ | ~0x100~ | ~[31:0]~ | rw | ~0xFFFFFFFF~ | Prescale value for the ANY trigger. 0 == 0%, 2**32-1 == 100% | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|TRACK_TRIGGER_PRESCALE | ~0x41~ | ~0x104~ | ~[31:0]~ | rw | ~0xFFFFFFFF~ | Prescale value for the Inner + Outer Track Trigger. 0 == 0%, 2**32-1 == 100% | 
 |------------+---+---+---------+-----+-----+----------------------------|
 
 *MT.CHANNEL_MASK*

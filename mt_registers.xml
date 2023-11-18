@@ -67,14 +67,6 @@
           description="Write 1 to resync"
           fw_write_pulse_signal="rb_resync"/>
 
-    <node id="ANY_TRIG_EN"
-          address="0xb"
-          permission="rw"
-          mask="0x4"
-          description="1 to enable the ANY trigger"
-          fw_default="0x0"
-          fw_signal="any_trig_en"/>
-
     <node id="EVENT_CNT_RESET"
           address="0xc"
           permission="w"
@@ -319,6 +311,22 @@
           fw_make_signal="true"
           fw_signal="eth_bad_fcs_cnt"
           fw_cnt_en_signal="eth_bad_fcs"/>
+
+    <node id="ANY_TRIG_PRESCALE"
+          address="0x40"
+          permission="rw"
+          mask="0xffffffff"
+          description="Prescale value for the ANY trigger. 0 == 0%, 2**32-1 == 100%"
+          fw_default="0xffffffff"
+          fw_signal="any_hit_trigger_prescale"/>
+
+    <node id="TRACK_TRIGGER_PRESCALE"
+          address="0x41"
+          permission="rw"
+          mask="0xffffffff"
+          description="Prescale value for the Inner + Outer Track Trigger. 0 == 0%, 2**32-1 == 100%"
+          fw_default="0xffffffff"
+          fw_signal="track_trigger_prescale"/>
 
     <node id="XADC" address="0x120"
           description="Zynq XADC">

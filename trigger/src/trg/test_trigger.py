@@ -36,7 +36,7 @@ async def random_clusters(dut):
     dut.hits_i.value = 200*[0]
     dut.reset.value = 1
     dut.event_cnt_reset.value = 1
-    dut.single_hit_en_i.value = 1 # FIXME undo me
+    dut.any_hit_trigger_en_i.value = 1 # FIXME undo me
     dut.trig_mask_a.value = 0
     dut.trig_mask_b.value = 0
     dut.all_triggers_are_global.value = 0

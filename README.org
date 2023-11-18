@@ -243,6 +243,7 @@ trigger.
 |               |          | 5: gaps trigger                                            |
 |               |          | 6: any trigger                                             |
 |               |          | 7: forced trigger                                          |
+|               |          | 8: track trigger                                           |
 | BOARD_MASK    | ~[31:0]~ | 25 bits indicating boards which are read out               |
 | HITS          | --       | Variable sized, 16 bits / board * n_boards                 |
 | PAD           | ~[15:0]~ | Optional, only here if the # of boards read is odd         |

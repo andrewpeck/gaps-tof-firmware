@@ -20,6 +20,10 @@ use IEEE.std_logic_1164.all;
 
 entity trig_gen is
 
+  generic (
+    SEED : integer := 0
+    );
+
   port (
     sys_clk    : in  std_logic;                      -- 320MHz pipeline clock
     sys_rst    : in  std_logic;                      -- active high reset
@@ -32,13 +36,6 @@ end entity trig_gen;
 
 
 architecture arch of trig_gen is
-
-  component urand_inf is
-    port (
-      clk   : in  std_logic;
-      rst_n : in  std_logic;
-      u     : out std_logic_vector(31 downto 0));
-  end component urand_inf;
 
   signal u     : std_logic_vector(31 downto 0);
   signal rst_n : std_logic;
@@ -65,6 +62,9 @@ begin  -- architecture arch
   end process;
 
   urand_inf_1 : entity work.urand_inf
+    generic map (
+      SEED => SEED
+      )
     port map (
       clk   => sys_clk,
       rst_n => rst_n,

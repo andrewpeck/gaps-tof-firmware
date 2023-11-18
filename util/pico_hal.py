@@ -338,9 +338,14 @@ def en_ssl_trigger():
     set_trig("MT.TRIG_MASK_B", 0x0000fc3f)
 
 def set_any_trigger(val : int):
-    wReg("MT.ANY_TRIG_EN", val)
-    rd = rReg("MT.ANY_TRIG_EN")
+    wReg("MT.ANY_TRIG_PRESCALE", val)
+    rd = rReg("MT.ANY_TRIG_PRESCALE")
     print("Any trigger mode set to %d" % rd)
+
+def set_track_trigger(val : int):
+    wReg("MT.TRACK_TRIGGER_PRESCALE", val)
+    rd = rReg("MT.TRACK_TRIGGER_PRESCALE")
+    print("Track trigger prescale set to %d" % rd)
 
 def set_ssl_trig(trg : str, val : int):
     wReg("MT.SSL_TRIG_%s_EN" % trg, val)
@@ -486,6 +491,10 @@ if __name__ == '__main__':
     argParser.add_argument('--ssl_trig_en',           action='store_true', default=False, help="Enable SSL trigger")
     argParser.add_argument('--any_trig_en',           action='store_true', default=False, help="Enable ANY trigger")
     argParser.add_argument('--any_trig_dis',          action='store_true', default=False, help="Disable ANY trigger")
+    argParser.add_argument('--track_trig_en',         action='store_true', default=False, help="Enable TRACK trigger")
+    argParser.add_argument('--track_trig_dis',        action='store_true', default=False, help="Disable TRACK trigger")
+    argParser.add_argument('--any_trig_prescale',     action='store',      default=False, help="Set prescale for ANY trigger")
+    argParser.add_argument('--track_trig_prescale',   action='store',      default=False, help="Set prescale for TRACK trigger")
     argParser.add_argument('--ssl_top_bot_en',        action='store_true', default=False, help="Enable SSL trigger")
     argParser.add_argument('--ssl_top_bot_dis',       action='store_true', default=False, help="Disable SSL trigger")
     argParser.add_argument('--ssl_topedge_bot_en',    action='store_true', default=False, help="Enable SSL trigger")
@@ -559,9 +568,19 @@ if __name__ == '__main__':
         read_ltb_link_status()
 
     if args.any_trig_en:
-        set_any_trigger(1)
+        set_any_trigger(0xffffffff)
     if args.any_trig_dis:
         set_any_trigger(0)
+
+    if args.track_trig_en:
+        set_track_trigger(0xffffffff)
+    if args.track_trig_dis:
+        set_track_trigger(0)
+
+    if args.track_trig_prescale:
+        set_track_trigger(args.track_trig_prescale)
+    if args.any_prescale:
+        set_any_trigger(args.any_prescale)
 
     if args.ssl_top_bot_en:
         set_ssl_trig("TOP_BOT", 1)

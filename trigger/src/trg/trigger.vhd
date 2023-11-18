@@ -20,7 +20,8 @@ entity trigger is
 
     event_cnt_reset : in std_logic;
 
-    single_hit_en_i : in std_logic := '0';
+    any_hit_trigger_prescale : in std_logic_vector (31 downto 0);
+    track_trigger_prescale   : in std_logic_vector (31 downto 0);
 
     hit_thresh : in std_logic_vector (1 downto 0);
 
@@ -97,6 +98,7 @@ architecture behavioral of trigger is
 
   signal programmable_trigger : std_logic := '0';
   signal gaps_trigger         : std_logic := '0';
+  signal track_trigger        : std_logic := '0';
 
   --------------------------------------------------------------------------------
   -- Detector Mapping
@@ -136,6 +138,12 @@ architecture behavioral of trigger is
 
   signal or_inner_tof_beta : std_logic;
   signal or_outer_tof_beta : std_logic;
+
+  signal any_hit_trigger_en    : std_logic;
+  signal any_hit_trigger_urand : std_logic_vector (31 downto 0) := (others => '0');
+
+  signal track_trigger_en    : std_logic;
+  signal track_trigger_urand : std_logic_vector (31 downto 0) := (others => '0');
 
   signal trig_sources        : std_logic_vector(15 downto 0);
   signal pedestal_trig       : std_logic;
@@ -223,7 +231,7 @@ begin
   -- Turn the level triggers into on/off bits
   --------------------------------------------------------------------------------
 
-  single_hit_trg_gen : for I in 0 to hits_i'length-1 generate
+  any_hit_trigger_trg_gen : for I in 0 to hits_i'length-1 generate
   begin
     process (clk) is
     begin
@@ -268,6 +276,8 @@ begin
                   inner_tof_over_thresh and
                   outer_tof_over_thresh and
                   total_tof_over_thresh;
+
+  track_trigger <= '1' when (inner_tof_cnts >= 1 and outer_tof_cnts >= 1) else '0';
 
   --------------------------------------------------------------------------------
   -- Counters
@@ -578,12 +588,78 @@ begin
   end process;
 
   --------------------------------------------------------------------------------
+  -- Trigger Source Prescalers
+  --------------------------------------------------------------------------------
+  --
+  -- Ideal situation would be:
+  --
+  -- - We start a run, in which three triggers are enable: Normal TOF, poisson,
+  --   inner+outer
+  --
+  -- - The triggers run simultaneously and the MTB has to identify and tag which
+  --   trigger caused it to fire.
+  --
+  -- - The normal TOF trigger is not prescaled, we will read do trace
+  --   suppression (hopefully in firmware) and the rate will be something like
+  --   350-500Hz
+  --
+  -- - The poisson trigger is set to some low rate, we will read out all RBs and
+  --   the rate will be something like 0.1 Hz.
+  --
+  -- - The inner+outer trigger is prescaled by a factor of 1000 (can be
+  --   programmable); we can do trace suppression (or not); this rate should be
+  --   around 1-5 Hz or so.
+  --
+  -- - We keep the "any" trigger in our back pocket with the option of running
+  --   it in parallel as well.
+  --
+  --------------------------------------------------------------------------------
+
+  urand_inf_single_hit : entity work.urand_inf
+    generic map (SEED => 0)
+    port map (
+      clk   => clk,
+      rst_n => not reset,
+      u     => any_hit_trigger_urand
+      );
+
+  urand_inf_track_trig : entity work.urand_inf
+    generic map (SEED => 2)
+    port map (
+      clk   => clk,
+      rst_n => not reset,
+      u     => track_trigger_urand
+      );
+
+  process (clk) is
+  begin
+    if (rising_edge(clk)) then
+
+      if (any_hit_trigger_prescale /= x"00000000" and
+        any_hit_trigger_prescale > any_hit_trigger_urand) then
+        any_hit_trigger_en <= '1';
+      else
+        any_hit_trigger_en <= '0';
+      end if;
+
+      if (track_trigger_prescale /= x"00000000" and
+          track_trigger_prescale > track_trigger_urand) then
+        track_trigger_en <= '1';
+      else
+        track_trigger_en <= '0';
+      end if;
+
+    end if;
+  end process;
+
+  --------------------------------------------------------------------------------
   -- Trigger Source OR
   --------------------------------------------------------------------------------
 
-  trig_sources <= "00000000"
+  trig_sources <= "0000000"
+                  & (track_trigger and track_trigger_en)
                   & force_trigger_i
-                  & (or_reduce(hit_bitmap) and single_hit_en_i)
+                  & (or_reduce(hit_bitmap) and any_hit_trigger_en)
                   & (gaps_trigger_en and gaps_trigger)
                   & (ssl_trig_top_bot_en and ssl_trig_top_bot)
                   & (ssl_trig_topedge_bot_en and ssl_trig_topedge_bot)

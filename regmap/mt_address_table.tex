@@ -62,7 +62,6 @@
     FORCE\_TRIGGER & \texttt{0x8} & \texttt{[0:0]} & w & Pulse & Write 1 to generate a trigger \\\hline
     TRIG\_GEN\_RATE & \texttt{0x9} & \texttt{[31:0]} & rw & \texttt{0x0} & Rate of generated triggers f\_trig = (1/clk\_period) * rate/0xffffffff \\\hline
     RESYNC & \texttt{0xa} & \texttt{[0:0]} & w & Pulse & Write 1 to resync \\\hline
-    ANY\_TRIG\_EN & \texttt{0xb} & \texttt{[2:2]} & rw & \texttt{0x0} & 1 to enable the ANY trigger \\\hline
     EVENT\_CNT\_RESET & \texttt{0xc} & \texttt{[0:0]} & w & Pulse & Write 1 to reset the event counter \\\hline
     EVENT\_CNT & \texttt{0xd} & \texttt{[31:0]} & r & \texttt{} & Event Counter \\\hline
     TIU\_EMULATION\_MODE & \texttt{0xe} & \texttt{[0:0]} & rw & \texttt{0x0} & 1 to emulate the TIU \\\hline
@@ -193,6 +192,8 @@
     \nopagebreak
     ETH\_RX\_BAD\_FRAME\_CNT & \texttt{0x3d} & \texttt{[15:0]} & r & \texttt{} & Ethernet MAC bad frame error \\\hline
     ETH\_RX\_BAD\_FCS\_CNT & \texttt{0x3d} & \texttt{[31:16]} & r & \texttt{} & Ethernet MAC bad fcs \\\hline
+    ANY\_TRIG\_PRESCALE & \texttt{0x40} & \texttt{[31:0]} & rw & \texttt{0xFFFFFFFF} & Prescale value for the ANY trigger. 0 == 0\%, 2**32-1 == 100\% \\\hline
+    TRACK\_TRIGGER\_PRESCALE & \texttt{0x41} & \texttt{[31:0]} & rw & \texttt{0xFFFFFFFF} & Prescale value for the Inner + Outer Track Trigger. 0 == 0\%, 2**32-1 == 100\% \\\hline
     \end{tabularx}
     \vspace{5mm}
 
