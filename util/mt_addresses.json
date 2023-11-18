@@ -65,6 +65,18 @@
         "mask": 1,
         "description": "Write 1 to resync"
     },
+    "MT.ANY_TRIG_IS_GLOBAL": {
+        "adr": 11,
+        "permission": "rw",
+        "mask": 1,
+        "description": "1 makes the ANY trigger read all paddles."
+    },
+    "MT.TRACK_TRIG_IS_GLOBAL": {
+        "adr": 11,
+        "permission": "rw",
+        "mask": 2,
+        "description": "1 makes the TRACK trigger read all paddles."
+    },
     "MT.EVENT_CNT_RESET": {
         "adr": 12,
         "permission": "w",

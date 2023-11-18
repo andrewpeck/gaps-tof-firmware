@@ -20,6 +20,9 @@ entity trigger is
 
     event_cnt_reset : in std_logic;
 
+    any_hit_trigger_is_global : in std_logic;
+    track_trigger_is_global   : in std_logic;
+
     any_hit_trigger_prescale : in std_logic_vector (31 downto 0);
     track_trigger_prescale   : in std_logic_vector (31 downto 0);
 
@@ -99,6 +102,7 @@ architecture behavioral of trigger is
   signal programmable_trigger : std_logic := '0';
   signal gaps_trigger         : std_logic := '0';
   signal track_trigger        : std_logic := '0';
+  signal any_trigger          : std_logic := '0';
 
   --------------------------------------------------------------------------------
   -- Detector Mapping
@@ -271,13 +275,16 @@ begin
   outer_tof_over_thresh <= '1' when (outer_tof_cnts >= to_integer(unsigned(outer_tof_thresh))) else '0';
   total_tof_over_thresh <= '1' when (total_tof_cnts >= to_integer(unsigned(total_tof_thresh))) else '0';
 
-  gaps_trigger <= (not require_beta or or_inner_tof_beta) and
+  gaps_trigger <= gaps_trigger_en and
+                  (not require_beta or or_inner_tof_beta) and
                   (not require_beta or or_outer_tof_beta) and
                   inner_tof_over_thresh and
                   outer_tof_over_thresh and
                   total_tof_over_thresh;
 
-  track_trigger <= '1' when (inner_tof_cnts >= 1 and outer_tof_cnts >= 1) else '0';
+  track_trigger <= '1' when (track_trigger_en = '1' and inner_tof_cnts >= 1 and outer_tof_cnts >= 1) else '0';
+
+  any_trigger <= (or_reduce(hit_bitmap) and any_hit_trigger_en);
 
   --------------------------------------------------------------------------------
   -- Counters
@@ -655,12 +662,11 @@ begin
   --------------------------------------------------------------------------------
   -- Trigger Source OR
   --------------------------------------------------------------------------------
-
   trig_sources <= "0000000"
-                  & (track_trigger and track_trigger_en)
+                  & track_trigger
                   & force_trigger_i
-                  & (or_reduce(hit_bitmap) and any_hit_trigger_en)
-                  & (gaps_trigger_en and gaps_trigger)
+                  & any_trigger
+                  & gaps_trigger
                   & (ssl_trig_top_bot_en and ssl_trig_top_bot)
                   & (ssl_trig_topedge_bot_en and ssl_trig_topedge_bot)
                   & (ssl_trig_top_botedge_en and ssl_trig_top_botedge)
@@ -671,7 +677,10 @@ begin
   begin
     if (rising_edge(clk)) then
 
-      pedestal_trig <= force_trigger_i or read_all_channels;
+      pedestal_trig <= force_trigger_i or
+                       (any_trigger and any_hit_trigger_is_global) or
+                       (track_trigger and track_trigger_is_global) or
+                       read_all_channels;
 
       pre_trigger <= not busy_i
                      and not dead

@@ -39,6 +39,10 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |RESYNC | ~0xa~ | ~0x28~ | ~0~ | w | Pulse | Write 1 to resync | 
 |------------+---+---+---------+-----+-----+----------------------------|
+|ANY_TRIG_IS_GLOBAL | ~0xb~ | ~0x2c~ | ~0~ | rw | ~0x0~ | 1 makes the ANY trigger read all paddles. | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|TRACK_TRIG_IS_GLOBAL | ~0xb~ | ~0x2c~ | ~1~ | rw | ~0x0~ | 1 makes the TRACK trigger read all paddles. | 
+|------------+---+---+---------+-----+-----+----------------------------|
 |EVENT_CNT_RESET | ~0xc~ | ~0x30~ | ~0~ | w | Pulse | Write 1 to reset the event counter | 
 |------------+---+---+---------+-----+-----+----------------------------|
 |EVENT_CNT | ~0xd~ | ~0x34~ | ~[31:0]~ | r |  | Event Counter | 

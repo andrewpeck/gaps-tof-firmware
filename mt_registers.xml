@@ -67,6 +67,22 @@
           description="Write 1 to resync"
           fw_write_pulse_signal="rb_resync"/>
 
+    <node id="ANY_TRIG_IS_GLOBAL"
+          address="0xb"
+          permission="rw"
+          fw_default="0x0"
+          mask="0x1"
+          description="1 makes the ANY trigger read all paddles."
+          fw_signal="any_hit_trigger_is_global"/>
+
+    <node id="TRACK_TRIG_IS_GLOBAL"
+          address="0xb"
+          permission="rw"
+          fw_default="0x0"
+          mask="0x2"
+          description="1 makes the TRACK trigger read all paddles."
+          fw_signal="track_trigger_is_global"/>
+
     <node id="EVENT_CNT_RESET"
           address="0xc"
           permission="w"

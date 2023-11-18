@@ -62,6 +62,8 @@
     FORCE\_TRIGGER & \texttt{0x8} & \texttt{[0:0]} & w & Pulse & Write 1 to generate a trigger \\\hline
     TRIG\_GEN\_RATE & \texttt{0x9} & \texttt{[31:0]} & rw & \texttt{0x0} & Rate of generated triggers f\_trig = (1/clk\_period) * rate/0xffffffff \\\hline
     RESYNC & \texttt{0xa} & \texttt{[0:0]} & w & Pulse & Write 1 to resync \\\hline
+    ANY\_TRIG\_IS\_GLOBAL & \texttt{0xb} & \texttt{[0:0]} & rw & \texttt{0x0} & 1 makes the ANY trigger read all paddles. \\\hline
+    TRACK\_TRIG\_IS\_GLOBAL & \texttt{0xb} & \texttt{[1:1]} & rw & \texttt{0x0} & 1 makes the TRACK trigger read all paddles. \\\hline
     EVENT\_CNT\_RESET & \texttt{0xc} & \texttt{[0:0]} & w & Pulse & Write 1 to reset the event counter \\\hline
     EVENT\_CNT & \texttt{0xd} & \texttt{[31:0]} & r & \texttt{} & Event Counter \\\hline
     TIU\_EMULATION\_MODE & \texttt{0xe} & \texttt{[0:0]} & rw & \texttt{0x0} & 1 to emulate the TIU \\\hline
