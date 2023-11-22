@@ -82,9 +82,9 @@ architecture behavioral of trigger is
   -- t4: + global_trigger + event counter output
 
   -- constant should be # of clocks from hits_i to pretrigger
-  constant TRIG_LATENCY : integer := 3;
+  constant TRIG_LATENCY : integer := 4;
   type hits_dlyline_t is array (integer range <>) of threshold_array_t;
-  signal hits_dly       : hits_dlyline_t (TRIG_LATENCY-1 downto 0);
+  signal hits_dly       : hits_dlyline_t (TRIG_LATENCY-3 downto 0) := (others => (others => (others => '0')));
 
   constant HIT_BITMAP_LATENCY : integer := TRIG_LATENCY-1;
   type hit_bitmap_dlyline_t is array (integer range <>) of channel_bitmask_t;
@@ -750,8 +750,6 @@ begin
 
   pre_trigger_o <= pre_trigger;
 
-  hits_o      <= hits_dly(hits_dly'high);
-  hits_dly(0) <= hits_i;
 
   hit_bitmap_dly(0) <= hit_bitmap;
 
@@ -760,12 +758,14 @@ begin
     if (rising_edge(clk)) then
 
       -- this should be delayed to align with the trigger
+      hits_dly(0) <= hits_i;
+      hits_o      <= hits_dly(hits_dly'length-1);
       for I in 1 to hits_dly'length-1 loop
-        hits_dly(I) <= hits_dly(I-1) after 0.5 ns;
+        hits_dly(I) <= hits_dly(I-1);
       end loop;
 
       for I in 1 to hit_bitmap_dly'length-1 loop
-        hit_bitmap_dly(I) <= hit_bitmap_dly(I-1) after 0.5 ns;
+        hit_bitmap_dly(I) <= hit_bitmap_dly(I-1);
       end loop;
 
       lost_trigger_o   <= busy_i and pre_trigger;
