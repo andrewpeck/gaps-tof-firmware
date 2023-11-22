@@ -539,13 +539,13 @@ begin
   -- Programmable Trigger
   --------------------------------------------------------------------------------
 
-  process (clk) is
-  begin
-    if (rising_edge(clk)) then
-      programmable_trigger <= or_reduce(hit_bitmap(31 downto 0) and trig_mask_a) and
-                              or_reduce(hit_bitmap(31 downto 0) and trig_mask_b);
-    end if;
-  end process;
+  -- process (clk) is
+  -- begin
+  --   if (rising_edge(clk)) then
+  --     programmable_trigger <= or_reduce(hit_bitmap(31 downto 0) and trig_mask_a) and
+  --                             or_reduce(hit_bitmap(31 downto 0) and trig_mask_b);
+  --   end if;
+  -- end process;
 
   --------------------------------------------------------------------------------
   -- SSL triggers
@@ -556,40 +556,6 @@ begin
     if (rising_edge(clk)) then
 
       --START: autoinsert triggers
-
-      ssl_trig_top_bot <=
-        ((or_reduce(x"3F" and get_hits_from_slot(hit_bitmap, 2, 1)) or
-          or_reduce(x"FC" and get_hits_from_slot(hit_bitmap, 3, 2)))
-         and
-         (or_reduce(x"3F" and get_hits_from_slot(hit_bitmap, 2, 3)) or
-          or_reduce(x"FC" and get_hits_from_slot(hit_bitmap, 2, 4))));
-
-      ssl_trig_topedge_bot <=
-        ((or_reduce(x"C0" and get_hits_from_slot(hit_bitmap, 2, 1)) or
-          or_reduce(x"30" and get_hits_from_slot(hit_bitmap, 2, 2)) or
-          or_reduce(x"3C" and get_hits_from_slot(hit_bitmap, 3, 5)) or
-          or_reduce(x"03" and get_hits_from_slot(hit_bitmap, 3, 2)) or
-          or_reduce(x"0C" and get_hits_from_slot(hit_bitmap, 3, 1)) or
-          or_reduce(x"3C" and get_hits_from_slot(hit_bitmap, 3, 3)))
-         and
-         (or_reduce(x"3F" and get_hits_from_slot(hit_bitmap, 2, 3)) or
-          or_reduce(x"FC" and get_hits_from_slot(hit_bitmap, 2, 4))));
-
-      ssl_trig_top_botedge <=
-        ((or_reduce(x"3F" and get_hits_from_slot(hit_bitmap, 2, 1)) or
-          or_reduce(x"FC" and get_hits_from_slot(hit_bitmap, 3, 2)))
-         and
-         (or_reduce(x"0F" and get_hits_from_slot(hit_bitmap, 2, 2)) or
-          or_reduce(x"C3" and get_hits_from_slot(hit_bitmap, 3, 5)) or
-          or_reduce(x"F0" and get_hits_from_slot(hit_bitmap, 3, 1)) or
-          or_reduce(x"C3" and get_hits_from_slot(hit_bitmap, 3, 3))));
-
-      ssl_trig_topmid_botmid <=
-        ((or_reduce(x"03" and get_hits_from_slot(hit_bitmap, 2, 1)) or
-          or_reduce(x"C0" and get_hits_from_slot(hit_bitmap, 3, 2)))
-         and
-         (or_reduce(x"30" and get_hits_from_slot(hit_bitmap, 2, 3)) or
-          or_reduce(x"0C" and get_hits_from_slot(hit_bitmap, 2, 4))));
 
       --END: autoinsert triggers
 
@@ -670,10 +636,10 @@ begin
                   & force_trigger_i
                   & any_trigger
                   & gaps_trigger
-                  & (ssl_trig_top_bot_en and ssl_trig_top_bot)
-                  & (ssl_trig_topedge_bot_en and ssl_trig_topedge_bot)
-                  & (ssl_trig_top_botedge_en and ssl_trig_top_botedge)
-                  & (ssl_trig_topmid_botmid_en and ssl_trig_topmid_botmid)
+                  & '0'
+                  & '0'
+                  & '0'
+                  & '0'
                   & programmable_trigger;
 
   process (clk) is
