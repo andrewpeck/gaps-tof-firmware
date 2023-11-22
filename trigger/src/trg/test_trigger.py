@@ -47,6 +47,26 @@ async def gaps_trigger_test_gaps_local(dut):
     await gaps_trigger_test(dut, trig="gaps", is_global=0)
 
 
+@cocotb.test()
+async def track_trigger_test_track_global(dut):
+    await gaps_trigger_test(dut, trig="track", is_global=1)
+
+
+@cocotb.test()
+async def track_trigger_test_track_local(dut):
+    await gaps_trigger_test(dut, trig="track", is_global=0)
+
+
+@cocotb.test()
+async def combine_trigger_test_combine_global(dut):
+    await gaps_trigger_test(dut, trig="combine", is_global=1)
+
+
+@cocotb.test()
+async def combine_trigger_test_combine_local(dut):
+    await gaps_trigger_test(dut, trig="combine", is_global=0)
+
+
 async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30):
 
     """Test GAPS trigger"""
@@ -61,17 +81,17 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
     dut.any_hit_trigger_is_global.value = is_global
     dut.read_all_channels.value = is_global
 
-    if trig == "any":
+    if trig == "any" or trig == "combine":
         dut.any_hit_trigger_prescale.value = 2**32 - 1
     else:
         dut.any_hit_trigger_prescale.value = 0
 
-    if trig == "track":
+    if trig == "track" or trig == "combine":
         dut.track_trigger_prescale.value = 2**32-1
     else:
         dut.track_trigger_prescale.value = 0
 
-    if trig == "gaps":
+    if trig == "gaps" or trig == "combine":
         dut.gaps_trigger_en.value = 1
     else:
         dut.gaps_trigger_en.value = 0
@@ -137,8 +157,11 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
 
                 assert int(dut.event_cnt_o.value) == evt + 1
 
-                trig_source = {"any": 6, "gaps": 5}[trig]
-                assert int(dut.trig_sources_o.value) == 1 << trig_source
+                trig_source = {"any": 1 << 6,
+                               "gaps": 1 << 5,
+                               "track": 1 << 8,
+                               "combine": 1 << 8 | 1 << 5 | 1 << 6}[trig]
+                assert int(dut.trig_sources_o.value) == trig_source
 
                 assert int(dut.hits_o_0.value) == 2
 

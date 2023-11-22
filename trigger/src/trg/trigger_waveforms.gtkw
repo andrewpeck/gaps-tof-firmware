@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.115 (w)1999-2023 BSI
-[*] Wed Nov 22 03:56:30 2023
+[*] Wed Nov 22 04:04:19 2023
 [*]
 [dumpfile] "/home/apeck/work/drs-firmware-trig-map/trigger/src/trg/sim_build/trigger_top.ghw"
-[dumpfile_mtime] "Wed Nov 22 03:56:04 2023"
-[dumpfile_size] 745010
+[dumpfile_mtime] "Wed Nov 22 04:03:51 2023"
+[dumpfile_size] 1926926
 [savefile] "/home/apeck/work/drs-firmware-trig-map/trigger/src/trg/trigger_waveforms.gtkw"
-[timestart] 1024000000
+[timestart] 25231000000
 [size] 3840 2057
 [pos] -1 -1
-*-25.403021 1256700000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-26.228762 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] top.
 [treeopen] top.trigger_top.
 [treeopen] top.trigger_top.trigger_2.
@@ -25,10 +25,12 @@ top.trigger_top.trigger_2.or_outer_tof_beta
 top.trigger_top.trigger_2.or_inner_tof_beta
 top.trigger_top.trigger_2.require_beta
 top.trigger_top.trigger_2.pre_trigger
+top.trigger_top.trigger_2.any_trigger
 @29
+top.trigger_top.trigger_2.track_trigger
+@28
 top.trigger_top.trigger_2.gaps_trigger
 top.trigger_top.trigger_2.gaps_trigger_en
-@28
 top.trigger_top.trigger_2.dead
 top.trigger_top.clk
 top.trigger_top.global_trigger_o
