@@ -62,7 +62,7 @@ entity trigger is
     global_trigger_o : out std_logic := '0';
     lost_trigger_o   : out std_logic;
     rb_trigger_o     : out std_logic;
-    rb_ch_bitmap_o   : out std_logic_vector (NUM_RBS*8-1 downto 0);
+    rb_ch_bitmap_o   : out std_logic_vector (NUM_RBS*8-1 downto 0) := (others => '0');
     event_cnt_o      : out std_logic_vector (31 downto 0)
     );
 end trigger;
@@ -86,7 +86,7 @@ architecture behavioral of trigger is
   type hits_dlyline_t is array (integer range <>) of threshold_array_t;
   signal hits_dly       : hits_dlyline_t (TRIG_LATENCY-3 downto 0) := (others => (others => (others => '0')));
 
-  constant HIT_BITMAP_LATENCY : integer := TRIG_LATENCY-1;
+  constant HIT_BITMAP_LATENCY : integer := TRIG_LATENCY-3;
   type hit_bitmap_dlyline_t is array (integer range <>) of channel_bitmask_t;
   signal hit_bitmap_dly       : hit_bitmap_dlyline_t (HIT_BITMAP_LATENCY-1 downto 0);
 
@@ -152,7 +152,8 @@ architecture behavioral of trigger is
   signal trig_sources        : std_logic_vector(15 downto 0) := (others => '0');
   signal trig_sources_reg    : std_logic_vector(15 downto 0) := (others => '0');
   signal pedestal_trig       : std_logic;
-  signal pedestal_trig_latch : std_logic;
+  signal pedestal_trig_latch : std_logic := '0';
+  signal rb_trigger          : std_logic := '0';
 
   signal cube_cnts        : integer range 0 to N_CUBE;
   signal cube_bot_cnts    : integer range 0 to N_CUBE_BOT;
@@ -663,6 +664,7 @@ begin
   --------------------------------------------------------------------------------
   -- Trigger Source OR
   --------------------------------------------------------------------------------
+
   trig_sources <= "0000000"
                   & track_trigger
                   & force_trigger_i
@@ -725,8 +727,8 @@ begin
     port map (
       clk    => clk,
       trg_i  => pre_trigger,
-      trg_o  => rb_trigger_o,
-      d      => rb_ch_bitmap,
+      trg_o  => rb_trigger,
+      d      => rb_ch_bitmap, -- align to pretrigger
       q      => rb_ch_integrated,
       window => to_integer(unsigned(rb_window_i))
       );
@@ -734,7 +736,8 @@ begin
   process (clk) is
   begin
     if (rising_edge(clk)) then
-      if (rb_trigger_o = '1') then
+      rb_trigger_o <= rb_trigger;
+      if (rb_trigger = '1') then
         if (pedestal_trig_latch = '1') then
           rb_ch_bitmap_o <= (others => '1');
         else
@@ -751,7 +754,6 @@ begin
   pre_trigger_o <= pre_trigger;
 
 
-  hit_bitmap_dly(0) <= hit_bitmap;
 
   process (clk) is
   begin
@@ -764,6 +766,7 @@ begin
         hits_dly(I) <= hits_dly(I-1);
       end loop;
 
+      hit_bitmap_dly(0) <= hit_bitmap;
       for I in 1 to hit_bitmap_dly'length-1 loop
         hit_bitmap_dly(I) <= hit_bitmap_dly(I-1);
       end loop;
