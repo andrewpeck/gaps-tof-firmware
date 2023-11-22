@@ -160,7 +160,7 @@ architecture behavioral of trigger is
   signal cortina_cnts     : integer range 0 to N_CORTINA;
   signal inner_tof_cnts   : integer range 0 to N_INNER_TOF;
   signal outer_tof_cnts   : integer range 0 to N_OUTER_TOF;
-  signal total_tof_cnts   : integer range 0 to N_OUTER_TOF;
+  signal total_tof_cnts   : integer range 0 to N_OUTER_TOF + N_INNER_TOF;
 
   signal inner_tof_over_thresh : std_logic := '0';
   signal outer_tof_over_thresh : std_logic := '0';
