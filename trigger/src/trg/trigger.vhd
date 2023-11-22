@@ -57,9 +57,9 @@ entity trigger is
 
     force_trigger_i : in std_logic;
 
-    trig_sources_o   : out std_logic_vector(15 downto 0);
+    trig_sources_o   : out std_logic_vector(15 downto 0) := (others => '0');
     pre_trigger_o    : out std_logic;
-    global_trigger_o : out std_logic;
+    global_trigger_o : out std_logic := '0';
     lost_trigger_o   : out std_logic;
     rb_trigger_o     : out std_logic;
     rb_ch_bitmap_o   : out std_logic_vector (NUM_RBS*8-1 downto 0);
