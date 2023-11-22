@@ -4,8 +4,8 @@ import random
 
 import cocotb
 from cocotb_test.simulator import run
-from cocotb.clock import Clock
-from cocotb.triggers import RisingEdge
+from cocotb.clock import Clock, Timer
+from cocotb.triggers import RisingEdge, FallingEdge
 
 # monitor that the trigger signal is always asserted when the event counter increments
 
@@ -22,57 +22,141 @@ async def monitor_trig_width(dut):
         await RisingEdge(dut.clk)
 
 
+def set_hits(dut, value):
+    for i, val in enumerate(value):
+        getattr(dut, f"hits_i_{i}").value = val
+
+
 @cocotb.test()
-async def gaps_trigger_test(dut):
+async def gaps_trigger_test_any_global(dut):
+    await gaps_trigger_test(dut, trig="any", is_global=1)
+
+
+@cocotb.test()
+async def gaps_trigger_test_any_local(dut):
+    await gaps_trigger_test(dut, trig="any", is_global=0)
+
+
+@cocotb.test()
+async def gaps_trigger_test_gaps_global(dut):
+    await gaps_trigger_test(dut, trig="gaps", is_global=1)
+
+
+@cocotb.test()
+async def gaps_trigger_test_gaps_local(dut):
+    await gaps_trigger_test(dut, trig="gaps", is_global=0)
+
+
+async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30):
 
     """Test GAPS trigger"""
 
     cocotb.start_soon(Clock(dut.clk, 10, units="ns").start())  # Create a clock
 
-    cocotb.start_soon(monitor_trig_width(dut))
+    # cocotb.start_soon(monitor_trig_width(dut))
 
-    dut.hits_i[0].value = 1
-    dut.reset.value = 1
     dut.event_cnt_reset.value = 1
-    dut.any_hit_trigger_en_i.value = 1
+
+    dut.track_trigger_is_global.value = 0
+
+    dut.any_hit_trigger_prescale.value = 2**32 - 2
+    dut.track_trigger_prescale.value = 0
+
+    dut.hit_thresh.value = 0
     dut.trig_mask_a.value = 0
     dut.trig_mask_b.value = 0
-    dut.all_triggers_are_global.value = 0
+    dut.read_all_channels.value = 0
+
+    dut.ssl_trig_top_bot_en.value = 0
+    dut.ssl_trig_topedge_bot_en.value = 0
+    dut.ssl_trig_top_botedge_en.value = 0
+    dut.ssl_trig_topmid_botmid_en.value = 0
+
+    dut.gaps_trigger_en.value = 0
+    dut.require_beta.value = 0
+    dut.event_cnt_reset.value = 0
+    dut.inner_tof_thresh.value = 1
+    dut.outer_tof_thresh.value = 1
+    dut.total_tof_thresh.value = 1
+
+    dut.busy_i.value = 0
+    dut.rb_busy_i.value = 0
+    dut.rb_window_i.value = rb_window
+
+    dut.force_trigger_i.value = 0
+
+    dut.trig_mask_a.value = 0
+    dut.trig_mask_b.value = 0
     dut.busy_i.value = 0
     dut.rb_busy_i.value = 0
     dut.force_trigger_i.value = 0
 
+    set_hits(dut, 200*[0])
+
     # flush the buffers
-    for _ in range(4):
-        await RisingEdge(dut.clk)
-
+    dut.reset.value = 1
+    await RisingEdge(dut.clk)
     dut.reset.value = 0
-    dut.event_cnt_reset.value = 0
-
-    for _ in range(10):
+    for _ in range(128):
         await RisingEdge(dut.clk)
 
-    n_hits = 10
+    dut.event_cnt_reset = 1
+    await RisingEdge(dut.clk)
+    dut.event_cnt_reset = 0
+
+    dut.any_hit_trigger_is_global.value = is_global
 
     # event loop
-    for _ in range(1000):
-        data = 200 * [0]
-        for _ in range(n_hits):
-            threshold = random.randint(0, 2)
-            paddle = random.randint(0, 199)
-            data[paddle] = threshold
-            dut.hits_i.value = data
+    for evt in range(10):
 
-            if dut.global_trigger_o.value == 1:
-                print(int(dut.event_cnt_o.value))
+        data = 200 * [0]
+
+        # for _ in range(n_hits):
+        #     threshold = random.randint(0, 2)
+        #     paddle = random.randint(0, 199)
+        #     data[paddle] = threshold
+        data = 200 * [2]
+
+        set_hits(dut, data)
+        await RisingEdge(dut.clk)
+        set_hits(dut, 200 * [0])
+
+        for _ in range(10):
+            if (dut.global_trigger_o.value == 1):
+                print(f" event id = {int(dut.event_cnt_o.value)}")
+
+                assert int(dut.event_cnt_o.value) == evt + 1
+                assert int(dut.trig_sources_o.value) == 1 << 6
+                assert int(dut.hits_o_0.value) == 2
+                if (is_global):
+                    assert int(dut.trigger_2.pedestal_trig_latch.value) == 1
+                else:
+                    assert int(dut.trigger_2.pedestal_trig_latch.value) == 0
+                break
 
             await RisingEdge(dut.clk)
+
+        # n cycles to integrate the ltb channels
+        for _ in range(rb_window):
+            await RisingEdge(dut.clk)
+
+        # 1 cycle to copy the outputs
+        await RisingEdge(dut.clk)
+
+        assert dut.rb_trigger_o.value == 1
+        if is_global:
+            assert int(dut.rb_ch_bitmap_o.value) == \
+                0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        else:
+            assert int(dut.rb_ch_bitmap_o.value) == \
+                0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+
+        await FallingEdge(dut.trigger_2.dead)
 
 
 def test_trigger():
 
     tests_dir = os.path.abspath(os.path.dirname(__file__))
-    rtl_dir = os.path.abspath(os.path.join(tests_dir, "..", "hdl"))
     module = os.path.splitext(os.path.basename(__file__))[0]
 
     vhdl_sources = [
@@ -86,6 +170,7 @@ def test_trigger():
         os.path.join(tests_dir, f"rb_map.vhd"),
         os.path.join(tests_dir, f"integrator.vhd"),
         os.path.join(tests_dir, f"trigger.vhd"),
+        os.path.join(tests_dir, f"trigger_top.vhd"),
     ]
 
     os.environ["SIM"] = "ghdl"
@@ -93,11 +178,13 @@ def test_trigger():
     run(
         vhdl_sources=vhdl_sources,
         module=module,
-        toplevel="trigger",
+        toplevel="trigger_top",
         parameters={"DEBUG": False},
-        compile_args=["--std=08", "-fsynopsys"],
+        compile_args=["--std=08"],
+        simulation_args=["--ieee-asserts=disable"],
         toplevel_lang="vhdl",
         gui=0,
+        waves=1,
     )
 
 

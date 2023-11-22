@@ -7,8 +7,7 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.std_logic_arith.all;
-use ieee.std_logic_unsigned.all;
+use ieee.std_logic_misc.all;
 use ieee.numeric_std.all;
 
 entity urand_inf is
@@ -26,12 +25,12 @@ end urand_inf;
 
 architecture arch of urand_inf is
 
-  constant k1 : std_logic_vector(31 downto 0) := X"0019660d";
-  constant k2 : std_logic_vector(31 downto 0) := X"3c6ef35f";
+  constant k1 : unsigned(31 downto 0) := X"0019660d";
+  constant k2 : unsigned(31 downto 0) := X"3c6ef35f";
 
-  signal tu   : std_logic_vector(31 downto 0) := std_logic_vector(to_unsigned(SEED, 32));
-  signal p    : std_logic_vector(63 downto 0) := std_logic_vector(to_unsigned(SEED, 64));
-  signal mmux : std_logic_vector(31 downto 0) := std_logic_vector(to_unsigned(SEED, 32));
+  signal tu   : unsigned(31 downto 0) := to_unsigned(SEED, 32);
+  signal p    : unsigned(63 downto 0) := to_unsigned(SEED, 64);
+  signal mmux : unsigned(31 downto 0) := to_unsigned(SEED, 32);
 
   signal r_seed : std_logic := '1';
 
@@ -58,8 +57,8 @@ begin  -- arch
   end process;
 
   mmux <= p(31 downto 0) when r_seed = '0'
-          else std_logic_vector(to_unsigned(SEED, 32));
+          else unsigned(to_unsigned(SEED, 32));
 
-  u <= tu;
+  u <= std_logic_vector(tu);
 
 end arch;
