@@ -149,7 +149,8 @@ architecture behavioral of trigger is
   signal track_trigger_en    : std_logic;
   signal track_trigger_urand : std_logic_vector (31 downto 0) := (others => '0');
 
-  signal trig_sources        : std_logic_vector(15 downto 0);
+  signal trig_sources        : std_logic_vector(15 downto 0) := (others => '0');
+  signal trig_sources_reg    : std_logic_vector(15 downto 0) := (others => '0');
   signal pedestal_trig       : std_logic;
   signal pedestal_trig_latch : std_logic;
 
@@ -677,6 +678,8 @@ begin
   begin
     if (rising_edge(clk)) then
 
+      trig_sources_reg <= trig_sources;
+
       pedestal_trig <= force_trigger_i or
                        (any_trigger and any_hit_trigger_is_global) or
                        (track_trigger and track_trigger_is_global) or
@@ -768,7 +771,7 @@ begin
       global_trigger_o <= pre_trigger;  -- delay by 1 clock to align with event count
 
       if (pre_trigger) then
-        trig_sources_o      <= trig_sources;
+        trig_sources_o      <= trig_sources_reg;
         pedestal_trig_latch <= pedestal_trig;
       end if;
 
