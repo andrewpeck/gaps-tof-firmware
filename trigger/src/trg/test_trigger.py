@@ -67,7 +67,12 @@ async def combine_trigger_test_combine_local(dut):
     await gaps_trigger_test(dut, trig="combine", is_global=0)
 
 
-async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30):
+@cocotb.test()
+async def single_trigger_test_single(dut):
+    await gaps_trigger_test(dut, trig="any", is_global=0, single=True)
+
+
+async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30, single=False):
 
     """Test GAPS trigger"""
 
@@ -81,13 +86,13 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
     dut.any_hit_trigger_is_global.value = is_global
     dut.read_all_channels.value = is_global
 
-    if trig == "any" or trig == "combine":
+    if trig == "any" or trig == "combine" or single:
         dut.any_hit_trigger_prescale.value = 2**32 - 1
     else:
         dut.any_hit_trigger_prescale.value = 0
 
     if trig == "track" or trig == "combine":
-        dut.track_trigger_prescale.value = 2**32-1
+        dut.track_trigger_prescale.value = 2**32 - 1
     else:
         dut.track_trigger_prescale.value = 0
 
@@ -139,13 +144,17 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
     # event loop
     for evt in range(10):
 
-        data = 200 * [0]
-
         # for _ in range(n_hits):
         #     threshold = random.randint(0, 2)
         #     paddle = random.randint(0, 199)
         #     data[paddle] = threshold
-        data = 200 * [2]
+
+        data = 200 * [0]
+        if single:
+            data = 200 * [0]
+            data[0] = 2
+        else:
+            data = 200 * [2]
 
         set_hits(dut, data)
         await RisingEdge(dut.clk)
@@ -161,6 +170,7 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
                                "gaps": 1 << 5,
                                "track": 1 << 8,
                                "combine": 1 << 8 | 1 << 5 | 1 << 6}[trig]
+
                 assert int(dut.trig_sources_o.value) == trig_source
 
                 assert int(dut.hits_o_0.value) == 2
@@ -184,6 +194,8 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
         if is_global:
             assert int(dut.rb_ch_bitmap_o.value) == \
                 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        elif single:
+            assert int(dut.rb_ch_bitmap_o.value) == 0b11
         else:
             assert int(dut.rb_ch_bitmap_o.value) == \
                 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
