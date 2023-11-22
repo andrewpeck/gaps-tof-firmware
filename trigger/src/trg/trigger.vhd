@@ -82,7 +82,7 @@ architecture behavioral of trigger is
   -- t4: + global_trigger + event counter output
 
   -- constant should be # of clocks from hits_i to pretrigger
-  constant TRIG_LATENCY : integer := 4;
+  constant TRIG_LATENCY : integer := 5;
   type hits_dlyline_t is array (integer range <>) of threshold_array_t;
   signal hits_dly       : hits_dlyline_t (TRIG_LATENCY-3 downto 0) := (others => (others => (others => '0')));
 
@@ -286,7 +286,12 @@ begin
 
   track_trigger <= '1' when (track_trigger_en = '1' and inner_tof_cnts >= 1 and outer_tof_cnts >= 1) else '0';
 
-  any_trigger <= (or_reduce(hit_bitmap) and any_hit_trigger_en);
+  process (clk) is
+  begin
+    if (rising_edge(clk)) then
+      any_trigger <= (or_reduce(hit_bitmap) and any_hit_trigger_en);
+    end if;
+  end process;
 
   --------------------------------------------------------------------------------
   -- Counters
@@ -743,6 +748,11 @@ begin
       if (pre_trigger) then
         trig_sources_o      <= trig_sources_reg;
         pedestal_trig_latch <= pedestal_trig;
+      end if;
+
+      if (reset) then
+        global_trigger_o <= '0';
+        lost_trigger_o   <= '0';
       end if;
 
     end if;

@@ -57,22 +57,34 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
 
     dut.event_cnt_reset.value = 1
 
-    dut.track_trigger_is_global.value = 0
+    dut.track_trigger_is_global.value = is_global
+    dut.any_hit_trigger_is_global.value = is_global
+    dut.read_all_channels.value = is_global
 
-    dut.any_hit_trigger_prescale.value = 2**32 - 2
-    dut.track_trigger_prescale.value = 0
+    if trig == "any":
+        dut.any_hit_trigger_prescale.value = 2**32 - 1
+    else:
+        dut.any_hit_trigger_prescale.value = 0
+
+    if trig == "track":
+        dut.track_trigger_prescale.value = 2**32-1
+    else:
+        dut.track_trigger_prescale.value = 0
+
+    if trig == "gaps":
+        dut.gaps_trigger_en.value = 1
+    else:
+        dut.gaps_trigger_en.value = 0
 
     dut.hit_thresh.value = 0
     dut.trig_mask_a.value = 0
     dut.trig_mask_b.value = 0
-    dut.read_all_channels.value = 0
 
     dut.ssl_trig_top_bot_en.value = 0
     dut.ssl_trig_topedge_bot_en.value = 0
     dut.ssl_trig_top_botedge_en.value = 0
     dut.ssl_trig_topmid_botmid_en.value = 0
 
-    dut.gaps_trigger_en.value = 0
     dut.require_beta.value = 0
     dut.event_cnt_reset.value = 0
     dut.inner_tof_thresh.value = 1
@@ -104,8 +116,6 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
     await RisingEdge(dut.clk)
     dut.event_cnt_reset = 0
 
-    dut.any_hit_trigger_is_global.value = is_global
-
     # event loop
     for evt in range(10):
 
@@ -126,8 +136,12 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
                 print(f" event id = {int(dut.event_cnt_o.value)}")
 
                 assert int(dut.event_cnt_o.value) == evt + 1
-                assert int(dut.trig_sources_o.value) == 1 << 6
+
+                trig_source = {"any": 6, "gaps": 5}[trig]
+                assert int(dut.trig_sources_o.value) == 1 << trig_source
+
                 assert int(dut.hits_o_0.value) == 2
+
                 if (is_global):
                     assert int(dut.trigger_2.pedestal_trig_latch.value) == 1
                 else:
