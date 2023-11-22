@@ -686,6 +686,7 @@ begin
                        read_all_channels;
 
       pre_trigger <= not busy_i
+                     and not pre_trigger
                      and not dead
                      and or_reduce(trig_sources);
     end if;
