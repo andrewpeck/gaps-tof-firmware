@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_MT_NUM_REGS : integer := 148;
+    constant REG_MT_NUM_REGS : integer := 145;
     constant REG_MT_ADDRESS_MSB : integer := 9;
     constant REG_MT_ADDRESS_LSB : integer := 0;
     constant REG_LOOPBACK_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
@@ -148,16 +148,6 @@ package registers is
     constant REG_HIT_THRESH_LSB     : integer := 28;
     constant REG_HIT_THRESH_DEFAULT : std_logic_vector(29 downto 28) := "00";
 
-    constant REG_TRIG_MASK_A_ADDR    : std_logic_vector(9 downto 0) := "00" & x"15";
-    constant REG_TRIG_MASK_A_MSB    : integer := 31;
-    constant REG_TRIG_MASK_A_LSB     : integer := 0;
-    constant REG_TRIG_MASK_A_DEFAULT : std_logic_vector(31 downto 0) := x"00000000";
-
-    constant REG_TRIG_MASK_B_ADDR    : std_logic_vector(9 downto 0) := "00" & x"16";
-    constant REG_TRIG_MASK_B_MSB    : integer := 31;
-    constant REG_TRIG_MASK_B_LSB     : integer := 0;
-    constant REG_TRIG_MASK_B_DEFAULT : std_logic_vector(31 downto 0) := x"00000000";
-
     constant REG_TRIGGER_RATE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"17";
     constant REG_TRIGGER_RATE_MSB    : integer := 23;
     constant REG_TRIGGER_RATE_LSB     : integer := 0;
@@ -165,22 +155,6 @@ package registers is
     constant REG_LOST_TRIGGER_RATE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"18";
     constant REG_LOST_TRIGGER_RATE_MSB    : integer := 23;
     constant REG_LOST_TRIGGER_RATE_LSB     : integer := 0;
-
-    constant REG_SSL_TRIG_TOP_BOT_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"19";
-    constant REG_SSL_TRIG_TOP_BOT_EN_BIT    : integer := 0;
-    constant REG_SSL_TRIG_TOP_BOT_EN_DEFAULT : std_logic := '0';
-
-    constant REG_SSL_TRIG_TOPEDGE_BOT_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"19";
-    constant REG_SSL_TRIG_TOPEDGE_BOT_EN_BIT    : integer := 1;
-    constant REG_SSL_TRIG_TOPEDGE_BOT_EN_DEFAULT : std_logic := '0';
-
-    constant REG_SSL_TRIG_TOP_BOTEDGE_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"19";
-    constant REG_SSL_TRIG_TOP_BOTEDGE_EN_BIT    : integer := 2;
-    constant REG_SSL_TRIG_TOP_BOTEDGE_EN_DEFAULT : std_logic := '0';
-
-    constant REG_SSL_TRIG_TOPMID_BOTMID_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"19";
-    constant REG_SSL_TRIG_TOPMID_BOTMID_EN_BIT    : integer := 3;
-    constant REG_SSL_TRIG_TOPMID_BOTMID_EN_DEFAULT : std_logic := '0';
 
     constant REG_LT_LINK_READY0_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1a";
     constant REG_LT_LINK_READY0_MSB    : integer := 9;

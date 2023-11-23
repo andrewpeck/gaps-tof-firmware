@@ -197,18 +197,6 @@
         "mask": 805306368,
         "description": "Threshold for the hit bitmap. Threshold must be > this number."
     },
-    "MT.TRIG_MASK_A": {
-        "adr": 21,
-        "permission": "rw",
-        "mask": 4294967295,
-        "description": "Bitmask for the A trigger"
-    },
-    "MT.TRIG_MASK_B": {
-        "adr": 22,
-        "permission": "rw",
-        "mask": 4294967295,
-        "description": "Bitmask for the B trigger"
-    },
     "MT.TRIGGER_RATE": {
         "adr": 23,
         "permission": "r",
@@ -220,30 +208,6 @@
         "permission": "r",
         "mask": 16777215,
         "description": "Rate of lost triggers in Hz"
-    },
-    "MT.SSL_TRIG_TOP_BOT_EN": {
-        "adr": 25,
-        "permission": "rw",
-        "mask": 1,
-        "description": "1 to enable"
-    },
-    "MT.SSL_TRIG_TOPEDGE_BOT_EN": {
-        "adr": 25,
-        "permission": "rw",
-        "mask": 2,
-        "description": "1 to enable"
-    },
-    "MT.SSL_TRIG_TOP_BOTEDGE_EN": {
-        "adr": 25,
-        "permission": "rw",
-        "mask": 4,
-        "description": "1 to enable"
-    },
-    "MT.SSL_TRIG_TOPMID_BOTMID_EN": {
-        "adr": 25,
-        "permission": "rw",
-        "mask": 8,
-        "description": "1 to enable"
     },
     "MT.LT_LINK_READY0": {
         "adr": 26,

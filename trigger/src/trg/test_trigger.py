@@ -102,13 +102,6 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
         dut.gaps_trigger_en.value = 0
 
     dut.hit_thresh.value = 0
-    dut.trig_mask_a.value = 0
-    dut.trig_mask_b.value = 0
-
-    dut.ssl_trig_top_bot_en.value = 0
-    dut.ssl_trig_topedge_bot_en.value = 0
-    dut.ssl_trig_top_botedge_en.value = 0
-    dut.ssl_trig_topmid_botmid_en.value = 0
 
     dut.require_beta.value = 0
     dut.event_cnt_reset.value = 0
@@ -122,8 +115,6 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
 
     dut.force_trigger_i.value = 0
 
-    dut.trig_mask_a.value = 0
-    dut.trig_mask_b.value = 0
     dut.busy_i.value = 0
     dut.rb_busy_i.value = 0
     dut.force_trigger_i.value = 0

@@ -329,14 +329,6 @@ def set_tiu_emulation_mode(val : int):
 def set_tiu_emu_busy_cnt(val : int):
     wReg("MT.TIU_EMU_BUSY_CNT", val)
 
-def en_ucla_trigger():
-    set_trig("MT.TRIG_MASK_A", 0x000000f0)
-    set_trig("MT.TRIG_MASK_B", 0x0000000f)
-
-def en_ssl_trigger():
-    set_trig("MT.TRIG_MASK_A", 0xfc3f0000)
-    set_trig("MT.TRIG_MASK_B", 0x0000fc3f)
-
 def set_any_trigger(val : int):
     wReg("MT.ANY_TRIG_PRESCALE", val)
     rd = rReg("MT.ANY_TRIG_PRESCALE")
@@ -346,23 +338,6 @@ def set_track_trigger(val : int):
     wReg("MT.TRACK_TRIGGER_PRESCALE", val)
     rd = rReg("MT.TRACK_TRIGGER_PRESCALE")
     print("Track trigger prescale set to %d" % rd)
-
-def set_ssl_trig(trg : str, val : int):
-    wReg("MT.SSL_TRIG_%s_EN" % trg, val)
-
-def trig_stop():
-    set_trig("MT.TRIG_MASK_A", 0x00000000)
-    set_trig("MT.TRIG_MASK_B", 0x00000000)
-
-def set_trig(reg : str, val : int):
-
-    if not (reg == "MT.TRIG_MASK_A" or reg == "MT.TRIG_MASK_B"):
-        raise Exception("invalid Trigger mask register!")
-
-    if (isinstance(val, str)):
-        val = int(val, 16)
-
-    wReg(reg, val)
 
 def set_trig_generate(val : int):
     wReg("MT.TRIG_GEN_RATE", val)
@@ -487,27 +462,14 @@ if __name__ == '__main__':
 
     argParser.add_argument('--ip',                    action='store',      default=False, help="Set the IP Address of the target MTB.")
     argParser.add_argument('--status',                action='store_true', default=False, help="Print out hte status of the TMB.")
-    argParser.add_argument('--ucla_trig_en',          action='store_true', default=False, help="Enable UCLA trigger")
-    argParser.add_argument('--ssl_trig_en',           action='store_true', default=False, help="Enable SSL trigger")
     argParser.add_argument('--any_trig_en',           action='store_true', default=False, help="Enable ANY trigger")
     argParser.add_argument('--any_trig_dis',          action='store_true', default=False, help="Disable ANY trigger")
     argParser.add_argument('--track_trig_en',         action='store_true', default=False, help="Enable TRACK trigger")
     argParser.add_argument('--track_trig_dis',        action='store_true', default=False, help="Disable TRACK trigger")
     argParser.add_argument('--any_trig_prescale',     action='store',      default=False, help="Set prescale for ANY trigger")
     argParser.add_argument('--track_trig_prescale',   action='store',      default=False, help="Set prescale for TRACK trigger")
-    argParser.add_argument('--ssl_top_bot_en',        action='store_true', default=False, help="Enable SSL trigger")
-    argParser.add_argument('--ssl_top_bot_dis',       action='store_true', default=False, help="Disable SSL trigger")
-    argParser.add_argument('--ssl_topedge_bot_en',    action='store_true', default=False, help="Enable SSL trigger")
-    argParser.add_argument('--ssl_topedge_bot_dis',   action='store_true', default=False, help="Disable SSL trigger")
-    argParser.add_argument('--ssl_top_botedge_en',    action='store_true', default=False, help="Enable SSL trigger")
-    argParser.add_argument('--ssl_top_botedge_dis',   action='store_true', default=False, help="Disable SSL trigger")
-    argParser.add_argument('--ssl_topmid_botmid_en',  action='store_true', default=False, help="Enable SSL trigger")
-    argParser.add_argument('--ssl_topmid_botmid_dis', action='store_true', default=False, help="Disable SSL trigger")
     argParser.add_argument('--trig_rates',            action='store_true', default=False, help="Read the trigger rates")
     argParser.add_argument('--ltb_status',            action='store_true', default=False, help="Read LTB link status")
-    argParser.add_argument('--trig_stop',             action='store_true', default=False, help="Stop all triggers.")
-    argParser.add_argument('--trig_a',                action='store',                     help="Set trigger mask A")
-    argParser.add_argument('--trig_b',                action='store',                     help="Set trigger mask B")
     argParser.add_argument('--trig_set_hz',           action='store',                     help="Set the poisson trigger generator rate in Hz")
     argParser.add_argument('--trig_generate',         action='store',                     help="Set the poisson trigger generator rate (f_trig = 1E8 * rate / 0xffffffff)")
     argParser.add_argument('--read_adc',              action='store_true', default=False, help="Read ADCs")
@@ -538,8 +500,6 @@ if __name__ == '__main__':
         check_clocks()
     if args.tiu_data_src:
         set_tiu_data_src(int(args.tiu_data_src))
-    if args.ucla_trig_en:
-        en_ucla_trigger()
     if args.tiu_emulation_mode:
         set_tiu_emulation_mode(int(args.tiu_emulation_mode))
     if args.tiu_emu_busy_cnt:
@@ -550,8 +510,6 @@ if __name__ == '__main__':
         read_ltb_link_status()
     if args.force_trig:
         force_trigger()
-    if args.ssl_trig_en:
-        en_ssl_trigger()
     if args.status:
         fw_info()
         print("")
@@ -582,35 +540,12 @@ if __name__ == '__main__':
     if args.any_prescale:
         set_any_trigger(args.any_prescale)
 
-    if args.ssl_top_bot_en:
-        set_ssl_trig("TOP_BOT", 1)
-    if args.ssl_top_bot_dis:
-        set_ssl_trig("TOP_BOT", 0)
-    if args.ssl_topedge_bot_en:
-        set_ssl_trig("TOPEDGE_BOT", 1)
-    if args.ssl_topedge_bot_dis:
-        set_ssl_trig("TOPEDGE_BOT", 0)
-    if args.ssl_top_botedge_en:
-        set_ssl_trig("TOP_BOTEDGE", 1)
-    if args.ssl_top_botedge_dis:
-        set_ssl_trig("TOP_BOTEDGE", 0)
-    if args.ssl_topmid_botmid_en:
-        set_ssl_trig("TOPMID_BOTMID", 1)
-    if args.ssl_topmid_botmid_dis:
-        set_ssl_trig("TOPMID_BOTMID", 0)
-
-    if args.trig_stop:
-        trig_stop()
     if args.read_adc:
         read_adcs()
     if args.trig_generate:
         set_trig_generate(int(args.trig_generate))
     if args.trig_set_hz:
         set_trig_hz(int(args.trig_set_hz))
-    if args.trig_a:
-        set_trig("MT.TRIG_MASK_A", args.trig_a)
-    if args.trig_b:
-        set_trig("MT.TRIG_MASK_B", args.trig_b)
     if args.reset_event_cnt:
         reset_event_cnt()
     if args.read_event_cnt:

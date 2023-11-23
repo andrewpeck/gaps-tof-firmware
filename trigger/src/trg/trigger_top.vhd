@@ -29,10 +29,6 @@ entity trigger_top is
 
     hit_thresh : in std_logic_vector (1 downto 0);
 
-    trig_mask_a : in std_logic_vector (31 downto 0);
-
-    trig_mask_b : in std_logic_vector (31 downto 0);
-
     read_all_channels : in std_logic := '1';
 
     -- this is an array of 25*8 = 200 thresholds, where each threshold is a 2
@@ -440,11 +436,6 @@ entity trigger_top is
     hits_o_199 : out std_logic_vector(1 downto 0);
 
     -- trigger parameters
-    ssl_trig_top_bot_en       : in std_logic;
-    ssl_trig_topedge_bot_en   : in std_logic;
-    ssl_trig_top_botedge_en   : in std_logic;
-    ssl_trig_topmid_botmid_en : in std_logic;
-
     gaps_trigger_en  : in std_logic;
     require_beta     : in std_logic;
     inner_tof_thresh : in std_logic_vector (7 downto 0);
@@ -887,15 +878,9 @@ begin
       any_hit_trigger_prescale  => any_hit_trigger_prescale,
       track_trigger_prescale    => track_trigger_prescale,
       hit_thresh                => hit_thresh,
-      trig_mask_a               => trig_mask_a,
-      trig_mask_b               => trig_mask_b,
       read_all_channels         => read_all_channels,
       hits_i                    => hits_i,
       hits_o                    => hits_o,
-      ssl_trig_top_bot_en       => ssl_trig_top_bot_en,
-      ssl_trig_topedge_bot_en   => ssl_trig_topedge_bot_en,
-      ssl_trig_top_botedge_en   => ssl_trig_top_botedge_en,
-      ssl_trig_topmid_botmid_en => ssl_trig_topmid_botmid_en,
       gaps_trigger_en           => gaps_trigger_en,
       require_beta              => require_beta,
       inner_tof_thresh          => inner_tof_thresh,

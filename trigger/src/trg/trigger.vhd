@@ -28,10 +28,6 @@ entity trigger is
 
     hit_thresh : in std_logic_vector (1 downto 0);
 
-    trig_mask_a : in std_logic_vector (31 downto 0);
-
-    trig_mask_b : in std_logic_vector (31 downto 0);
-
     read_all_channels : in std_logic := '1';
 
     -- this is an array of 25*8 = 200 thresholds, where each threshold is a 2
@@ -40,11 +36,6 @@ entity trigger is
     hits_o : out threshold_array_t;
 
     -- trigger parameters
-    ssl_trig_top_bot_en       : in std_logic;
-    ssl_trig_topedge_bot_en   : in std_logic;
-    ssl_trig_top_botedge_en   : in std_logic;
-    ssl_trig_topmid_botmid_en : in std_logic;
-
     gaps_trigger_en  : in std_logic;
     require_beta     : in std_logic;
     inner_tof_thresh : in std_logic_vector (7 downto 0);
@@ -94,12 +85,6 @@ architecture behavioral of trigger is
   signal dead          : std_logic                      := '0';
   signal deadcnt       : integer range 0 to DEADCNT_MAX := 0;
 
-  signal ssl_trig_top_bot       : std_logic := '0';
-  signal ssl_trig_topedge_bot   : std_logic := '0';
-  signal ssl_trig_top_botedge   : std_logic := '0';
-  signal ssl_trig_topmid_botmid : std_logic := '0';
-
-  signal programmable_trigger : std_logic := '0';
   signal gaps_trigger         : std_logic := '0';
   signal track_trigger        : std_logic := '0';
   signal any_trigger          : std_logic := '0';
@@ -263,7 +248,7 @@ begin
         probe0(1)          => global_trigger_o,
         probe0(7 downto 2) => (others => '0'),
         probe1(7 downto 0) => (others => '0'),
-        probe2             => busy_i & pre_trigger & dead & programmable_trigger,
+        probe2             => busy_i & pre_trigger & dead & '0',
         probe3             => event_cnt_o,
         probe4             => hit_bitmap
         );
@@ -541,33 +526,6 @@ begin
   end process;
 
   --------------------------------------------------------------------------------
-  -- Programmable Trigger
-  --------------------------------------------------------------------------------
-
-  -- process (clk) is
-  -- begin
-  --   if (rising_edge(clk)) then
-  --     programmable_trigger <= or_reduce(hit_bitmap(31 downto 0) and trig_mask_a) and
-  --                             or_reduce(hit_bitmap(31 downto 0) and trig_mask_b);
-  --   end if;
-  -- end process;
-
-  --------------------------------------------------------------------------------
-  -- SSL triggers
-  --------------------------------------------------------------------------------
-
-  process (clk) is
-  begin
-    if (rising_edge(clk)) then
-
-      --START: autoinsert triggers
-
-      --END: autoinsert triggers
-
-    end if;
-  end process;
-
-  --------------------------------------------------------------------------------
   -- Trigger Source Prescalers
   --------------------------------------------------------------------------------
   --
@@ -645,7 +603,7 @@ begin
                   & '0'
                   & '0'
                   & '0'
-                  & programmable_trigger;
+                  & '0';
 
   process (clk) is
   begin
