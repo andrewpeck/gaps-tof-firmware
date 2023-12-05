@@ -417,13 +417,13 @@
         "adr": 64,
         "permission": "rw",
         "mask": 4294967295,
-        "description": "Prescale value for the ANY trigger. 0 == 0%, 2**32-1 == 100%"
+        "description": "Prescale value for the ANY trigger. 0 == 0% (off), 2**32-1 == 100%"
     },
     "MT.TRACK_TRIGGER_PRESCALE": {
         "adr": 65,
         "permission": "rw",
         "mask": 4294967295,
-        "description": "Prescale value for the Inner + Outer Track Trigger. 0 == 0%, 2**32-1 == 100%"
+        "description": "Prescale value for the Inner + Outer Track Trigger. 0 == 0% (off), 2**32-1 == 100%"
     },
     "MT.CHANNEL_MASK.LT0": {
         "adr": 80,

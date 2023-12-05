@@ -239,7 +239,7 @@ bits per trigger.
 |               |          | other bits unallocated                                            |
 | BOARD_MASK    | `[31:0]` | 25 bits indicating boards which local trigger boards are read out |
 | HITS          | –        | Variable sized, 16 bits / board \* n_boards                       |
-| PAD           | `[15:0]` | Optional, only here if the \# of LTBs read is odd                 |
+| PAD           | `[15:0]` | Optional zero pad only here if the \# of LTBs read is odd         |
 | CRC           | `[31:0]` | CRC32, same polynomial as the RB                                  |
 | TRAILER       | `[15:0]` | 0x5555                                                            |
 

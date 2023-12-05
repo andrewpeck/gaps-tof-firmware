@@ -187,9 +187,9 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |ETH_RX_BAD_FCS_CNT | ~0x3d~ | ~0xf4~ | ~[31:16]~ | r |  | Ethernet MAC bad fcs | 
 |------------+---+---+---------+-----+-----+----------------------------|
-|ANY_TRIG_PRESCALE | ~0x40~ | ~0x100~ | ~[31:0]~ | rw | ~0xFFFFFFFF~ | Prescale value for the ANY trigger. 0 == 0%, 2**32-1 == 100% | 
+|ANY_TRIG_PRESCALE | ~0x40~ | ~0x100~ | ~[31:0]~ | rw | ~0x0~ | Prescale value for the ANY trigger. 0 == 0% (off), 2**32-1 == 100% | 
 |------------+---+---+---------+-----+-----+----------------------------|
-|TRACK_TRIGGER_PRESCALE | ~0x41~ | ~0x104~ | ~[31:0]~ | rw | ~0xFFFFFFFF~ | Prescale value for the Inner + Outer Track Trigger. 0 == 0%, 2**32-1 == 100% | 
+|TRACK_TRIGGER_PRESCALE | ~0x41~ | ~0x104~ | ~[31:0]~ | rw | ~0x0~ | Prescale value for the Inner + Outer Track Trigger. 0 == 0% (off), 2**32-1 == 100% | 
 |------------+---+---+---------+-----+-----+----------------------------|
 
 *MT.CHANNEL_MASK*

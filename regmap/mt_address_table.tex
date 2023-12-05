@@ -188,8 +188,8 @@
     \nopagebreak
     ETH\_RX\_BAD\_FRAME\_CNT & \texttt{0x3d} & \texttt{[15:0]} & r & \texttt{} & Ethernet MAC bad frame error \\\hline
     ETH\_RX\_BAD\_FCS\_CNT & \texttt{0x3d} & \texttt{[31:16]} & r & \texttt{} & Ethernet MAC bad fcs \\\hline
-    ANY\_TRIG\_PRESCALE & \texttt{0x40} & \texttt{[31:0]} & rw & \texttt{0xFFFFFFFF} & Prescale value for the ANY trigger. 0 == 0\%, 2**32-1 == 100\% \\\hline
-    TRACK\_TRIGGER\_PRESCALE & \texttt{0x41} & \texttt{[31:0]} & rw & \texttt{0xFFFFFFFF} & Prescale value for the Inner + Outer Track Trigger. 0 == 0\%, 2**32-1 == 100\% \\\hline
+    ANY\_TRIG\_PRESCALE & \texttt{0x40} & \texttt{[31:0]} & rw & \texttt{0x0} & Prescale value for the ANY trigger. 0 == 0\% (off), 2**32-1 == 100\% \\\hline
+    TRACK\_TRIGGER\_PRESCALE & \texttt{0x41} & \texttt{[31:0]} & rw & \texttt{0x0} & Prescale value for the Inner + Outer Track Trigger. 0 == 0\% (off), 2**32-1 == 100\% \\\hline
     \end{tabularx}
     \vspace{5mm}
 

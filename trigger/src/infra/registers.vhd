@@ -294,12 +294,12 @@ package registers is
     constant REG_ANY_TRIG_PRESCALE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"40";
     constant REG_ANY_TRIG_PRESCALE_MSB    : integer := 31;
     constant REG_ANY_TRIG_PRESCALE_LSB     : integer := 0;
-    constant REG_ANY_TRIG_PRESCALE_DEFAULT : std_logic_vector(31 downto 0) := x"ffffffff";
+    constant REG_ANY_TRIG_PRESCALE_DEFAULT : std_logic_vector(31 downto 0) := x"00000000";
 
     constant REG_TRACK_TRIGGER_PRESCALE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"41";
     constant REG_TRACK_TRIGGER_PRESCALE_MSB    : integer := 31;
     constant REG_TRACK_TRIGGER_PRESCALE_LSB     : integer := 0;
-    constant REG_TRACK_TRIGGER_PRESCALE_DEFAULT : std_logic_vector(31 downto 0) := x"ffffffff";
+    constant REG_TRACK_TRIGGER_PRESCALE_DEFAULT : std_logic_vector(31 downto 0) := x"00000000";
 
     constant REG_CHANNEL_MASK_LT0_ADDR    : std_logic_vector(9 downto 0) := "00" & x"50";
     constant REG_CHANNEL_MASK_LT0_MSB    : integer := 7;

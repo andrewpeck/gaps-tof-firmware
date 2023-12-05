@@ -291,16 +291,16 @@
           address="0x40"
           permission="rw"
           mask="0xffffffff"
-          description="Prescale value for the ANY trigger. 0 == 0%, 2**32-1 == 100%"
-          fw_default="0xffffffff"
+          description="Prescale value for the ANY trigger. 0 == 0% (off), 2**32-1 == 100%"
+          fw_default="0x00000000"
           fw_signal="any_hit_trigger_prescale"/>
 
     <node id="TRACK_TRIGGER_PRESCALE"
           address="0x41"
           permission="rw"
           mask="0xffffffff"
-          description="Prescale value for the Inner + Outer Track Trigger. 0 == 0%, 2**32-1 == 100%"
-          fw_default="0xffffffff"
+          description="Prescale value for the Inner + Outer Track Trigger. 0 == 0% (off), 2**32-1 == 100%"
+          fw_default="0x00000000"
           fw_signal="track_trigger_prescale"/>
 
     <node id="XADC" address="0x120"
