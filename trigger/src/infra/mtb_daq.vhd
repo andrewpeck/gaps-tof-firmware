@@ -9,7 +9,7 @@ entity mtb_daq is
   generic(
     g_PACKET_PAD    : positive := 32;
     g_WORD_SIZE     : positive := 16;
-    g_DELAY         : integer  := 1;
+    g_DELAY         : integer  := 0;
     g_MSB_FIRST     : boolean  := false;
     g_LITTLE_ENDIAN : boolean  := true
     );
@@ -65,15 +65,10 @@ architecture behavioral of mtb_daq is
   signal event_cnt       : std_logic_vector (event_cnt_i'range) := (others => '0');
 
   --------------------------------------------------------------------------------
-  -- Hit Delay Line
+  -- Hit Stable Copy
   --------------------------------------------------------------------------------
 
-  signal hits     : threshold_array_t;
-  signal hits_dly : threshold_array_t;
-
-  type threshold_dly_line_t is array (integer range <>) of threshold_array_t;
-
-  signal hits_dlyline : threshold_dly_line_t (0 to g_DELAY);
+  signal hits : threshold_array_t;
 
   --------------------------------------------------------------------------------
   -- 1 bit / paddle hitmask
@@ -87,10 +82,10 @@ architecture behavioral of mtb_daq is
 
   signal odd_num_channels : std_logic := '0';
 
-  signal board_mask      : std_logic_vector (hits_i'length/8-1 downto 0) := (others => '0');
-  signal next_board_mask : std_logic_vector (hits_i'length/8-1 downto 0) := (others => '0');
+  signal board_mask      : std_logic_vector (hits'length/8-1 downto 0) := (others => '0');
+  signal next_board_mask : std_logic_vector (hits'length/8-1 downto 0) := (others => '0');
 
-  signal ltb_sel : natural range 0 to hits_i'length/8 := 0;
+  signal ltb_sel : natural range 0 to hits'length/8 := 0;
 
   signal packet_size : natural range 0 to 2**data_size_o'length-1;
 
@@ -230,22 +225,6 @@ begin
   data_size_o <= std_logic_vector(to_unsigned(packet_size, data_size_o'length));
 
   --------------------------------------------------------------------------------
-  -- Delay Line
-  --------------------------------------------------------------------------------
-
-  hits_dlyline(0) <= hits_i;
-  hits_dly        <= hits_dlyline(g_DELAY);
-
-  process (clock) is
-  begin
-    if (rising_edge(clock)) then
-      for I in 1 to hits_dlyline'length-1 loop
-        hits_dlyline(I) <= hits_dlyline(I-1);
-      end loop;
-    end if;
-  end process;
-
-  --------------------------------------------------------------------------------
   -- DAQ State Machine
   --------------------------------------------------------------------------------
 
@@ -269,7 +248,7 @@ begin
           if (trigger_i = '1') then
             state         <= HEADER_state;
             event_cnt     <= event_cnt_i;
-            hits          <= hits_dly;
+            hits          <= hits_i;
             data_o        <= x"AAAA";
             data_valid_o  <= '1';
             crc_en        <= '1';
@@ -288,8 +267,8 @@ begin
           packet_size  <= packet_size + 1;
 
           -- pre-calculate the hitmask, will get reduced to the board_mask
-          for I in hits_i'range loop
-            if (hits_i(I) /= "00") then
+          for I in hits'range loop
+            if (hits(I) /= "00") then
               hitmask(I) <= '1';
             else
               hitmask(I) <= '0';
