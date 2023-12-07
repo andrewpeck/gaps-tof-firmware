@@ -145,7 +145,10 @@ no files are missing, the build directory is clean, and so on.
 
 ## DRS Data Flow
 
-![data-flow](./drs/data-flow.svg)
+<figure>
+<img src="./drs/data-flow.svg" />
+<figcaption>data-flow</figcaption>
+</figure>
 
 ## RB Dataformat
 
@@ -226,7 +229,7 @@ bits per trigger.
 
 | Field         | Len      | Description                                                       |
 |---------------|----------|-------------------------------------------------------------------|
-| HEADER        | `[15:0]` | 0xAAAA                                                            |
+| HEADER        | `[31:0]` | 0xAAAA_AAAA                                                       |
 | EVENT_CNT     | `[31:0]` | Event counter                                                     |
 | TIMESTAMP     | `[31:0]` | Internal timestamp at the time of trigger (1 unit = 10 ns)        |
 | TIU_TIMESTAMP | `[31:0]` | Timestamp at the edge of the TIU GPS (1 unit = 10 ns)             |
@@ -239,9 +242,9 @@ bits per trigger.
 |               |          | other bits unallocated                                            |
 | BOARD_MASK    | `[31:0]` | 25 bits indicating boards which local trigger boards are read out |
 | HITS          | –        | Variable sized, 16 bits / board \* n_boards                       |
-| PAD           | `[15:0]` | Optional zero pad only here if the \# of LTBs read is odd         |
+| PAD           | `[15:0]` | Optional, only here if the \# of LTBs read is odd                 |
 | CRC           | `[31:0]` | CRC32, same polynomial as the RB                                  |
-| TRAILER       | `[15:0]` | 0x5555                                                            |
+| TRAILER       | `[31:0]` | 0x5555_5555                                                       |
 
 ## Master Trigger External IO
 
