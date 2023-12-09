@@ -97,6 +97,17 @@
     SROUT\_POSNEG & \texttt{0x1a} & \texttt{[1:1]} & rw & \texttt{0x0} & 1 to sample on positive edge, 0 on negative \\\hline
     SROUT\_LATENCY & \texttt{0x1a} & \texttt{[6:4]} & rw & \texttt{0x2} & Latency of the SROUT readout \\\hline
     DMA\_CLEAR & \texttt{0x1b} & \texttt{[0:0]} & w & Pulse & Write 1 to clear the DMA memory (write zeroes) \\\hline
+    SOFT\_RESET & \texttt{0x1c} & \texttt{[0:0]} & w & Pulse & Write 1 to soft reset the readout buffers. \\\hline
+    SOFT\_RESET\_DRS\_EN & \texttt{0x1d} & \texttt{[0:0]} & rw & \texttt{0x0} & Soft reset DRS. \\\hline
+    SOFT\_RESET\_DAQ\_EN & \texttt{0x1d} & \texttt{[1:1]} & rw & \texttt{0x0} & Soft reset DAQ. \\\hline
+    SOFT\_RESET\_DMA\_EN & \texttt{0x1d} & \texttt{[2:2]} & rw & \texttt{0x1} & Soft reset DMA. \\\hline
+    SOFT\_RESET\_PTR\_EN & \texttt{0x1d} & \texttt{[3:3]} & rw & \texttt{0x1} & Soft reset occupancy pointer. \\\hline
+    SOFT\_RESET\_TRG\_EN & \texttt{0x1d} & \texttt{[4:4]} & rw & \texttt{0x1} & Soft reset triggers. \\\hline
+    SOFT\_RESET\_BUF\_EN & \texttt{0x1d} & \texttt{[5:5]} & rw & \texttt{0x1} & Soft reset buffers. \\\hline
+    SOFT\_RESET\_WAIT\_DRS & \texttt{0x1d} & \texttt{[8:8]} & rw & \texttt{0x1} & Wait for DRS to idle. \\\hline
+    SOFT\_RESET\_WAIT\_DAQ & \texttt{0x1d} & \texttt{[9:9]} & rw & \texttt{0x1} & Wait for DAQ to idle. \\\hline
+    SOFT\_RESET\_WAIT\_DMA & \texttt{0x1d} & \texttt{[10:10]} & rw & \texttt{0x1} & Wait for DMA to idle. \\\hline
+    SOFT\_RESET\_DONE & \texttt{0x1d} & \texttt{[15:15]} & r & \texttt{} & Soft reset is finished. \\\hline
     \end{tabularx}
     \vspace{5mm}
 
@@ -223,7 +234,7 @@
     TRIGGER\_DELAY & \texttt{0x42} & \texttt{[11:0]} & rw & \texttt{0x0} & Trigger delay measured in LUT1 units \\\hline
     CNT\_MT\_PRBS\_ERRS & \texttt{0x43} & \texttt{[31:0]} & r & \texttt{} & Number of PRBS errors on the MT line \\\hline
     MT\_PRBS\_ERR\_RESET & \texttt{0x44} & \texttt{[0:0]} & w & Pulse & Write 1 to reset the MT PRBS Error Counter \\\hline
-    MT\_TRIGGER\_MODE & \texttt{0x45} & \texttt{[0:0]} & rw & \texttt{0x1} & 1 to use the MT as the source of the trigger \\\hline
+    MT\_TRIGGER\_MODE & \texttt{0x45} & \texttt{[0:0]} & rw & \texttt{0x0} & 1 to use the MT as the source of the trigger \\\hline
     CNT\_MT\_CRC\_ERR & \texttt{0x46} & \texttt{[15:0]} & r & \texttt{} & Number of MT CRC errors \\\hline
     TRIGGER\_ENABLE & \texttt{0x47} & \texttt{[0:0]} & rw & \texttt{0x0} & Set to 0 to stop all triggers. 1 to enable triggers. \\\hline
     MT\_EVENT\_CNT & \texttt{0x48} & \texttt{[31:0]} & r & \texttt{} & Recevied event counter \\\hline

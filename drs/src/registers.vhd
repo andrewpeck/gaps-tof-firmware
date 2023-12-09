@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_DRS_NUM_REGS : integer := 69;
+    constant REG_DRS_NUM_REGS : integer := 71;
     constant REG_DRS_ADDRESS_MSB : integer := 9;
     constant REG_DRS_ADDRESS_LSB : integer := 0;
     constant REG_CHIP_DMODE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
@@ -125,6 +125,48 @@ package registers is
     constant REG_READOUT_DMA_CLEAR_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1b";
     constant REG_READOUT_DMA_CLEAR_BIT    : integer := 0;
 
+    constant REG_READOUT_SOFT_RESET_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1c";
+    constant REG_READOUT_SOFT_RESET_BIT    : integer := 0;
+
+    constant REG_READOUT_SOFT_RESET_DRS_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1d";
+    constant REG_READOUT_SOFT_RESET_DRS_EN_BIT    : integer := 0;
+    constant REG_READOUT_SOFT_RESET_DRS_EN_DEFAULT : std_logic := '0';
+
+    constant REG_READOUT_SOFT_RESET_DAQ_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1d";
+    constant REG_READOUT_SOFT_RESET_DAQ_EN_BIT    : integer := 1;
+    constant REG_READOUT_SOFT_RESET_DAQ_EN_DEFAULT : std_logic := '0';
+
+    constant REG_READOUT_SOFT_RESET_DMA_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1d";
+    constant REG_READOUT_SOFT_RESET_DMA_EN_BIT    : integer := 2;
+    constant REG_READOUT_SOFT_RESET_DMA_EN_DEFAULT : std_logic := '1';
+
+    constant REG_READOUT_SOFT_RESET_PTR_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1d";
+    constant REG_READOUT_SOFT_RESET_PTR_EN_BIT    : integer := 3;
+    constant REG_READOUT_SOFT_RESET_PTR_EN_DEFAULT : std_logic := '1';
+
+    constant REG_READOUT_SOFT_RESET_TRG_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1d";
+    constant REG_READOUT_SOFT_RESET_TRG_EN_BIT    : integer := 4;
+    constant REG_READOUT_SOFT_RESET_TRG_EN_DEFAULT : std_logic := '1';
+
+    constant REG_READOUT_SOFT_RESET_BUF_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1d";
+    constant REG_READOUT_SOFT_RESET_BUF_EN_BIT    : integer := 5;
+    constant REG_READOUT_SOFT_RESET_BUF_EN_DEFAULT : std_logic := '1';
+
+    constant REG_READOUT_SOFT_RESET_WAIT_DRS_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1d";
+    constant REG_READOUT_SOFT_RESET_WAIT_DRS_BIT    : integer := 8;
+    constant REG_READOUT_SOFT_RESET_WAIT_DRS_DEFAULT : std_logic := '1';
+
+    constant REG_READOUT_SOFT_RESET_WAIT_DAQ_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1d";
+    constant REG_READOUT_SOFT_RESET_WAIT_DAQ_BIT    : integer := 9;
+    constant REG_READOUT_SOFT_RESET_WAIT_DAQ_DEFAULT : std_logic := '1';
+
+    constant REG_READOUT_SOFT_RESET_WAIT_DMA_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1d";
+    constant REG_READOUT_SOFT_RESET_WAIT_DMA_BIT    : integer := 10;
+    constant REG_READOUT_SOFT_RESET_WAIT_DMA_DEFAULT : std_logic := '1';
+
+    constant REG_READOUT_SOFT_RESET_DONE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1d";
+    constant REG_READOUT_SOFT_RESET_DONE_BIT    : integer := 15;
+
     constant REG_FPGA_DNA_DNA_LSBS_ADDR    : std_logic_vector(9 downto 0) := "00" & x"20";
     constant REG_FPGA_DNA_DNA_LSBS_MSB    : integer := 31;
     constant REG_FPGA_DNA_DNA_LSBS_LSB     : integer := 0;
@@ -222,7 +264,7 @@ package registers is
 
     constant REG_TRIGGER_MT_TRIGGER_MODE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"45";
     constant REG_TRIGGER_MT_TRIGGER_MODE_BIT    : integer := 0;
-    constant REG_TRIGGER_MT_TRIGGER_MODE_DEFAULT : std_logic := '1';
+    constant REG_TRIGGER_MT_TRIGGER_MODE_DEFAULT : std_logic := '0';
 
     constant REG_TRIGGER_CNT_MT_CRC_ERR_ADDR    : std_logic_vector(9 downto 0) := "00" & x"46";
     constant REG_TRIGGER_CNT_MT_CRC_ERR_MSB    : integer := 15;

@@ -69,6 +69,7 @@ entity ps_interface is
 
     --DMA 
     dma_reset_i : in std_logic;
+    dma_idle_o  : out std_logic;
 
     --------------------------------------------------------------
     -- RAM Occupancy signals
@@ -91,6 +92,8 @@ architecture Behavioral of ps_interface is
   signal packet_counter_xdma : std_logic_vector (31 downto 0);
 
   signal dma_clear_synced : std_logic := '0';
+
+  signal dma_idle : std_logic := '0';
 
   signal dma_reset,         dma_reset_synced         : std_logic := '1';
   signal dma_control_reset, dma_control_reset_synced : std_logic := '1';
@@ -439,6 +442,22 @@ begin
       dest_pulse => ram_toggle_request
       );
 
+  xpm_cdc_single_inst : xpm_cdc_single
+    generic map (
+      DEST_SYNC_FF   => 4,     -- DECIMAL; range: 2-10
+      INIT_SYNC_FF   => 0,     -- DECIMAL; 0=disable simulation init values, 1=enable simulation init values
+      SIM_ASSERT_CHK => 0,     -- DECIMAL; 0=disable simulation messages, 1=enable simulation messages
+      SRC_INPUT_REG  => 1      -- DECIMAL; 0=do not register input, 1=register input
+      )
+    port map (
+      dest_out => dma_idle_o,  -- 1-bit output: src_in synchronized to the destination clock domain. This output
+      -- is registered.
+
+      dest_clk => ipb_clk,      -- 1-bit input: Clock signal for the destination clock domain.
+      src_clk  => dma_axi_aclk, -- 1-bit input: optional; required when SRC_INPUT_REG = 1
+      src_in   => dma_idle      -- 1-bit input: Input signal to be synchronized to dest_clk domain.
+      );
+
   dma_controller_inst : entity dma.dma_controller
     generic map (
       WORDS_TO_SEND => 16,
@@ -458,6 +477,8 @@ begin
       fifo_wr_en  => fifo_data_wen,
       fifo_full   => open,              -- TODO: connect to monitor
       daq_busy_in => daq_busy_in,
+
+      idle_o      => dma_idle,
       
       -- RAM occupancy monitoring
       ram_a_occ_rst          => ram_a_occ_rst_synced,

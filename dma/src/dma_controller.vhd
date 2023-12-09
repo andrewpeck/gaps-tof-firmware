@@ -62,6 +62,8 @@ entity dma_controller is
 
     ram_toggle_request_i : in std_logic := '0';
 
+    idle_o : out std_logic;
+
     ram_buff_a_occupancy_o : out std_logic_vector(31 downto 0) := BOT_HALF_ADDRESS;
     ram_buff_b_occupancy_o : out std_logic_vector(31 downto 0) := TOP_HALF_ADDRESS;
     dma_pointer_o          : out std_logic_vector(31 downto 0) := BOT_HALF_ADDRESS;
@@ -325,6 +327,8 @@ architecture Behavioral of dma_controller is
   signal ram_b_occ_rst_cnt     : integer := ram_occ_rst_cnt_max;
 
 begin
+
+  idle_o <= '1' when reset = '0' and s2mm_data_state = IDLE and fifo_empty = '1' else '0';
 
   --------------------------------------------------------------------------------
   -- Make sure the reset is always at least 7 clocks wide

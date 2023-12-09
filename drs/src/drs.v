@@ -1,4 +1,3 @@
-`define IOB (*IOB="true"*)
 // synthesis translate_off
 `define SIMULATION
 // synthesis translate_on
@@ -232,7 +231,7 @@ localparam MXSTATEBITS = $clog2(STANDBY);
 reg [MXSTATEBITS-1:0] drs_readout_state=0;
 
 assign busy_o = (drs_readout_state != RUNNING);
-assign idle_o = (drs_readout_state == IDLE);
+assign idle_o = (drs_readout_state == IDLE || drs_readout_state == INIT);
 
 //----------------------------------------------------------------------------------------------------------------------
 // State Machine
