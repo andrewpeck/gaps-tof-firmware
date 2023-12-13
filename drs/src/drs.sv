@@ -2,7 +2,7 @@
 `define SIMULATION
 // synthesis translate_on
 `ifndef SIMULATION
-`define DEBUG
+// `define DEBUG
 `endif
 // Enable DRS ILAs for now..
 
@@ -123,8 +123,7 @@ localparam ADR_STANDBY     = 4'b1111;
 // Input flops
 //----------------------------------------------------------------------------------------------------------------------
 
-reg [13:0] adc_data_neg, adc_data_pos;
-reg [13:0] adc_data;
+reg [13:0] adc_data_neg, adc_data_pos, adc_data;
 
 // take data in on negedge of clock, assuming that adc and fpga clocks are synchronous
 always @(negedge clock) begin
@@ -150,19 +149,6 @@ end
 wire drs_srout = srout_posneg_i ? drs_srout_i : drs_srout_neg;
 
 //----------------------------------------------------------------------------------------------------------------------
-// Trigger
-//----------------------------------------------------------------------------------------------------------------------
-
-reg trigger, domino_ready;
-
-// always read the 9th channel if any other channel is enabled
-wire [8:0] drs_ctl_readout_mask = drs_ctl_readout_mask_i;
-
-always @(posedge clock) begin
-  trigger <= (|drs_ctl_readout_mask && domino_ready) ? trigger_i : 0;
-end
-
-//----------------------------------------------------------------------------------------------------------------------
 // First/Last/Next Channel Calculators for Mask Based Channel Readout
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -174,8 +160,8 @@ reg [8:0] readout_mask_sr;
 
 always @(posedge clock) begin
    drs_ctl_next_chn  <= prienc9(readout_mask_sr);
-   drs_ctl_first_chn <= prienc9(drs_ctl_readout_mask);
-   drs_ctl_last_chn  <= prienc9_rev(drs_ctl_readout_mask);
+   drs_ctl_first_chn <= prienc9(drs_ctl_readout_mask_i);
+   drs_ctl_last_chn  <= prienc9_rev(drs_ctl_readout_mask_i);
 end
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -219,6 +205,15 @@ assign busy_o = (drs_readout_state != RUNNING);
 assign idle_o = (drs_readout_state == IDLE || drs_readout_state == INIT);
 
 //----------------------------------------------------------------------------------------------------------------------
+// Trigger
+//----------------------------------------------------------------------------------------------------------------------
+
+reg trigger;
+always @(posedge clock) begin
+   trigger <= trigger && (|drs_ctl_readout_mask_i && drs_readout_state == RUNNING);
+end
+
+//----------------------------------------------------------------------------------------------------------------------
 // State Machine
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -260,7 +255,6 @@ always @(posedge clock) begin
   drs_sample_count     <= 0;
   drs_rd_tmp_count     <= 0;
   drs_reinit_request   <= 1;
-  domino_ready         <= 0;
   drs_old_roi_mode     <= 1;
   readout_complete     <= 0;
 
@@ -270,7 +264,6 @@ always @(posedge clock) begin
 
   fifo_wdata        <= 0;
   fifo_wen          <= 0;
-  domino_ready      <= 1;
   readout_complete  <= 0;
 
   // Memorize a write access to the bit in the control register that requests a reinitialisation of
@@ -426,7 +419,7 @@ always @(posedge clock) begin
           //------------------------------------------------------------------------------------------------------------
 
           drs_addr             <= drs_ctl_first_chn;
-          readout_mask_sr      <= drs_ctl_readout_mask;
+          readout_mask_sr      <= drs_ctl_readout_mask_i;
           drs_addr_o           <= ADR_READ_SR;  // set address to read shift register for readout
           drs_sample_count     <= 0;
           drs_rd_tmp_count     <= 0;
@@ -436,9 +429,6 @@ always @(posedge clock) begin
     end // fini
 
     // WAIT FOR SUPPLY TO SETTLE BEFORE READOUT
-    // wait ~120 us for VDD to stabilize
-    // is this really necessary ??
-    // deadtime contribution would be HUGE
     WAIT_VDD: begin
 
           if (drs_reinit_request)
@@ -660,12 +650,13 @@ always @(posedge clock) begin
 
           drs_rd_tmp_count <= drs_rd_tmp_count + 1'b1;
           drs_addr_o       <= ADR_READ_SR;
+          fifo_wen         <= 0;
+          drs_srin_o       <= 0;      // Shared Shift Register Input
+
           if (drs_rd_tmp_count < 1024)
             drs_srclk_en_o   <= 1;
           else
             drs_srclk_en_o   <= 0;
-          fifo_wen         <= 0;
-          drs_srin_o       <= 0;      // Shared Shift Register Input
 
     end // fini
 
@@ -864,6 +855,9 @@ end // and always
 assign fifo_wdata_o = fifo_wdata[READ_WIDTH-1:0];
 assign fifo_wen_o   = fifo_wen;
 
+//------------------------------------------------------------------------------
+// ILA
+//------------------------------------------------------------------------------   
 
 `ifdef DEBUG
   ila_drs ila_drs_inst (
@@ -883,7 +877,7 @@ assign fifo_wen_o   = fifo_wen;
     .probe12 (drs_ctl_reinit),
     .probe13 (drs_ctl_configure_drs),
     .probe14 (drs_ctl_chn_config [7:0]),
-    .probe15 (drs_ctl_readout_mask[8:0]),
+    .probe15 (drs_ctl_readout_mask_i[8:0]),
     .probe16 (drs_srout),
     .probe17 (drs_addr_o[3:0]),
     .probe18 (drs_denable_o),
@@ -905,6 +899,10 @@ assign fifo_wen_o   = fifo_wen;
     .probe34 (readout_mask_sr)
   );
 `endif
+
+//------------------------------------------------------------------------------
+// Helper Functions
+//------------------------------------------------------------------------------   
 
 function [3:0] prienc9_rev;
  input [8:0] select;
