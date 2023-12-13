@@ -1,7 +1,9 @@
 // synthesis translate_off
 `define SIMULATION
 // synthesis translate_on
-// `define DEBUG
+`ifndef SIMULATION
+`define DEBUG
+`endif
 // Enable DRS ILAs for now..
 
 // TODO: implement ROI trigger delay
@@ -207,29 +209,11 @@ wire shift_out_config_done = (drs_sr_count == 7);
 // State machine parameters
 //----------------------------------------------------------------------------------------------------------------------
 
-localparam INIT          = 0;
-localparam IDLE          = 1;
-localparam START_RUNNING = 2;
-localparam RUNNING       = 3;
-localparam TRIGGER       = 4;
-localparam WAIT_VDD      = 5;
-localparam INIT_READOUT  = 6;
-localparam RSR_LOAD      = 7;
-localparam ADC_READOUT   = 8;
-localparam STOP_CELL     = 9;
-localparam SPIKE_REMOVAL = 13;
-localparam DONE          = 14;
-localparam CONF_SETUP    = 15;
-localparam CONF_WRITE    = 16;
-localparam WSR_SETUP     = 18;
-localparam WSR_STROBE    = 19;
-localparam INIT_RSR      = 20;
-localparam STANDBY       = 21;
+typedef enum int unsigned {INIT, IDLE, START_RUNNING, RUNNING, TRIGGER,
+    WAIT_VDD, INIT_READOUT, RSR_LOAD, ADC_READOUT, STOP_CELL, SPIKE_REMOVAL, DONE,
+    CONF_SETUP, CONF_WRITE, WSR_SETUP, WSR_STROBE, INIT_RSR, STANDBY} state_t;
 
-localparam MXSTATEBITS = $clog2(STANDBY);
-
-
-reg [MXSTATEBITS-1:0] drs_readout_state=0;
+var state_t drs_readout_state = INIT;
 
 assign busy_o = (drs_readout_state != RUNNING);
 assign idle_o = (drs_readout_state == IDLE || drs_readout_state == INIT);
@@ -879,35 +863,6 @@ end // and always
 
 assign fifo_wdata_o = fifo_wdata[READ_WIDTH-1:0];
 assign fifo_wen_o   = fifo_wen;
-
-`ifdef SIMULATION
-// Write-buffer auto-clear state machine display
-
-reg[15*8:0] state_disp;
-
-always @* begin
-  case (drs_readout_state)
-    INIT            : state_disp <= "INIT";
-    IDLE            : state_disp <= "IDLE";
-    START_RUNNING   : state_disp <= "START_RUNNING";
-    RUNNING         : state_disp <= "RUNNING";
-    TRIGGER         : state_disp <= "TRIGGER";
-    WAIT_VDD        : state_disp <= "WAIT_VDD";
-    INIT_READOUT    : state_disp <= "INIT_READOUT";
-    RSR_LOAD        : state_disp <= "RSR_LOAD";
-    ADC_READOUT     : state_disp <= "ADC_READOUT";
-    STOP_CELL       : state_disp <= "STOP_CELL";
-    SPIKE_REMOVAL   : state_disp <= "SPIKE_REMOVAL";
-    DONE            : state_disp <= "DONE";
-    CONF_SETUP      : state_disp <= "CONF_SETUP";
-    CONF_WRITE      : state_disp <= "CONF_WRITE";
-    WSR_SETUP       : state_disp <= "WSR_SETUP";
-    WSR_STROBE      : state_disp <= "WSR_STROBE";
-    STANDBY         : state_disp <= "STANDBY";
-    INIT_RSR        : state_disp <= "INIT_RSR";
-  endcase
-end
-`endif
 
 
 `ifdef DEBUG
