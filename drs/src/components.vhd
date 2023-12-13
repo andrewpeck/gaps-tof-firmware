@@ -28,6 +28,7 @@ package components is
       drs_ctl_dmode            : in  std_logic;
       drs_ctl_adc_latency      : in  std_logic_vector;
       drs_ctl_sample_count_max : in  std_logic_vector;
+      drs_ctl_start_timer      : in  std_logic_vector;
       drs_ctl_config           : in  std_logic_vector;
       drs_ctl_standby_mode     : in  std_logic;
       drs_ctl_transp_mode      : in  std_logic;

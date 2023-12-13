@@ -46,6 +46,11 @@ package registers is
     constant REG_CHIP_CYLON_MODE_BIT    : integer := 0;
     constant REG_CHIP_CYLON_MODE_DEFAULT : std_logic := '0';
 
+    constant REG_CHIP_START_TIMER_ADDR    : std_logic_vector(9 downto 0) := "00" & x"03";
+    constant REG_CHIP_START_TIMER_MSB    : integer := 11;
+    constant REG_CHIP_START_TIMER_LSB     : integer := 4;
+    constant REG_CHIP_START_TIMER_DEFAULT : std_logic_vector(11 downto 4) := x"69";
+
     constant REG_CHIP_LOSS_OF_LOCK_ADDR    : std_logic_vector(9 downto 0) := "00" & x"04";
     constant REG_CHIP_LOSS_OF_LOCK_BIT    : integer := 0;
 

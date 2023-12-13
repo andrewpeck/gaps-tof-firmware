@@ -55,6 +55,13 @@
         "description": "1 for cylon mode",
         "adr8": 12
     },
+    "DRS.CHIP.START_TIMER": {
+        "adr": 3,
+        "permission": "rw",
+        "mask": 4080,
+        "description": "Number of clock cycles to delay before allowing triggers.",
+        "adr8": 12
+    },
     "DRS.CHIP.LOSS_OF_LOCK": {
         "adr": 4,
         "permission": "r",

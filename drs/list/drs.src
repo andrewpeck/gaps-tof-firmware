@@ -41,6 +41,6 @@ drs/src/registers.vhd
 drs/src/spi_rx.vhd
 drs/src/trigger_mux.vhd
 drs/src/mt_rx.vhd
-drs/src/drs.v
+drs/src/drs.sv
 drs/src/dna.v
 drs/src/daq.vhd

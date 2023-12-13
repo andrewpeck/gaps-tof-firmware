@@ -235,13 +235,14 @@ architecture Behavioral of top_readout_board is
   signal readout_mask_9th_channel_auto : std_logic;
   signal read_ch8                      : std_logic                     := '0';
 
-  signal drs_config       : std_logic_vector (7 downto 0);
-  signal chn_config       : std_logic_vector (7 downto 0);
-  signal drs_stop_cell    : std_logic_vector (9 downto 0);
-  signal dna              : std_logic_vector (56 downto 0);
-  signal board_id         : std_logic_vector (7 downto 0);
-  signal adc_latency      : std_logic_vector (5 downto 0);
-  signal sample_count_max : std_logic_vector (9 downto 0);
+  signal drs_config          : std_logic_vector (7 downto 0);
+  signal chn_config          : std_logic_vector (7 downto 0);
+  signal drs_stop_cell       : std_logic_vector (9 downto 0);
+  signal dna                 : std_logic_vector (56 downto 0);
+  signal board_id            : std_logic_vector (7 downto 0);
+  signal adc_latency         : std_logic_vector (5 downto 0);
+  signal sample_count_max    : std_logic_vector (9 downto 0);
+  signal drs_ctl_start_timer : std_logic_vector (7 downto 0);
 
   signal drs_reset        : std_logic;
   signal daq_reset        : std_logic;
@@ -930,6 +931,7 @@ begin
       drs_ctl_standby_mode     => standby_mode,
       drs_ctl_transp_mode      => transp_mode,
       drs_ctl_start            => start,
+      drs_ctl_start_timer      => drs_ctl_start_timer,
       drs_ctl_adc_latency      => adc_latency,
       drs_ctl_spike_removal    => spike_removal,
       drs_ctl_sample_count_max => sample_count_max,
@@ -1487,6 +1489,7 @@ begin
   regs_read_arr(1)(REG_CHIP_DTAP_FREQ_MSB downto REG_CHIP_DTAP_FREQ_LSB) <= dtap_cnt;
   regs_read_arr(2)(REG_CHIP_CLK_IDELAY_MSB downto REG_CHIP_CLK_IDELAY_LSB) <= clock_tap_delays;
   regs_read_arr(3)(REG_CHIP_CYLON_MODE_BIT) <= cylon_mode;
+  regs_read_arr(3)(REG_CHIP_START_TIMER_MSB downto REG_CHIP_START_TIMER_LSB) <= drs_ctl_start_timer;
   regs_read_arr(4)(REG_CHIP_LOSS_OF_LOCK_BIT) <= loss_of_lock_i;
   regs_read_arr(4)(REG_CHIP_LOSS_OF_LOCK_STABLE_BIT) <= lock_stable;
   regs_read_arr(5)(REG_READOUT_ROI_MODE_BIT) <= roi_mode;
@@ -1571,6 +1574,7 @@ begin
   chn_config <= regs_write_arr(0)(REG_CHIP_CHANNEL_CONFIG_MSB downto REG_CHIP_CHANNEL_CONFIG_LSB);
   clock_tap_delays <= regs_write_arr(2)(REG_CHIP_CLK_IDELAY_MSB downto REG_CHIP_CLK_IDELAY_LSB);
   cylon_mode <= regs_write_arr(3)(REG_CHIP_CYLON_MODE_BIT);
+  drs_ctl_start_timer <= regs_write_arr(3)(REG_CHIP_START_TIMER_MSB downto REG_CHIP_START_TIMER_LSB);
   roi_mode <= regs_write_arr(5)(REG_READOUT_ROI_MODE_BIT);
   adc_latency <= regs_write_arr(5)(REG_READOUT_ADC_LATENCY_MSB downto REG_READOUT_ADC_LATENCY_LSB);
   sample_count_max <= regs_write_arr(5)(REG_READOUT_SAMPLE_COUNT_MSB downto REG_READOUT_SAMPLE_COUNT_LSB);
@@ -1744,6 +1748,7 @@ begin
   regs_defaults(0)(REG_CHIP_CHANNEL_CONFIG_MSB downto REG_CHIP_CHANNEL_CONFIG_LSB) <= REG_CHIP_CHANNEL_CONFIG_DEFAULT;
   regs_defaults(2)(REG_CHIP_CLK_IDELAY_MSB downto REG_CHIP_CLK_IDELAY_LSB) <= REG_CHIP_CLK_IDELAY_DEFAULT;
   regs_defaults(3)(REG_CHIP_CYLON_MODE_BIT) <= REG_CHIP_CYLON_MODE_DEFAULT;
+  regs_defaults(3)(REG_CHIP_START_TIMER_MSB downto REG_CHIP_START_TIMER_LSB) <= REG_CHIP_START_TIMER_DEFAULT;
   regs_defaults(5)(REG_READOUT_ROI_MODE_BIT) <= REG_READOUT_ROI_MODE_DEFAULT;
   regs_defaults(5)(REG_READOUT_ADC_LATENCY_MSB downto REG_READOUT_ADC_LATENCY_LSB) <= REG_READOUT_ADC_LATENCY_DEFAULT;
   regs_defaults(5)(REG_READOUT_SAMPLE_COUNT_MSB downto REG_READOUT_SAMPLE_COUNT_LSB) <= REG_READOUT_SAMPLE_COUNT_DEFAULT;

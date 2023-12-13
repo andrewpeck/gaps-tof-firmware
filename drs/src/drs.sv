@@ -53,6 +53,7 @@ module drs #(
                                                   //
     input [15:0] drs_ctl_wait_vdd_clocks,         //
     input [9:0]  drs_ctl_sample_count_max,        // number of samples to readout
+    input [7:0]  drs_ctl_start_timer,             // number of counts from start_running -> running
                                                   //
     input [7:0]  drs_ctl_config,                  // configuration register
                                                   // Bit0  DMODE  Control Domino Mode. A 1 means continuous cycling, a 0 configures a single shot
@@ -182,7 +183,7 @@ end
 reg [7:0]  drs_sr_reg='hf8;
 
 // TODO: merge with the other counter
-reg [6:0] drs_start_timer = 0; // startup timer to make sure the domino is running before allowing triggers
+reg [7:0] drs_start_timer = 0; // startup timer to make sure the domino is running before allowing triggers
 
 // reg [7:0]  drs_stat_stop_wsr=0;
 // reg        drs_stop_wsr=0;
@@ -392,22 +393,18 @@ always @(posedge clock) begin
               drs_readout_state  <= INIT;
 
           // do not go to running until at least 1.5 domino revolutions
-          if (drs_start_timer == 105) // 105 * 30ns <= 3.15us
-              drs_readout_state  <= RUNNING;
+          if (drs_start_timer == drs_ctl_start_timer)  begin // 105 * 30ns <= 3.15us
+              drs_readout_state <= RUNNING;
+          end else begin
+             drs_start_timer <= drs_start_timer + 1;
+          end             
 
           //------------------------------------------------------------------------------------------------------------
           // Logic
           //------------------------------------------------------------------------------------------------------------
 
-          drs_denable_o    <= 1;   // enable and start domino wave
-          domino_ready     <= 0;
-
-          drs_dwrite_o   <= 1;   // set drs_write_ff in proc_drs_write
-
-          // do not go to running until at least 1.5 domino revolutions
-          drs_start_timer  <= drs_start_timer + 1;
-          if (drs_start_timer==105) // 105 * 30ns <= 3.15us
-            domino_ready <= 1;  // arm trigger
+          drs_denable_o   <= 1;   // enable and start domino wave
+          drs_dwrite_o    <= 1;   // set drs_write_ff in proc_drs_write
 
     end // fini
 
