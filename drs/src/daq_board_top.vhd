@@ -818,7 +818,7 @@ begin
 
       force_trig => force_trig or (trig_gen_gated and not drs_busy),
 
-      master_trigger => mt_trigger or mt_trigger_fast,
+      master_trigger => mt_trigger_mode and (mt_trigger or mt_trigger_fast),
 
       trigger_o => trigger,
       dwrite_o  => drs_dwrite_async
