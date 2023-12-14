@@ -159,7 +159,6 @@ architecture Behavioral of top_readout_board is
   signal mt_active_hi_cnts      : integer range 0 to 127 := 0;
 
   signal mt_fifo_wr_req     : std_logic                      := '0';
-  signal mt_fifo_wr_en      : std_logic                      := '0';
   signal mt_event_cnt_valid : std_logic                      := '0';
   signal mt_mask_valid      : std_logic                      := '0';
   signal mt_mask            : std_logic_vector (7 downto 0)  := (others => '0');
@@ -172,7 +171,7 @@ architecture Behavioral of top_readout_board is
   signal mt_crc_calc        : std_logic_vector(7 downto 0);
   signal mt_crc_valid       : std_logic;
   signal mt_crc_ok          : std_logic;
-  signal mt_resync          : std_logic := '0';
+  signal mt_resync          : std_logic;
 
   signal trigger_enable      : std_logic := '0';
   signal ext_trigger_en      : std_logic := '0';
@@ -326,23 +325,25 @@ architecture Behavioral of top_readout_board is
   signal event_counter : std_logic_vector (31 downto 0) := (others => '0');
   ------ Register signals end ----------------------------------------------
 
-  signal daq_event_cnt   : std_logic_vector(31 downto 0);
-  signal daq_timestamp   : std_logic_vector(47 downto 0);
-  signal daq_mask        : std_logic_vector(8 downto 0);
-  signal daq_drs_busy    : std_logic;
-  signal daq_event_ack   : std_logic := '0';
-  signal daq_trigger     : std_logic := '0';
-  signal daq_fragment    : std_logic := '0';
-  signal daq_fragment_en : std_logic := '0';
-  signal daq_event_valid : std_logic := '0';
-  signal daq_acknowledge : std_logic := '0';
+  signal daq_event_cnt         : std_logic_vector(31 downto 0);
+  signal daq_timestamp         : std_logic_vector(47 downto 0);
+  signal daq_mask              : std_logic_vector(8 downto 0);
+  signal daq_drs_busy          : std_logic;
+  signal daq_event_ack         : std_logic := '0';
+  signal daq_trigger           : std_logic := '0';
+  signal daq_fragment          : std_logic := '0';
+  signal daq_fragment_en       : std_logic := '0';
+  signal daq_acknowledge       : std_logic := '0';
 
   signal xfifo_fragment  : std_logic_vector (0 downto 0);
+  signal xfifo_trigger   : std_logic_vector (0 downto 0);
   signal xfifo_busy      : std_logic_vector (0 downto 0);
   signal xfifo_timestamp : std_logic_vector (timestamp'range);
   signal xfifo_mask      : std_logic_vector (readout_mask'range);
   signal xfifo_event_cnt : std_logic_vector (mt_event_cnt'range);
 
+  signal event_queue_valid   : std_logic := '0';
+  signal event_queue_wr_en   : std_logic := '0';
   signal event_queue_request : std_logic := '0';
   signal event_queue_rd_en   : std_logic := '0';
   signal event_queue_empty   : std_logic := '0';
@@ -582,7 +583,7 @@ begin
         probe3(31)            => mt_resync,
         probe4                => (others => '0'),
         probe5                => mt_prbs_err,
-        probe6                => daq_event_valid,
+        probe6                => event_queue_valid,
         probe7                => loss_of_lock_i,
         probe8                => mt_event_cnt,
         probe9                => mt_trigger_dav,
@@ -707,11 +708,26 @@ begin
 
   event_queue_din <= mt_fragment & mt_event_cnt & readout_mask & drs_busy_latch & std_logic_vector(timestamp);
 
-  xfifo_timestamp <= event_queue_dout(xfifo_timestamp'length-1 downto 0);
-  xfifo_busy      <= event_queue_dout(xfifo_timestamp'length downto xfifo_timestamp'length);
-  xfifo_mask      <= event_queue_dout(xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length - 1 downto xfifo_busy'length + xfifo_timestamp'length);
-  xfifo_event_cnt <= event_queue_dout(xfifo_event_cnt'length + xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length - 1 downto xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length);
-  xfifo_fragment  <= event_queue_dout(xfifo_event_cnt'length + xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length downto xfifo_event_cnt'length + xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length);
+  process (clock) is
+  begin
+    if (rising_edge(clock)) then
+      if (event_queue_valid = '1') then 
+        xfifo_timestamp <= event_queue_dout(xfifo_timestamp'length-1 downto 0);
+        xfifo_busy      <= event_queue_dout(xfifo_timestamp'length downto xfifo_timestamp'length);
+        xfifo_mask      <= event_queue_dout(xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length - 1 downto xfifo_busy'length + xfifo_timestamp'length);
+        xfifo_event_cnt <= event_queue_dout(xfifo_event_cnt'length + xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length - 1 downto xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length);
+        xfifo_fragment  <= event_queue_dout(xfifo_event_cnt'length + xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length downto xfifo_event_cnt'length + xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length);
+        xfifo_trigger   <= not event_queue_dout(xfifo_event_cnt'length + xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length downto xfifo_event_cnt'length + xfifo_mask'length + xfifo_timestamp'length + xfifo_busy'length);
+      else 
+        xfifo_timestamp <= (others => '0');
+        xfifo_busy      <= (others => '0');
+        xfifo_mask      <= (others => '0');
+        xfifo_event_cnt <= (others => '0');
+        xfifo_fragment  <= (others => '0');
+        xfifo_trigger   <= (others => '0');
+      end if; 
+    end if;
+  end process;
 
   -- save a copy of whether the drs was busy when the trigger was received,
   -- push this into the FIFO when the rest of the metadata is received
@@ -726,7 +742,7 @@ begin
     end if;
   end process;
 
-  mt_fifo_wr_en <= trigger_enable and mt_fifo_wr_req and not soft_reset_trg;
+  event_queue_wr_en <= trigger_enable and mt_fifo_wr_req and not soft_reset_trg;
 
   event_fifo_inst : entity work.fifo_sync
     generic map (
@@ -737,11 +753,11 @@ begin
     port map (
       rst    => reset or soft_reset_buf,
       clk    => clock,
-      wr_en  => mt_fifo_wr_en,
+      wr_en  => event_queue_wr_en,
       rd_en  => event_queue_rd_en,
       din    => event_queue_din,
       dout   => event_queue_dout,
-      valid  => daq_event_valid,
+      valid  => event_queue_valid,
       full   => open,
       empty  => event_queue_empty
       );
@@ -1068,7 +1084,7 @@ begin
   daq_timestamp <= xfifo_timestamp   when mt_trigger_mode = '1' else std_logic_vector(timestamp);
   daq_mask      <= xfifo_mask        when mt_trigger_mode = '1' else readout_mask;
   daq_drs_busy  <= xfifo_busy(0)     when mt_trigger_mode = '1' else drs_busy;
-  daq_trigger   <= daq_event_valid   when mt_trigger_mode = '1' else trigger;
+  daq_trigger   <= xfifo_trigger(0)  when mt_trigger_mode = '1' else trigger;
   daq_fragment  <= xfifo_fragment(0) when mt_trigger_mode = '1' else '0';
 
   daq_inst : entity work.daq
@@ -1241,7 +1257,7 @@ begin
     port map (
       clk_i   => clock,
       reset_i => reset,
-      en_i    => mt_fifo_wr_en,
+      en_i    => event_queue_wr_en,
       rate_o  => mt_trigger_rate
       );
 

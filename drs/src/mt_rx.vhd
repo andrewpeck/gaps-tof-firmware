@@ -72,6 +72,8 @@ architecture rtl of mt_rx is
   constant WAIT_CNT_MAX : integer                         := 2**12-1;
   signal wait_cnt       : natural range 0 to WAIT_CNT_MAX := 0;
 
+  signal done : std_logic := '0';
+
 begin
 
   crc_rst  <= '1' when state = IDLE_state or reset = '1' else '0';
@@ -106,6 +108,7 @@ begin
             cmd_valid       <= '0';
             crc_valid       <= '0';
             trg             <= '0';
+            fragment        <= '0';
 
             state_bit_cnt <= 0;
 
@@ -219,13 +222,15 @@ begin
     end if;
   end process;
 
+  done <= (event_cnt_valid and not event_cnt_valid_r);
+
   process (outclk) is
   begin
     if (rising_edge(outclk)) then
 
-      fifo_wr_o  <= (fragment or trg) and (event_cnt_valid and not event_cnt_valid_r);
+      fifo_wr_o  <= (fragment or trg) and done;
       trg_o      <= trg_fast_o or (trg and not trg_r);
-      fragment_o <= fragment_en_i and fragment;
+      fragment_o <= fragment;
 
       trg_r             <= trg; 
       event_cnt_valid_r <= event_cnt_valid; 
@@ -235,7 +240,7 @@ begin
 
       -- make these rising edge sensitive on the outclk so they are only 1
       -- clock wide and can be used as write enables
-      event_cnt_valid_o <= event_cnt_valid and not event_cnt_valid_r;
+      event_cnt_valid_o <= done; 
       mask_valid_o      <= mask_valid and not mask_valid_r;
       cmd_valid_o       <= cmd_valid and not cmd_valid_r;
       crc_valid_o       <= crc_valid and not crc_valid_r;
