@@ -433,13 +433,6 @@
         "description": "Set to 1 for mt level trigger on v2.4 boards",
         "adr8": 260
     },
-    "DRS.TRIGGER.TRIGGER_DELAY": {
-        "adr": 66,
-        "permission": "rw",
-        "mask": 4095,
-        "description": "Trigger delay measured in LUT1 units",
-        "adr8": 264
-    },
     "DRS.TRIGGER.CNT_MT_PRBS_ERRS": {
         "adr": 67,
         "permission": "r",

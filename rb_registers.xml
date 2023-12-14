@@ -359,11 +359,6 @@
                 fw_default="0x0"
                 mask="0x4"
                 fw_signal="mt_is_level_trigger" />
-            <node id="TRIGGER_DELAY" address="0x2" permission="rw"
-                description="Trigger delay measured in LUT1 units"
-                fw_default="0x0"
-                mask="0xfff"
-                fw_signal="drs_dwrite_delay_sel" />
             <node id="CNT_MT_PRBS_ERRS" address="0x3" permission="r"
                 description="Number of PRBS errors on the MT line"
                 mask="0xffffffff"
