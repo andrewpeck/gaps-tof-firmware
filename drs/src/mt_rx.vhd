@@ -18,11 +18,10 @@ entity mt_rx is
     serial_i : in std_logic;
     enable_i : in std_logic;
 
-    wr_en_o : out std_logic;
-
-    trg_o      : out std_logic := '0';
-    trg_fast_o : out std_logic := '0';
-    fragment_o : out std_logic := '0';
+    trg_o         : out std_logic := '0';
+    trg_fast_o    : out std_logic := '0';
+    fragment_o    : out std_logic := '0';
+    fragment_en_i : in  std_logic := '0';
 
     cmd_o       : out std_logic_vector (CMDB-1 downto 0);
     cmd_valid_o : out std_logic;
@@ -32,11 +31,13 @@ entity mt_rx is
 
     crc_o       : out std_logic_vector (CRCB-1 downto 0);
     crc_calc_o  : out std_logic_vector (CRCB-1 downto 0);
-    crc_valid_o : out std_logic;
-    crc_ok_o    : out std_logic;
+    crc_valid_o : out std_logic := '0';
+    crc_ok_o    : out std_logic := '0';
 
     event_cnt_o       : out std_logic_vector (EVENTCNTB-1 downto 0);
-    event_cnt_valid_o : out std_logic
+    event_cnt_valid_o : out std_logic;
+
+    fifo_wr_o : out std_logic
 
     );
 end mt_rx;
@@ -45,7 +46,7 @@ architecture rtl of mt_rx is
 
   type state_t is (IDLE_state, DWRITE_state, MASK_state, EVENTCNT_state, CMD_state, CRC_state, WAIT_state);
 
-  signal trg, fragment                                             : std_logic := '0';
+  signal trg, trg_r, fragment                                      : std_logic := '0';
   signal cmd_valid, mask_valid, crc_valid, event_cnt_valid         : std_logic := '0';
   signal cmd_valid_r, mask_valid_r, crc_valid_r, event_cnt_valid_r : std_logic := '0';
 
@@ -95,16 +96,16 @@ begin
       if (enable_i = '1') then
 
         trg_fast_o      <= '0';
-        event_cnt_valid <= '0';
-        mask_valid      <= '0';
-        cmd_valid       <= '0';
-        crc_valid       <= '0';
-        trg             <= '0';
-        fragment        <= '0';
 
         case state is
 
           when IDLE_state =>
+
+            event_cnt_valid <= '0';
+            mask_valid      <= '0';
+            cmd_valid       <= '0';
+            crc_valid       <= '0';
+            trg             <= '0';
 
             state_bit_cnt <= 0;
 
@@ -121,7 +122,7 @@ begin
               trg        <= '1';
               trg_fast_o <= '1';
             else
-              fragment <= '1';
+              fragment <= fragment_en_i;
             end if;
 
           when MASK_state =>
@@ -222,15 +223,23 @@ begin
   begin
     if (rising_edge(outclk)) then
 
-      trg_o      <= trg;
-      fragment_o <= fragment;
+      fifo_wr_o  <= (fragment or trg) and (event_cnt_valid and not event_cnt_valid_r);
+      trg_o      <= trg_fast_o or (trg and not trg_r);
+      fragment_o <= fragment_en_i and fragment;
+
+      trg_r             <= trg; 
+      event_cnt_valid_r <= event_cnt_valid; 
+      mask_valid_r      <= mask_valid;
+      cmd_valid_r       <= cmd_valid;
+      crc_valid_r       <= crc_valid;
 
       -- make these rising edge sensitive on the outclk so they are only 1
       -- clock wide and can be used as write enables
-      event_cnt_valid_o <= event_cnt_valid and not event_cnt_valid_o;
-      mask_valid_o      <= mask_valid and not mask_valid_o;
-      cmd_valid_o       <= cmd_valid and not cmd_valid_o;
-      crc_valid_o       <= crc_valid and not crc_valid_o;
+      event_cnt_valid_o <= event_cnt_valid and not event_cnt_valid_r;
+      mask_valid_o      <= mask_valid and not mask_valid_r;
+      cmd_valid_o       <= cmd_valid and not cmd_valid_r;
+      crc_valid_o       <= crc_valid and not crc_valid_r;
+
 
       event_cnt_o <= event_cnt;
       mask_o      <= mask;

@@ -160,6 +160,7 @@ architecture Behavioral of top_readout_board is
   signal mt_inactive_cnts       : integer range 0 to 63  := 0;
   signal mt_active_hi_cnts      : integer range 0 to 127 := 0;
 
+  signal mt_fifo_wr_req     : std_logic                      := '0';
   signal mt_fifo_wr_en      : std_logic                      := '0';
   signal mt_event_cnt_valid : std_logic                      := '0';
   signal mt_mask_valid      : std_logic                      := '0';
@@ -678,9 +679,10 @@ begin
 
       -- provide a 200MHz copy of the trigger signal for a fast route to dwrite
       -- and a 33MHz copy for the rest of the logic
-      trg_fast_o => mt_trigger_fast,
-      trg_o      => mt_trigger,
-      fragment_o => mt_fragment,
+      trg_fast_o    => mt_trigger_fast,
+      trg_o         => mt_trigger,
+      fragment_o    => mt_fragment,
+      fragment_en_i => daq_fragment_en,
 
       serial_i    => mt_trigger_data,
       enable_i    => mt_trigger_mode and mt_trigger_dav,
@@ -696,7 +698,9 @@ begin
       event_cnt_valid_o => mt_event_cnt_valid,
 
       mask_o       => mt_mask,
-      mask_valid_o => mt_mask_valid
+      mask_valid_o => mt_mask_valid,
+
+      fifo_wr_o    => mt_fifo_wr_req
       );
 
   process (clock) is
@@ -757,7 +761,7 @@ begin
     end if;
   end process;
 
-  mt_fifo_wr_en <= trigger_enable and mt_event_cnt_valid and not soft_reset_trg;
+  mt_fifo_wr_en <= trigger_enable and mt_fifo_wr_req and not soft_reset_trg;
 
   event_fifo_inst : entity work.fifo_sync
     generic map (
