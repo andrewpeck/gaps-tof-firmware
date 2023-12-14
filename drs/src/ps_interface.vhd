@@ -534,12 +534,11 @@ begin
     constant addrb   : natural := ipb_mosi_arr_int(I).ipb_addr'length;
     constant wdatb   : natural := ipb_mosi_arr_int(I).ipb_wdata'length;
     constant rdatb   : natural := ipb_miso_arr_int(I).ipb_rdata'length;
-    constant strobeb : natural := 1;
     constant writeb  : natural := 1;
-    constant ackb    : natural := 1;
     constant errb    : natural := 1;
+    constant ackb    : natural := 1;
 
-    constant MOSIB : natural := addrb + wdatb + strobeb + writeb;
+    constant MOSIB : natural := addrb + wdatb + writeb;
     constant MISOB : natural := rdatb + ackb + errb;
 
     signal mosi_pre_cdc  : std_logic_vector (MOSIB-1 downto 0) := (others => '0');
@@ -555,31 +554,42 @@ begin
     --------------------------------------------------------------------------------
 
     -- internal signal to slv
-    mosi_pre_cdc <= ipb_mosi_arr_int(I).ipb_addr & ipb_mosi_arr_int(I).ipb_wdata &
-                    ipb_mosi_arr_int(I).ipb_strobe & ipb_mosi_arr_int(I).ipb_write;
+    mosi_pre_cdc <= ipb_mosi_arr_int(I).ipb_addr &
+                    ipb_mosi_arr_int(I).ipb_wdata &
+                    ipb_mosi_arr_int(I).ipb_write;
 
     -- outputs
-    ipb_mosi_arr(I).ipb_addr   <= mosi_post_cdc (2+wdatb+addrb-1 downto 2+wdatb);
-    ipb_mosi_arr(I).ipb_wdata  <= mosi_post_cdc (2+wdatb-1 downto 2);
-    ipb_mosi_arr(I).ipb_strobe <= mosi_post_cdc (1);
+    ipb_mosi_arr(I).ipb_addr   <= mosi_post_cdc (1+wdatb+addrb-1 downto 1+wdatb);
+    ipb_mosi_arr(I).ipb_wdata  <= mosi_post_cdc (1+wdatb-1 downto 1);
     ipb_mosi_arr(I).ipb_write  <= mosi_post_cdc (0);
 
-    mosi_sync : entity work.fifo_async
+    xpm_mosi_sync : xpm_cdc_array_single
       generic map (
-        DEPTH    => 16,
-        WR_WIDTH => MOSIB,
-        RD_WIDTH => MOSIB)
+        DEST_SYNC_FF   => 2,    -- DECIMAL; range: 2-10
+        INIT_SYNC_FF   => 0,    -- DECIMAL; 0=disable simulation init values, 1=enable simulation init values
+        SIM_ASSERT_CHK => 0,    -- DECIMAL; 0=disable simulation messages, 1=enable simulation messages
+        SRC_INPUT_REG  => 1,    -- DECIMAL; 0=do not register input, 1=register input
+        WIDTH          => MOSIB -- DECIMAL; range: 1-1024
+        )
       port map (
-        rst    => (not pl_mmcm_locked) or (not ipb_axi_aresetn(0)),
-        wr_clk => ipb_axi_clk,
-        rd_clk => ipb_clk,
-        wr_en  => '1',
-        rd_en  => '1',
-        din    => mosi_pre_cdc,
-        dout   => mosi_post_cdc,
-        valid  => open,
-        full   => open,
-        empty  => open
+        src_clk  => ipb_axi_clk,   -- 1-bit input: optional; required when SRC_INPUT_REG = 1
+        dest_clk => ipb_clk,       -- 1-bit input: Clock signal for the destination clock domain.
+        dest_out => mosi_post_cdc, -- WIDTH-bit output: src_in synchronized to the destination clock domain. This output is registered.
+        src_in   => mosi_pre_cdc   -- WIDTH-bit input: Input single-bit array to be synchronized to destination clock
+        );
+
+    xpm_strobe_sync : xpm_cdc_pulse
+      generic map (
+        DEST_SYNC_FF => 8, -- range: 2-10
+        RST_USED     => 0  -- integer; 0=no reset, 1=implement reset
+        )
+      port map (
+        src_rst    => not ipb_axi_aresetn(0),
+        dest_rst   => not pl_mmcm_locked,
+        src_clk    => ipb_axi_clk,
+        dest_clk   => ipb_clk,
+        src_pulse  => ipb_mosi_arr_int(I).ipb_strobe,
+        dest_pulse => ipb_mosi_arr(I).ipb_strobe
         );
 
     --------------------------------------------------------------------------------
