@@ -677,26 +677,5 @@
         "mask": 1,
         "description": "Write 1 to switch the dma buffer to the other half",
         "adr8": 1044
-    },
-    "DRS.GFP.EVENTID_SPI_EN": {
-        "adr": 512,
-        "permission": "rw",
-        "mask": 1,
-        "description": "1 to enable GFP Event ID from SPI",
-        "adr8": 2048
-    },
-    "DRS.GFP.EVENTID_RX": {
-        "adr": 513,
-        "permission": "r",
-        "mask": 4294967295,
-        "description": "Event ID from GFP SPI Interface",
-        "adr8": 2052
-    },
-    "DRS.GFP.EVENTID_TIMEOUT_CNT": {
-        "adr": 514,
-        "permission": "r",
-        "mask": 65535,
-        "description": "Timed out triggers waiting for event id",
-        "adr8": 2056
     }
 }
