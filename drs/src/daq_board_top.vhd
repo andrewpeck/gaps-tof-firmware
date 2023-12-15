@@ -1106,12 +1106,6 @@ begin
 
       ack_o  => daq_acknowledge,
 
-      gfp_use_eventid_i     => '0',
-      gfp_eventid_i         => (others => '0'),
-      gfp_eventid_valid_i   => (others => '0'),
-      gfp_eventid_read_o    => open,
-      gfp_eventid_timeout_o => open,
-
       board_id    => board_id,
       sync_err_i  => '0',
       dna_i       => "0000000" & dna,

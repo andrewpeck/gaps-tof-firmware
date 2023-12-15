@@ -29,12 +29,6 @@ entity daq is
 
     ack_o : out std_logic;
 
-    gfp_use_eventid_i     : in  std_logic;
-    gfp_eventid_i         : in  std_logic_vector (31 downto 0);
-    gfp_eventid_valid_i   : in  std_logic;
-    gfp_eventid_read_o    : out std_logic;
-    gfp_eventid_timeout_o : out std_logic;
-
     -- status
     temperature_i  : in std_logic_vector (11 downto 0);
     loss_of_lock_i : in std_logic;
@@ -66,7 +60,7 @@ architecture behavioral of daq is
 
   type state_t is (IDLE_state, ERR_state, HEAD_state, STATUS_state, LENGTH_state, ROI_state,
                    DNA_state, RSVD0_state, RSVD1_state, RSVD2_state, HASH_state, ID_state,
-                   CHMASK_state, WAIT_EVENT_CNT_state, EVENT_CNT_state, DTAP_state, DRS_TEMP_state,
+                   CHMASK_state, EVENT_CNT_state, DTAP_state, DRS_TEMP_state,
                    TIMESTAMP_state, CALC_CH_CRC_state, CH_CRC_state, CH_HEADER_state, PAYLOAD_state,
                    STOP_CELL_state, CALC_CRC32_state, CRC32_state, TAIL_state, PAD_state,
                    WAIT_state);
@@ -100,8 +94,6 @@ architecture behavioral of daq is
 
   signal mask          : std_logic_vector (17 downto 0)       := (others => '0');
   signal event_cnt     : std_logic_vector (event_cnt_i'range) := (others => '0');
-  -- mux the event count between normal daq and gfp
-  signal event_cnt_mux : std_logic_vector (event_cnt_i'range) := (others => '0');
 
   signal timestamp : std_logic_vector (timestamp_i'range) := (others => '0');
   signal dna       : std_logic_vector (15 downto 0)       := (others => '0');
@@ -118,9 +110,6 @@ architecture behavioral of daq is
   signal state_word_cnt : natural range 0 to 1024 := 0;
   signal channel_cnt    : natural range 0 to 15   := 0;
   signal channel_id     : natural range 0 to 17   := 0;
-
-  constant EVENTID_TIMEOUT_MAX : natural := 10000000;
-  signal gfp_eventid_timeout_counter : natural range 0 to EVENTID_TIMEOUT_MAX := 0;
 
   constant PAYLOAD_TIMEOUT_MAX: natural := 2**16-1;
   signal payload_timeout_counter : natural range 0 to PAYLOAD_TIMEOUT_MAX := 0;
@@ -349,7 +338,6 @@ begin
       dav                   <= false;
       data                  <= (others => '0');
       drs_rden_o            <= '0';
-      gfp_eventid_timeout_o <= '0';
       ack_o                 <= '0';
 
       case state is
@@ -361,7 +349,6 @@ begin
 
           packet_timed_out            <= '0';
           payload_timeout_counter     <= 0;
-          gfp_eventid_timeout_counter <= 0;
 
           if (fragment_i = '1' or trigger_i = '1' or debug_packet_inject_i = '1') then
             state <= HEAD_state;
@@ -433,38 +420,14 @@ begin
 
         when CHMASK_state =>
 
-          if (gfp_use_eventid_i = '1') then
-            state <= WAIT_EVENT_CNT_state;
-          else
-            state         <= EVENT_CNT_state;
-            event_cnt_mux <= event_cnt;
-          end if;
+          state         <= EVENT_CNT_state;
 
           data <= "0000000" & mask (8 downto 0);
           dav  <= true;
 
           channel_id <= get_first_channel(mask);
 
-        when WAIT_EVENT_CNT_state =>
-
-          gfp_eventid_timeout_counter <= gfp_eventid_timeout_counter + 1;
-
-          if (gfp_eventid_timeout_counter = EVENTID_TIMEOUT_MAX) then
-            state                   <= EVENT_CNT_state;
-            event_cnt_mux           <= x"FFFFFFFE";
-            gfp_eventid_timeout_o   <= '1';
-          elsif (gfp_eventid_valid_i = '1') then
-            state                   <= EVENT_CNT_state;
-            event_cnt_mux           <= gfp_eventid_i;
-            gfp_eventid_read_o      <= '1';
-          end if;
-
-          dav <= false;
-
         when EVENT_CNT_state =>
-
-          gfp_eventid_read_o <= '0';
-          gfp_eventid_timeout_counter <= 0;
 
           if (state_word_cnt = event_cnt'length / g_WORD_SIZE - 1) then
             state          <= DTAP_state;
@@ -473,7 +436,7 @@ begin
             state_word_cnt <= state_word_cnt + 1;
           end if;
 
-          data <= data_sel(g_MSB_FIRST, g_WORD_SIZE, EVENT_CNT_WORDS, state_word_cnt, event_cnt_mux);
+          data <= data_sel(g_MSB_FIRST, g_WORD_SIZE, EVENT_CNT_WORDS, state_word_cnt, event_cnt);
           dav  <= true;
 
         when DTAP_state =>
