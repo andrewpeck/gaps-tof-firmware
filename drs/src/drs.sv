@@ -209,8 +209,8 @@ assign idle_o = (drs_readout_state == IDLE || drs_readout_state == INIT);
 //----------------------------------------------------------------------------------------------------------------------
 
 reg trigger;
-always @(posedge clock) begin
-   trigger <= trigger && (|drs_ctl_readout_mask_i && drs_readout_state == RUNNING);
+always_ff @(posedge clock) begin
+   trigger <= trigger_i && |drs_ctl_readout_mask_i && drs_readout_state == RUNNING;
 end
 
 //----------------------------------------------------------------------------------------------------------------------
