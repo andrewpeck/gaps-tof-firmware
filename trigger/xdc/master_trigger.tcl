@@ -67,28 +67,28 @@ set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets fb_clk_i_*]
 ################################################################################
 
 set_max_delay -datapath_only 5.0 \
-    -from [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/rx_fifo/fifo_inst/s_rst_sync1_reg_reg/C] \
-    -to [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/rx_fifo/fifo_inst/s_rst_sync2_reg_reg/D]
+    -from [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/rx_fifo/fifo_inst/s_rst_sync1*/C] \
+    -to [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/rx_fifo/fifo_inst/s_rst_sync2*/D]
 
 set_max_delay -datapath_only 5.0 \
-    -from [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/s_rst_sync1_reg_reg/C] \
-    -to [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/s_rst_sync2_reg_reg/D]
+    -from [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/s_rst_sync1*/C] \
+    -to [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/s_rst_sync2*/D]
 
 set_max_delay -datapath_only 5.0 \
-    -from [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/rx_fifo/fifo_inst/s_rst_sync1_reg_reg/C] \
-    -to [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/rx_fifo/fifo_inst/s_rst_sync2_reg_reg/D]
+    -from [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/rx_fifo/fifo_inst/s_rst_sync1*/C] \
+    -to [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/rx_fifo/fifo_inst/s_rst_sync2*/D]
 
 set_max_delay -datapath_only 5.0 \
-    -from [get_pins {eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/rd_ptr_gray_reg_reg[*]/C}] \
-    -to [get_pins {eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/rd_ptr_gray_sync1_reg_reg[*]/D}]
+    -from [get_pins {eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/rd_ptr_gray*/C}] \
+    -to [get_pins {eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/rd_ptr_gray_sync1*/D}]
 
 set_max_delay -datapath_only 5.0 \
-    -from [get_pins {eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/wr_ptr_sync_gray_reg_reg[*]/C}] \
-    -to [get_pins {eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/wr_ptr_gray_sync1_reg_reg[*]/D}]
+    -from [get_pins {eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/wr_ptr_sync_gray*/C}] \
+    -to [get_pins {eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/wr_ptr_gray_sync1*/D}]
 
 set_max_delay -datapath_only 5.0 \
-  -from [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/wr_ptr_update_reg_reg/C] \
-  -to [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/wr_ptr_update_sync1_reg_reg/D]
+  -from [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/wr_ptr_update*/C] \
+  -to [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/wr_ptr_update_sync1*/D]
 
 set_max_delay -datapath_only 5.0 \
     -from [get_clocks rgmii_rx_clk] \
@@ -99,12 +99,12 @@ set_max_delay -datapath_only 5.0 \
     -to [get_clocks rgmii_rx_clk]
 
 set_max_delay -datapath_only 5.0 \
-    -from [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/rx_fifo/fifo_inst/s_rst_sync1_reg_reg/C] \
-    -to [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/m_rst_sync2_reg_reg/D]
+    -from [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/rx_fifo/fifo_inst/s_rst_sync1*/C] \
+    -to [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/m_rst_sync2*/D]
 
 set_max_delay -datapath_only 5.0 \
-    -from [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/wr_ptr_update_sync3_reg_reg/C] \
-    -to [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/wr_ptr_update_ack_sync1_reg_reg/D]
+    -from [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/wr_ptr_update_sync3*/C] \
+    -to [get_pins eth_infra_inst/eth_mac_1g_rgmii_inst/tx_fifo/fifo_inst/wr_ptr_update_ack_sync1*/D]
 
 ################################################################################
 #
