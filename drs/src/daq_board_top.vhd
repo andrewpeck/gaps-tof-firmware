@@ -959,11 +959,12 @@ begin
   begin
     if (rising_edge(clock)) then
 
-      soft_reset_drs <= '0';
-      soft_reset_daq <= '0';
-      soft_reset_dma <= '0';
-      soft_reset_buf <= '0';
-      soft_reset_ptr <= '0';
+      soft_reset_drs  <= '0';
+      soft_reset_daq  <= '0';
+      soft_reset_dma  <= '0';
+      soft_reset_buf  <= '0';
+      soft_reset_ptr  <= '0';
+      soft_reset_done <= '0';
 
       case soft_rst_state is
 
@@ -1011,7 +1012,7 @@ begin
 
         when RST_POINTER =>
 
-          if (dma_idle = '1') then
+          if (dma_idle = '1' or soft_reset_wait_dma = '0') then
             soft_rst_state <= FLUSH;
             soft_reset_ptr <= soft_reset_ptr_en;
           end if;
