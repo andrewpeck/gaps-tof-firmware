@@ -28,12 +28,13 @@ architecture behavioral of rb_deadtime is
   -- this should be programmed to the constant deadtime of a readout board
   -- including wait_vdd etc.
   -- 105  clocks for START_RUNNING
-  -- 8    clocks for WAIT_VDD
+  -- 110  clocks for WAIT_VDD
   -- 1    clocks for INIT_READOUT
   -- 1    clocks for RSR_LOAD
   -- 1    clocks for STOP_CELL
   -- 1    clocks for DONE
-constant CONSTANT_DEADTIME : natural := integer(ceil(117.0 * RB_CLK_PERIOD / CLK_PERIOD));
+  -- 10   safety, transmission, serialization
+  constant CONSTANT_DEADTIME : natural := integer(ceil(229.0 * RB_CLK_PERIOD / CLK_PERIOD));
 
   constant DEADMAX : natural := 9*DEADTIME_PER_CHANNEL + CONSTANT_DEADTIME;
 
