@@ -57,7 +57,7 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |LT_INPUT_STRETCH | ~0xf~ | ~0x3c~ | ~[7:4]~ | rw | ~0xF~ | Number of clock cycles to stretch the LT inputs by | 
 |------------+---+---+---------+-----+-----+----------------------------|
-|RB_INTEGRATION_WINDOW | ~0xf~ | ~0x3c~ | ~[12:8]~ | rw | ~0x5~ | Number of 100MHz clock cycles to integrate the LTB hits to determine which MTB to read out. | 
+|RB_INTEGRATION_WINDOW | ~0xf~ | ~0x3c~ | ~[12:8]~ | rw | ~0x1F~ | Number of 100MHz clock cycles to integrate the LTB hits to determine which MTB to read out. | 
 |------------+---+---+---------+-----+-----+----------------------------|
 |RB_READ_ALL_CHANNELS | ~0xf~ | ~0x3c~ | ~13~ | rw | ~0x1~ | Set to 1 to read all channels from RB for any trigger | 
 |------------+---+---+---------+-----+-----+----------------------------|

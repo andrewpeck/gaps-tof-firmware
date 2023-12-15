@@ -71,7 +71,7 @@
     TIU\_EMU\_BUSY\_CNT & \texttt{0xe} & \texttt{[31:14]} & rw & \texttt{0xC350} & Number of 10 ns clock cyles that the emulator will remain busy \\\hline
     TIU\_BAD & \texttt{0xf} & \texttt{[0:0]} & r & \texttt{} & 1 means that the tiu link is not working \\\hline
     LT\_INPUT\_STRETCH & \texttt{0xf} & \texttt{[7:4]} & rw & \texttt{0xF} & Number of clock cycles to stretch the LT inputs by \\\hline
-    RB\_INTEGRATION\_WINDOW & \texttt{0xf} & \texttt{[12:8]} & rw & \texttt{0x5} & Number of 100MHz clock cycles to integrate the LTB hits to determine which MTB to read out. \\\hline
+    RB\_INTEGRATION\_WINDOW & \texttt{0xf} & \texttt{[12:8]} & rw & \texttt{0x1F} & Number of 100MHz clock cycles to integrate the LTB hits to determine which MTB to read out. \\\hline
     RB\_READ\_ALL\_CHANNELS & \texttt{0xf} & \texttt{[13:13]} & rw & \texttt{0x1} & Set to 1 to read all channels from RB for any trigger \\\hline
     \end{tabularx}
     \vspace{5mm}
