@@ -27,6 +27,7 @@ entity rb_tx is
     resync_i : in std_logic;
 
     trg_i : in std_logic;
+    trg_o : out std_logic;
 
     event_cnt_i : in std_logic_vector (EVENTCNTB-1 downto 0);
     ch_mask_i   : in std_logic_vector (MASKCNTB-1 downto 0)
@@ -42,6 +43,7 @@ architecture rtl of rb_tx is
   signal state         : state_t   := IDLE_state;
   signal state_bit_cnt : natural   := 0;
   signal trg           : std_logic := '0';
+  signal has_hits      : std_logic;
 
   signal packet_buf : std_logic_vector (LENGTH-1 downto 0) := (others => '0');
 
@@ -75,6 +77,8 @@ begin
       crc_out => crc
       );
 
+  has_hits <= or_reduce(ch_mask_i);
+
   process (clock)
   begin
 
@@ -82,6 +86,7 @@ begin
 
       serial_data <= '0';
       crc_en      <= '0';
+      trg_o       <= '0';
 
       case state is
 
@@ -92,7 +97,8 @@ begin
           if (trg_i = '1') then
             serial_data <= '1';
             state       <= DATA_state;
-            packet_buf  <= or_reduce(ch_mask_i) & ch_mask_i & event_cnt_i & cmd & x"00";
+            packet_buf  <= has_hits & ch_mask_i & event_cnt_i & cmd & x"00";
+            trg_o       <= has_hits;
             crc_en      <= '1';
           end if;
 

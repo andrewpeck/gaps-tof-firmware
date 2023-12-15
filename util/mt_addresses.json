@@ -875,6 +875,258 @@
         "mask": 15,
         "description": "Integer clock delay of LT LINK 49"
     },
+    "MT.RB_READOUT_CNTS.CNTS_0": {
+        "adr": 242,
+        "permission": "r",
+        "mask": 255,
+        "description": "Readout count on RB=0"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_1": {
+        "adr": 242,
+        "permission": "r",
+        "mask": 65280,
+        "description": "Readout count on RB=1"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_2": {
+        "adr": 242,
+        "permission": "r",
+        "mask": 16711680,
+        "description": "Readout count on RB=2"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_3": {
+        "adr": 242,
+        "permission": "r",
+        "mask": 4278190080,
+        "description": "Readout count on RB=3"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_4": {
+        "adr": 243,
+        "permission": "r",
+        "mask": 255,
+        "description": "Readout count on RB=4"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_5": {
+        "adr": 243,
+        "permission": "r",
+        "mask": 65280,
+        "description": "Readout count on RB=5"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_6": {
+        "adr": 243,
+        "permission": "r",
+        "mask": 16711680,
+        "description": "Readout count on RB=6"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_7": {
+        "adr": 243,
+        "permission": "r",
+        "mask": 4278190080,
+        "description": "Readout count on RB=7"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_8": {
+        "adr": 244,
+        "permission": "r",
+        "mask": 255,
+        "description": "Readout count on RB=8"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_9": {
+        "adr": 244,
+        "permission": "r",
+        "mask": 65280,
+        "description": "Readout count on RB=9"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_10": {
+        "adr": 244,
+        "permission": "r",
+        "mask": 16711680,
+        "description": "Readout count on RB=10"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_11": {
+        "adr": 244,
+        "permission": "r",
+        "mask": 4278190080,
+        "description": "Readout count on RB=11"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_12": {
+        "adr": 245,
+        "permission": "r",
+        "mask": 255,
+        "description": "Readout count on RB=12"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_13": {
+        "adr": 245,
+        "permission": "r",
+        "mask": 65280,
+        "description": "Readout count on RB=13"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_14": {
+        "adr": 245,
+        "permission": "r",
+        "mask": 16711680,
+        "description": "Readout count on RB=14"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_15": {
+        "adr": 245,
+        "permission": "r",
+        "mask": 4278190080,
+        "description": "Readout count on RB=15"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_16": {
+        "adr": 246,
+        "permission": "r",
+        "mask": 255,
+        "description": "Readout count on RB=16"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_17": {
+        "adr": 246,
+        "permission": "r",
+        "mask": 65280,
+        "description": "Readout count on RB=17"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_18": {
+        "adr": 246,
+        "permission": "r",
+        "mask": 16711680,
+        "description": "Readout count on RB=18"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_19": {
+        "adr": 246,
+        "permission": "r",
+        "mask": 4278190080,
+        "description": "Readout count on RB=19"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_20": {
+        "adr": 247,
+        "permission": "r",
+        "mask": 255,
+        "description": "Readout count on RB=20"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_21": {
+        "adr": 247,
+        "permission": "r",
+        "mask": 65280,
+        "description": "Readout count on RB=21"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_22": {
+        "adr": 247,
+        "permission": "r",
+        "mask": 16711680,
+        "description": "Readout count on RB=22"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_23": {
+        "adr": 247,
+        "permission": "r",
+        "mask": 4278190080,
+        "description": "Readout count on RB=23"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_24": {
+        "adr": 248,
+        "permission": "r",
+        "mask": 255,
+        "description": "Readout count on RB=24"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_25": {
+        "adr": 248,
+        "permission": "r",
+        "mask": 65280,
+        "description": "Readout count on RB=25"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_26": {
+        "adr": 248,
+        "permission": "r",
+        "mask": 16711680,
+        "description": "Readout count on RB=26"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_27": {
+        "adr": 248,
+        "permission": "r",
+        "mask": 4278190080,
+        "description": "Readout count on RB=27"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_28": {
+        "adr": 249,
+        "permission": "r",
+        "mask": 255,
+        "description": "Readout count on RB=28"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_29": {
+        "adr": 249,
+        "permission": "r",
+        "mask": 65280,
+        "description": "Readout count on RB=29"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_30": {
+        "adr": 249,
+        "permission": "r",
+        "mask": 16711680,
+        "description": "Readout count on RB=30"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_31": {
+        "adr": 249,
+        "permission": "r",
+        "mask": 4278190080,
+        "description": "Readout count on RB=31"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_32": {
+        "adr": 250,
+        "permission": "r",
+        "mask": 255,
+        "description": "Readout count on RB=32"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_33": {
+        "adr": 250,
+        "permission": "r",
+        "mask": 65280,
+        "description": "Readout count on RB=33"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_34": {
+        "adr": 250,
+        "permission": "r",
+        "mask": 16711680,
+        "description": "Readout count on RB=34"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_35": {
+        "adr": 250,
+        "permission": "r",
+        "mask": 4278190080,
+        "description": "Readout count on RB=35"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_36": {
+        "adr": 251,
+        "permission": "r",
+        "mask": 255,
+        "description": "Readout count on RB=36"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_37": {
+        "adr": 251,
+        "permission": "r",
+        "mask": 65280,
+        "description": "Readout count on RB=37"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_38": {
+        "adr": 251,
+        "permission": "r",
+        "mask": 16711680,
+        "description": "Readout count on RB=38"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_39": {
+        "adr": 251,
+        "permission": "r",
+        "mask": 4278190080,
+        "description": "Readout count on RB=39"
+    },
+    "MT.RB_READOUT_CNTS.RESET": {
+        "adr": 252,
+        "permission": "w",
+        "mask": 1,
+        "description": "Write 1 to reset hit counters."
+    },
+    "MT.RB_READOUT_CNTS.SNAP": {
+        "adr": 253,
+        "permission": "rw",
+        "mask": 1,
+        "description": "1 to snap the hit counters."
+    },
     "MT.XADC.CALIBRATION": {
         "adr": 288,
         "permission": "r",

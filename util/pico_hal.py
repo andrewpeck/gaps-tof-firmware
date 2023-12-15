@@ -239,6 +239,15 @@ def read_hit_cnt():
         print("LTB%2d hit counts = %d" % (i, rAdr(base_address+i)))
     wReg("MT.HIT_COUNTERS.SNAP", 0) # unsnap
 
+def reset_rb_readout_cnt():
+    wReg("MT.RB_READOUT_CNTS.RESET", 1)
+
+def read_rb_readout_cnt():
+    wReg("MT.RB_READOUT_CNTS.SNAP", 1)  # snap
+    for i in range(40):
+        print("RB%2d readout counts = %d" % (i, rReg(f"MT.RB_READOUT_CNTS.CNTS_{i}")))
+    wReg("MT.RB_READOUT_CNTS.SNAP", 0)  # unsnap
+
 def read_adcs():
 
     from tabulate import tabulate
@@ -479,6 +488,8 @@ if __name__ == '__main__':
     argParser.add_argument('--read_event_cnt',        action='store_true', default=False, help="Read the Event Counter")
     argParser.add_argument('--read_hit_cnt',          action='store_true', default=False, help="Read the LTB Hit Counters")
     argParser.add_argument('--reset_hit_cnt',         action='store_true', default=False, help="Reset the LTB Hit Counters")
+    argParser.add_argument('--read_rb_readout_cnt',   action='store_true', default=False, help="Read the RB Readout Counters")
+    argParser.add_argument('--reset_rb_readout_cnt',  action='store_true', default=False, help="Reset the RB Readout Counters")
     argParser.add_argument('--read_daq',              action='store_true', default=False, help="Stream the DAQ data to the screen")
     argParser.add_argument('--force_trig',            action='store_true', default=False, help="Force an MTB Trigger")
     argParser.add_argument('--check_clocks',          action='store_true', default=False, help="Check DSI loopback clock frequencies")
@@ -510,6 +521,8 @@ if __name__ == '__main__':
         read_ltb_link_status()
     if args.force_trig:
         force_trigger()
+    if args.reset_rb_readout_cnt:
+        reset_rb_readout_cnt()
     if args.status:
         fw_info()
         print("")
@@ -524,6 +537,8 @@ if __name__ == '__main__':
         read_hit_cnt()
         print("")
         read_ltb_link_status()
+        print("")
+        read_rb_readout_cnt()
 
     if args.any_trig_en:
         set_any_trigger(0xffffffff)
@@ -537,8 +552,8 @@ if __name__ == '__main__':
 
     if args.track_trig_prescale:
         set_track_trigger(args.track_trig_prescale)
-    if args.any_prescale:
-        set_any_trigger(args.any_prescale)
+    if args.any_trig_prescale:
+        set_any_trigger(args.any_trig_prescale)
 
     if args.read_adc:
         read_adcs()

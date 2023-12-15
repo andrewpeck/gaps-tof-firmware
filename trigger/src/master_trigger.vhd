@@ -174,9 +174,12 @@ architecture structural of gaps_mt is
   signal discrim_1bit       : t_std8_array (NUM_LTS-1 downto 0);
   signal ltb_hit, ltb_hit_r, ltb_hit_rr : std_logic_vector (24 downto 0) := (others => '0');
 
-  signal rb_ch_bitmap : std_logic_vector (NUM_RBS*8-1 downto 0);
-  signal rb_busy      : std_logic_vector (NUM_RBS-1 downto 0);
-  signal rb_window    : std_logic_vector (4 downto 0);
+  signal rb_readout_cnt_reset : std_logic;
+  signal rb_readout_cnt_snap : std_logic;
+  signal rb_readout_flag : std_logic_vector (NUM_RBS-1 downto 0);
+  signal rb_ch_bitmap    : std_logic_vector (NUM_RBS*8-1 downto 0);
+  signal rb_busy         : std_logic_vector (NUM_RBS-1 downto 0);
+  signal rb_window       : std_logic_vector (4 downto 0);
 
   signal lost_trigger   : std_logic;
   signal global_trigger : std_logic;    -- single bit == the baloon triggered somewhere
@@ -349,6 +352,46 @@ architecture structural of gaps_mt is
   signal hit_count_24 : std_logic_vector (23 downto 0) := (others => '0');
   signal eth_bad_frame_cnt : std_logic_vector (15 downto 0) := (others => '0');
   signal eth_bad_fcs_cnt : std_logic_vector (15 downto 0) := (others => '0');
+  signal rb_readout_cnt_0 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_1 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_2 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_3 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_4 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_5 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_6 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_7 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_8 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_9 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_10 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_11 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_12 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_13 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_14 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_15 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_16 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_17 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_18 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_19 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_20 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_21 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_22 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_23 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_24 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_25 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_26 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_27 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_28 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_29 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_30 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_31 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_32 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_33 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_34 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_35 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_36 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_37 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_38 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_39 : std_logic_vector (7 downto 0) := (others => '0');
   ------ Register signals end ----------------------------------------------
 
   signal hk_ext_cs_n : std_logic_vector(1 downto 0);
@@ -906,6 +949,7 @@ begin
           reset => reset,
 
           trg_i       => rb_trg,
+          trg_o       => rb_readout_flag(I),
           resync_i    => resync,
           event_cnt_i => event_cnt,
           ch_mask_i   => rb_ch_bitmap(8*(I+1)-1 downto 8*I),
@@ -1783,18 +1827,30 @@ begin
   regs_addresses(130)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "00" & x"ef";
   regs_addresses(131)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "00" & x"f0";
   regs_addresses(132)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "00" & x"f1";
-  regs_addresses(133)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"20";
-  regs_addresses(134)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"21";
-  regs_addresses(135)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"22";
-  regs_addresses(136)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"23";
-  regs_addresses(137)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"00";
-  regs_addresses(138)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"01";
-  regs_addresses(139)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"02";
-  regs_addresses(140)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"03";
-  regs_addresses(141)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"04";
-  regs_addresses(142)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"05";
-  regs_addresses(143)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"06";
-  regs_addresses(144)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"07";
+  regs_addresses(133)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "00" & x"f2";
+  regs_addresses(134)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "00" & x"f3";
+  regs_addresses(135)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "00" & x"f4";
+  regs_addresses(136)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "00" & x"f5";
+  regs_addresses(137)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "00" & x"f6";
+  regs_addresses(138)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "00" & x"f7";
+  regs_addresses(139)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "00" & x"f8";
+  regs_addresses(140)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "00" & x"f9";
+  regs_addresses(141)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "00" & x"fa";
+  regs_addresses(142)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "00" & x"fb";
+  regs_addresses(143)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "00" & x"fc";
+  regs_addresses(144)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "00" & x"fd";
+  regs_addresses(145)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"20";
+  regs_addresses(146)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"21";
+  regs_addresses(147)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"22";
+  regs_addresses(148)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"23";
+  regs_addresses(149)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"00";
+  regs_addresses(150)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"01";
+  regs_addresses(151)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"02";
+  regs_addresses(152)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"03";
+  regs_addresses(153)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"04";
+  regs_addresses(154)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"05";
+  regs_addresses(155)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"06";
+  regs_addresses(156)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"07";
 
   -- Connect read signals
   regs_read_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB) <= loopback;
@@ -1938,22 +1994,63 @@ begin
   regs_read_arr(130)(REG_COARSE_DELAYS_LT47_MSB downto REG_COARSE_DELAYS_LT47_LSB) <= coarse_delays(47);
   regs_read_arr(131)(REG_COARSE_DELAYS_LT48_MSB downto REG_COARSE_DELAYS_LT48_LSB) <= coarse_delays(48);
   regs_read_arr(132)(REG_COARSE_DELAYS_LT49_MSB downto REG_COARSE_DELAYS_LT49_LSB) <= coarse_delays(49);
-  regs_read_arr(133)(REG_XADC_CALIBRATION_MSB downto REG_XADC_CALIBRATION_LSB) <= calibration;
-  regs_read_arr(133)(REG_XADC_VCCPINT_MSB downto REG_XADC_VCCPINT_LSB) <= vccpint;
-  regs_read_arr(134)(REG_XADC_VCCPAUX_MSB downto REG_XADC_VCCPAUX_LSB) <= vccpaux;
-  regs_read_arr(134)(REG_XADC_VCCODDR_MSB downto REG_XADC_VCCODDR_LSB) <= vccoddr;
-  regs_read_arr(135)(REG_XADC_TEMP_MSB downto REG_XADC_TEMP_LSB) <= temp;
-  regs_read_arr(135)(REG_XADC_VCCINT_MSB downto REG_XADC_VCCINT_LSB) <= vccint;
-  regs_read_arr(136)(REG_XADC_VCCAUX_MSB downto REG_XADC_VCCAUX_LSB) <= vccaux;
-  regs_read_arr(136)(REG_XADC_VCCBRAM_MSB downto REG_XADC_VCCBRAM_LSB) <= vccbram;
-  regs_read_arr(137)(REG_HOG_GLOBAL_DATE_MSB downto REG_HOG_GLOBAL_DATE_LSB) <= GLOBAL_DATE;
-  regs_read_arr(138)(REG_HOG_GLOBAL_TIME_MSB downto REG_HOG_GLOBAL_TIME_LSB) <= GLOBAL_TIME;
-  regs_read_arr(139)(REG_HOG_GLOBAL_VER_MSB downto REG_HOG_GLOBAL_VER_LSB) <= GLOBAL_VER;
-  regs_read_arr(140)(REG_HOG_GLOBAL_SHA_MSB downto REG_HOG_GLOBAL_SHA_LSB) <= GLOBAL_SHA;
-  regs_read_arr(141)(REG_HOG_TOP_SHA_MSB downto REG_HOG_TOP_SHA_LSB) <= TOP_SHA;
-  regs_read_arr(142)(REG_HOG_TOP_VER_MSB downto REG_HOG_TOP_VER_LSB) <= TOP_VER;
-  regs_read_arr(143)(REG_HOG_HOG_SHA_MSB downto REG_HOG_HOG_SHA_LSB) <= HOG_SHA;
-  regs_read_arr(144)(REG_HOG_HOG_VER_MSB downto REG_HOG_HOG_VER_LSB) <= HOG_VER;
+  regs_read_arr(133)(REG_RB_READOUT_CNTS_CNTS_0_MSB downto REG_RB_READOUT_CNTS_CNTS_0_LSB) <= rb_readout_cnt_0;
+  regs_read_arr(133)(REG_RB_READOUT_CNTS_CNTS_1_MSB downto REG_RB_READOUT_CNTS_CNTS_1_LSB) <= rb_readout_cnt_1;
+  regs_read_arr(133)(REG_RB_READOUT_CNTS_CNTS_2_MSB downto REG_RB_READOUT_CNTS_CNTS_2_LSB) <= rb_readout_cnt_2;
+  regs_read_arr(133)(REG_RB_READOUT_CNTS_CNTS_3_MSB downto REG_RB_READOUT_CNTS_CNTS_3_LSB) <= rb_readout_cnt_3;
+  regs_read_arr(134)(REG_RB_READOUT_CNTS_CNTS_4_MSB downto REG_RB_READOUT_CNTS_CNTS_4_LSB) <= rb_readout_cnt_4;
+  regs_read_arr(134)(REG_RB_READOUT_CNTS_CNTS_5_MSB downto REG_RB_READOUT_CNTS_CNTS_5_LSB) <= rb_readout_cnt_5;
+  regs_read_arr(134)(REG_RB_READOUT_CNTS_CNTS_6_MSB downto REG_RB_READOUT_CNTS_CNTS_6_LSB) <= rb_readout_cnt_6;
+  regs_read_arr(134)(REG_RB_READOUT_CNTS_CNTS_7_MSB downto REG_RB_READOUT_CNTS_CNTS_7_LSB) <= rb_readout_cnt_7;
+  regs_read_arr(135)(REG_RB_READOUT_CNTS_CNTS_8_MSB downto REG_RB_READOUT_CNTS_CNTS_8_LSB) <= rb_readout_cnt_8;
+  regs_read_arr(135)(REG_RB_READOUT_CNTS_CNTS_9_MSB downto REG_RB_READOUT_CNTS_CNTS_9_LSB) <= rb_readout_cnt_9;
+  regs_read_arr(135)(REG_RB_READOUT_CNTS_CNTS_10_MSB downto REG_RB_READOUT_CNTS_CNTS_10_LSB) <= rb_readout_cnt_10;
+  regs_read_arr(135)(REG_RB_READOUT_CNTS_CNTS_11_MSB downto REG_RB_READOUT_CNTS_CNTS_11_LSB) <= rb_readout_cnt_11;
+  regs_read_arr(136)(REG_RB_READOUT_CNTS_CNTS_12_MSB downto REG_RB_READOUT_CNTS_CNTS_12_LSB) <= rb_readout_cnt_12;
+  regs_read_arr(136)(REG_RB_READOUT_CNTS_CNTS_13_MSB downto REG_RB_READOUT_CNTS_CNTS_13_LSB) <= rb_readout_cnt_13;
+  regs_read_arr(136)(REG_RB_READOUT_CNTS_CNTS_14_MSB downto REG_RB_READOUT_CNTS_CNTS_14_LSB) <= rb_readout_cnt_14;
+  regs_read_arr(136)(REG_RB_READOUT_CNTS_CNTS_15_MSB downto REG_RB_READOUT_CNTS_CNTS_15_LSB) <= rb_readout_cnt_15;
+  regs_read_arr(137)(REG_RB_READOUT_CNTS_CNTS_16_MSB downto REG_RB_READOUT_CNTS_CNTS_16_LSB) <= rb_readout_cnt_16;
+  regs_read_arr(137)(REG_RB_READOUT_CNTS_CNTS_17_MSB downto REG_RB_READOUT_CNTS_CNTS_17_LSB) <= rb_readout_cnt_17;
+  regs_read_arr(137)(REG_RB_READOUT_CNTS_CNTS_18_MSB downto REG_RB_READOUT_CNTS_CNTS_18_LSB) <= rb_readout_cnt_18;
+  regs_read_arr(137)(REG_RB_READOUT_CNTS_CNTS_19_MSB downto REG_RB_READOUT_CNTS_CNTS_19_LSB) <= rb_readout_cnt_19;
+  regs_read_arr(138)(REG_RB_READOUT_CNTS_CNTS_20_MSB downto REG_RB_READOUT_CNTS_CNTS_20_LSB) <= rb_readout_cnt_20;
+  regs_read_arr(138)(REG_RB_READOUT_CNTS_CNTS_21_MSB downto REG_RB_READOUT_CNTS_CNTS_21_LSB) <= rb_readout_cnt_21;
+  regs_read_arr(138)(REG_RB_READOUT_CNTS_CNTS_22_MSB downto REG_RB_READOUT_CNTS_CNTS_22_LSB) <= rb_readout_cnt_22;
+  regs_read_arr(138)(REG_RB_READOUT_CNTS_CNTS_23_MSB downto REG_RB_READOUT_CNTS_CNTS_23_LSB) <= rb_readout_cnt_23;
+  regs_read_arr(139)(REG_RB_READOUT_CNTS_CNTS_24_MSB downto REG_RB_READOUT_CNTS_CNTS_24_LSB) <= rb_readout_cnt_24;
+  regs_read_arr(139)(REG_RB_READOUT_CNTS_CNTS_25_MSB downto REG_RB_READOUT_CNTS_CNTS_25_LSB) <= rb_readout_cnt_25;
+  regs_read_arr(139)(REG_RB_READOUT_CNTS_CNTS_26_MSB downto REG_RB_READOUT_CNTS_CNTS_26_LSB) <= rb_readout_cnt_26;
+  regs_read_arr(139)(REG_RB_READOUT_CNTS_CNTS_27_MSB downto REG_RB_READOUT_CNTS_CNTS_27_LSB) <= rb_readout_cnt_27;
+  regs_read_arr(140)(REG_RB_READOUT_CNTS_CNTS_28_MSB downto REG_RB_READOUT_CNTS_CNTS_28_LSB) <= rb_readout_cnt_28;
+  regs_read_arr(140)(REG_RB_READOUT_CNTS_CNTS_29_MSB downto REG_RB_READOUT_CNTS_CNTS_29_LSB) <= rb_readout_cnt_29;
+  regs_read_arr(140)(REG_RB_READOUT_CNTS_CNTS_30_MSB downto REG_RB_READOUT_CNTS_CNTS_30_LSB) <= rb_readout_cnt_30;
+  regs_read_arr(140)(REG_RB_READOUT_CNTS_CNTS_31_MSB downto REG_RB_READOUT_CNTS_CNTS_31_LSB) <= rb_readout_cnt_31;
+  regs_read_arr(141)(REG_RB_READOUT_CNTS_CNTS_32_MSB downto REG_RB_READOUT_CNTS_CNTS_32_LSB) <= rb_readout_cnt_32;
+  regs_read_arr(141)(REG_RB_READOUT_CNTS_CNTS_33_MSB downto REG_RB_READOUT_CNTS_CNTS_33_LSB) <= rb_readout_cnt_33;
+  regs_read_arr(141)(REG_RB_READOUT_CNTS_CNTS_34_MSB downto REG_RB_READOUT_CNTS_CNTS_34_LSB) <= rb_readout_cnt_34;
+  regs_read_arr(141)(REG_RB_READOUT_CNTS_CNTS_35_MSB downto REG_RB_READOUT_CNTS_CNTS_35_LSB) <= rb_readout_cnt_35;
+  regs_read_arr(142)(REG_RB_READOUT_CNTS_CNTS_36_MSB downto REG_RB_READOUT_CNTS_CNTS_36_LSB) <= rb_readout_cnt_36;
+  regs_read_arr(142)(REG_RB_READOUT_CNTS_CNTS_37_MSB downto REG_RB_READOUT_CNTS_CNTS_37_LSB) <= rb_readout_cnt_37;
+  regs_read_arr(142)(REG_RB_READOUT_CNTS_CNTS_38_MSB downto REG_RB_READOUT_CNTS_CNTS_38_LSB) <= rb_readout_cnt_38;
+  regs_read_arr(142)(REG_RB_READOUT_CNTS_CNTS_39_MSB downto REG_RB_READOUT_CNTS_CNTS_39_LSB) <= rb_readout_cnt_39;
+  regs_read_arr(144)(REG_RB_READOUT_CNTS_SNAP_BIT) <= rb_readout_cnt_snap;
+  regs_read_arr(145)(REG_XADC_CALIBRATION_MSB downto REG_XADC_CALIBRATION_LSB) <= calibration;
+  regs_read_arr(145)(REG_XADC_VCCPINT_MSB downto REG_XADC_VCCPINT_LSB) <= vccpint;
+  regs_read_arr(146)(REG_XADC_VCCPAUX_MSB downto REG_XADC_VCCPAUX_LSB) <= vccpaux;
+  regs_read_arr(146)(REG_XADC_VCCODDR_MSB downto REG_XADC_VCCODDR_LSB) <= vccoddr;
+  regs_read_arr(147)(REG_XADC_TEMP_MSB downto REG_XADC_TEMP_LSB) <= temp;
+  regs_read_arr(147)(REG_XADC_VCCINT_MSB downto REG_XADC_VCCINT_LSB) <= vccint;
+  regs_read_arr(148)(REG_XADC_VCCAUX_MSB downto REG_XADC_VCCAUX_LSB) <= vccaux;
+  regs_read_arr(148)(REG_XADC_VCCBRAM_MSB downto REG_XADC_VCCBRAM_LSB) <= vccbram;
+  regs_read_arr(149)(REG_HOG_GLOBAL_DATE_MSB downto REG_HOG_GLOBAL_DATE_LSB) <= GLOBAL_DATE;
+  regs_read_arr(150)(REG_HOG_GLOBAL_TIME_MSB downto REG_HOG_GLOBAL_TIME_LSB) <= GLOBAL_TIME;
+  regs_read_arr(151)(REG_HOG_GLOBAL_VER_MSB downto REG_HOG_GLOBAL_VER_LSB) <= GLOBAL_VER;
+  regs_read_arr(152)(REG_HOG_GLOBAL_SHA_MSB downto REG_HOG_GLOBAL_SHA_LSB) <= GLOBAL_SHA;
+  regs_read_arr(153)(REG_HOG_TOP_SHA_MSB downto REG_HOG_TOP_SHA_LSB) <= TOP_SHA;
+  regs_read_arr(154)(REG_HOG_TOP_VER_MSB downto REG_HOG_TOP_VER_LSB) <= TOP_VER;
+  regs_read_arr(155)(REG_HOG_HOG_SHA_MSB downto REG_HOG_HOG_SHA_LSB) <= HOG_SHA;
+  regs_read_arr(156)(REG_HOG_HOG_VER_MSB downto REG_HOG_HOG_VER_LSB) <= HOG_VER;
 
   -- Connect write signals
   loopback <= regs_write_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB);
@@ -2051,6 +2148,7 @@ begin
   coarse_delays(47) <= regs_write_arr(130)(REG_COARSE_DELAYS_LT47_MSB downto REG_COARSE_DELAYS_LT47_LSB);
   coarse_delays(48) <= regs_write_arr(131)(REG_COARSE_DELAYS_LT48_MSB downto REG_COARSE_DELAYS_LT48_LSB);
   coarse_delays(49) <= regs_write_arr(132)(REG_COARSE_DELAYS_LT49_MSB downto REG_COARSE_DELAYS_LT49_LSB);
+  rb_readout_cnt_snap <= regs_write_arr(144)(REG_RB_READOUT_CNTS_SNAP_BIT);
 
   -- Connect write pulse signals
   trigger_ipb <= regs_write_pulse_arr(8);
@@ -2058,6 +2156,7 @@ begin
   event_cnt_reset <= regs_write_pulse_arr(12);
   daq_reset <= regs_write_pulse_arr(16);
   hit_cnt_reset <= regs_write_pulse_arr(53);
+  rb_readout_cnt_reset <= regs_write_pulse_arr(143);
 
   -- Connect write done signals
 
@@ -2418,6 +2517,526 @@ begin
   );
 
 
+  COUNTER_RB_READOUT_CNTS_CNTS_0 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(0),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_0
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_1 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(1),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_1
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_2 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(2),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_2
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_3 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(3),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_3
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_4 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(4),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_4
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_5 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(5),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_5
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_6 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(6),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_6
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_7 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(7),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_7
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_8 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(8),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_8
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_9 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(9),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_9
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_10 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(10),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_10
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_11 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(11),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_11
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_12 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(12),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_12
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_13 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(13),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_13
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_14 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(14),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_14
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_15 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(15),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_15
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_16 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(16),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_16
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_17 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(17),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_17
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_18 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(18),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_18
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_19 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(19),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_19
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_20 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(20),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_20
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_21 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(21),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_21
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_22 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(22),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_22
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_23 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(23),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_23
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_24 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(24),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_24
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_25 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(25),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_25
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_26 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(26),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_26
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_27 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(27),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_27
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_28 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(28),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_28
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_29 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(29),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_29
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_30 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(30),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_30
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_31 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(31),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_31
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_32 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(32),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_32
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_33 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(33),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_33
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_34 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(34),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_34
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_35 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(35),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_35
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_36 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(36),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_36
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_37 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(37),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_37
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_38 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(38),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_38
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_39 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(39),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_39
+  );
+
+
   -- Connect rate instances
 
   -- Connect read ready signals
@@ -2520,6 +3139,7 @@ begin
   regs_defaults(130)(REG_COARSE_DELAYS_LT47_MSB downto REG_COARSE_DELAYS_LT47_LSB) <= REG_COARSE_DELAYS_LT47_DEFAULT;
   regs_defaults(131)(REG_COARSE_DELAYS_LT48_MSB downto REG_COARSE_DELAYS_LT48_LSB) <= REG_COARSE_DELAYS_LT48_DEFAULT;
   regs_defaults(132)(REG_COARSE_DELAYS_LT49_MSB downto REG_COARSE_DELAYS_LT49_LSB) <= REG_COARSE_DELAYS_LT49_DEFAULT;
+  regs_defaults(144)(REG_RB_READOUT_CNTS_SNAP_BIT) <= REG_RB_READOUT_CNTS_SNAP_DEFAULT;
 
   -- Define writable regs
   regs_writable_arr(0) <= '1';
@@ -2607,6 +3227,7 @@ begin
   regs_writable_arr(130) <= '1';
   regs_writable_arr(131) <= '1';
   regs_writable_arr(132) <= '1';
+  regs_writable_arr(144) <= '1';
 
 --==== Registers end ============================================================================
 end structural;

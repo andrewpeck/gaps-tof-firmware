@@ -303,6 +303,464 @@
           fw_default="0x00000000"
           fw_signal="track_trigger_prescale"/>
 
+    <node id="RB_READOUT_CNTS" address="0xf2" description="Counters">
+
+      <node id="CNTS_0" address="0x0"
+            permission="r"
+            mask="0x000000ff"
+            description="Readout count on RB=0"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_0"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(0)">
+      </node>
+
+      <node id="CNTS_1" address="0x0"
+            permission="r"
+            mask="0x0000ff00"
+            description="Readout count on RB=1"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_1"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(1)">
+      </node>
+
+      <node id="CNTS_2" address="0x0"
+            permission="r"
+            mask="0x00ff0000"
+            description="Readout count on RB=2"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_2"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(2)">
+      </node>
+
+      <node id="CNTS_3" address="0x0"
+            permission="r"
+            mask="0xff000000"
+            description="Readout count on RB=3"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_3"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(3)">
+      </node>
+
+      <node id="CNTS_4" address="0x1"
+            permission="r"
+            mask="0x000000ff"
+            description="Readout count on RB=4"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_4"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(4)">
+      </node>
+
+      <node id="CNTS_5" address="0x1"
+            permission="r"
+            mask="0x0000ff00"
+            description="Readout count on RB=5"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_5"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(5)">
+      </node>
+
+      <node id="CNTS_6" address="0x1"
+            permission="r"
+            mask="0x00ff0000"
+            description="Readout count on RB=6"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_6"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(6)">
+      </node>
+
+      <node id="CNTS_7" address="0x1"
+            permission="r"
+            mask="0xff000000"
+            description="Readout count on RB=7"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_7"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(7)">
+      </node>
+
+      <node id="CNTS_8" address="0x2"
+            permission="r"
+            mask="0x000000ff"
+            description="Readout count on RB=8"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_8"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(8)">
+      </node>
+
+      <node id="CNTS_9" address="0x2"
+            permission="r"
+            mask="0x0000ff00"
+            description="Readout count on RB=9"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_9"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(9)">
+      </node>
+
+      <node id="CNTS_10" address="0x2"
+            permission="r"
+            mask="0x00ff0000"
+            description="Readout count on RB=10"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_10"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(10)">
+      </node>
+
+      <node id="CNTS_11" address="0x2"
+            permission="r"
+            mask="0xff000000"
+            description="Readout count on RB=11"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_11"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(11)">
+      </node>
+
+      <node id="CNTS_12" address="0x3"
+            permission="r"
+            mask="0x000000ff"
+            description="Readout count on RB=12"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_12"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(12)">
+      </node>
+
+      <node id="CNTS_13" address="0x3"
+            permission="r"
+            mask="0x0000ff00"
+            description="Readout count on RB=13"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_13"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(13)">
+      </node>
+
+      <node id="CNTS_14" address="0x3"
+            permission="r"
+            mask="0x00ff0000"
+            description="Readout count on RB=14"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_14"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(14)">
+      </node>
+
+      <node id="CNTS_15" address="0x3"
+            permission="r"
+            mask="0xff000000"
+            description="Readout count on RB=15"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_15"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(15)">
+      </node>
+
+      <node id="CNTS_16" address="0x4"
+            permission="r"
+            mask="0x000000ff"
+            description="Readout count on RB=16"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_16"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(16)">
+      </node>
+
+      <node id="CNTS_17" address="0x4"
+            permission="r"
+            mask="0x0000ff00"
+            description="Readout count on RB=17"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_17"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(17)">
+      </node>
+
+      <node id="CNTS_18" address="0x4"
+            permission="r"
+            mask="0x00ff0000"
+            description="Readout count on RB=18"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_18"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(18)">
+      </node>
+
+      <node id="CNTS_19" address="0x4"
+            permission="r"
+            mask="0xff000000"
+            description="Readout count on RB=19"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_19"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(19)">
+      </node>
+
+      <node id="CNTS_20" address="0x5"
+            permission="r"
+            mask="0x000000ff"
+            description="Readout count on RB=20"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_20"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(20)">
+      </node>
+
+      <node id="CNTS_21" address="0x5"
+            permission="r"
+            mask="0x0000ff00"
+            description="Readout count on RB=21"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_21"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(21)">
+      </node>
+
+      <node id="CNTS_22" address="0x5"
+            permission="r"
+            mask="0x00ff0000"
+            description="Readout count on RB=22"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_22"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(22)">
+      </node>
+
+      <node id="CNTS_23" address="0x5"
+            permission="r"
+            mask="0xff000000"
+            description="Readout count on RB=23"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_23"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(23)">
+      </node>
+
+      <node id="CNTS_24" address="0x6"
+            permission="r"
+            mask="0x000000ff"
+            description="Readout count on RB=24"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_24"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(24)">
+      </node>
+
+      <node id="CNTS_25" address="0x6"
+            permission="r"
+            mask="0x0000ff00"
+            description="Readout count on RB=25"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_25"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(25)">
+      </node>
+
+      <node id="CNTS_26" address="0x6"
+            permission="r"
+            mask="0x00ff0000"
+            description="Readout count on RB=26"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_26"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(26)">
+      </node>
+
+      <node id="CNTS_27" address="0x6"
+            permission="r"
+            mask="0xff000000"
+            description="Readout count on RB=27"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_27"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(27)">
+      </node>
+
+      <node id="CNTS_28" address="0x7"
+            permission="r"
+            mask="0x000000ff"
+            description="Readout count on RB=28"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_28"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(28)">
+      </node>
+
+      <node id="CNTS_29" address="0x7"
+            permission="r"
+            mask="0x0000ff00"
+            description="Readout count on RB=29"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_29"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(29)">
+      </node>
+
+      <node id="CNTS_30" address="0x7"
+            permission="r"
+            mask="0x00ff0000"
+            description="Readout count on RB=30"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_30"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(30)">
+      </node>
+
+      <node id="CNTS_31" address="0x7"
+            permission="r"
+            mask="0xff000000"
+            description="Readout count on RB=31"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_31"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(31)">
+      </node>
+
+      <node id="CNTS_32" address="0x8"
+            permission="r"
+            mask="0x000000ff"
+            description="Readout count on RB=32"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_32"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(32)">
+      </node>
+
+      <node id="CNTS_33" address="0x8"
+            permission="r"
+            mask="0x0000ff00"
+            description="Readout count on RB=33"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_33"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(33)">
+      </node>
+
+      <node id="CNTS_34" address="0x8"
+            permission="r"
+            mask="0x00ff0000"
+            description="Readout count on RB=34"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_34"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(34)">
+      </node>
+
+      <node id="CNTS_35" address="0x8"
+            permission="r"
+            mask="0xff000000"
+            description="Readout count on RB=35"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_35"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(35)">
+      </node>
+
+      <node id="CNTS_36" address="0x9"
+            permission="r"
+            mask="0x000000ff"
+            description="Readout count on RB=36"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_36"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(36)">
+      </node>
+
+      <node id="CNTS_37" address="0x9"
+            permission="r"
+            mask="0x0000ff00"
+            description="Readout count on RB=37"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_37"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(37)">
+      </node>
+
+      <node id="CNTS_38" address="0x9"
+            permission="r"
+            mask="0x00ff0000"
+            description="Readout count on RB=38"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_38"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(38)">
+      </node>
+
+      <node id="CNTS_39" address="0x9"
+            permission="r"
+            mask="0xff000000"
+            description="Readout count on RB=39"
+            fw_make_signal="true"
+            fw_signal="rb_readout_cnt_39"
+            fw_cnt_reset_signal="ipb_reset or rb_readout_cnt_reset"
+            fw_cnt_snap_signal="rb_readout_cnt_snap"
+            fw_cnt_en_signal="rb_readout_flag(39)">
+      </node>
+
+      <node id="RESET"
+            address="0xA"
+            permission="w"
+            mask="0x1"
+            description="Write 1 to reset hit counters."
+            fw_write_pulse_signal="rb_readout_cnt_reset"/>
+
+      <node id="SNAP"
+            address="0xB"
+            permission="rw"
+            description="1 to snap the hit counters."
+            mask="0x1"
+            fw_default="0x1"
+            fw_signal="rb_readout_cnt_snap"/>
+    </node>
+
     <node id="XADC" address="0x120"
           description="Zynq XADC">
       <node id="CALIBRATION" address="0x0" permission="r"
