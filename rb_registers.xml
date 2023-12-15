@@ -17,17 +17,17 @@
             <node id="DMODE" address="0x0" permission="rw"
                 description="set 1 = continuous domino, 0=single shot"
                 mask="0x2"
-                fw_signal="dmode"
+                fw_signal="drs_dmode"
                 fw_default="0x1"/>
             <node id="STANDBY_MODE" address="0x0" permission="rw"
                 description="set 1 = shutdown drs"
                 mask="0x4"
-                fw_signal="standby_mode"
+                fw_signal="drs_standby_mode"
                 fw_default="0x0"/>
             <node id="TRANSPARENT_MODE" address="0x0" permission="rw"
                 description="set 1 = transparent mode"
                 mask="0x8"
-                fw_signal="transp_mode"
+                fw_signal="drs_transp_mode"
                 fw_default="0x0"/>
             <node id="DRS_PLL_LOCK" address="0x0" permission="r"
                 description="DRS PLL Locked"
@@ -79,7 +79,7 @@
             <node id="ROI_MODE" address="0x0" permission="rw"
                 description="Set to 1 to enable Region of Interest Readout"
                 mask="0x1"
-                fw_signal="roi_mode"
+                fw_signal="drs_roi_mode"
                 fw_default="0x1"/>
             <node id="BUSY" address="0x0" permission="r"
                 description="DRS is busy"
@@ -98,7 +98,7 @@
             <node id="EN_SPIKE_REMOVAL" address="0x0" permission="rw"
                 description="set 1 to enable spike removal"
                 mask="0x400000"
-                fw_signal="spike_removal"
+                fw_signal="drs_spike_removal"
                 fw_default="0x1"/>
 
 
@@ -115,17 +115,17 @@
             <node id="START" address="0x2" permission="w"
                 description="Write 1 to take the state machine out of idle mode"
                 mask="0x1"
-                fw_write_pulse_signal="start" />
+                fw_write_pulse_signal="drs_start"/>
 
             <node id="REINIT" address="0x3" permission="w"
                 description="Write 1 to reinitialize DRS state machine (restores to idle state)"
                 mask="0x1"
-                fw_write_pulse_signal="reinit" />
+                fw_write_pulse_signal="drs_reinit" />
 
             <node id="CONFIGURE" address="0x4" permission="w"
                 description="Write 1 to configure the DRS. Should be done before data taking"
                 mask="0x1"
-                fw_write_pulse_signal="configure" />
+                fw_write_pulse_signal="drs_configure"/>
 
             <node id="DRS_RESET" address="0x5" permission="w"
                 description="Write 1 to completely reset the DRS state machine logic"
@@ -156,7 +156,7 @@
                 description="1 to sample on positive edge, 0 on negative"
                 mask="0x1"
                 fw_default="0x0"
-                fw_signal="posneg"/>
+                fw_signal="adc_posneg"/>
 
             <node id="SROUT_POSNEG" address="0xA" permission="rw"
                 description="1 to sample on positive edge, 0 on negative"

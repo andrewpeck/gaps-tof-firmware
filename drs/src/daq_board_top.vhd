@@ -140,7 +140,7 @@ architecture Behavioral of top_readout_board is
   signal start_readout         : std_logic := '0';
   signal trigger               : std_logic := '0';
 
-  signal posneg                : std_logic;
+  signal adc_posneg            : std_logic;
   signal srout_posneg          : std_logic;
   signal srout_latency         : std_logic_vector(2 downto 0);
 
@@ -212,18 +212,18 @@ architecture Behavioral of top_readout_board is
 
   signal drs_diagnostic_mode : std_logic := '0';
 
-  signal drs_srclk_en   : std_logic;
-  signal drs_busy       : std_logic;
-  signal drs_idle       : std_logic;
-  signal drs_busy_latch : std_logic;
-  signal roi_mode       : std_logic;
-  signal spike_removal  : std_logic;
-  signal dmode          : std_logic;
-  signal reinit         : std_logic;
-  signal configure      : std_logic;
-  signal standby_mode   : std_logic;
-  signal start          : std_logic;
-  signal transp_mode    : std_logic;
+  signal drs_srclk_en      : std_logic;
+  signal drs_busy          : std_logic;
+  signal drs_idle          : std_logic;
+  signal drs_busy_latch    : std_logic;
+  signal drs_roi_mode      : std_logic;
+  signal drs_spike_removal : std_logic;
+  signal drs_dmode         : std_logic;
+  signal drs_reinit        : std_logic;
+  signal drs_configure     : std_logic;
+  signal drs_standby_mode  : std_logic;
+  signal drs_start         : std_logic;
+  signal drs_transp_mode   : std_logic;
 
   signal wait_vdd_clocks : std_logic_vector (15 downto 0);
 
@@ -605,8 +605,8 @@ begin
         probe19               => trigger,
         probe20               => mt_trigger,
         probe21(8 downto 0)   => daq_mask,
-        probe21(9)            => reinit,
-        probe21(10)           => start,
+        probe21(9)            => drs_reinit,
+        probe21(10)           => drs_start,
         probe21(11)           => drs_idle,
         probe21(12)           => event_queue_rd_en,
         probe21(13)           => event_queue_request,
@@ -868,7 +868,7 @@ begin
   read_ch8        <= readout_mask_9th_channel_auto and or_reduce(readout_mask_or (7 downto 0));
   readout_mask    <= readout_mask_or or (read_ch8 & x"00");
 
-  drs_config(0) <= dmode;
+  drs_config(0) <= drs_dmode;
   drs_config(1) <= '1';                 -- pllen
   drs_config(2) <= '0';                 -- wrsloop
 
@@ -899,27 +899,26 @@ begin
       reset     => reset or drs_reset or soft_reset_drs,
       trigger_i => start_readout and not soft_reset_trg,
 
-      posneg_i        => posneg,
+      posneg_i        => adc_posneg,
       srout_posneg_i  => srout_posneg,
       srout_latency_i => srout_latency,
 
-      --adc_data => adc_data,
       adc_data_i => adc_data_i,
 
       diagnostic_mode => drs_diagnostic_mode,
 
-      drs_ctl_roi_mode         => roi_mode,  -- 1 bit roi input
-      drs_ctl_dmode            => dmode,     -- 1 bit dmode input
+      drs_ctl_roi_mode         => drs_roi_mode,  -- 1 bit roi input
+      drs_ctl_dmode            => drs_dmode, -- 1 bit dmode input
       drs_ctl_config           => drs_config(7 downto 0),
-      drs_ctl_standby_mode     => standby_mode,
-      drs_ctl_transp_mode      => transp_mode,
-      drs_ctl_start            => start,
+      drs_ctl_standby_mode     => drs_standby_mode,
+      drs_ctl_transp_mode      => drs_transp_mode,
+      drs_ctl_start            => drs_start,
       drs_ctl_start_timer      => drs_ctl_start_timer,
       drs_ctl_adc_latency      => adc_latency,
-      drs_ctl_spike_removal    => spike_removal,
+      drs_ctl_spike_removal    => drs_spike_removal,
       drs_ctl_sample_count_max => sample_count_max,
-      drs_ctl_reinit           => reinit,
-      drs_ctl_configure_drs    => configure,
+      drs_ctl_reinit           => drs_reinit,
+      drs_ctl_configure_drs    => drs_configure,
       drs_ctl_chn_config       => chn_config(7 downto 0),
       drs_ctl_readout_mask_i   => readout_mask(8 downto 0),
       drs_ctl_wait_vdd_clocks  => wait_vdd_clocks,
@@ -1455,9 +1454,9 @@ begin
   regs_addresses(66)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"05";
 
   -- Connect read signals
-  regs_read_arr(0)(REG_CHIP_DMODE_BIT) <= dmode;
-  regs_read_arr(0)(REG_CHIP_STANDBY_MODE_BIT) <= standby_mode;
-  regs_read_arr(0)(REG_CHIP_TRANSPARENT_MODE_BIT) <= transp_mode;
+  regs_read_arr(0)(REG_CHIP_DMODE_BIT) <= drs_dmode;
+  regs_read_arr(0)(REG_CHIP_STANDBY_MODE_BIT) <= drs_standby_mode;
+  regs_read_arr(0)(REG_CHIP_TRANSPARENT_MODE_BIT) <= drs_transp_mode;
   regs_read_arr(0)(REG_CHIP_DRS_PLL_LOCK_BIT) <= drs_plllock_i;
   regs_read_arr(0)(REG_CHIP_CHANNEL_CONFIG_MSB downto REG_CHIP_CHANNEL_CONFIG_LSB) <= chn_config;
   regs_read_arr(1)(REG_CHIP_DTAP_FREQ_MSB downto REG_CHIP_DTAP_FREQ_LSB) <= dtap_cnt;
@@ -1466,16 +1465,16 @@ begin
   regs_read_arr(3)(REG_CHIP_START_TIMER_MSB downto REG_CHIP_START_TIMER_LSB) <= drs_ctl_start_timer;
   regs_read_arr(4)(REG_CHIP_LOSS_OF_LOCK_BIT) <= loss_of_lock_i;
   regs_read_arr(4)(REG_CHIP_LOSS_OF_LOCK_STABLE_BIT) <= lock_stable;
-  regs_read_arr(5)(REG_READOUT_ROI_MODE_BIT) <= roi_mode;
+  regs_read_arr(5)(REG_READOUT_ROI_MODE_BIT) <= drs_roi_mode;
   regs_read_arr(5)(REG_READOUT_BUSY_BIT) <= drs_busy;
   regs_read_arr(5)(REG_READOUT_ADC_LATENCY_MSB downto REG_READOUT_ADC_LATENCY_LSB) <= adc_latency;
   regs_read_arr(5)(REG_READOUT_SAMPLE_COUNT_MSB downto REG_READOUT_SAMPLE_COUNT_LSB) <= sample_count_max;
-  regs_read_arr(5)(REG_READOUT_EN_SPIKE_REMOVAL_BIT) <= spike_removal;
+  regs_read_arr(5)(REG_READOUT_EN_SPIKE_REMOVAL_BIT) <= drs_spike_removal;
   regs_read_arr(6)(REG_READOUT_READOUT_MASK_MSB downto REG_READOUT_READOUT_MASK_LSB) <= readout_mask_axi;
   regs_read_arr(6)(REG_READOUT_AUTO_9TH_CHANNEL_BIT) <= readout_mask_9th_channel_auto;
   regs_read_arr(13)(REG_READOUT_WAIT_VDD_CLKS_MSB downto REG_READOUT_WAIT_VDD_CLKS_LSB) <= wait_vdd_clocks;
   regs_read_arr(14)(REG_READOUT_DRS_DIAGNOSTIC_MODE_BIT) <= drs_diagnostic_mode;
-  regs_read_arr(15)(REG_READOUT_POSNEG_BIT) <= posneg;
+  regs_read_arr(15)(REG_READOUT_POSNEG_BIT) <= adc_posneg;
   regs_read_arr(15)(REG_READOUT_SROUT_POSNEG_BIT) <= srout_posneg;
   regs_read_arr(15)(REG_READOUT_SROUT_LATENCY_MSB downto REG_READOUT_SROUT_LATENCY_LSB) <= srout_latency;
   regs_read_arr(18)(REG_READOUT_SOFT_RESET_DRS_EN_BIT) <= soft_reset_drs_en;
@@ -1538,22 +1537,22 @@ begin
   regs_read_arr(65)(REG_DMA_DMA_POINTER_MSB downto REG_DMA_DMA_POINTER_LSB) <= dma_pointer;
 
   -- Connect write signals
-  dmode <= regs_write_arr(0)(REG_CHIP_DMODE_BIT);
-  standby_mode <= regs_write_arr(0)(REG_CHIP_STANDBY_MODE_BIT);
-  transp_mode <= regs_write_arr(0)(REG_CHIP_TRANSPARENT_MODE_BIT);
+  drs_dmode <= regs_write_arr(0)(REG_CHIP_DMODE_BIT);
+  drs_standby_mode <= regs_write_arr(0)(REG_CHIP_STANDBY_MODE_BIT);
+  drs_transp_mode <= regs_write_arr(0)(REG_CHIP_TRANSPARENT_MODE_BIT);
   chn_config <= regs_write_arr(0)(REG_CHIP_CHANNEL_CONFIG_MSB downto REG_CHIP_CHANNEL_CONFIG_LSB);
   clock_tap_delays <= regs_write_arr(2)(REG_CHIP_CLK_IDELAY_MSB downto REG_CHIP_CLK_IDELAY_LSB);
   cylon_mode <= regs_write_arr(3)(REG_CHIP_CYLON_MODE_BIT);
   drs_ctl_start_timer <= regs_write_arr(3)(REG_CHIP_START_TIMER_MSB downto REG_CHIP_START_TIMER_LSB);
-  roi_mode <= regs_write_arr(5)(REG_READOUT_ROI_MODE_BIT);
+  drs_roi_mode <= regs_write_arr(5)(REG_READOUT_ROI_MODE_BIT);
   adc_latency <= regs_write_arr(5)(REG_READOUT_ADC_LATENCY_MSB downto REG_READOUT_ADC_LATENCY_LSB);
   sample_count_max <= regs_write_arr(5)(REG_READOUT_SAMPLE_COUNT_MSB downto REG_READOUT_SAMPLE_COUNT_LSB);
-  spike_removal <= regs_write_arr(5)(REG_READOUT_EN_SPIKE_REMOVAL_BIT);
+  drs_spike_removal <= regs_write_arr(5)(REG_READOUT_EN_SPIKE_REMOVAL_BIT);
   readout_mask_axi <= regs_write_arr(6)(REG_READOUT_READOUT_MASK_MSB downto REG_READOUT_READOUT_MASK_LSB);
   readout_mask_9th_channel_auto <= regs_write_arr(6)(REG_READOUT_AUTO_9TH_CHANNEL_BIT);
   wait_vdd_clocks <= regs_write_arr(13)(REG_READOUT_WAIT_VDD_CLKS_MSB downto REG_READOUT_WAIT_VDD_CLKS_LSB);
   drs_diagnostic_mode <= regs_write_arr(14)(REG_READOUT_DRS_DIAGNOSTIC_MODE_BIT);
-  posneg <= regs_write_arr(15)(REG_READOUT_POSNEG_BIT);
+  adc_posneg <= regs_write_arr(15)(REG_READOUT_POSNEG_BIT);
   srout_posneg <= regs_write_arr(15)(REG_READOUT_SROUT_POSNEG_BIT);
   srout_latency <= regs_write_arr(15)(REG_READOUT_SROUT_LATENCY_MSB downto REG_READOUT_SROUT_LATENCY_LSB);
   soft_reset_drs_en <= regs_write_arr(18)(REG_READOUT_SOFT_RESET_DRS_EN_BIT);
@@ -1576,9 +1575,9 @@ begin
   trig_gen_rate <= regs_write_arr(49)(REG_TRIG_GEN_RATE_MSB downto REG_TRIG_GEN_RATE_LSB);
 
   -- Connect write pulse signals
-  start <= regs_write_pulse_arr(7);
-  reinit <= regs_write_pulse_arr(8);
-  configure <= regs_write_pulse_arr(9);
+  drs_start <= regs_write_pulse_arr(7);
+  drs_reinit <= regs_write_pulse_arr(8);
+  drs_configure <= regs_write_pulse_arr(9);
   drs_reset <= regs_write_pulse_arr(10);
   daq_reset <= regs_write_pulse_arr(11);
   dma_control_reset <= regs_write_pulse_arr(12);
