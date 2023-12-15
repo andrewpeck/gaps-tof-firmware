@@ -126,15 +126,15 @@ localparam ADR_STANDBY     = 4'b1111;
 reg [13:0] adc_data_neg, adc_data_pos, adc_data;
 
 // take data in on negedge of clock, assuming that adc and fpga clocks are synchronous
-always @(negedge clock) begin
+always_ff @(negedge clock) begin
   adc_data_neg <= adc_data_i;
 end
-always @(posedge clock) begin
+always_ff @(posedge clock) begin
   adc_data_pos <= adc_data_i;
 end
 
 // transfer on flops from negedge to posedge before fifo
-always @(posedge clock) begin
+always_ff @(posedge clock) begin
   if (posneg_i)
     adc_data <= adc_data_pos;
   else
@@ -158,7 +158,7 @@ reg [3:0] drs_ctl_next_chn;
 
 reg [8:0] readout_mask_sr;
 
-always @(posedge clock) begin
+always_ff @(posedge clock) begin
    drs_ctl_next_chn  <= prienc9(readout_mask_sr);
    drs_ctl_first_chn <= prienc9(drs_ctl_readout_mask_i);
    drs_ctl_last_chn  <= prienc9_rev(drs_ctl_readout_mask_i);
@@ -217,7 +217,7 @@ end
 // State Machine
 //----------------------------------------------------------------------------------------------------------------------
 
-always @(posedge clock) begin
+always_ff @(posedge clock) begin
 
   if (reset) begin
 
