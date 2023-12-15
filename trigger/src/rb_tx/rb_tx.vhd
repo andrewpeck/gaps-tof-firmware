@@ -16,6 +16,8 @@ entity rb_tx is
     MASKCNTB   : natural := 8;
     CMDB       : natural := 2;
     CRCB       : natural := 8;
+    LINKID     : integer := 0;
+    LINKB      : integer := 6;
     MANCHESTER : boolean := true
     );
   port(
@@ -37,11 +39,11 @@ end rb_tx;
 
 architecture rtl of rb_tx is
 
-  constant LENGTH : natural := CRCB + CMDB + EVENTCNTB + MASKCNTB + 1;
+  constant LENGTH : natural := CRCB + CMDB + EVENTCNTB + MASKCNTB + LINKB + 1;
 
   type state_t is (IDLE_state, DATA_state);
   signal state         : state_t   := IDLE_state;
-  signal state_bit_cnt : natural   := 0;
+  signal state_bit_cnt : natural range 0 to LENGTH := 0;
   signal trg           : std_logic := '0';
   signal has_hits      : std_logic;
 
@@ -70,7 +72,7 @@ begin
 
   crc_inst : entity work.crc
     port map (
-      data_in => packet_buf(packet_buf'length-1 downto 8),
+      data_in => packet_buf(packet_buf'length-1 downto 14),
       crc_en  => crc_en,
       rst     => crc_rst,
       clk     => clock,
@@ -97,14 +99,14 @@ begin
           if (trg_i = '1') then
             serial_data <= '1';
             state       <= DATA_state;
-            packet_buf  <= has_hits & ch_mask_i & event_cnt_i & cmd & x"00";
+            packet_buf  <= has_hits & ch_mask_i & event_cnt_i & cmd & x"00" & std_logic_vector(to_unsigned(LINKID, LINKB));
             trg_o       <= has_hits;
             crc_en      <= '1';
           end if;
 
         when DATA_state =>
 
-          packet_buf(7 downto 0) <= crc;
+          packet_buf(LINKB + 7 downto LINKB) <= crc;
 
           if (state_bit_cnt = LENGTH - 1) then
             state         <= IDLE_state;

@@ -942,7 +942,8 @@ begin
       rb_tx_inst : entity work.rb_tx
         generic map (
           EVENTCNTB => EVENTCNTB,
-          MASKCNTB  => NUM_RB_CHANNELS
+          MASKCNTB  => NUM_RB_CHANNELS,
+          LINKID    => I
           )
         port map (
           clock => clk,
