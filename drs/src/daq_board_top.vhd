@@ -167,6 +167,8 @@ architecture Behavioral of top_readout_board is
   signal mt_event_cnt_err   : std_logic;
   signal mt_cmd             : std_logic_vector(1 downto 0);
   signal mt_cmd_valid       : std_logic;
+  signal mt_link_id         : std_logic_vector(5 downto 0);
+  signal mt_link_id_valid   : std_logic;
   signal mt_crc             : std_logic_vector(7 downto 0);
   signal mt_crc_calc        : std_logic_vector(7 downto 0);
   signal mt_crc_valid       : std_logic;
@@ -654,6 +656,9 @@ begin
       enable_i    => mt_trigger_mode and mt_trigger_dav,
       cmd_o       => mt_cmd,
       cmd_valid_o => mt_cmd_valid,
+
+      link_id_o       => mt_link_id,
+      link_id_valid_o => mt_link_id_valid,
 
       crc_ok_o    => mt_crc_ok,
       crc_o       => mt_crc,
@@ -1506,6 +1511,7 @@ begin
   regs_read_arr(32)(REG_TRIGGER_EXT_TRIGGER_EN_BIT) <= ext_trigger_en;
   regs_read_arr(32)(REG_TRIGGER_EXT_TRIGGER_ACTIVE_HI_BIT) <= ext_trigger_active_hi;
   regs_read_arr(32)(REG_TRIGGER_MT_TRIGGER_IS_LEVEL_BIT) <= mt_is_level_trigger;
+  regs_read_arr(32)(REG_TRIGGER_MT_LINK_ID_MSB downto REG_TRIGGER_MT_LINK_ID_LSB) <= mt_link_id;
   regs_read_arr(33)(REG_TRIGGER_CNT_MT_PRBS_ERRS_MSB downto REG_TRIGGER_CNT_MT_PRBS_ERRS_LSB) <= cnt_mt_prbs_err;
   regs_read_arr(35)(REG_TRIGGER_MT_TRIGGER_MODE_BIT) <= mt_trigger_mode;
   regs_read_arr(36)(REG_TRIGGER_CNT_MT_CRC_ERR_MSB downto REG_TRIGGER_CNT_MT_CRC_ERR_LSB) <= cnt_mt_crc_err;

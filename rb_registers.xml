@@ -359,6 +359,10 @@
                 fw_default="0x0"
                 mask="0x4"
                 fw_signal="mt_is_level_trigger" />
+            <node id="MT_LINK_ID" address="0x1" permission="r"
+                description="MT Link ID Received from MTB"
+                mask="0x1f8"
+                fw_signal="mt_link_id" />
             <node id="CNT_MT_PRBS_ERRS" address="0x3" permission="r"
                 description="Number of PRBS errors on the MT line"
                 mask="0xffffffff"

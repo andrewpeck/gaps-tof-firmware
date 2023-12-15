@@ -8,7 +8,8 @@ entity mt_rx is
     EVENTCNTB : natural := 32;
     MASKB     : natural := 8;
     CRCB      : natural := 8;
-    CMDB      : natural := 2
+    CMDB      : natural := 2;
+    LINKB     : natural := 6
     );
   port(
 
@@ -25,6 +26,9 @@ entity mt_rx is
 
     cmd_o       : out std_logic_vector (CMDB-1 downto 0);
     cmd_valid_o : out std_logic;
+
+    link_id_o       : out std_logic_vector (LINKB-1 downto 0);
+    link_id_valid_o : out std_logic;
 
     mask_o       : out std_logic_vector (MASKB-1 downto 0);
     mask_valid_o : out std_logic;
@@ -44,7 +48,7 @@ end mt_rx;
 
 architecture rtl of mt_rx is
 
-  type state_t is (IDLE_state, DWRITE_state, MASK_state, EVENTCNT_state, CMD_state, CRC_state, WAIT_state);
+  type state_t is (IDLE_state, DWRITE_state, MASK_state, EVENTCNT_state, CMD_state, CRC_state, LINKID_state, WAIT_state);
 
   signal trg, trg_r, fragment                                      : std_logic := '0';
   signal cmd_valid, mask_valid, crc_valid, event_cnt_valid         : std_logic := '0';
@@ -54,6 +58,7 @@ architecture rtl of mt_rx is
   signal crc_rx    : std_logic_vector (CRCB-1 downto 0)      := (others => '0');
   signal mask      : std_logic_vector (MASKB-1 downto 0)     := (others => '0');
   signal cmd       : std_logic_vector (CMDB-1 downto 0)      := (others => '0');
+  signal linkid    : std_logic_vector (LINKB-1 downto 0)     := (others => '0');
 
   signal state         : state_t                                   := IDLE_state;
   signal state_bit_cnt : natural range 0 to event_cnt_o'length - 1 := 0;
@@ -61,6 +66,7 @@ architecture rtl of mt_rx is
   signal event_cnt_buf : std_logic_vector (EVENTCNTB-1 downto 0) := (others => '0');
   signal mask_buf      : std_logic_vector (MASKB-1 downto 0)     := (others => '0');
   signal cmd_buf       : std_logic_vector (CMDB-1 downto 0)      := (others => '0');
+  signal linkid_buf    : std_logic_vector (LINKB-1 downto 0)     := (others => '0');
   signal crc_rx_buf    : std_logic_vector (CRCB-1 downto 0)      := (others => '0');
   signal crc_calc      : std_logic_vector (CRCB-1 downto 0)      := (others => '0');
 
@@ -190,14 +196,30 @@ begin
             end if;
 
             if (state_bit_cnt = CRCB - 1) then
-              crc_rx    <= crc_rx_buf(CRCB-1 downto 1) & serial_i;
-              state     <= WAIT_state;
-              crc_valid <= '1';
+              crc_rx        <= crc_rx_buf(CRCB-1 downto 1) & serial_i;
+              state         <= LINKID_state;
+              crc_valid     <= '1';
+              state_bit_cnt <= 0;
             else
               state_bit_cnt <= state_bit_cnt + 1;
             end if;
 
             crc_rx_buf(CRCB-1-state_bit_cnt) <= serial_i;
+
+          when LINKID_state =>
+
+            if (state_bit_cnt = LINKB - 1) then
+              link_id_o       <= linkid_buf(LINKB-1 downto 1) & serial_i;
+              state_bit_cnt   <= 0;
+              link_id_valid_o <= '1';
+              state           <= WAIT_state;
+            else
+
+              state_bit_cnt <= state_bit_cnt + 1;
+
+            end if;
+
+            linkid_buf(LINKB-1-state_bit_cnt) <= serial_i;
 
           when WAIT_state =>
 

@@ -433,6 +433,13 @@
         "description": "Set to 1 for mt level trigger on v2.4 boards",
         "adr8": 260
     },
+    "DRS.TRIGGER.MT_LINK_ID": {
+        "adr": 65,
+        "permission": "r",
+        "mask": 504,
+        "description": "MT Link ID Received from MTB",
+        "adr8": 260
+    },
     "DRS.TRIGGER.CNT_MT_PRBS_ERRS": {
         "adr": 67,
         "permission": "r",
