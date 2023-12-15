@@ -43,9 +43,6 @@ begin
           trg_o <= '1';
         end if;
 
-      else
-        reg <= (others => '0');
-
       end if;
     end if;
   end process;
