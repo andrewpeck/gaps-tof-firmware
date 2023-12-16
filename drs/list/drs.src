@@ -44,3 +44,4 @@ drs/src/mt_rx.vhd
 drs/src/drs.sv
 drs/src/dna.v
 drs/src/daq.vhd
+drs/src/soft_reset.vhd
