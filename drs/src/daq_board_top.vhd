@@ -253,8 +253,10 @@ architecture Behavioral of top_readout_board is
                             RST_POINTER, FLUSH);
   signal soft_rst_state : soft_rst_state_t;
 
+  constant SOFT_RESET_FLUSH_CNT_MAX          : integer := 127;
+
   signal soft_reset                        : std_logic;
-  signal soft_reset_flush_cnt              : integer range 0 to 127;
+  signal soft_reset_flush_cnt              : integer range 0 to SOFT_RESET_FLUSH_CNT_MAX;
   signal soft_reset_done                   : std_logic;
   signal soft_reset_drs, soft_reset_drs_en : std_logic;
   signal soft_reset_daq, soft_reset_daq_en : std_logic;
@@ -981,7 +983,7 @@ begin
         when IDLE =>
 
           soft_reset_done      <= '1';
-          soft_reset_flush_cnt <= 127;
+          soft_reset_flush_cnt <= SOFT_RESET_FLUSH_CNT_MAX;
           soft_reset_trg       <= '0'; -- trigger reset should be held high
 
           if (soft_reset) then
@@ -1016,9 +1018,12 @@ begin
 
         when RST_POINTER =>
 
-          if (dma_idle = '1' or soft_reset_wait_dma = '0') then
-            soft_rst_state <= FLUSH;
-            soft_reset_ptr <= soft_reset_ptr_en;
+          if (soft_reset_flush_cnt = 0 and (dma_idle = '1' or soft_reset_wait_dma = '0')) then
+            soft_rst_state       <= FLUSH;
+            soft_reset_ptr       <= soft_reset_ptr_en;
+            soft_reset_flush_cnt <= SOFT_RESET_FLUSH_CNT_MAX;
+          else 
+            soft_reset_flush_cnt <= soft_reset_flush_cnt - 1;
           end if;
 
         when FLUSH =>
