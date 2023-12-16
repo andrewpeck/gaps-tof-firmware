@@ -21,9 +21,9 @@ proc translate_name {name} {
     # rb_d_{DSI 1..5}_{PAIR 0..1}_{RB 1..5} --> rb_d_[Q]
     if {[string range $name 0 4] eq "rb_d_"} {
         set args [split $name "_"]
-        set dsi  [expr [lindex $args 2] - 1]
+        set rb   [expr [lindex $args 2] - 1]
         set pair [lindex $args 3]
-        set rb   [expr [lindex $args 4] - 1]
+        set dsi  [expr [lindex $args 4] - 1]
         set pin [expr $dsi * 10 + $rb * 2 + $pair]
         set name rb_data_o\[$pin\]
         # puts $name
