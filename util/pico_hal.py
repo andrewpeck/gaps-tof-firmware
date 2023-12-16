@@ -244,7 +244,7 @@ def reset_rb_readout_cnt():
 
 def read_rb_readout_cnt():
     wReg("MT.RB_READOUT_CNTS.SNAP", 1)  # snap
-    for i in range(40):
+    for i in range(50):
         print("RB%2d readout counts = %d" % (i, rReg(f"MT.RB_READOUT_CNTS.CNTS_{i}")))
     wReg("MT.RB_READOUT_CNTS.SNAP", 0)  # unsnap
 

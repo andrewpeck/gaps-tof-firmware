@@ -1115,14 +1115,74 @@
         "mask": 4278190080,
         "description": "Readout count on RB=39"
     },
-    "MT.RB_READOUT_CNTS.RESET": {
+    "MT.RB_READOUT_CNTS.CNTS_40": {
         "adr": 252,
+        "permission": "r",
+        "mask": 255,
+        "description": "Readout count on RB=40"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_41": {
+        "adr": 252,
+        "permission": "r",
+        "mask": 65280,
+        "description": "Readout count on RB=41"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_42": {
+        "adr": 252,
+        "permission": "r",
+        "mask": 16711680,
+        "description": "Readout count on RB=42"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_43": {
+        "adr": 252,
+        "permission": "r",
+        "mask": 4278190080,
+        "description": "Readout count on RB=43"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_44": {
+        "adr": 253,
+        "permission": "r",
+        "mask": 255,
+        "description": "Readout count on RB=44"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_45": {
+        "adr": 253,
+        "permission": "r",
+        "mask": 65280,
+        "description": "Readout count on RB=45"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_46": {
+        "adr": 253,
+        "permission": "r",
+        "mask": 16711680,
+        "description": "Readout count on RB=46"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_47": {
+        "adr": 253,
+        "permission": "r",
+        "mask": 4278190080,
+        "description": "Readout count on RB=47"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_48": {
+        "adr": 254,
+        "permission": "r",
+        "mask": 255,
+        "description": "Readout count on RB=48"
+    },
+    "MT.RB_READOUT_CNTS.CNTS_49": {
+        "adr": 254,
+        "permission": "r",
+        "mask": 65280,
+        "description": "Readout count on RB=49"
+    },
+    "MT.RB_READOUT_CNTS.RESET": {
+        "adr": 255,
         "permission": "w",
         "mask": 1,
         "description": "Write 1 to reset hit counters."
     },
     "MT.RB_READOUT_CNTS.SNAP": {
-        "adr": 253,
+        "adr": 256,
         "permission": "rw",
         "mask": 1,
         "description": "1 to snap the hit counters."

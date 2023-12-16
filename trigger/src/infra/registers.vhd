@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_MT_NUM_REGS : integer := 157;
+    constant REG_MT_NUM_REGS : integer := 160;
     constant REG_MT_ADDRESS_MSB : integer := 9;
     constant REG_MT_ADDRESS_LSB : integer := 0;
     constant REG_LOOPBACK_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
@@ -836,10 +836,50 @@ package registers is
     constant REG_RB_READOUT_CNTS_CNTS_39_MSB    : integer := 31;
     constant REG_RB_READOUT_CNTS_CNTS_39_LSB     : integer := 24;
 
-    constant REG_RB_READOUT_CNTS_RESET_ADDR    : std_logic_vector(9 downto 0) := "00" & x"fc";
+    constant REG_RB_READOUT_CNTS_CNTS_40_ADDR    : std_logic_vector(9 downto 0) := "00" & x"fc";
+    constant REG_RB_READOUT_CNTS_CNTS_40_MSB    : integer := 7;
+    constant REG_RB_READOUT_CNTS_CNTS_40_LSB     : integer := 0;
+
+    constant REG_RB_READOUT_CNTS_CNTS_41_ADDR    : std_logic_vector(9 downto 0) := "00" & x"fc";
+    constant REG_RB_READOUT_CNTS_CNTS_41_MSB    : integer := 15;
+    constant REG_RB_READOUT_CNTS_CNTS_41_LSB     : integer := 8;
+
+    constant REG_RB_READOUT_CNTS_CNTS_42_ADDR    : std_logic_vector(9 downto 0) := "00" & x"fc";
+    constant REG_RB_READOUT_CNTS_CNTS_42_MSB    : integer := 23;
+    constant REG_RB_READOUT_CNTS_CNTS_42_LSB     : integer := 16;
+
+    constant REG_RB_READOUT_CNTS_CNTS_43_ADDR    : std_logic_vector(9 downto 0) := "00" & x"fc";
+    constant REG_RB_READOUT_CNTS_CNTS_43_MSB    : integer := 31;
+    constant REG_RB_READOUT_CNTS_CNTS_43_LSB     : integer := 24;
+
+    constant REG_RB_READOUT_CNTS_CNTS_44_ADDR    : std_logic_vector(9 downto 0) := "00" & x"fd";
+    constant REG_RB_READOUT_CNTS_CNTS_44_MSB    : integer := 7;
+    constant REG_RB_READOUT_CNTS_CNTS_44_LSB     : integer := 0;
+
+    constant REG_RB_READOUT_CNTS_CNTS_45_ADDR    : std_logic_vector(9 downto 0) := "00" & x"fd";
+    constant REG_RB_READOUT_CNTS_CNTS_45_MSB    : integer := 15;
+    constant REG_RB_READOUT_CNTS_CNTS_45_LSB     : integer := 8;
+
+    constant REG_RB_READOUT_CNTS_CNTS_46_ADDR    : std_logic_vector(9 downto 0) := "00" & x"fd";
+    constant REG_RB_READOUT_CNTS_CNTS_46_MSB    : integer := 23;
+    constant REG_RB_READOUT_CNTS_CNTS_46_LSB     : integer := 16;
+
+    constant REG_RB_READOUT_CNTS_CNTS_47_ADDR    : std_logic_vector(9 downto 0) := "00" & x"fd";
+    constant REG_RB_READOUT_CNTS_CNTS_47_MSB    : integer := 31;
+    constant REG_RB_READOUT_CNTS_CNTS_47_LSB     : integer := 24;
+
+    constant REG_RB_READOUT_CNTS_CNTS_48_ADDR    : std_logic_vector(9 downto 0) := "00" & x"fe";
+    constant REG_RB_READOUT_CNTS_CNTS_48_MSB    : integer := 7;
+    constant REG_RB_READOUT_CNTS_CNTS_48_LSB     : integer := 0;
+
+    constant REG_RB_READOUT_CNTS_CNTS_49_ADDR    : std_logic_vector(9 downto 0) := "00" & x"fe";
+    constant REG_RB_READOUT_CNTS_CNTS_49_MSB    : integer := 15;
+    constant REG_RB_READOUT_CNTS_CNTS_49_LSB     : integer := 8;
+
+    constant REG_RB_READOUT_CNTS_RESET_ADDR    : std_logic_vector(9 downto 0) := "00" & x"ff";
     constant REG_RB_READOUT_CNTS_RESET_BIT    : integer := 0;
 
-    constant REG_RB_READOUT_CNTS_SNAP_ADDR    : std_logic_vector(9 downto 0) := "00" & x"fd";
+    constant REG_RB_READOUT_CNTS_SNAP_ADDR    : std_logic_vector(9 downto 0) := "01" & x"00";
     constant REG_RB_READOUT_CNTS_SNAP_BIT    : integer := 0;
     constant REG_RB_READOUT_CNTS_SNAP_DEFAULT : std_logic := '1';
 
