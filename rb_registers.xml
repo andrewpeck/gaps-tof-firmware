@@ -17,17 +17,17 @@
             <node id="DMODE" address="0x0" permission="rw"
                 description="set 1 = continuous domino, 0=single shot"
                 mask="0x2"
-                fw_signal="dmode"
+                fw_signal="drs_dmode"
                 fw_default="0x1"/>
             <node id="STANDBY_MODE" address="0x0" permission="rw"
                 description="set 1 = shutdown drs"
                 mask="0x4"
-                fw_signal="standby_mode"
+                fw_signal="drs_standby_mode"
                 fw_default="0x0"/>
             <node id="TRANSPARENT_MODE" address="0x0" permission="rw"
                 description="set 1 = transparent mode"
                 mask="0x8"
-                fw_signal="transp_mode"
+                fw_signal="drs_transp_mode"
                 fw_default="0x0"/>
             <node id="DRS_PLL_LOCK" address="0x0" permission="r"
                 description="DRS PLL Locked"
@@ -58,6 +58,11 @@
                 mask="0x1"
                 fw_default="0x0"
                 fw_signal="cylon_mode" />
+            <node id="START_TIMER" address="0x3" permission="rw"
+                description="Number of clock cycles to delay before allowing triggers."
+                mask="0xff0"
+                fw_default="105"
+                fw_signal="drs_ctl_start_timer"/>
             <node id="LOSS_OF_LOCK" address="0x4" permission="r"
                 description="Raw reading of LOL signal"
                 mask="0x1"
@@ -74,7 +79,7 @@
             <node id="ROI_MODE" address="0x0" permission="rw"
                 description="Set to 1 to enable Region of Interest Readout"
                 mask="0x1"
-                fw_signal="roi_mode"
+                fw_signal="drs_roi_mode"
                 fw_default="0x1"/>
             <node id="BUSY" address="0x0" permission="r"
                 description="DRS is busy"
@@ -93,7 +98,7 @@
             <node id="EN_SPIKE_REMOVAL" address="0x0" permission="rw"
                 description="set 1 to enable spike removal"
                 mask="0x400000"
-                fw_signal="spike_removal"
+                fw_signal="drs_spike_removal"
                 fw_default="0x1"/>
 
 
@@ -110,17 +115,17 @@
             <node id="START" address="0x2" permission="w"
                 description="Write 1 to take the state machine out of idle mode"
                 mask="0x1"
-                fw_write_pulse_signal="start" />
+                fw_write_pulse_signal="drs_start"/>
 
             <node id="REINIT" address="0x3" permission="w"
                 description="Write 1 to reinitialize DRS state machine (restores to idle state)"
                 mask="0x1"
-                fw_write_pulse_signal="reinit" />
+                fw_write_pulse_signal="drs_reinit" />
 
             <node id="CONFIGURE" address="0x4" permission="w"
                 description="Write 1 to configure the DRS. Should be done before data taking"
                 mask="0x1"
-                fw_write_pulse_signal="configure" />
+                fw_write_pulse_signal="drs_configure"/>
 
             <node id="DRS_RESET" address="0x5" permission="w"
                 description="Write 1 to completely reset the DRS state machine logic"
@@ -151,7 +156,7 @@
                 description="1 to sample on positive edge, 0 on negative"
                 mask="0x1"
                 fw_default="0x0"
-                fw_signal="posneg"/>
+                fw_signal="adc_posneg"/>
 
             <node id="SROUT_POSNEG" address="0xA" permission="rw"
                 description="1 to sample on positive edge, 0 on negative"
@@ -170,7 +175,71 @@
                 mask="0x1"
                 fw_write_pulse_signal="dma_clear"/>
 
-            <node id="DRS_DEADTIME" address="0xc" permission="r"
+            <node id="SOFT_RESET" address="0xC" permission="w"
+                description="Write 1 to soft reset the readout buffers."
+                mask="0x1"
+                fw_write_pulse_signal="soft_reset"/>
+
+            <node id="SOFT_RESET_DONE" address="0xD" permission="r"
+                description="Soft reset is finished."
+                mask="0x8000"
+                fw_signal="soft_reset_done"/>
+
+            <node id="SOFT_RESET_DRS_EN" address="0xD" permission="rw"
+                description="Soft reset DRS."
+                mask="0x0001"
+                fw_signal="soft_reset_drs_en"
+                fw_default="0x0" />
+
+            <node id="SOFT_RESET_DAQ_EN" address="0xD" permission="rw"
+                description="Soft reset DAQ."
+                mask="0x0002"
+                fw_signal="soft_reset_daq_en"
+                fw_default="0x0" />
+
+            <node id="SOFT_RESET_DMA_EN" address="0xD" permission="rw"
+                description="Soft reset DMA."
+                mask="0x0004"
+                fw_signal="soft_reset_dma_en"
+                fw_default="0x1" />
+
+            <node id="SOFT_RESET_PTR_EN" address="0xD" permission="rw"
+                description="Soft reset occupancy pointer."
+                mask="0x0008"
+                fw_signal="soft_reset_ptr_en"
+                fw_default="0x1" />
+
+            <node id="SOFT_RESET_TRG_EN" address="0xD" permission="rw"
+                description="Soft reset triggers."
+                mask="0x0010"
+                fw_signal="soft_reset_trg_en"
+                fw_default="0x1" />
+
+            <node id="SOFT_RESET_BUF_EN" address="0xD" permission="rw"
+                description="Soft reset buffers."
+                mask="0x0020"
+                fw_signal="soft_reset_buf_en"
+                fw_default="0x1" />
+
+            <node id="SOFT_RESET_WAIT_DRS" address="0xD" permission="rw"
+                description="Wait for DRS to idle."
+                mask="0x0100"
+                fw_signal="soft_reset_wait_drs"
+                fw_default="0x1" />
+
+            <node id="SOFT_RESET_WAIT_DAQ" address="0xD" permission="rw"
+                description="Wait for DAQ to idle."
+                mask="0x0200"
+                fw_signal="soft_reset_wait_daq"
+                fw_default="0x1" />
+
+            <node id="SOFT_RESET_WAIT_DMA" address="0xD" permission="rw"
+                description="Wait for DMA to idle."
+                mask="0x0400"
+                fw_signal="soft_reset_wait_dma"
+                fw_default="0x1" />
+
+            <node id="DRS_DEADTIME" address="0xE" permission="r"
                 description="Measured last deadtime of the DRS in clock cycles"
                 mask="0xFFFF"
                 fw_signal="std_logic_vector(to_unsigned(drs_busy_timer, 16))"/>
@@ -295,11 +364,10 @@
                 fw_default="0x0"
                 mask="0x4"
                 fw_signal="mt_is_level_trigger" />
-            <node id="TRIGGER_DELAY" address="0x2" permission="rw"
-                description="Trigger delay measured in LUT1 units"
-                fw_default="0x0"
-                mask="0xfff"
-                fw_signal="drs_dwrite_delay_sel" />
+            <node id="MT_LINK_ID" address="0x1" permission="r"
+                description="MT Link ID Received from MTB"
+                mask="0x1f8"
+                fw_signal="mt_link_id" />
             <node id="CNT_MT_PRBS_ERRS" address="0x3" permission="r"
                 description="Number of PRBS errors on the MT line"
                 mask="0xffffffff"
@@ -313,7 +381,7 @@
             <node id="MT_TRIGGER_MODE" address="0x5" permission="rw"
                 description="1 to use the MT as the source of the trigger"
                 mask="0x1"
-                fw_default="0x1"
+                fw_default="0x0"
                 fw_signal="mt_trigger_mode" />
             <node id="CNT_MT_CRC_ERR" address="0x6" permission="r"
                 description="Number of MT CRC errors"
@@ -425,15 +493,6 @@
             <node id="RAM_B_OCCUPANCY" permission="r" address="0x3" mask="0xFFFFFFFF" description="RAM buffer b occupancy"  fw_signal="ram_buff_b_occupancy"/>
             <node id="DMA_POINTER"     permission="r" address="0x4" mask="0xFFFFFFFF" description="DMA controller pointer"  fw_signal="dma_pointer"/>
             <node id="TOGGLE_RAM"      permission="w" address="0x5"  description="Write 1 to switch the dma buffer to the other half" mask="0x1" fw_write_pulse_signal="ram_toggle_request" />
-        </node>
-        <node id="GFP" address="0x200" description = "GFP Registers">
-            <node id="EVENTID_SPI_EN"  fw_default="0x0" permission="rw" address="0x0" mask="0x1" description="1 to enable GFP Event ID from SPI"  fw_signal="gfp_use_eventid"/>
-            <node id="EVENTID_RX"  permission="r" address="0x1" mask="0xFFFFFFFF" description="Event ID from GFP SPI Interface"  fw_signal="gfp_eventid_rx"/>
-            <node id="EVENTID_TIMEOUT_CNT"  permission="r" address="0x2" mask="0xffff"
-                  description="Timed out triggers waiting for event id"
-                  fw_cnt_reset_signal="reset or cnt_reset"
-                  fw_cnt_en_signal="gfp_eventid_timeout"
-                  fw_signal="gfp_eventid_timeout_cnt"/>
         </node>
     </node>
 </node>

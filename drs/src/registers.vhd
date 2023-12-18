@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_DRS_NUM_REGS : integer := 70;
+    constant REG_DRS_NUM_REGS : integer := 68;
     constant REG_DRS_ADDRESS_MSB : integer := 9;
     constant REG_DRS_ADDRESS_LSB : integer := 0;
     constant REG_CHIP_DMODE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
@@ -45,6 +45,11 @@ package registers is
     constant REG_CHIP_CYLON_MODE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"03";
     constant REG_CHIP_CYLON_MODE_BIT    : integer := 0;
     constant REG_CHIP_CYLON_MODE_DEFAULT : std_logic := '0';
+
+    constant REG_CHIP_START_TIMER_ADDR    : std_logic_vector(9 downto 0) := "00" & x"03";
+    constant REG_CHIP_START_TIMER_MSB    : integer := 11;
+    constant REG_CHIP_START_TIMER_LSB     : integer := 4;
+    constant REG_CHIP_START_TIMER_DEFAULT : std_logic_vector(11 downto 4) := x"69";
 
     constant REG_CHIP_LOSS_OF_LOCK_ADDR    : std_logic_vector(9 downto 0) := "00" & x"04";
     constant REG_CHIP_LOSS_OF_LOCK_BIT    : integer := 0;
@@ -125,7 +130,49 @@ package registers is
     constant REG_READOUT_DMA_CLEAR_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1b";
     constant REG_READOUT_DMA_CLEAR_BIT    : integer := 0;
 
-    constant REG_READOUT_DRS_DEADTIME_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1c";
+    constant REG_READOUT_SOFT_RESET_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1c";
+    constant REG_READOUT_SOFT_RESET_BIT    : integer := 0;
+
+    constant REG_READOUT_SOFT_RESET_DRS_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1d";
+    constant REG_READOUT_SOFT_RESET_DRS_EN_BIT    : integer := 0;
+    constant REG_READOUT_SOFT_RESET_DRS_EN_DEFAULT : std_logic := '0';
+
+    constant REG_READOUT_SOFT_RESET_DAQ_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1d";
+    constant REG_READOUT_SOFT_RESET_DAQ_EN_BIT    : integer := 1;
+    constant REG_READOUT_SOFT_RESET_DAQ_EN_DEFAULT : std_logic := '0';
+
+    constant REG_READOUT_SOFT_RESET_DMA_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1d";
+    constant REG_READOUT_SOFT_RESET_DMA_EN_BIT    : integer := 2;
+    constant REG_READOUT_SOFT_RESET_DMA_EN_DEFAULT : std_logic := '1';
+
+    constant REG_READOUT_SOFT_RESET_PTR_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1d";
+    constant REG_READOUT_SOFT_RESET_PTR_EN_BIT    : integer := 3;
+    constant REG_READOUT_SOFT_RESET_PTR_EN_DEFAULT : std_logic := '1';
+
+    constant REG_READOUT_SOFT_RESET_TRG_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1d";
+    constant REG_READOUT_SOFT_RESET_TRG_EN_BIT    : integer := 4;
+    constant REG_READOUT_SOFT_RESET_TRG_EN_DEFAULT : std_logic := '1';
+
+    constant REG_READOUT_SOFT_RESET_BUF_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1d";
+    constant REG_READOUT_SOFT_RESET_BUF_EN_BIT    : integer := 5;
+    constant REG_READOUT_SOFT_RESET_BUF_EN_DEFAULT : std_logic := '1';
+
+    constant REG_READOUT_SOFT_RESET_WAIT_DRS_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1d";
+    constant REG_READOUT_SOFT_RESET_WAIT_DRS_BIT    : integer := 8;
+    constant REG_READOUT_SOFT_RESET_WAIT_DRS_DEFAULT : std_logic := '1';
+
+    constant REG_READOUT_SOFT_RESET_WAIT_DAQ_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1d";
+    constant REG_READOUT_SOFT_RESET_WAIT_DAQ_BIT    : integer := 9;
+    constant REG_READOUT_SOFT_RESET_WAIT_DAQ_DEFAULT : std_logic := '1';
+
+    constant REG_READOUT_SOFT_RESET_WAIT_DMA_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1d";
+    constant REG_READOUT_SOFT_RESET_WAIT_DMA_BIT    : integer := 10;
+    constant REG_READOUT_SOFT_RESET_WAIT_DMA_DEFAULT : std_logic := '1';
+
+    constant REG_READOUT_SOFT_RESET_DONE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1d";
+    constant REG_READOUT_SOFT_RESET_DONE_BIT    : integer := 15;
+
+    constant REG_READOUT_DRS_DEADTIME_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1e";
     constant REG_READOUT_DRS_DEADTIME_MSB    : integer := 15;
     constant REG_READOUT_DRS_DEADTIME_LSB     : integer := 0;
 
@@ -212,10 +259,9 @@ package registers is
     constant REG_TRIGGER_MT_TRIGGER_IS_LEVEL_BIT    : integer := 2;
     constant REG_TRIGGER_MT_TRIGGER_IS_LEVEL_DEFAULT : std_logic := '0';
 
-    constant REG_TRIGGER_TRIGGER_DELAY_ADDR    : std_logic_vector(9 downto 0) := "00" & x"42";
-    constant REG_TRIGGER_TRIGGER_DELAY_MSB    : integer := 11;
-    constant REG_TRIGGER_TRIGGER_DELAY_LSB     : integer := 0;
-    constant REG_TRIGGER_TRIGGER_DELAY_DEFAULT : std_logic_vector(11 downto 0) := x"000";
+    constant REG_TRIGGER_MT_LINK_ID_ADDR    : std_logic_vector(9 downto 0) := "00" & x"41";
+    constant REG_TRIGGER_MT_LINK_ID_MSB    : integer := 8;
+    constant REG_TRIGGER_MT_LINK_ID_LSB     : integer := 3;
 
     constant REG_TRIGGER_CNT_MT_PRBS_ERRS_ADDR    : std_logic_vector(9 downto 0) := "00" & x"43";
     constant REG_TRIGGER_CNT_MT_PRBS_ERRS_MSB    : integer := 31;
@@ -226,7 +272,7 @@ package registers is
 
     constant REG_TRIGGER_MT_TRIGGER_MODE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"45";
     constant REG_TRIGGER_MT_TRIGGER_MODE_BIT    : integer := 0;
-    constant REG_TRIGGER_MT_TRIGGER_MODE_DEFAULT : std_logic := '1';
+    constant REG_TRIGGER_MT_TRIGGER_MODE_DEFAULT : std_logic := '0';
 
     constant REG_TRIGGER_CNT_MT_CRC_ERR_ADDR    : std_logic_vector(9 downto 0) := "00" & x"46";
     constant REG_TRIGGER_CNT_MT_CRC_ERR_MSB    : integer := 15;
@@ -349,18 +395,6 @@ package registers is
 
     constant REG_DMA_TOGGLE_RAM_ADDR    : std_logic_vector(9 downto 0) := "01" & x"05";
     constant REG_DMA_TOGGLE_RAM_BIT    : integer := 0;
-
-    constant REG_GFP_EVENTID_SPI_EN_ADDR    : std_logic_vector(9 downto 0) := "10" & x"00";
-    constant REG_GFP_EVENTID_SPI_EN_BIT    : integer := 0;
-    constant REG_GFP_EVENTID_SPI_EN_DEFAULT : std_logic := '0';
-
-    constant REG_GFP_EVENTID_RX_ADDR    : std_logic_vector(9 downto 0) := "10" & x"01";
-    constant REG_GFP_EVENTID_RX_MSB    : integer := 31;
-    constant REG_GFP_EVENTID_RX_LSB     : integer := 0;
-
-    constant REG_GFP_EVENTID_TIMEOUT_CNT_ADDR    : std_logic_vector(9 downto 0) := "10" & x"02";
-    constant REG_GFP_EVENTID_TIMEOUT_CNT_MSB    : integer := 15;
-    constant REG_GFP_EVENTID_TIMEOUT_CNT_LSB     : integer := 0;
 
 
 end registers;

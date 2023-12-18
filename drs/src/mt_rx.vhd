@@ -8,7 +8,8 @@ entity mt_rx is
     EVENTCNTB : natural := 32;
     MASKB     : natural := 8;
     CRCB      : natural := 8;
-    CMDB      : natural := 2
+    CMDB      : natural := 2;
+    LINKB     : natural := 6
     );
   port(
 
@@ -18,34 +19,38 @@ entity mt_rx is
     serial_i : in std_logic;
     enable_i : in std_logic;
 
-    wr_en_o : out std_logic;
-
-    trg_o      : out std_logic := '0';
-    trg_fast_o : out std_logic := '0';
-    fragment_o : out std_logic := '0';
+    trg_o         : out std_logic := '0';
+    trg_fast_o    : out std_logic := '0';
+    fragment_o    : out std_logic := '0';
+    fragment_en_i : in  std_logic := '0';
 
     cmd_o       : out std_logic_vector (CMDB-1 downto 0);
     cmd_valid_o : out std_logic;
+
+    link_id_o       : out std_logic_vector (LINKB-1 downto 0);
+    link_id_valid_o : out std_logic;
 
     mask_o       : out std_logic_vector (MASKB-1 downto 0);
     mask_valid_o : out std_logic;
 
     crc_o       : out std_logic_vector (CRCB-1 downto 0);
     crc_calc_o  : out std_logic_vector (CRCB-1 downto 0);
-    crc_valid_o : out std_logic;
-    crc_ok_o    : out std_logic;
+    crc_valid_o : out std_logic := '0';
+    crc_ok_o    : out std_logic := '0';
 
     event_cnt_o       : out std_logic_vector (EVENTCNTB-1 downto 0);
-    event_cnt_valid_o : out std_logic
+    event_cnt_valid_o : out std_logic;
+
+    fifo_wr_o : out std_logic
 
     );
 end mt_rx;
 
 architecture rtl of mt_rx is
 
-  type state_t is (IDLE_state, DWRITE_state, MASK_state, EVENTCNT_state, CMD_state, CRC_state, WAIT_state);
+  type state_t is (IDLE_state, DWRITE_state, MASK_state, EVENTCNT_state, CMD_state, CRC_state, LINKID_state, WAIT_state);
 
-  signal trg, fragment                                             : std_logic := '0';
+  signal trg, trg_r, fragment                                      : std_logic := '0';
   signal cmd_valid, mask_valid, crc_valid, event_cnt_valid         : std_logic := '0';
   signal cmd_valid_r, mask_valid_r, crc_valid_r, event_cnt_valid_r : std_logic := '0';
 
@@ -53,6 +58,7 @@ architecture rtl of mt_rx is
   signal crc_rx    : std_logic_vector (CRCB-1 downto 0)      := (others => '0');
   signal mask      : std_logic_vector (MASKB-1 downto 0)     := (others => '0');
   signal cmd       : std_logic_vector (CMDB-1 downto 0)      := (others => '0');
+  signal linkid    : std_logic_vector (LINKB-1 downto 0)     := (others => '0');
 
   signal state         : state_t                                   := IDLE_state;
   signal state_bit_cnt : natural range 0 to event_cnt_o'length - 1 := 0;
@@ -60,6 +66,7 @@ architecture rtl of mt_rx is
   signal event_cnt_buf : std_logic_vector (EVENTCNTB-1 downto 0) := (others => '0');
   signal mask_buf      : std_logic_vector (MASKB-1 downto 0)     := (others => '0');
   signal cmd_buf       : std_logic_vector (CMDB-1 downto 0)      := (others => '0');
+  signal linkid_buf    : std_logic_vector (LINKB-1 downto 0)     := (others => '0');
   signal crc_rx_buf    : std_logic_vector (CRCB-1 downto 0)      := (others => '0');
   signal crc_calc      : std_logic_vector (CRCB-1 downto 0)      := (others => '0');
 
@@ -70,6 +77,8 @@ architecture rtl of mt_rx is
 
   constant WAIT_CNT_MAX : integer                         := 2**12-1;
   signal wait_cnt       : natural range 0 to WAIT_CNT_MAX := 0;
+
+  signal done : std_logic := '0';
 
 begin
 
@@ -95,16 +104,17 @@ begin
       if (enable_i = '1') then
 
         trg_fast_o      <= '0';
-        event_cnt_valid <= '0';
-        mask_valid      <= '0';
-        cmd_valid       <= '0';
-        crc_valid       <= '0';
-        trg             <= '0';
-        fragment        <= '0';
 
         case state is
 
           when IDLE_state =>
+
+            event_cnt_valid <= '0';
+            mask_valid      <= '0';
+            cmd_valid       <= '0';
+            crc_valid       <= '0';
+            trg             <= '0';
+            fragment        <= '0';
 
             state_bit_cnt <= 0;
 
@@ -121,7 +131,7 @@ begin
               trg        <= '1';
               trg_fast_o <= '1';
             else
-              fragment <= '1';
+              fragment <= fragment_en_i;
             end if;
 
           when MASK_state =>
@@ -186,14 +196,30 @@ begin
             end if;
 
             if (state_bit_cnt = CRCB - 1) then
-              crc_rx    <= crc_rx_buf(CRCB-1 downto 1) & serial_i;
-              state     <= WAIT_state;
-              crc_valid <= '1';
+              crc_rx        <= crc_rx_buf(CRCB-1 downto 1) & serial_i;
+              state         <= LINKID_state;
+              crc_valid     <= '1';
+              state_bit_cnt <= 0;
             else
               state_bit_cnt <= state_bit_cnt + 1;
             end if;
 
             crc_rx_buf(CRCB-1-state_bit_cnt) <= serial_i;
+
+          when LINKID_state =>
+
+            if (state_bit_cnt = LINKB - 1) then
+              link_id_o       <= linkid_buf(LINKB-1 downto 1) & serial_i;
+              state_bit_cnt   <= 0;
+              link_id_valid_o <= '1';
+              state           <= WAIT_state;
+            else
+
+              state_bit_cnt <= state_bit_cnt + 1;
+
+            end if;
+
+            linkid_buf(LINKB-1-state_bit_cnt) <= serial_i;
 
           when WAIT_state =>
 
@@ -218,19 +244,29 @@ begin
     end if;
   end process;
 
+  done <= (event_cnt_valid and not event_cnt_valid_r);
+
   process (outclk) is
   begin
     if (rising_edge(outclk)) then
 
-      trg_o      <= trg;
+      fifo_wr_o  <= (fragment or trg) and done;
+      trg_o      <= trg_fast_o or (trg and not trg_r);
       fragment_o <= fragment;
+
+      trg_r             <= trg; 
+      event_cnt_valid_r <= event_cnt_valid; 
+      mask_valid_r      <= mask_valid;
+      cmd_valid_r       <= cmd_valid;
+      crc_valid_r       <= crc_valid;
 
       -- make these rising edge sensitive on the outclk so they are only 1
       -- clock wide and can be used as write enables
-      event_cnt_valid_o <= event_cnt_valid and not event_cnt_valid_o;
-      mask_valid_o      <= mask_valid and not mask_valid_o;
-      cmd_valid_o       <= cmd_valid and not cmd_valid_o;
-      crc_valid_o       <= crc_valid and not crc_valid_o;
+      event_cnt_valid_o <= done; 
+      mask_valid_o      <= mask_valid and not mask_valid_r;
+      cmd_valid_o       <= cmd_valid and not cmd_valid_r;
+      crc_valid_o       <= crc_valid and not crc_valid_r;
+
 
       event_cnt_o <= event_cnt;
       mask_o      <= mask;

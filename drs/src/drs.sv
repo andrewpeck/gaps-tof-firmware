@@ -1,8 +1,4 @@
-`define IOB (*IOB="true"*)
-// synthesis translate_off
-`define SIMULATION
-// synthesis translate_on
-`define DEBUG
+// `define DEBUG
 // Enable DRS ILAs for now..
 
 // TODO: implement ROI trigger delay
@@ -55,6 +51,7 @@ module drs #(
                                                   //
     input [15:0] drs_ctl_wait_vdd_clocks,         //
     input [9:0]  drs_ctl_sample_count_max,        // number of samples to readout
+    input [7:0]  drs_ctl_start_timer,             // number of counts from start_running -> running
                                                   //
     input [7:0]  drs_ctl_config,                  // configuration register
                                                   // Bit0  DMODE  Control Domino Mode. A 1 means continuous cycling, a 0 configures a single shot
@@ -122,19 +119,18 @@ localparam ADR_STANDBY     = 4'b1111;
 // Input flops
 //----------------------------------------------------------------------------------------------------------------------
 
-reg [13:0] adc_data_neg, adc_data_pos;
-reg [13:0] adc_data;
+reg [13:0] adc_data_neg, adc_data_pos, adc_data;
 
 // take data in on negedge of clock, assuming that adc and fpga clocks are synchronous
-always @(negedge clock) begin
+always_ff @(negedge clock) begin
   adc_data_neg <= adc_data_i;
 end
-always @(posedge clock) begin
+always_ff @(posedge clock) begin
   adc_data_pos <= adc_data_i;
 end
 
 // transfer on flops from negedge to posedge before fifo
-always @(posedge clock) begin
+always_ff @(posedge clock) begin
   if (posneg_i)
     adc_data <= adc_data_pos;
   else
@@ -149,19 +145,6 @@ end
 wire drs_srout = srout_posneg_i ? drs_srout_i : drs_srout_neg;
 
 //----------------------------------------------------------------------------------------------------------------------
-// Trigger
-//----------------------------------------------------------------------------------------------------------------------
-
-reg trigger, domino_ready;
-
-// always read the 9th channel if any other channel is enabled
-wire [8:0] drs_ctl_readout_mask = drs_ctl_readout_mask_i;
-
-always @(posedge clock) begin
-  trigger <= (|drs_ctl_readout_mask && domino_ready) ? trigger_i : 0;
-end
-
-//----------------------------------------------------------------------------------------------------------------------
 // First/Last/Next Channel Calculators for Mask Based Channel Readout
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -171,10 +154,10 @@ reg [3:0] drs_ctl_next_chn;
 
 reg [8:0] readout_mask_sr;
 
-always @(posedge clock) begin
+always_ff @(posedge clock) begin
    drs_ctl_next_chn  <= prienc9(readout_mask_sr);
-   drs_ctl_first_chn <= prienc9(drs_ctl_readout_mask);
-   drs_ctl_last_chn  <= prienc9_rev(drs_ctl_readout_mask);
+   drs_ctl_first_chn <= prienc9(drs_ctl_readout_mask_i);
+   drs_ctl_last_chn  <= prienc9_rev(drs_ctl_readout_mask_i);
 end
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -184,7 +167,7 @@ end
 reg [7:0]  drs_sr_reg='hf8;
 
 // TODO: merge with the other counter
-reg [6:0] drs_start_timer = 0; // startup timer to make sure the domino is running before allowing triggers
+reg [7:0] drs_start_timer = 0; // startup timer to make sure the domino is running before allowing triggers
 
 // reg [7:0]  drs_stat_stop_wsr=0;
 // reg        drs_stop_wsr=0;
@@ -208,38 +191,29 @@ wire shift_out_config_done = (drs_sr_count == 7);
 // State machine parameters
 //----------------------------------------------------------------------------------------------------------------------
 
-localparam INIT          = 0;
-localparam IDLE          = 1;
-localparam START_RUNNING = 2;
-localparam RUNNING       = 3;
-localparam TRIGGER       = 4;
-localparam WAIT_VDD      = 5;
-localparam INIT_READOUT  = 6;
-localparam RSR_LOAD      = 7;
-localparam ADC_READOUT   = 8;
-localparam STOP_CELL     = 9;
-localparam SPIKE_REMOVAL = 13;
-localparam DONE          = 14;
-localparam CONF_SETUP    = 15;
-localparam CONF_WRITE    = 16;
-localparam WSR_SETUP     = 18;
-localparam WSR_STROBE    = 19;
-localparam INIT_RSR      = 20;
-localparam STANDBY       = 21;
+typedef enum int unsigned {INIT, IDLE, START_RUNNING, RUNNING, TRIGGER,
+    WAIT_VDD, INIT_READOUT, RSR_LOAD, ADC_READOUT, STOP_CELL, SPIKE_REMOVAL, DONE,
+    CONF_SETUP, CONF_WRITE, WSR_SETUP, WSR_STROBE, INIT_RSR, STANDBY} state_t;
 
-localparam MXSTATEBITS = $clog2(STANDBY);
-
-
-reg [MXSTATEBITS-1:0] drs_readout_state=0;
+var state_t drs_readout_state = INIT;
 
 assign busy_o = (drs_readout_state != RUNNING);
-assign idle_o = (drs_readout_state == IDLE);
+assign idle_o = (drs_readout_state == IDLE || drs_readout_state == INIT);
+
+//----------------------------------------------------------------------------------------------------------------------
+// Trigger
+//----------------------------------------------------------------------------------------------------------------------
+
+reg trigger;
+always_ff @(posedge clock) begin
+   trigger <= trigger_i && |drs_ctl_readout_mask_i && drs_readout_state == RUNNING;
+end
 
 //----------------------------------------------------------------------------------------------------------------------
 // State Machine
 //----------------------------------------------------------------------------------------------------------------------
 
-always @(posedge clock) begin
+always_ff @(posedge clock) begin
 
   if (reset) begin
 
@@ -277,7 +251,6 @@ always @(posedge clock) begin
   drs_sample_count     <= 0;
   drs_rd_tmp_count     <= 0;
   drs_reinit_request   <= 1;
-  domino_ready         <= 0;
   drs_old_roi_mode     <= 1;
   readout_complete     <= 0;
 
@@ -287,7 +260,6 @@ always @(posedge clock) begin
 
   fifo_wdata        <= 0;
   fifo_wen          <= 0;
-  domino_ready      <= 1;
   readout_complete  <= 0;
 
   // Memorize a write access to the bit in the control register that requests a reinitialisation of
@@ -394,22 +366,18 @@ always @(posedge clock) begin
               drs_readout_state  <= INIT;
 
           // do not go to running until at least 1.5 domino revolutions
-          if (drs_start_timer == 105) // 105 * 30ns <= 3.15us
-              drs_readout_state  <= RUNNING;
+          if (drs_start_timer == drs_ctl_start_timer)  begin // 105 * 30ns <= 3.15us
+              drs_readout_state <= RUNNING;
+          end else begin
+             drs_start_timer <= drs_start_timer + 1;
+          end             
 
           //------------------------------------------------------------------------------------------------------------
           // Logic
           //------------------------------------------------------------------------------------------------------------
 
-          drs_denable_o    <= 1;   // enable and start domino wave
-          domino_ready     <= 0;
-
-          drs_dwrite_o   <= 1;   // set drs_write_ff in proc_drs_write
-
-          // do not go to running until at least 1.5 domino revolutions
-          drs_start_timer  <= drs_start_timer + 1;
-          if (drs_start_timer==105) // 105 * 30ns <= 3.15us
-            domino_ready <= 1;  // arm trigger
+          drs_denable_o   <= 1;   // enable and start domino wave
+          drs_dwrite_o    <= 1;   // set drs_write_ff in proc_drs_write
 
     end // fini
 
@@ -447,7 +415,7 @@ always @(posedge clock) begin
           //------------------------------------------------------------------------------------------------------------
 
           drs_addr             <= drs_ctl_first_chn;
-          readout_mask_sr      <= drs_ctl_readout_mask;
+          readout_mask_sr      <= drs_ctl_readout_mask_i;
           drs_addr_o           <= ADR_READ_SR;  // set address to read shift register for readout
           drs_sample_count     <= 0;
           drs_rd_tmp_count     <= 0;
@@ -457,9 +425,6 @@ always @(posedge clock) begin
     end // fini
 
     // WAIT FOR SUPPLY TO SETTLE BEFORE READOUT
-    // wait ~120 us for VDD to stabilize
-    // is this really necessary ??
-    // deadtime contribution would be HUGE
     WAIT_VDD: begin
 
           if (drs_reinit_request)
@@ -681,12 +646,13 @@ always @(posedge clock) begin
 
           drs_rd_tmp_count <= drs_rd_tmp_count + 1'b1;
           drs_addr_o       <= ADR_READ_SR;
+          fifo_wen         <= 0;
+          drs_srin_o       <= 0;      // Shared Shift Register Input
+
           if (drs_rd_tmp_count < 1024)
             drs_srclk_en_o   <= 1;
           else
             drs_srclk_en_o   <= 0;
-          fifo_wen         <= 0;
-          drs_srin_o       <= 0;      // Shared Shift Register Input
 
     end // fini
 
@@ -885,35 +851,9 @@ end // and always
 assign fifo_wdata_o = fifo_wdata[READ_WIDTH-1:0];
 assign fifo_wen_o   = fifo_wen;
 
-`ifdef SIMULATION
-// Write-buffer auto-clear state machine display
-
-reg[15*8:0] state_disp;
-
-always @* begin
-  case (drs_readout_state)
-    INIT            : state_disp <= "INIT";
-    IDLE            : state_disp <= "IDLE";
-    START_RUNNING   : state_disp <= "START_RUNNING";
-    RUNNING         : state_disp <= "RUNNING";
-    TRIGGER         : state_disp <= "TRIGGER";
-    WAIT_VDD        : state_disp <= "WAIT_VDD";
-    INIT_READOUT    : state_disp <= "INIT_READOUT";
-    RSR_LOAD        : state_disp <= "RSR_LOAD";
-    ADC_READOUT     : state_disp <= "ADC_READOUT";
-    STOP_CELL       : state_disp <= "STOP_CELL";
-    SPIKE_REMOVAL   : state_disp <= "SPIKE_REMOVAL";
-    DONE            : state_disp <= "DONE";
-    CONF_SETUP      : state_disp <= "CONF_SETUP";
-    CONF_WRITE      : state_disp <= "CONF_WRITE";
-    WSR_SETUP       : state_disp <= "WSR_SETUP";
-    WSR_STROBE      : state_disp <= "WSR_STROBE";
-    STANDBY         : state_disp <= "STANDBY";
-    INIT_RSR        : state_disp <= "INIT_RSR";
-  endcase
-end
-`endif
-
+//------------------------------------------------------------------------------
+// ILA
+//------------------------------------------------------------------------------   
 
 `ifdef DEBUG
   ila_drs ila_drs_inst (
@@ -933,7 +873,7 @@ end
     .probe12 (drs_ctl_reinit),
     .probe13 (drs_ctl_configure_drs),
     .probe14 (drs_ctl_chn_config [7:0]),
-    .probe15 (drs_ctl_readout_mask[8:0]),
+    .probe15 (drs_ctl_readout_mask_i[8:0]),
     .probe16 (drs_srout),
     .probe17 (drs_addr_o[3:0]),
     .probe18 (drs_denable_o),
@@ -955,6 +895,10 @@ end
     .probe34 (readout_mask_sr)
   );
 `endif
+
+//------------------------------------------------------------------------------
+// Helper Functions
+//------------------------------------------------------------------------------   
 
 function [3:0] prienc9_rev;
  input [8:0] select;

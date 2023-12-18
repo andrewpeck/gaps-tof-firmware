@@ -392,6 +392,16 @@ architecture structural of gaps_mt is
   signal rb_readout_cnt_37 : std_logic_vector (7 downto 0) := (others => '0');
   signal rb_readout_cnt_38 : std_logic_vector (7 downto 0) := (others => '0');
   signal rb_readout_cnt_39 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_40 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_41 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_42 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_43 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_44 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_45 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_46 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_47 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_48 : std_logic_vector (7 downto 0) := (others => '0');
+  signal rb_readout_cnt_49 : std_logic_vector (7 downto 0) := (others => '0');
   ------ Register signals end ----------------------------------------------
 
   signal hk_ext_cs_n : std_logic_vector(1 downto 0);
@@ -1190,39 +1200,41 @@ begin
 
     ila_mt_inst : ila_mt
       port map (
-        clk                  => clock,
-        probe0(0)            => rb_data_o(0),
-        probe1(0)            => global_trigger,
-        probe2(31 downto 0)  => loopback,
-        probe2(39 downto 32) => eth_bad_frame_cnt (7 downto 0),
-        probe2(47 downto 40) => eth_bad_fcs_cnt (7 downto 0),
-        probe2(52 downto 48) => fb_clk_ok,
-        probe2(57 downto 53) => dsi_on,
-        probe2(58)           => tiu_busy_i,
-        probe2(59)           => tiu_gps_i,
-        probe2(60)           => tiu_serial_o,
-        probe2(61)           => tiu_trigger_o,
-        probe2(62)           => eth_bad_fcs,
-        probe2(74 downto 63) => (others => '0'),
-        probe3(3 downto 0)   => (others => '0'),
-        probe3(4)            => ext_in(0),
-        probe3(5)            => ext_in(1),
-        probe3(6)            => eth_bad_frame,
-        probe3(7)            => ext_out(0),
-        probe4(4 downto 0)   => lvs_sync,
-        probe4(5)            => daq_data_valid,
-        probe4(6)            => ext_trigger,
-        probe4(7)            => ext_out(1),
-        probe5(0)            => lvs_sync_ccb,
-        probe6(0)            => hk_ext_clk,
-        probe7(0)            => hk_ext_mosi,
-        probe8(0)            => hk_ext_miso,
-        probe9               => hk_ext_cs_n,
-        probe10              => fb_clock_rates(0),
-        probe11              => lt_data_i_pri(31 downto 0),
-        probe12(31 downto 0) => timestamp_latch,
-        probe13              => x"0000" & daq_data,
-        probe14              => event_cnt
+        clk                   => clock,
+        probe0(0)             => rb_data_o(0),
+        probe1(0)             => global_trigger,
+        probe2(31 downto 0)   => ipb_mosi_arr(0).ipb_addr,
+        probe2(63 downto 32)  => ipb_mosi_arr(0).ipb_wdata,
+        probe2(64)            => ipb_mosi_arr(0).ipb_strobe,
+        probe2(65)            => ipb_mosi_arr(0).ipb_write,
+        probe2(66)            => ipb_miso_arr(0).ipb_ack,
+        probe2(67)            => ipb_miso_arr(0).ipb_err,
+        probe2(68)            => daq_rd_en,
+        probe2(69)            => daq_valid_xfifo,
+        probe2(70)            => daq_full,
+        probe2(71)            => daq_empty,
+        probe2(72)            => daq_reset,
+        probe2(74 downto 73)  => (others => '0'),
+        probe3(3 downto 0)    => (others => '0'),
+        probe3(4)             => ext_in(0),
+        probe3(5)             => ext_in(1),
+        probe3(6)             => eth_bad_frame,
+        probe3(7)             => ext_out(0),
+        probe4(4 downto 0)    => lvs_sync,
+        probe4(5)             => daq_data_valid,
+        probe4(6)             => ext_trigger,
+        probe4(7)             => ext_out(1),
+        probe5(0)             => lvs_sync_ccb,
+        probe6(0)             => hk_ext_clk,
+        probe7(0)             => daq_pkt_size_rd_done,
+        probe8(0)             => daq_pkt_size_rd_en,
+        probe9                => hk_ext_cs_n,
+        probe10               => fb_clock_rates(0),
+        probe11               => ipb_miso_arr(0).ipb_rdata,
+        probe12(15 downto 0)  => daq_pkt_size_xfifo,
+        probe12(31 downto 16) => daq_pkt_size_masked,
+        probe13               => x"0000" & daq_data,
+        probe14               => event_cnt
         );
   end generate;
 
@@ -1840,18 +1852,21 @@ begin
   regs_addresses(142)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "00" & x"fb";
   regs_addresses(143)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "00" & x"fc";
   regs_addresses(144)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "00" & x"fd";
-  regs_addresses(145)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"20";
-  regs_addresses(146)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"21";
-  regs_addresses(147)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"22";
-  regs_addresses(148)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"23";
-  regs_addresses(149)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"00";
-  regs_addresses(150)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"01";
-  regs_addresses(151)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"02";
-  regs_addresses(152)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"03";
-  regs_addresses(153)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"04";
-  regs_addresses(154)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"05";
-  regs_addresses(155)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"06";
-  regs_addresses(156)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"07";
+  regs_addresses(145)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "00" & x"fe";
+  regs_addresses(146)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "00" & x"ff";
+  regs_addresses(147)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"00";
+  regs_addresses(148)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"20";
+  regs_addresses(149)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"21";
+  regs_addresses(150)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"22";
+  regs_addresses(151)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"23";
+  regs_addresses(152)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"00";
+  regs_addresses(153)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"01";
+  regs_addresses(154)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"02";
+  regs_addresses(155)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"03";
+  regs_addresses(156)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"04";
+  regs_addresses(157)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"05";
+  regs_addresses(158)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"06";
+  regs_addresses(159)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"07";
 
   -- Connect read signals
   regs_read_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB) <= loopback;
@@ -2035,23 +2050,33 @@ begin
   regs_read_arr(142)(REG_RB_READOUT_CNTS_CNTS_37_MSB downto REG_RB_READOUT_CNTS_CNTS_37_LSB) <= rb_readout_cnt_37;
   regs_read_arr(142)(REG_RB_READOUT_CNTS_CNTS_38_MSB downto REG_RB_READOUT_CNTS_CNTS_38_LSB) <= rb_readout_cnt_38;
   regs_read_arr(142)(REG_RB_READOUT_CNTS_CNTS_39_MSB downto REG_RB_READOUT_CNTS_CNTS_39_LSB) <= rb_readout_cnt_39;
-  regs_read_arr(144)(REG_RB_READOUT_CNTS_SNAP_BIT) <= rb_readout_cnt_snap;
-  regs_read_arr(145)(REG_XADC_CALIBRATION_MSB downto REG_XADC_CALIBRATION_LSB) <= calibration;
-  regs_read_arr(145)(REG_XADC_VCCPINT_MSB downto REG_XADC_VCCPINT_LSB) <= vccpint;
-  regs_read_arr(146)(REG_XADC_VCCPAUX_MSB downto REG_XADC_VCCPAUX_LSB) <= vccpaux;
-  regs_read_arr(146)(REG_XADC_VCCODDR_MSB downto REG_XADC_VCCODDR_LSB) <= vccoddr;
-  regs_read_arr(147)(REG_XADC_TEMP_MSB downto REG_XADC_TEMP_LSB) <= temp;
-  regs_read_arr(147)(REG_XADC_VCCINT_MSB downto REG_XADC_VCCINT_LSB) <= vccint;
-  regs_read_arr(148)(REG_XADC_VCCAUX_MSB downto REG_XADC_VCCAUX_LSB) <= vccaux;
-  regs_read_arr(148)(REG_XADC_VCCBRAM_MSB downto REG_XADC_VCCBRAM_LSB) <= vccbram;
-  regs_read_arr(149)(REG_HOG_GLOBAL_DATE_MSB downto REG_HOG_GLOBAL_DATE_LSB) <= GLOBAL_DATE;
-  regs_read_arr(150)(REG_HOG_GLOBAL_TIME_MSB downto REG_HOG_GLOBAL_TIME_LSB) <= GLOBAL_TIME;
-  regs_read_arr(151)(REG_HOG_GLOBAL_VER_MSB downto REG_HOG_GLOBAL_VER_LSB) <= GLOBAL_VER;
-  regs_read_arr(152)(REG_HOG_GLOBAL_SHA_MSB downto REG_HOG_GLOBAL_SHA_LSB) <= GLOBAL_SHA;
-  regs_read_arr(153)(REG_HOG_TOP_SHA_MSB downto REG_HOG_TOP_SHA_LSB) <= TOP_SHA;
-  regs_read_arr(154)(REG_HOG_TOP_VER_MSB downto REG_HOG_TOP_VER_LSB) <= TOP_VER;
-  regs_read_arr(155)(REG_HOG_HOG_SHA_MSB downto REG_HOG_HOG_SHA_LSB) <= HOG_SHA;
-  regs_read_arr(156)(REG_HOG_HOG_VER_MSB downto REG_HOG_HOG_VER_LSB) <= HOG_VER;
+  regs_read_arr(143)(REG_RB_READOUT_CNTS_CNTS_40_MSB downto REG_RB_READOUT_CNTS_CNTS_40_LSB) <= rb_readout_cnt_40;
+  regs_read_arr(143)(REG_RB_READOUT_CNTS_CNTS_41_MSB downto REG_RB_READOUT_CNTS_CNTS_41_LSB) <= rb_readout_cnt_41;
+  regs_read_arr(143)(REG_RB_READOUT_CNTS_CNTS_42_MSB downto REG_RB_READOUT_CNTS_CNTS_42_LSB) <= rb_readout_cnt_42;
+  regs_read_arr(143)(REG_RB_READOUT_CNTS_CNTS_43_MSB downto REG_RB_READOUT_CNTS_CNTS_43_LSB) <= rb_readout_cnt_43;
+  regs_read_arr(144)(REG_RB_READOUT_CNTS_CNTS_44_MSB downto REG_RB_READOUT_CNTS_CNTS_44_LSB) <= rb_readout_cnt_44;
+  regs_read_arr(144)(REG_RB_READOUT_CNTS_CNTS_45_MSB downto REG_RB_READOUT_CNTS_CNTS_45_LSB) <= rb_readout_cnt_45;
+  regs_read_arr(144)(REG_RB_READOUT_CNTS_CNTS_46_MSB downto REG_RB_READOUT_CNTS_CNTS_46_LSB) <= rb_readout_cnt_46;
+  regs_read_arr(144)(REG_RB_READOUT_CNTS_CNTS_47_MSB downto REG_RB_READOUT_CNTS_CNTS_47_LSB) <= rb_readout_cnt_47;
+  regs_read_arr(145)(REG_RB_READOUT_CNTS_CNTS_48_MSB downto REG_RB_READOUT_CNTS_CNTS_48_LSB) <= rb_readout_cnt_48;
+  regs_read_arr(145)(REG_RB_READOUT_CNTS_CNTS_49_MSB downto REG_RB_READOUT_CNTS_CNTS_49_LSB) <= rb_readout_cnt_49;
+  regs_read_arr(147)(REG_RB_READOUT_CNTS_SNAP_BIT) <= rb_readout_cnt_snap;
+  regs_read_arr(148)(REG_XADC_CALIBRATION_MSB downto REG_XADC_CALIBRATION_LSB) <= calibration;
+  regs_read_arr(148)(REG_XADC_VCCPINT_MSB downto REG_XADC_VCCPINT_LSB) <= vccpint;
+  regs_read_arr(149)(REG_XADC_VCCPAUX_MSB downto REG_XADC_VCCPAUX_LSB) <= vccpaux;
+  regs_read_arr(149)(REG_XADC_VCCODDR_MSB downto REG_XADC_VCCODDR_LSB) <= vccoddr;
+  regs_read_arr(150)(REG_XADC_TEMP_MSB downto REG_XADC_TEMP_LSB) <= temp;
+  regs_read_arr(150)(REG_XADC_VCCINT_MSB downto REG_XADC_VCCINT_LSB) <= vccint;
+  regs_read_arr(151)(REG_XADC_VCCAUX_MSB downto REG_XADC_VCCAUX_LSB) <= vccaux;
+  regs_read_arr(151)(REG_XADC_VCCBRAM_MSB downto REG_XADC_VCCBRAM_LSB) <= vccbram;
+  regs_read_arr(152)(REG_HOG_GLOBAL_DATE_MSB downto REG_HOG_GLOBAL_DATE_LSB) <= GLOBAL_DATE;
+  regs_read_arr(153)(REG_HOG_GLOBAL_TIME_MSB downto REG_HOG_GLOBAL_TIME_LSB) <= GLOBAL_TIME;
+  regs_read_arr(154)(REG_HOG_GLOBAL_VER_MSB downto REG_HOG_GLOBAL_VER_LSB) <= GLOBAL_VER;
+  regs_read_arr(155)(REG_HOG_GLOBAL_SHA_MSB downto REG_HOG_GLOBAL_SHA_LSB) <= GLOBAL_SHA;
+  regs_read_arr(156)(REG_HOG_TOP_SHA_MSB downto REG_HOG_TOP_SHA_LSB) <= TOP_SHA;
+  regs_read_arr(157)(REG_HOG_TOP_VER_MSB downto REG_HOG_TOP_VER_LSB) <= TOP_VER;
+  regs_read_arr(158)(REG_HOG_HOG_SHA_MSB downto REG_HOG_HOG_SHA_LSB) <= HOG_SHA;
+  regs_read_arr(159)(REG_HOG_HOG_VER_MSB downto REG_HOG_HOG_VER_LSB) <= HOG_VER;
 
   -- Connect write signals
   loopback <= regs_write_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB);
@@ -2149,7 +2174,7 @@ begin
   coarse_delays(47) <= regs_write_arr(130)(REG_COARSE_DELAYS_LT47_MSB downto REG_COARSE_DELAYS_LT47_LSB);
   coarse_delays(48) <= regs_write_arr(131)(REG_COARSE_DELAYS_LT48_MSB downto REG_COARSE_DELAYS_LT48_LSB);
   coarse_delays(49) <= regs_write_arr(132)(REG_COARSE_DELAYS_LT49_MSB downto REG_COARSE_DELAYS_LT49_LSB);
-  rb_readout_cnt_snap <= regs_write_arr(144)(REG_RB_READOUT_CNTS_SNAP_BIT);
+  rb_readout_cnt_snap <= regs_write_arr(147)(REG_RB_READOUT_CNTS_SNAP_BIT);
 
   -- Connect write pulse signals
   trigger_ipb <= regs_write_pulse_arr(8);
@@ -2157,7 +2182,7 @@ begin
   event_cnt_reset <= regs_write_pulse_arr(12);
   daq_reset <= regs_write_pulse_arr(16);
   hit_cnt_reset <= regs_write_pulse_arr(53);
-  rb_readout_cnt_reset <= regs_write_pulse_arr(143);
+  rb_readout_cnt_reset <= regs_write_pulse_arr(146);
 
   -- Connect write done signals
 
@@ -3038,6 +3063,136 @@ begin
   );
 
 
+  COUNTER_RB_READOUT_CNTS_CNTS_40 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(40),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_40
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_41 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(41),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_41
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_42 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(42),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_42
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_43 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(43),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_43
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_44 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(44),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_44
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_45 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(45),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_45
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_46 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(46),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_46
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_47 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(47),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_47
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_48 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(48),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_48
+  );
+
+
+  COUNTER_RB_READOUT_CNTS_CNTS_49 : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 8
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => ipb_reset or rb_readout_cnt_reset,
+      en_i      => rb_readout_flag(49),
+      snap_i    => rb_readout_cnt_snap,
+      count_o   => rb_readout_cnt_49
+  );
+
+
   -- Connect rate instances
 
   -- Connect read ready signals
@@ -3140,7 +3295,7 @@ begin
   regs_defaults(130)(REG_COARSE_DELAYS_LT47_MSB downto REG_COARSE_DELAYS_LT47_LSB) <= REG_COARSE_DELAYS_LT47_DEFAULT;
   regs_defaults(131)(REG_COARSE_DELAYS_LT48_MSB downto REG_COARSE_DELAYS_LT48_LSB) <= REG_COARSE_DELAYS_LT48_DEFAULT;
   regs_defaults(132)(REG_COARSE_DELAYS_LT49_MSB downto REG_COARSE_DELAYS_LT49_LSB) <= REG_COARSE_DELAYS_LT49_DEFAULT;
-  regs_defaults(144)(REG_RB_READOUT_CNTS_SNAP_BIT) <= REG_RB_READOUT_CNTS_SNAP_DEFAULT;
+  regs_defaults(147)(REG_RB_READOUT_CNTS_SNAP_BIT) <= REG_RB_READOUT_CNTS_SNAP_DEFAULT;
 
   -- Define writable regs
   regs_writable_arr(0) <= '1';
@@ -3228,7 +3383,7 @@ begin
   regs_writable_arr(130) <= '1';
   regs_writable_arr(131) <= '1';
   regs_writable_arr(132) <= '1';
-  regs_writable_arr(144) <= '1';
+  regs_writable_arr(147) <= '1';
 
 --==== Registers end ============================================================================
 end structural;

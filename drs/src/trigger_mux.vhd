@@ -8,10 +8,7 @@ use unisim.vcomponents.all;
 
 entity trigger_mux is
 
-  generic(
-    TRIGGER_OS_MAX : natural := 3;
-    EN_DELAY_LINE  : boolean := false
-    );
+  generic(TRIGGER_OS_MAX : natural := 3);
 
   port(
     clock : in std_logic;
@@ -25,8 +22,6 @@ entity trigger_mux is
 
     -- software trigger
     force_trig : in std_logic;
-
-    delay_i : in std_logic_vector (11 downto 0);
 
     -- master trigger
     master_trigger : in std_logic;
@@ -46,50 +41,19 @@ architecture behavioral of trigger_mux is
 
   signal ext_trigger       : std_logic := '0';
   signal ext_trigger_async : std_logic := '0';
-  signal ext_trigger_dly   : std_logic := '0';
 
   signal trigger_os     : std_logic                         := '0';
   signal trigger_os_cnt : natural range 0 to TRIGGER_OS_MAX := 0;
 
   signal trigger_r     : std_logic := '0';
-  signal trigger_rr    : std_logic := '0';
   signal trigger       : std_logic := '0';
   signal trigger_dly   : std_logic := '0';
-  signal trigger_r_neg : std_logic := '0';
 
   -- put a dont touch to allow manual placement
   attribute DONT_TOUCH                       : string;
   attribute DONT_TOUCH of trigger, trigger_r : signal is "true";
 
 begin
-
-  -- buffer chain delay for hardware trigger
-
-  nodly_line_gen : if (not EN_DELAY_LINE) generate
-    ext_trigger_dly <= ext_trigger_i;
-  end generate;
-
-  dly_line_gen : if (EN_DELAY_LINE) generate
-    signal ext_trigger_delay_line            : std_logic_vector(4095 downto 0);
-    -- Tell P&R to not optimize away the ext_trigger_delay_line array
-    attribute keep                           : string;
-    attribute keep of ext_trigger_delay_line : signal is "true";
-  begin
-
-    ext_trigger_delay_line(0) <= ext_trigger_i;
-    ext_trigger_dly           <= ext_trigger_delay_line(to_integer(unsigned(delay_i)));
-
-    delayed_trig_gen : for bit_no in 1 to 4095 generate
-      LUT1_inst : LUT1
-        generic map (
-          INIT => "10"
-          )
-        port map (
-          O  => ext_trigger_delay_line(bit_no),
-          I0 => ext_trigger_delay_line(bit_no-1)
-          );
-    end generate;
-  end generate;
 
   process (clock) is
   begin
@@ -141,7 +105,7 @@ begin
 
 
   -- optionally invert the ext trigger input
-  ext_trigger_async <= ext_trigger_dly when ext_trigger_active_hi_ff = '1' else not ext_trigger_dly;
+  ext_trigger_async <= ext_trigger_i when ext_trigger_active_hi_ff = '1' else not ext_trigger_i;
 
   -- ext_trigger is the OR of the async and one-shotted synchronous trigger
   ext_trigger <= ext_trigger_en_ff and (ext_trigger_async);
@@ -152,14 +116,13 @@ begin
   dwrite_o <= not (trigger or trigger_os or trigger_r);
 
   -- rising edge only
-  trigger_o <= '1' when trigger_r = '1' and trigger_rr = '0' else '0';
+  trigger_o <= '1' when trigger = '1' and trigger_r = '0' else '0';
 
   process (clock) is
   begin
     if (rising_edge(clock)) then
 
       trigger_r  <= trigger;
-      trigger_rr <= trigger_r or trigger_r_neg;
 
       if (trigger_r = '1') then
         trigger_os_cnt <= TRIGGER_OS_MAX;

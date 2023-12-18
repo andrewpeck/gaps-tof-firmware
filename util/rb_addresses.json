@@ -55,6 +55,13 @@
         "description": "1 for cylon mode",
         "adr8": 12
     },
+    "DRS.CHIP.START_TIMER": {
+        "adr": 3,
+        "permission": "rw",
+        "mask": 4080,
+        "description": "Number of clock cycles to delay before allowing triggers.",
+        "adr8": 12
+    },
     "DRS.CHIP.LOSS_OF_LOCK": {
         "adr": 4,
         "permission": "r",
@@ -202,12 +209,89 @@
         "description": "Write 1 to clear the DMA memory (write zeroes)",
         "adr8": 108
     },
-    "DRS.READOUT.DRS_DEADTIME": {
+    "DRS.READOUT.SOFT_RESET": {
         "adr": 28,
+        "permission": "w",
+        "mask": 1,
+        "description": "Write 1 to soft reset the readout buffers.",
+        "adr8": 112
+    },
+    "DRS.READOUT.SOFT_RESET_DRS_EN": {
+        "adr": 29,
+        "permission": "rw",
+        "mask": 1,
+        "description": "Soft reset DRS.",
+        "adr8": 116
+    },
+    "DRS.READOUT.SOFT_RESET_DAQ_EN": {
+        "adr": 29,
+        "permission": "rw",
+        "mask": 2,
+        "description": "Soft reset DAQ.",
+        "adr8": 116
+    },
+    "DRS.READOUT.SOFT_RESET_DMA_EN": {
+        "adr": 29,
+        "permission": "rw",
+        "mask": 4,
+        "description": "Soft reset DMA.",
+        "adr8": 116
+    },
+    "DRS.READOUT.SOFT_RESET_PTR_EN": {
+        "adr": 29,
+        "permission": "rw",
+        "mask": 8,
+        "description": "Soft reset occupancy pointer.",
+        "adr8": 116
+    },
+    "DRS.READOUT.SOFT_RESET_TRG_EN": {
+        "adr": 29,
+        "permission": "rw",
+        "mask": 16,
+        "description": "Soft reset triggers.",
+        "adr8": 116
+    },
+    "DRS.READOUT.SOFT_RESET_BUF_EN": {
+        "adr": 29,
+        "permission": "rw",
+        "mask": 32,
+        "description": "Soft reset buffers.",
+        "adr8": 116
+    },
+    "DRS.READOUT.SOFT_RESET_WAIT_DRS": {
+        "adr": 29,
+        "permission": "rw",
+        "mask": 256,
+        "description": "Wait for DRS to idle.",
+        "adr8": 116
+    },
+    "DRS.READOUT.SOFT_RESET_WAIT_DAQ": {
+        "adr": 29,
+        "permission": "rw",
+        "mask": 512,
+        "description": "Wait for DAQ to idle.",
+        "adr8": 116
+    },
+    "DRS.READOUT.SOFT_RESET_WAIT_DMA": {
+        "adr": 29,
+        "permission": "rw",
+        "mask": 1024,
+        "description": "Wait for DMA to idle.",
+        "adr8": 116
+    },
+    "DRS.READOUT.SOFT_RESET_DONE": {
+        "adr": 29,
+        "permission": "r",
+        "mask": 32768,
+        "description": "Soft reset is finished.",
+        "adr8": 116
+    },
+    "DRS.READOUT.DRS_DEADTIME": {
+        "adr": 30,
         "permission": "r",
         "mask": 65535,
         "description": "Measured last deadtime of the DRS in clock cycles",
-        "adr8": 112
+        "adr8": 120
     },
     "DRS.FPGA.DNA.DNA_LSBS": {
         "adr": 32,
@@ -356,12 +440,12 @@
         "description": "Set to 1 for mt level trigger on v2.4 boards",
         "adr8": 260
     },
-    "DRS.TRIGGER.TRIGGER_DELAY": {
-        "adr": 66,
-        "permission": "rw",
-        "mask": 4095,
-        "description": "Trigger delay measured in LUT1 units",
-        "adr8": 264
+    "DRS.TRIGGER.MT_LINK_ID": {
+        "adr": 65,
+        "permission": "r",
+        "mask": 504,
+        "description": "MT Link ID Received from MTB",
+        "adr8": 260
     },
     "DRS.TRIGGER.CNT_MT_PRBS_ERRS": {
         "adr": 67,
@@ -607,26 +691,5 @@
         "mask": 1,
         "description": "Write 1 to switch the dma buffer to the other half",
         "adr8": 1044
-    },
-    "DRS.GFP.EVENTID_SPI_EN": {
-        "adr": 512,
-        "permission": "rw",
-        "mask": 1,
-        "description": "1 to enable GFP Event ID from SPI",
-        "adr8": 2048
-    },
-    "DRS.GFP.EVENTID_RX": {
-        "adr": 513,
-        "permission": "r",
-        "mask": 4294967295,
-        "description": "Event ID from GFP SPI Interface",
-        "adr8": 2052
-    },
-    "DRS.GFP.EVENTID_TIMEOUT_CNT": {
-        "adr": 514,
-        "permission": "r",
-        "mask": 65535,
-        "description": "Timed out triggers waiting for event id",
-        "adr8": 2056
     }
 }
