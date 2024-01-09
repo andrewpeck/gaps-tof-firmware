@@ -257,6 +257,7 @@ architecture Behavioral of top_readout_board is
   signal soft_reset_wait_daq               : std_logic;
   signal soft_reset_wait_drs               : std_logic;
   signal soft_reset_wait_dma               : std_logic;
+  signal soft_reset_watchdog_en            : std_logic;
 
   signal timestamp : unsigned (47 downto 0) := (others => '0');
 
@@ -987,6 +988,7 @@ begin
       daq_busy            => daq_busy,
       dma_idle            => dma_idle,
       soft_reset_i        => soft_reset,
+      watchdog_en_i       => soft_reset_watchdog_en,
       soft_reset_done     => soft_reset_done,
       soft_reset_drs      => soft_reset_drs,
       soft_reset_daq      => soft_reset_daq,
@@ -1434,6 +1436,7 @@ begin
   regs_read_arr(18)(REG_READOUT_SOFT_RESET_WAIT_DAQ_BIT) <= soft_reset_wait_daq;
   regs_read_arr(18)(REG_READOUT_SOFT_RESET_WAIT_DMA_BIT) <= soft_reset_wait_dma;
   regs_read_arr(18)(REG_READOUT_SOFT_RESET_DONE_BIT) <= soft_reset_done;
+  regs_read_arr(19)(REG_READOUT_SOFT_RESET_WATCHDOG_EN_BIT) <= soft_reset_watchdog_en;
   regs_read_arr(19)(REG_READOUT_DRS_DEADTIME_MSB downto REG_READOUT_DRS_DEADTIME_LSB) <= std_logic_vector(to_unsigned(drs_busy_timer, 16));
   regs_read_arr(20)(REG_FPGA_DNA_DNA_LSBS_MSB downto REG_FPGA_DNA_DNA_LSBS_LSB) <= dna (31 downto 0);
   regs_read_arr(21)(REG_FPGA_DNA_DNA_MSBS_MSB downto REG_FPGA_DNA_DNA_MSBS_LSB) <= dna (56 downto 32);
@@ -1513,6 +1516,7 @@ begin
   soft_reset_wait_drs <= regs_write_arr(18)(REG_READOUT_SOFT_RESET_WAIT_DRS_BIT);
   soft_reset_wait_daq <= regs_write_arr(18)(REG_READOUT_SOFT_RESET_WAIT_DAQ_BIT);
   soft_reset_wait_dma <= regs_write_arr(18)(REG_READOUT_SOFT_RESET_WAIT_DMA_BIT);
+  soft_reset_watchdog_en <= regs_write_arr(19)(REG_READOUT_SOFT_RESET_WATCHDOG_EN_BIT);
   board_id <= regs_write_arr(28)(REG_FPGA_BOARD_ID_MSB downto REG_FPGA_BOARD_ID_LSB);
   drs_temp <= regs_write_arr(29)(REG_FPGA_DRS_TEMP_MSB downto REG_FPGA_DRS_TEMP_LSB);
   daq_fragment_en <= regs_write_arr(31)(REG_DAQ_DAQ_FRAGMENT_EN_BIT);
@@ -1672,6 +1676,7 @@ begin
   regs_defaults(18)(REG_READOUT_SOFT_RESET_WAIT_DRS_BIT) <= REG_READOUT_SOFT_RESET_WAIT_DRS_DEFAULT;
   regs_defaults(18)(REG_READOUT_SOFT_RESET_WAIT_DAQ_BIT) <= REG_READOUT_SOFT_RESET_WAIT_DAQ_DEFAULT;
   regs_defaults(18)(REG_READOUT_SOFT_RESET_WAIT_DMA_BIT) <= REG_READOUT_SOFT_RESET_WAIT_DMA_DEFAULT;
+  regs_defaults(19)(REG_READOUT_SOFT_RESET_WATCHDOG_EN_BIT) <= REG_READOUT_SOFT_RESET_WATCHDOG_EN_DEFAULT;
   regs_defaults(28)(REG_FPGA_BOARD_ID_MSB downto REG_FPGA_BOARD_ID_LSB) <= REG_FPGA_BOARD_ID_DEFAULT;
   regs_defaults(29)(REG_FPGA_DRS_TEMP_MSB downto REG_FPGA_DRS_TEMP_LSB) <= REG_FPGA_DRS_TEMP_DEFAULT;
   regs_defaults(31)(REG_DAQ_DAQ_FRAGMENT_EN_BIT) <= REG_DAQ_DAQ_FRAGMENT_EN_DEFAULT;
@@ -1692,6 +1697,7 @@ begin
   regs_writable_arr(14) <= '1';
   regs_writable_arr(15) <= '1';
   regs_writable_arr(18) <= '1';
+  regs_writable_arr(19) <= '1';
   regs_writable_arr(28) <= '1';
   regs_writable_arr(29) <= '1';
   regs_writable_arr(31) <= '1';

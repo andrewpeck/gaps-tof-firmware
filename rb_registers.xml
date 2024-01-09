@@ -239,6 +239,12 @@
                 fw_signal="soft_reset_wait_dma"
                 fw_default="0x1" />
 
+            <node id="SOFT_RESET_WATCHDOG_EN" address="0xE" permission="rw"
+                description="Enable a watchdog timer for the soft reset module."
+                mask="0x0800"
+                fw_signal="soft_reset_watchdog_en"
+                fw_default="0x1"/>
+
             <node id="DRS_DEADTIME" address="0xE" permission="r"
                 description="Measured last deadtime of the DRS in clock cycles"
                 mask="0xFFFF"

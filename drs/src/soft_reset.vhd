@@ -20,7 +20,8 @@ entity soft_reset is
     daq_busy : in std_logic;
     dma_idle : in std_logic;
 
-    soft_reset_i        :     std_logic;
+    watchdog_en_i       : in  std_logic;
+    soft_reset_i        : in  std_logic;
     soft_reset_done     : out std_logic;
     soft_reset_drs      : out std_logic;
     soft_reset_daq      : out std_logic;
@@ -46,10 +47,15 @@ architecture rtl of soft_reset is
                             WAIT_DRS, WAIT_DAQ, WAIT_DMA,
                             RST_POINTER, FLUSH);
 
-  signal soft_rst_state : soft_rst_state_t;
+  signal soft_rst_state      : soft_rst_state_t;
+  signal soft_rst_state_last : soft_rst_state_t;
 
   constant SOFT_RESET_FLUSH_CNT_MAX : integer := 127;
   signal soft_reset_flush_cnt       : integer range 0 to SOFT_RESET_FLUSH_CNT_MAX;
+
+  constant WATCHDOG_CNT_MAX : integer   := 11000;
+  signal watchdog_cnt       : integer range 0 to WATCHDOG_CNT_MAX;
+  signal watchdog_timeout   : std_logic := '0';
 
 begin
 
@@ -99,28 +105,32 @@ begin
 
         when WAIT_DRS =>
 
-          if (drs_busy = '0' or drs_idle = '1' or soft_reset_wait_drs = '0') then
+          if (drs_busy = '0' or drs_idle = '1' or soft_reset_wait_drs = '0'
+              or watchdog_timeout = '1') then
             soft_rst_state <= WAIT_DAQ;
             soft_reset_drs <= soft_reset_drs_en;
           end if;
 
         when WAIT_DAQ =>
 
-          if (daq_busy = '0' or soft_reset_wait_daq = '0') then
+          if (daq_busy = '0' or soft_reset_wait_daq = '0'
+              or watchdog_timeout = '1') then
             soft_rst_state <= WAIT_DMA;
             soft_reset_daq <= soft_reset_daq_en;
           end if;
 
         when WAIT_DMA =>
 
-          if (dma_idle = '1' or soft_reset_wait_dma = '0') then
+          if (dma_idle = '1' or soft_reset_wait_dma = '0'
+              or watchdog_timeout = '1') then
             soft_rst_state <= RST_POINTER;
             soft_reset_dma <= soft_reset_dma_en;
           end if;
 
         when RST_POINTER =>
 
-          if (soft_reset_flush_cnt = 0 and (dma_idle = '1' or soft_reset_wait_dma = '0')) then
+          if ((soft_reset_flush_cnt = 0 and (dma_idle = '1' or soft_reset_wait_dma = '0'))
+              or watchdog_timeout = '1') then
             soft_rst_state       <= FLUSH;
             soft_reset_ptr       <= soft_reset_ptr_en;
             soft_reset_flush_cnt <= SOFT_RESET_FLUSH_CNT_MAX;
@@ -132,7 +142,7 @@ begin
 
           soft_reset_buf <= soft_reset_buf_en;
 
-          if (soft_reset_flush_cnt = 0) then
+          if (soft_reset_flush_cnt = 0 or watchdog_timeout = '1') then
             soft_rst_state <= IDLE;
           else
             soft_reset_flush_cnt <= soft_reset_flush_cnt - 1;
@@ -146,6 +156,26 @@ begin
 
       if (reset = '1') then
         soft_rst_state <= AUTO_RESET;
+      end if;
+
+    end if;
+  end process;
+
+  process (clock) is
+  begin
+    if (rising_edge(clock)) then
+
+      soft_rst_state_last <= soft_rst_state;
+
+      if (soft_rst_state = IDLE or soft_rst_state /= soft_rst_state_last) then
+        watchdog_cnt     <= 0;
+        watchdog_timeout <= '0';
+      elsif (watchdog_cnt = WATCHDOG_CNT_MAX) then
+        watchdog_cnt     <= 0;
+        watchdog_timeout <= watchdog_en_i;
+      else
+        watchdog_cnt     <= watchdog_cnt + 1;
+        watchdog_timeout <= '0';
       end if;
 
     end if;

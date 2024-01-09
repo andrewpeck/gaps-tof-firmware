@@ -172,6 +172,10 @@ package registers is
     constant REG_READOUT_SOFT_RESET_DONE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1d";
     constant REG_READOUT_SOFT_RESET_DONE_BIT    : integer := 15;
 
+    constant REG_READOUT_SOFT_RESET_WATCHDOG_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1e";
+    constant REG_READOUT_SOFT_RESET_WATCHDOG_EN_BIT    : integer := 11;
+    constant REG_READOUT_SOFT_RESET_WATCHDOG_EN_DEFAULT : std_logic := '1';
+
     constant REG_READOUT_DRS_DEADTIME_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1e";
     constant REG_READOUT_DRS_DEADTIME_MSB    : integer := 15;
     constant REG_READOUT_DRS_DEADTIME_LSB     : integer := 0;

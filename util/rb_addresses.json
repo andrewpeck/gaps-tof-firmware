@@ -286,6 +286,13 @@
         "description": "Soft reset is finished.",
         "adr8": 116
     },
+    "DRS.READOUT.SOFT_RESET_WATCHDOG_EN": {
+        "adr": 30,
+        "permission": "rw",
+        "mask": 2048,
+        "description": "Enable a watchdog timer for the soft reset module.",
+        "adr8": 120
+    },
     "DRS.READOUT.DRS_DEADTIME": {
         "adr": 30,
         "permission": "r",

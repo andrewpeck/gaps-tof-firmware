@@ -109,6 +109,7 @@
     SOFT\_RESET\_WAIT\_DAQ & \texttt{0x1d} & \texttt{[9:9]} & rw & \texttt{0x1} & Wait for DAQ to idle. \\\hline
     SOFT\_RESET\_WAIT\_DMA & \texttt{0x1d} & \texttt{[10:10]} & rw & \texttt{0x1} & Wait for DMA to idle. \\\hline
     SOFT\_RESET\_DONE & \texttt{0x1d} & \texttt{[15:15]} & r & \texttt{} & Soft reset is finished. \\\hline
+    SOFT\_RESET\_WATCHDOG\_EN & \texttt{0x1e} & \texttt{[11:11]} & rw & \texttt{0x1} & Enable a watchdog timer for the soft reset module. \\\hline
     DRS\_DEADTIME & \texttt{0x1e} & \texttt{[15:0]} & r & \texttt{} & Measured last deadtime of the DRS in clock cycles \\\hline
     \end{tabularx}
     \vspace{5mm}
