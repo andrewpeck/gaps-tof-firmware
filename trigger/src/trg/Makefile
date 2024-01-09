@@ -1,7 +1,7 @@
 update:
+	make --silent update_mapping
 	make --silent mapping
 	make --silent rbmap
-	make --silent triggers
 	emacs -batch -Q trigger.vhd -f vhdl-beautify-buffer
 
 # triggers:

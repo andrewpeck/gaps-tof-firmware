@@ -48,9 +48,9 @@ entity trigger is
 
     force_trigger_i : in std_logic;
 
-    trig_sources_o   : out std_logic_vector(15 downto 0) := (others => '0');
+    trig_sources_o   : out std_logic_vector(15 downto 0)           := (others => '0');
     pre_trigger_o    : out std_logic;
-    global_trigger_o : out std_logic := '0';
+    global_trigger_o : out std_logic                               := '0';
     lost_trigger_o   : out std_logic;
     rb_trigger_o     : out std_logic;
     rb_ch_bitmap_o   : out std_logic_vector (NUM_RBS*8-1 downto 0) := (others => '0');
@@ -73,7 +73,7 @@ architecture behavioral of trigger is
   -- t4: + global_trigger + event counter output
 
   -- constant should be # of clocks from hits_i to pretrigger
-  constant TRIG_LATENCY : integer := 5;
+  constant TRIG_LATENCY : integer                                  := 5;
   type hits_dlyline_t is array (integer range <>) of threshold_array_t;
   signal hits_dly       : hits_dlyline_t (TRIG_LATENCY-3 downto 0) := (others => (others => (others => '0')));
 
@@ -85,9 +85,9 @@ architecture behavioral of trigger is
   signal dead          : std_logic                      := '0';
   signal deadcnt       : integer range 0 to DEADCNT_MAX := 0;
 
-  signal gaps_trigger         : std_logic := '0';
-  signal track_trigger        : std_logic := '0';
-  signal any_trigger          : std_logic := '0';
+  signal gaps_trigger  : std_logic := '0';
+  signal track_trigger : std_logic := '0';
+  signal any_trigger   : std_logic := '0';
 
   --------------------------------------------------------------------------------
   -- Detector Mapping
@@ -137,8 +137,8 @@ architecture behavioral of trigger is
   signal trig_sources        : std_logic_vector(15 downto 0) := (others => '0');
   signal trig_sources_reg    : std_logic_vector(15 downto 0) := (others => '0');
   signal pedestal_trig       : std_logic;
-  signal pedestal_trig_latch : std_logic := '0';
-  signal rb_trigger          : std_logic := '0';
+  signal pedestal_trig_latch : std_logic                     := '0';
+  signal rb_trigger          : std_logic                     := '0';
 
   signal cube_cnts        : integer range 0 to N_CUBE;
   signal cube_bot_cnts    : integer range 0 to N_CUBE_BOT;
@@ -574,7 +574,7 @@ begin
     if (rising_edge(clk)) then
 
       if (any_hit_trigger_prescale /= x"00000000" and
-        any_hit_trigger_prescale > any_hit_trigger_urand) then
+          any_hit_trigger_prescale > any_hit_trigger_urand) then
         any_hit_trigger_en <= '1';
       else
         any_hit_trigger_en <= '0';
@@ -657,7 +657,7 @@ begin
       clk    => clk,
       trg_i  => pre_trigger,
       trg_o  => rb_trigger,
-      d      => rb_ch_bitmap, -- align to pretrigger
+      d      => rb_ch_bitmap,           -- align to pretrigger
       q      => rb_ch_integrated,
       window => to_integer(unsigned(rb_window_i))
       );
