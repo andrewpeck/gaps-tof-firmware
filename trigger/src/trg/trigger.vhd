@@ -401,42 +401,42 @@ begin
     cube(42) <= hits_i(151);  -- panel= 6 paddle= 55 station=cube; LTB DSI4 J4 Ch16 Bit7
     cube(43) <= hits_i(144);  -- panel= 6 paddle= 56 station=cube; LTB DSI4 J4 Ch 2 Bit0
 
-    umbrella(0)  <= hits_i(5);  -- panel= 7 paddle= 61 station=umbrella; LTB DSI1 J1 Ch11 Bit5
-    umbrella(1)  <= hits_i(4);  -- panel= 7 paddle= 62 station=umbrella; LTB DSI1 J1 Ch 9 Bit4
-    umbrella(2)  <= hits_i(3);  -- panel= 7 paddle= 63 station=umbrella; LTB DSI1 J1 Ch 7 Bit3
-    umbrella(3)  <= hits_i(2);  -- panel= 7 paddle= 64 station=umbrella; LTB DSI1 J1 Ch 5 Bit2
-    umbrella(4)  <= hits_i(1);  -- panel= 7 paddle= 65 station=umbrella; LTB DSI1 J1 Ch 3 Bit1
-    umbrella(5)  <= hits_i(0);  -- panel= 7 paddle= 66 station=umbrella; LTB DSI1 J1 Ch 1 Bit0
+    umbrella(0)  <= hits_i(165);  -- panel= 7 paddle= 61 station=umbrella; LTB DSI5 J1 Ch11 Bit5
+    umbrella(1)  <= hits_i(164);  -- panel= 7 paddle= 62 station=umbrella; LTB DSI5 J1 Ch 9 Bit4
+    umbrella(2)  <= hits_i(163);  -- panel= 7 paddle= 63 station=umbrella; LTB DSI5 J1 Ch 7 Bit3
+    umbrella(3)  <= hits_i(162);  -- panel= 7 paddle= 64 station=umbrella; LTB DSI5 J1 Ch 5 Bit2
+    umbrella(4)  <= hits_i(161);  -- panel= 7 paddle= 65 station=umbrella; LTB DSI5 J1 Ch 3 Bit1
+    umbrella(5)  <= hits_i(160);  -- panel= 7 paddle= 66 station=umbrella; LTB DSI5 J1 Ch 1 Bit0
     umbrella(6)  <= hits_i(8);  -- panel= 7 paddle= 67 station=umbrella; LTB DSI1 J2 Ch 2 Bit0
     umbrella(7)  <= hits_i(9);  -- panel= 7 paddle= 68 station=umbrella; LTB DSI1 J2 Ch 4 Bit1
     umbrella(8)  <= hits_i(10);  -- panel= 7 paddle= 69 station=umbrella; LTB DSI1 J2 Ch 6 Bit2
     umbrella(9)  <= hits_i(11);  -- panel= 7 paddle= 70 station=umbrella; LTB DSI1 J2 Ch 8 Bit3
     umbrella(10) <= hits_i(12);  -- panel= 7 paddle= 71 station=umbrella; LTB DSI1 J2 Ch10 Bit4
     umbrella(11) <= hits_i(13);  -- panel= 7 paddle= 72 station=umbrella; LTB DSI1 J2 Ch12 Bit5
-    umbrella(12) <= hits_i(6);  -- panel= 8 paddle= 73 station=umbrella; LTB DSI1 J1 Ch13 Bit6
-    umbrella(13) <= hits_i(7);  -- panel= 8 paddle= 74 station=umbrella; LTB DSI1 J1 Ch15 Bit7
+    umbrella(12) <= hits_i(166);  -- panel= 8 paddle= 73 station=umbrella; LTB DSI5 J1 Ch13 Bit6
+    umbrella(13) <= hits_i(167);  -- panel= 8 paddle= 74 station=umbrella; LTB DSI5 J1 Ch15 Bit7
     umbrella(14) <= hits_i(16);  -- panel= 8 paddle= 75 station=umbrella; LTB DSI1 J3 Ch 1 Bit0
     umbrella(15) <= hits_i(17);  -- panel= 8 paddle= 76 station=umbrella; LTB DSI1 J3 Ch 3 Bit1
     umbrella(16) <= hits_i(18);  -- panel= 8 paddle= 77 station=umbrella; LTB DSI1 J3 Ch 5 Bit2
     umbrella(17) <= hits_i(19);  -- panel= 8 paddle= 78 station=umbrella; LTB DSI1 J3 Ch 7 Bit3
-    umbrella(18) <= hits_i(39);  -- panel= 9 paddle= 79 station=umbrella; LTB DSI1 J5 Ch15 Bit7
-    umbrella(19) <= hits_i(38);  -- panel= 9 paddle= 80 station=umbrella; LTB DSI1 J5 Ch13 Bit6
-    umbrella(20) <= hits_i(37);  -- panel= 9 paddle= 81 station=umbrella; LTB DSI1 J5 Ch11 Bit5
-    umbrella(21) <= hits_i(36);  -- panel= 9 paddle= 82 station=umbrella; LTB DSI1 J5 Ch 9 Bit4
-    umbrella(22) <= hits_i(35);  -- panel= 9 paddle= 83 station=umbrella; LTB DSI1 J5 Ch 7 Bit3
-    umbrella(23) <= hits_i(34);  -- panel= 9 paddle= 84 station=umbrella; LTB DSI1 J5 Ch 5 Bit2
-    umbrella(24) <= hits_i(33);  -- panel=10 paddle= 85 station=umbrella; LTB DSI1 J5 Ch 3 Bit1
-    umbrella(25) <= hits_i(32);  -- panel=10 paddle= 86 station=umbrella; LTB DSI1 J5 Ch 1 Bit0
-    umbrella(26) <= hits_i(31);  -- panel=10 paddle= 87 station=umbrella; LTB DSI1 J4 Ch15 Bit7
-    umbrella(27) <= hits_i(30);  -- panel=10 paddle= 88 station=umbrella; LTB DSI1 J4 Ch13 Bit6
-    umbrella(28) <= hits_i(29);  -- panel=10 paddle= 89 station=umbrella; LTB DSI1 J4 Ch11 Bit5
-    umbrella(29) <= hits_i(28);  -- panel=10 paddle= 90 station=umbrella; LTB DSI1 J4 Ch 9 Bit4
+    umbrella(18) <= hits_i(199);  -- panel= 9 paddle= 79 station=umbrella; LTB DSI5 J5 Ch15 Bit7
+    umbrella(19) <= hits_i(198);  -- panel= 9 paddle= 80 station=umbrella; LTB DSI5 J5 Ch13 Bit6
+    umbrella(20) <= hits_i(197);  -- panel= 9 paddle= 81 station=umbrella; LTB DSI5 J5 Ch11 Bit5
+    umbrella(21) <= hits_i(196);  -- panel= 9 paddle= 82 station=umbrella; LTB DSI5 J5 Ch 9 Bit4
+    umbrella(22) <= hits_i(195);  -- panel= 9 paddle= 83 station=umbrella; LTB DSI5 J5 Ch 7 Bit3
+    umbrella(23) <= hits_i(194);  -- panel= 9 paddle= 84 station=umbrella; LTB DSI5 J5 Ch 5 Bit2
+    umbrella(24) <= hits_i(193);  -- panel=10 paddle= 85 station=umbrella; LTB DSI5 J5 Ch 3 Bit1
+    umbrella(25) <= hits_i(192);  -- panel=10 paddle= 86 station=umbrella; LTB DSI5 J5 Ch 1 Bit0
+    umbrella(26) <= hits_i(191);  -- panel=10 paddle= 87 station=umbrella; LTB DSI5 J4 Ch15 Bit7
+    umbrella(27) <= hits_i(190);  -- panel=10 paddle= 88 station=umbrella; LTB DSI5 J4 Ch13 Bit6
+    umbrella(28) <= hits_i(189);  -- panel=10 paddle= 89 station=umbrella; LTB DSI5 J4 Ch11 Bit5
+    umbrella(29) <= hits_i(188);  -- panel=10 paddle= 90 station=umbrella; LTB DSI5 J4 Ch 9 Bit4
     umbrella(30) <= hits_i(14);  -- panel=11 paddle= 91 station=umbrella; LTB DSI1 J2 Ch14 Bit6
     umbrella(31) <= hits_i(15);  -- panel=11 paddle= 92 station=umbrella; LTB DSI1 J2 Ch16 Bit7
-    umbrella(32) <= hits_i(24);  -- panel=11 paddle= 93 station=umbrella; LTB DSI1 J4 Ch 1 Bit0
-    umbrella(33) <= hits_i(25);  -- panel=11 paddle= 94 station=umbrella; LTB DSI1 J4 Ch 3 Bit1
-    umbrella(34) <= hits_i(26);  -- panel=11 paddle= 95 station=umbrella; LTB DSI1 J4 Ch 5 Bit2
-    umbrella(35) <= hits_i(27);  -- panel=11 paddle= 96 station=umbrella; LTB DSI1 J4 Ch 7 Bit3
+    umbrella(32) <= hits_i(184);  -- panel=11 paddle= 93 station=umbrella; LTB DSI5 J4 Ch 1 Bit0
+    umbrella(33) <= hits_i(185);  -- panel=11 paddle= 94 station=umbrella; LTB DSI5 J4 Ch 3 Bit1
+    umbrella(34) <= hits_i(186);  -- panel=11 paddle= 95 station=umbrella; LTB DSI5 J4 Ch 5 Bit2
+    umbrella(35) <= hits_i(187);  -- panel=11 paddle= 96 station=umbrella; LTB DSI5 J4 Ch 7 Bit3
     umbrella(36) <= hits_i(47);  -- panel=12 paddle= 97 station=umbrella; LTB DSI2 J1 Ch15 Bit7
     umbrella(37) <= hits_i(46);  -- panel=12 paddle= 98 station=umbrella; LTB DSI2 J1 Ch13 Bit6
     umbrella(38) <= hits_i(45);  -- panel=12 paddle= 99 station=umbrella; LTB DSI2 J1 Ch11 Bit5
