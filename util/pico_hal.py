@@ -403,8 +403,8 @@ def read_daq():
         if (state=="Mask"):
             hit_paddles = count_ones(rd)
 
-        if (state=="Hits"):
-            paddles_rxd += 1
+        if (state == "Hits"):
+            paddles_rxd += 2
 
         print("%08X (%s)" % (rd, state))
 
