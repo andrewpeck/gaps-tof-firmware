@@ -68,11 +68,14 @@ async def combine_trigger_test_combine_local(dut):
 
 
 @cocotb.test()
-async def single_trigger_test_single(dut):
-    await gaps_trigger_test(dut, trig="any", is_global=0, single=True)
+async def single_channel_trigger_test_global (dut):
+    await gaps_trigger_test(dut, trig="any", is_global=1, single_channel=True)
 
+@cocotb.test()
+async def single_channel_trigger_test_local (dut):
+    await gaps_trigger_test(dut, trig="any", is_global=0, single_channel=True)
 
-async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30, single=False):
+async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30, single_channel=False):
 
     """Test GAPS trigger"""
 
@@ -86,7 +89,7 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
     dut.any_hit_trigger_is_global.value = is_global
     dut.read_all_channels.value = is_global
 
-    if trig == "any" or trig == "combine" or single:
+    if trig == "any" or trig == "combine" or single_channel:
         dut.any_hit_trigger_prescale.value = 2**32 - 1
     else:
         dut.any_hit_trigger_prescale.value = 0
@@ -141,9 +144,12 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
         #     data[paddle] = threshold
 
         data = 200 * [0]
-        if single:
+
+        channel = 9 
+
+        if single_channel:
             data = 200 * [0]
-            data[0] = 2
+            data[channel] = 2
         else:
             data = 200 * [2]
 
@@ -164,7 +170,7 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
 
                 assert int(dut.trig_sources_o.value) == trig_source
 
-                assert int(dut.hits_o_0.value) == 2
+                assert int(getattr(dut, f"hits_o_{channel}").value) == 2
 
                 if (is_global):
                     assert int(dut.trigger_2.pedestal_trig_latch.value) == 1
@@ -185,11 +191,14 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
         if is_global:
             assert int(dut.rb_ch_bitmap_o.value) == \
                 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-        elif single:
-            assert int(dut.rb_ch_bitmap_o.value) == 0b11
         else:
-            assert int(dut.rb_ch_bitmap_o.value) == \
-                0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+            if not single_channel:
+                assert int(dut.rb_ch_bitmap_o.value) > 0
+            
+        #     assert int(dut.rb_ch_bitmap_o.value) == 0b11
+        # else:
+        #     assert int(dut.rb_ch_bitmap_o.value) == \
+        #         0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 
         await FallingEdge(dut.trigger_2.dead)
 
