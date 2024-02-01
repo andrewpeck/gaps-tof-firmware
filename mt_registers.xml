@@ -172,7 +172,7 @@
           fw_signal="outer_tof_thresh"/>
     <node id="TOTAL_TOF_THRESH" address="0x14" permission="rw"
           mask="0xff0000"
-          description="Outer TOF hit threshold"
+          description="Total TOF hit threshold"
           fw_default="0x8"
           fw_signal="total_tof_thresh"/>
     <node id="GAPS_TRIGGER_EN" address="0x14" permission="rw"

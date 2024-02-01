@@ -177,7 +177,7 @@
         "adr": 20,
         "permission": "rw",
         "mask": 16711680,
-        "description": "Outer TOF hit threshold"
+        "description": "Total TOF hit threshold"
     },
     "MT.GAPS_TRIGGER_EN": {
         "adr": 20,

@@ -91,7 +91,7 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |OUTER_TOF_THRESH | ~0x14~ | ~0x50~ | ~[15:8]~ | rw | ~0x3~ | Outer TOF hit threshold | 
 |------------+---+---+---------+-----+-----+----------------------------|
-|TOTAL_TOF_THRESH | ~0x14~ | ~0x50~ | ~[23:16]~ | rw | ~0x8~ | Outer TOF hit threshold | 
+|TOTAL_TOF_THRESH | ~0x14~ | ~0x50~ | ~[23:16]~ | rw | ~0x8~ | Total TOF hit threshold | 
 |------------+---+---+---------+-----+-----+----------------------------|
 |GAPS_TRIGGER_EN | ~0x14~ | ~0x50~ | ~24~ | rw | ~0x0~ | Enable the gaps trigger. | 
 |------------+---+---+---------+-----+-----+----------------------------|
