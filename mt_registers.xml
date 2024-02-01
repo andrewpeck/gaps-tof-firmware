@@ -871,6 +871,82 @@
             fw_signal="rb_readout_cnt_snap"/>
     </node>
 
+    <node id="PULSER" address="0x100" description="LTB Channel Pulser">
+
+      <node id="FIRE"
+            address="0x0"
+            permission="w"
+            mask="0x1"
+            description="Write 1 to Fire the Pulser."
+            fw_write_pulse_signal="ltb_pulser_fire"/>
+
+      <node id="CH_0_24"
+            address="0x1"
+            permission="rw"
+            mask="0x01ffffff"
+            description="Set fire bits for channels 0 to 24"
+            fw_default="0x0"
+            fw_signal="ltb_pulser_mask (24 downto 0)"/>
+
+      <node id="CH_25_49"
+            address="0x2"
+            permission="rw"
+            mask="0x01ffffff"
+            description="Set fire bits for channels 25 to 49"
+            fw_default="0x0"
+            fw_signal="ltb_pulser_mask (49 downto 25)"/>
+
+      <node id="CH_50_74"
+            address="0x3"
+            permission="rw"
+            mask="0x01ffffff"
+            description="Set fire bits for channels 50 to 74"
+            fw_default="0x0"
+            fw_signal="ltb_pulser_mask (74 downto 50)"/>
+
+      <node id="CH_75_99"
+            address="0x4"
+            permission="rw"
+            mask="0x01ffffff"
+            description="Set fire bits for channels 75 to 99"
+            fw_default="0x0"
+            fw_signal="ltb_pulser_mask (99 downto 75)"/>
+
+      <node id="CH_100_124"
+            address="0x5"
+            permission="rw"
+            mask="0x01ffffff"
+            description="Set fire bits for channels 100 to 124"
+            fw_default="0x0"
+            fw_signal="ltb_pulser_mask (124 downto 100)"/>
+
+      <node id="CH_125_149"
+            address="0x6"
+            permission="rw"
+            mask="0x01ffffff"
+            description="Set fire bits for channels 125 to 149"
+            fw_default="0x0"
+            fw_signal="ltb_pulser_mask (149 downto 125)"/>
+
+      <node id="CH_150_174"
+            address="0x7"
+            permission="rw"
+            mask="0x01ffffff"
+            description="Set fire bits for channels 150 to 174"
+            fw_default="0x0"
+            fw_signal="ltb_pulser_mask (174 downto 150)"/>
+
+      <node id="CH_175_199"
+            address="0x8"
+            permission="rw"
+            mask="0x01ffffff"
+            description="Set fire bits for channels 175 to 199"
+            fw_default="0x0"
+            fw_signal="ltb_pulser_mask (199 downto 175)"/>
+
+    </node>
+
+
     <node id="XADC" address="0x120"
           description="Zynq XADC">
       <node id="CALIBRATION" address="0x0" permission="r"

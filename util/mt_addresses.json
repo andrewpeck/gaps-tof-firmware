@@ -1187,6 +1187,60 @@
         "mask": 1,
         "description": "1 to snap the hit counters."
     },
+    "MT.PULSER.FIRE": {
+        "adr": 256,
+        "permission": "w",
+        "mask": 1,
+        "description": "Write 1 to Fire the Pulser."
+    },
+    "MT.PULSER.CH_0_24": {
+        "adr": 257,
+        "permission": "rw",
+        "mask": 33554431,
+        "description": "Set fire bits for channels 0 to 24"
+    },
+    "MT.PULSER.CH_25_49": {
+        "adr": 258,
+        "permission": "rw",
+        "mask": 33554431,
+        "description": "Set fire bits for channels 25 to 49"
+    },
+    "MT.PULSER.CH_50_74": {
+        "adr": 259,
+        "permission": "rw",
+        "mask": 33554431,
+        "description": "Set fire bits for channels 50 to 74"
+    },
+    "MT.PULSER.CH_75_99": {
+        "adr": 260,
+        "permission": "rw",
+        "mask": 33554431,
+        "description": "Set fire bits for channels 75 to 99"
+    },
+    "MT.PULSER.CH_100_124": {
+        "adr": 261,
+        "permission": "rw",
+        "mask": 33554431,
+        "description": "Set fire bits for channels 100 to 124"
+    },
+    "MT.PULSER.CH_125_149": {
+        "adr": 262,
+        "permission": "rw",
+        "mask": 33554431,
+        "description": "Set fire bits for channels 125 to 149"
+    },
+    "MT.PULSER.CH_150_174": {
+        "adr": 263,
+        "permission": "rw",
+        "mask": 33554431,
+        "description": "Set fire bits for channels 150 to 174"
+    },
+    "MT.PULSER.CH_175_199": {
+        "adr": 264,
+        "permission": "rw",
+        "mask": 33554431,
+        "description": "Set fire bits for channels 175 to 199"
+    },
     "MT.XADC.CALIBRATION": {
         "adr": 288,
         "permission": "r",

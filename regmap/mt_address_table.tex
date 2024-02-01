@@ -368,6 +368,32 @@
 
 
     \noindent
+    \subsection*{\textcolor{parentcolor}{\textbf{MT.PULSER}}}
+
+    \vspace{4mm}
+    \noindent
+    LTB Channel Pulser
+    \noindent
+
+    \keepXColumns
+    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
+    \hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
+    \nopagebreak
+    FIRE & \texttt{0x100} & \texttt{[0:0]} & w & Pulse & Write 1 to Fire the Pulser. \\\hline
+    CH\_0\_24 & \texttt{0x101} & \texttt{[24:0]} & rw & \texttt{0x0} & Set fire bits for channels 0 to 24 \\\hline
+    CH\_25\_49 & \texttt{0x102} & \texttt{[24:0]} & rw & \texttt{0x0} & Set fire bits for channels 25 to 49 \\\hline
+    CH\_50\_74 & \texttt{0x103} & \texttt{[24:0]} & rw & \texttt{0x0} & Set fire bits for channels 50 to 74 \\\hline
+    CH\_75\_99 & \texttt{0x104} & \texttt{[24:0]} & rw & \texttt{0x0} & Set fire bits for channels 75 to 99 \\\hline
+    CH\_100\_124 & \texttt{0x105} & \texttt{[24:0]} & rw & \texttt{0x0} & Set fire bits for channels 100 to 124 \\\hline
+    CH\_125\_149 & \texttt{0x106} & \texttt{[24:0]} & rw & \texttt{0x0} & Set fire bits for channels 125 to 149 \\\hline
+    CH\_150\_174 & \texttt{0x107} & \texttt{[24:0]} & rw & \texttt{0x0} & Set fire bits for channels 150 to 174 \\\hline
+    CH\_175\_199 & \texttt{0x108} & \texttt{[24:0]} & rw & \texttt{0x0} & Set fire bits for channels 175 to 199 \\\hline
+    \end{tabularx}
+    \vspace{5mm}
+
+
+    \noindent
     \subsection*{\textcolor{parentcolor}{\textbf{MT.XADC}}}
 
     \vspace{4mm}

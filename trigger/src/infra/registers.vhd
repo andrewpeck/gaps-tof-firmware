@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_MT_NUM_REGS : integer := 160;
+    constant REG_MT_NUM_REGS : integer := 168;
     constant REG_MT_ADDRESS_MSB : integer := 9;
     constant REG_MT_ADDRESS_LSB : integer := 0;
     constant REG_LOOPBACK_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
@@ -882,6 +882,49 @@ package registers is
     constant REG_RB_READOUT_CNTS_SNAP_ADDR    : std_logic_vector(9 downto 0) := "01" & x"00";
     constant REG_RB_READOUT_CNTS_SNAP_BIT    : integer := 0;
     constant REG_RB_READOUT_CNTS_SNAP_DEFAULT : std_logic := '1';
+
+    constant REG_PULSER_FIRE_ADDR    : std_logic_vector(9 downto 0) := "01" & x"00";
+    constant REG_PULSER_FIRE_BIT    : integer := 0;
+
+    constant REG_PULSER_CH_0_24_ADDR    : std_logic_vector(9 downto 0) := "01" & x"01";
+    constant REG_PULSER_CH_0_24_MSB    : integer := 24;
+    constant REG_PULSER_CH_0_24_LSB     : integer := 0;
+    constant REG_PULSER_CH_0_24_DEFAULT : std_logic_vector(24 downto 0) := '0' & x"000000";
+
+    constant REG_PULSER_CH_25_49_ADDR    : std_logic_vector(9 downto 0) := "01" & x"02";
+    constant REG_PULSER_CH_25_49_MSB    : integer := 24;
+    constant REG_PULSER_CH_25_49_LSB     : integer := 0;
+    constant REG_PULSER_CH_25_49_DEFAULT : std_logic_vector(24 downto 0) := '0' & x"000000";
+
+    constant REG_PULSER_CH_50_74_ADDR    : std_logic_vector(9 downto 0) := "01" & x"03";
+    constant REG_PULSER_CH_50_74_MSB    : integer := 24;
+    constant REG_PULSER_CH_50_74_LSB     : integer := 0;
+    constant REG_PULSER_CH_50_74_DEFAULT : std_logic_vector(24 downto 0) := '0' & x"000000";
+
+    constant REG_PULSER_CH_75_99_ADDR    : std_logic_vector(9 downto 0) := "01" & x"04";
+    constant REG_PULSER_CH_75_99_MSB    : integer := 24;
+    constant REG_PULSER_CH_75_99_LSB     : integer := 0;
+    constant REG_PULSER_CH_75_99_DEFAULT : std_logic_vector(24 downto 0) := '0' & x"000000";
+
+    constant REG_PULSER_CH_100_124_ADDR    : std_logic_vector(9 downto 0) := "01" & x"05";
+    constant REG_PULSER_CH_100_124_MSB    : integer := 24;
+    constant REG_PULSER_CH_100_124_LSB     : integer := 0;
+    constant REG_PULSER_CH_100_124_DEFAULT : std_logic_vector(24 downto 0) := '0' & x"000000";
+
+    constant REG_PULSER_CH_125_149_ADDR    : std_logic_vector(9 downto 0) := "01" & x"06";
+    constant REG_PULSER_CH_125_149_MSB    : integer := 24;
+    constant REG_PULSER_CH_125_149_LSB     : integer := 0;
+    constant REG_PULSER_CH_125_149_DEFAULT : std_logic_vector(24 downto 0) := '0' & x"000000";
+
+    constant REG_PULSER_CH_150_174_ADDR    : std_logic_vector(9 downto 0) := "01" & x"07";
+    constant REG_PULSER_CH_150_174_MSB    : integer := 24;
+    constant REG_PULSER_CH_150_174_LSB     : integer := 0;
+    constant REG_PULSER_CH_150_174_DEFAULT : std_logic_vector(24 downto 0) := '0' & x"000000";
+
+    constant REG_PULSER_CH_175_199_ADDR    : std_logic_vector(9 downto 0) := "01" & x"08";
+    constant REG_PULSER_CH_175_199_MSB    : integer := 24;
+    constant REG_PULSER_CH_175_199_LSB     : integer := 0;
+    constant REG_PULSER_CH_175_199_DEFAULT : std_logic_vector(24 downto 0) := '0' & x"000000";
 
     constant REG_XADC_CALIBRATION_ADDR    : std_logic_vector(9 downto 0) := "01" & x"20";
     constant REG_XADC_CALIBRATION_MSB    : integer := 11;

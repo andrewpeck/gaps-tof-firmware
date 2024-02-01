@@ -170,6 +170,9 @@ architecture structural of gaps_mt is
 
   signal discrim, hits_masked, hits_xtrig : threshold_array_t;   -- 1d array of 25 * 8 discrim
 
+  signal ltb_pulser_fire : std_logic;
+  signal ltb_pulser_mask : std_logic_vector (199 downto 0) := (others => '0');
+
   signal channel_mask       : t_std8_array (NUM_LTS-1 downto 0);
   signal discrim_1bit       : t_std8_array (NUM_LTS-1 downto 0);
   signal ltb_hit, ltb_hit_r, ltb_hit_rr : std_logic_vector (24 downto 0) := (others => '0');
@@ -733,7 +736,13 @@ begin
   process (all) is
   begin
     for I in 0 to hits_masked'length-1 loop
-      hits_masked(I) <= discrim(I) and repeat(not channel_mask(I / 8)(I mod 8), hits_masked(I)'length);
+      hits_masked(I) <= (
+        -- ltb pulser 
+        ("0" & (ltb_pulser_fire and ltb_pulser_mask(I))) or
+        -- actual discriminator
+        (discrim(I) and
+         -- mask
+         repeat(not channel_mask(I / 8)(I mod 8), hits_masked(I)'length)));
     end loop;
   end process;
 
@@ -1855,18 +1864,26 @@ begin
   regs_addresses(145)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "00" & x"fe";
   regs_addresses(146)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "00" & x"ff";
   regs_addresses(147)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"00";
-  regs_addresses(148)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"20";
-  regs_addresses(149)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"21";
-  regs_addresses(150)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"22";
-  regs_addresses(151)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"23";
-  regs_addresses(152)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"00";
-  regs_addresses(153)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"01";
-  regs_addresses(154)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"02";
-  regs_addresses(155)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"03";
-  regs_addresses(156)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"04";
-  regs_addresses(157)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"05";
-  regs_addresses(158)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"06";
-  regs_addresses(159)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"07";
+  regs_addresses(148)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"01";
+  regs_addresses(149)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"02";
+  regs_addresses(150)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"03";
+  regs_addresses(151)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"04";
+  regs_addresses(152)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"05";
+  regs_addresses(153)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"06";
+  regs_addresses(154)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"07";
+  regs_addresses(155)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"08";
+  regs_addresses(156)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"20";
+  regs_addresses(157)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"21";
+  regs_addresses(158)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"22";
+  regs_addresses(159)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"23";
+  regs_addresses(160)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"00";
+  regs_addresses(161)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"01";
+  regs_addresses(162)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"02";
+  regs_addresses(163)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"03";
+  regs_addresses(164)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"04";
+  regs_addresses(165)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"05";
+  regs_addresses(166)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"06";
+  regs_addresses(167)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"07";
 
   -- Connect read signals
   regs_read_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB) <= loopback;
@@ -2061,22 +2078,30 @@ begin
   regs_read_arr(145)(REG_RB_READOUT_CNTS_CNTS_48_MSB downto REG_RB_READOUT_CNTS_CNTS_48_LSB) <= rb_readout_cnt_48;
   regs_read_arr(145)(REG_RB_READOUT_CNTS_CNTS_49_MSB downto REG_RB_READOUT_CNTS_CNTS_49_LSB) <= rb_readout_cnt_49;
   regs_read_arr(147)(REG_RB_READOUT_CNTS_SNAP_BIT) <= rb_readout_cnt_snap;
-  regs_read_arr(148)(REG_XADC_CALIBRATION_MSB downto REG_XADC_CALIBRATION_LSB) <= calibration;
-  regs_read_arr(148)(REG_XADC_VCCPINT_MSB downto REG_XADC_VCCPINT_LSB) <= vccpint;
-  regs_read_arr(149)(REG_XADC_VCCPAUX_MSB downto REG_XADC_VCCPAUX_LSB) <= vccpaux;
-  regs_read_arr(149)(REG_XADC_VCCODDR_MSB downto REG_XADC_VCCODDR_LSB) <= vccoddr;
-  regs_read_arr(150)(REG_XADC_TEMP_MSB downto REG_XADC_TEMP_LSB) <= temp;
-  regs_read_arr(150)(REG_XADC_VCCINT_MSB downto REG_XADC_VCCINT_LSB) <= vccint;
-  regs_read_arr(151)(REG_XADC_VCCAUX_MSB downto REG_XADC_VCCAUX_LSB) <= vccaux;
-  regs_read_arr(151)(REG_XADC_VCCBRAM_MSB downto REG_XADC_VCCBRAM_LSB) <= vccbram;
-  regs_read_arr(152)(REG_HOG_GLOBAL_DATE_MSB downto REG_HOG_GLOBAL_DATE_LSB) <= GLOBAL_DATE;
-  regs_read_arr(153)(REG_HOG_GLOBAL_TIME_MSB downto REG_HOG_GLOBAL_TIME_LSB) <= GLOBAL_TIME;
-  regs_read_arr(154)(REG_HOG_GLOBAL_VER_MSB downto REG_HOG_GLOBAL_VER_LSB) <= GLOBAL_VER;
-  regs_read_arr(155)(REG_HOG_GLOBAL_SHA_MSB downto REG_HOG_GLOBAL_SHA_LSB) <= GLOBAL_SHA;
-  regs_read_arr(156)(REG_HOG_TOP_SHA_MSB downto REG_HOG_TOP_SHA_LSB) <= TOP_SHA;
-  regs_read_arr(157)(REG_HOG_TOP_VER_MSB downto REG_HOG_TOP_VER_LSB) <= TOP_VER;
-  regs_read_arr(158)(REG_HOG_HOG_SHA_MSB downto REG_HOG_HOG_SHA_LSB) <= HOG_SHA;
-  regs_read_arr(159)(REG_HOG_HOG_VER_MSB downto REG_HOG_HOG_VER_LSB) <= HOG_VER;
+  regs_read_arr(148)(REG_PULSER_CH_0_24_MSB downto REG_PULSER_CH_0_24_LSB) <= ltb_pulser_mask (24 downto 0);
+  regs_read_arr(149)(REG_PULSER_CH_25_49_MSB downto REG_PULSER_CH_25_49_LSB) <= ltb_pulser_mask (49 downto 25);
+  regs_read_arr(150)(REG_PULSER_CH_50_74_MSB downto REG_PULSER_CH_50_74_LSB) <= ltb_pulser_mask (74 downto 50);
+  regs_read_arr(151)(REG_PULSER_CH_75_99_MSB downto REG_PULSER_CH_75_99_LSB) <= ltb_pulser_mask (99 downto 75);
+  regs_read_arr(152)(REG_PULSER_CH_100_124_MSB downto REG_PULSER_CH_100_124_LSB) <= ltb_pulser_mask (124 downto 100);
+  regs_read_arr(153)(REG_PULSER_CH_125_149_MSB downto REG_PULSER_CH_125_149_LSB) <= ltb_pulser_mask (149 downto 125);
+  regs_read_arr(154)(REG_PULSER_CH_150_174_MSB downto REG_PULSER_CH_150_174_LSB) <= ltb_pulser_mask (174 downto 150);
+  regs_read_arr(155)(REG_PULSER_CH_175_199_MSB downto REG_PULSER_CH_175_199_LSB) <= ltb_pulser_mask (199 downto 175);
+  regs_read_arr(156)(REG_XADC_CALIBRATION_MSB downto REG_XADC_CALIBRATION_LSB) <= calibration;
+  regs_read_arr(156)(REG_XADC_VCCPINT_MSB downto REG_XADC_VCCPINT_LSB) <= vccpint;
+  regs_read_arr(157)(REG_XADC_VCCPAUX_MSB downto REG_XADC_VCCPAUX_LSB) <= vccpaux;
+  regs_read_arr(157)(REG_XADC_VCCODDR_MSB downto REG_XADC_VCCODDR_LSB) <= vccoddr;
+  regs_read_arr(158)(REG_XADC_TEMP_MSB downto REG_XADC_TEMP_LSB) <= temp;
+  regs_read_arr(158)(REG_XADC_VCCINT_MSB downto REG_XADC_VCCINT_LSB) <= vccint;
+  regs_read_arr(159)(REG_XADC_VCCAUX_MSB downto REG_XADC_VCCAUX_LSB) <= vccaux;
+  regs_read_arr(159)(REG_XADC_VCCBRAM_MSB downto REG_XADC_VCCBRAM_LSB) <= vccbram;
+  regs_read_arr(160)(REG_HOG_GLOBAL_DATE_MSB downto REG_HOG_GLOBAL_DATE_LSB) <= GLOBAL_DATE;
+  regs_read_arr(161)(REG_HOG_GLOBAL_TIME_MSB downto REG_HOG_GLOBAL_TIME_LSB) <= GLOBAL_TIME;
+  regs_read_arr(162)(REG_HOG_GLOBAL_VER_MSB downto REG_HOG_GLOBAL_VER_LSB) <= GLOBAL_VER;
+  regs_read_arr(163)(REG_HOG_GLOBAL_SHA_MSB downto REG_HOG_GLOBAL_SHA_LSB) <= GLOBAL_SHA;
+  regs_read_arr(164)(REG_HOG_TOP_SHA_MSB downto REG_HOG_TOP_SHA_LSB) <= TOP_SHA;
+  regs_read_arr(165)(REG_HOG_TOP_VER_MSB downto REG_HOG_TOP_VER_LSB) <= TOP_VER;
+  regs_read_arr(166)(REG_HOG_HOG_SHA_MSB downto REG_HOG_HOG_SHA_LSB) <= HOG_SHA;
+  regs_read_arr(167)(REG_HOG_HOG_VER_MSB downto REG_HOG_HOG_VER_LSB) <= HOG_VER;
 
   -- Connect write signals
   loopback <= regs_write_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB);
@@ -2175,6 +2200,14 @@ begin
   coarse_delays(48) <= regs_write_arr(131)(REG_COARSE_DELAYS_LT48_MSB downto REG_COARSE_DELAYS_LT48_LSB);
   coarse_delays(49) <= regs_write_arr(132)(REG_COARSE_DELAYS_LT49_MSB downto REG_COARSE_DELAYS_LT49_LSB);
   rb_readout_cnt_snap <= regs_write_arr(147)(REG_RB_READOUT_CNTS_SNAP_BIT);
+  ltb_pulser_mask (24 downto 0) <= regs_write_arr(148)(REG_PULSER_CH_0_24_MSB downto REG_PULSER_CH_0_24_LSB);
+  ltb_pulser_mask (49 downto 25) <= regs_write_arr(149)(REG_PULSER_CH_25_49_MSB downto REG_PULSER_CH_25_49_LSB);
+  ltb_pulser_mask (74 downto 50) <= regs_write_arr(150)(REG_PULSER_CH_50_74_MSB downto REG_PULSER_CH_50_74_LSB);
+  ltb_pulser_mask (99 downto 75) <= regs_write_arr(151)(REG_PULSER_CH_75_99_MSB downto REG_PULSER_CH_75_99_LSB);
+  ltb_pulser_mask (124 downto 100) <= regs_write_arr(152)(REG_PULSER_CH_100_124_MSB downto REG_PULSER_CH_100_124_LSB);
+  ltb_pulser_mask (149 downto 125) <= regs_write_arr(153)(REG_PULSER_CH_125_149_MSB downto REG_PULSER_CH_125_149_LSB);
+  ltb_pulser_mask (174 downto 150) <= regs_write_arr(154)(REG_PULSER_CH_150_174_MSB downto REG_PULSER_CH_150_174_LSB);
+  ltb_pulser_mask (199 downto 175) <= regs_write_arr(155)(REG_PULSER_CH_175_199_MSB downto REG_PULSER_CH_175_199_LSB);
 
   -- Connect write pulse signals
   trigger_ipb <= regs_write_pulse_arr(8);
@@ -2183,6 +2216,7 @@ begin
   daq_reset <= regs_write_pulse_arr(16);
   hit_cnt_reset <= regs_write_pulse_arr(53);
   rb_readout_cnt_reset <= regs_write_pulse_arr(146);
+  ltb_pulser_fire <= regs_write_pulse_arr(147);
 
   -- Connect write done signals
 
@@ -3296,6 +3330,14 @@ begin
   regs_defaults(131)(REG_COARSE_DELAYS_LT48_MSB downto REG_COARSE_DELAYS_LT48_LSB) <= REG_COARSE_DELAYS_LT48_DEFAULT;
   regs_defaults(132)(REG_COARSE_DELAYS_LT49_MSB downto REG_COARSE_DELAYS_LT49_LSB) <= REG_COARSE_DELAYS_LT49_DEFAULT;
   regs_defaults(147)(REG_RB_READOUT_CNTS_SNAP_BIT) <= REG_RB_READOUT_CNTS_SNAP_DEFAULT;
+  regs_defaults(148)(REG_PULSER_CH_0_24_MSB downto REG_PULSER_CH_0_24_LSB) <= REG_PULSER_CH_0_24_DEFAULT;
+  regs_defaults(149)(REG_PULSER_CH_25_49_MSB downto REG_PULSER_CH_25_49_LSB) <= REG_PULSER_CH_25_49_DEFAULT;
+  regs_defaults(150)(REG_PULSER_CH_50_74_MSB downto REG_PULSER_CH_50_74_LSB) <= REG_PULSER_CH_50_74_DEFAULT;
+  regs_defaults(151)(REG_PULSER_CH_75_99_MSB downto REG_PULSER_CH_75_99_LSB) <= REG_PULSER_CH_75_99_DEFAULT;
+  regs_defaults(152)(REG_PULSER_CH_100_124_MSB downto REG_PULSER_CH_100_124_LSB) <= REG_PULSER_CH_100_124_DEFAULT;
+  regs_defaults(153)(REG_PULSER_CH_125_149_MSB downto REG_PULSER_CH_125_149_LSB) <= REG_PULSER_CH_125_149_DEFAULT;
+  regs_defaults(154)(REG_PULSER_CH_150_174_MSB downto REG_PULSER_CH_150_174_LSB) <= REG_PULSER_CH_150_174_DEFAULT;
+  regs_defaults(155)(REG_PULSER_CH_175_199_MSB downto REG_PULSER_CH_175_199_LSB) <= REG_PULSER_CH_175_199_DEFAULT;
 
   -- Define writable regs
   regs_writable_arr(0) <= '1';
@@ -3384,6 +3426,14 @@ begin
   regs_writable_arr(131) <= '1';
   regs_writable_arr(132) <= '1';
   regs_writable_arr(147) <= '1';
+  regs_writable_arr(148) <= '1';
+  regs_writable_arr(149) <= '1';
+  regs_writable_arr(150) <= '1';
+  regs_writable_arr(151) <= '1';
+  regs_writable_arr(152) <= '1';
+  regs_writable_arr(153) <= '1';
+  regs_writable_arr(154) <= '1';
+  regs_writable_arr(155) <= '1';
 
 --==== Registers end ============================================================================
 end structural;
