@@ -6,4 +6,4 @@ include:
   # - local: '/Top/readout_board_zx2/gitlab-ci.yml'
     - local: '/Top/trigger_board/gitlab-ci.yml'
     - local: '/Top/local_trigger/gitlab-ci.yml'
-  # - local: '/.user-jobs.yml'
+    - local: '/.user-jobs.yml'

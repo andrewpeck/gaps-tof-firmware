@@ -29,4 +29,12 @@ daq-sim-job:
   <<: *only-default
   <<: *tag-hog
   stage: user_pre
-  script: "make -C drs/"
+  script: "cd trigger/src/trg && python test_trigger.py"
+
+# daq-sim-job:
+#   variables:
+#     GIT_STRATEGY: clone
+#   <<: *only-default
+#   <<: *tag-hog
+#   stage: user_pre
+#   script: "make -C drs/"
