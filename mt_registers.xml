@@ -83,6 +83,14 @@
           description="1 makes the TRACK trigger read all paddles."
           fw_signal="track_trigger_is_global"/>
 
+    <node id="TRACK_CENTRAL_IS_GLOBAL"
+          address="0xb"
+          permission="rw"
+          fw_default="0x0"
+          mask="0x4"
+          description="1 makes the TRACK central read all paddles."
+          fw_signal="track_central_is_global"/>
+
     <node id="EVENT_CNT_RESET"
           address="0xc"
           permission="w"
@@ -302,6 +310,14 @@
           description="Prescale value for the Inner + Outer Track Trigger. 0 == 0% (off), 2**32-1 == 100%"
           fw_default="0x00000000"
           fw_signal="track_trigger_prescale"/>
+
+    <node id="TRACK_CENTRAL_PRESCALE"
+          address="0x42"
+          permission="rw"
+          mask="0xffffffff"
+          description="Prescale value for the Umbrella + Cube Top Track Trigger. 0 == 0% (off), 2**32-1 == 100%"
+          fw_default="0x00000000"
+          fw_signal="track_central_prescale"/>
 
     <node id="RB_READOUT_CNTS" address="0xf2" description="Counters">
 

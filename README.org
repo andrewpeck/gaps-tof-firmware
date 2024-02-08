@@ -239,6 +239,7 @@ trigger.
 |               |          | 6: any trigger                                                    |
 |               |          | 7: forced trigger                                                 |
 |               |          | 8: track trigger                                                  |
+|               |          | 9: central track trigger                                     |
 |               |          | other bits unallocated                                            |
 | BOARD_MASK    | ~[31:0]~ | 25 bits indicating boards which local trigger boards are read out |
 | HITS          | --       | Variable sized, 16 bits / board * n_boards                        |
@@ -324,6 +325,29 @@ Some simple instructions for registering a Gitlab runner
 Now you can simply start the runner (=gitlab-runner run=). Make sure
 Vivado is in the path.
 
+** Updating mapping
+
+Note: this requires an installation of babashka https://github.com/babashka/babashka
+
+1) clone the firmware
+
+2) update the mapping
+
+#+BEGIN_SRC: bash
+cd trigger/src/trg
+make
+#+END_SRC:
+
+4) Commit the updated files, push to devel of the repo
+
+#+BEGIN_SRC: bash
+git add mapping.csv rb_map.vhd trigger.vhd
+git commit -m "mtb: Update link mapping"
+#+END_SRC:
+
+4) Open a merge request from devel -> master
+
+
 ** Updating trigger
 
 If you send me a new version of the trigger definitions it is trivial to recompile firmware with whatever you want. The current definitions I got from you are here: https://gitlab.com/ucla-gaps-tof/firmware/-/blob/develop/trigger/src/trg/generate_triggers.bb
@@ -331,7 +355,8 @@ For reference in case I am not available sometime and you need things in a rush 
 
 1) clone the firmware
 2) edit generate_triggers.bb to your liking
-3) run Make in the same directory. You need awk and babashka installed4) Commit the updated files, push to devel of the repo
+3) run Make in the same directory. You need awk and babashka installed
+4) Commit the updated files, push to devel of the repo
 5) Open a merge request from devel -> master
 
 * Local Variables :noexport:

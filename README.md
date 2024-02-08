@@ -239,6 +239,7 @@ bits per trigger.
 |               |          | 6: any trigger                                                    |
 |               |          | 7: forced trigger                                                 |
 |               |          | 8: track trigger                                                  |
+|               |          | 9: central track trigger                                          |
 |               |          | other bits unallocated                                            |
 | BOARD_MASK    | `[31:0]` | 25 bits indicating boards which local trigger boards are read out |
 | HITS          | –        | Variable sized, 16 bits / board \* n_boards                       |
@@ -323,6 +324,24 @@ Some simple instructions for registering a Gitlab runner
 Now you can simply start the runner (`gitlab-runner run`). Make sure
 Vivado is in the path.
 
+## Updating mapping
+
+Note: this requires an installation of babashka
+<https://github.com/babashka/babashka>
+
+1.  clone the firmware
+
+2.  update the mapping
+
+cd trigger/src/trg make
+
+1.  Commit the updated files, push to devel of the repo
+
+git add mapping.csv rb_map.vhd trigger.vhd git commit -m "mtb: Update
+link mapping"
+
+1.  Open a merge request from devel -\> master
+
 ## Updating trigger
 
 If you send me a new version of the trigger definitions it is trivial to
@@ -334,6 +353,6 @@ a rush the to update the new firmware is:
 
 1.  clone the firmware
 2.  edit generate_triggers.bb to your liking
-3.  run Make in the same directory. You need awk and babashka
-    installed4) Commit the updated files, push to devel of the repo
-4.  Open a merge request from devel -\> master
+3.  run Make in the same directory. You need awk and babashka installed
+4.  Commit the updated files, push to devel of the repo
+5.  Open a merge request from devel -\> master

@@ -64,6 +64,7 @@
     RESYNC & \texttt{0xa} & \texttt{[0:0]} & w & Pulse & Write 1 to resync \\\hline
     ANY\_TRIG\_IS\_GLOBAL & \texttt{0xb} & \texttt{[0:0]} & rw & \texttt{0x0} & 1 makes the ANY trigger read all paddles. \\\hline
     TRACK\_TRIG\_IS\_GLOBAL & \texttt{0xb} & \texttt{[1:1]} & rw & \texttt{0x0} & 1 makes the TRACK trigger read all paddles. \\\hline
+    TRACK\_CENTRAL\_IS\_GLOBAL & \texttt{0xb} & \texttt{[2:2]} & rw & \texttt{0x0} & 1 makes the TRACK central read all paddles. \\\hline
     EVENT\_CNT\_RESET & \texttt{0xc} & \texttt{[0:0]} & w & Pulse & Write 1 to reset the event counter \\\hline
     EVENT\_CNT & \texttt{0xd} & \texttt{[31:0]} & r & \texttt{} & Event Counter \\\hline
     TIU\_EMULATION\_MODE & \texttt{0xe} & \texttt{[0:0]} & rw & \texttt{0x0} & 1 to emulate the TIU \\\hline
@@ -190,6 +191,7 @@
     ETH\_RX\_BAD\_FCS\_CNT & \texttt{0x3d} & \texttt{[31:16]} & r & \texttt{} & Ethernet MAC bad fcs \\\hline
     ANY\_TRIG\_PRESCALE & \texttt{0x40} & \texttt{[31:0]} & rw & \texttt{0x0} & Prescale value for the ANY trigger. 0 == 0\% (off), 2**32-1 == 100\% \\\hline
     TRACK\_TRIGGER\_PRESCALE & \texttt{0x41} & \texttt{[31:0]} & rw & \texttt{0x0} & Prescale value for the Inner + Outer Track Trigger. 0 == 0\% (off), 2**32-1 == 100\% \\\hline
+    TRACK\_CENTRAL\_PRESCALE & \texttt{0x42} & \texttt{[31:0]} & rw & \texttt{0x0} & Prescale value for the Umbrella + Cube Top Track Trigger. 0 == 0\% (off), 2**32-1 == 100\% \\\hline
     \end{tabularx}
     \vspace{5mm}
 

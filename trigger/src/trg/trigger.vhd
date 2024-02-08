@@ -22,9 +22,11 @@ entity trigger is
 
     any_hit_trigger_is_global : in std_logic;
     track_trigger_is_global   : in std_logic;
+    track_central_is_global   : in std_logic;
 
     any_hit_trigger_prescale : in std_logic_vector (31 downto 0);
     track_trigger_prescale   : in std_logic_vector (31 downto 0);
+    track_central_prescale   : in std_logic_vector (31 downto 0);
 
     hit_thresh : in std_logic_vector (1 downto 0);
 
@@ -87,6 +89,7 @@ architecture behavioral of trigger is
 
   signal gaps_trigger  : std_logic := '0';
   signal track_trigger : std_logic := '0';
+  signal track_central : std_logic := '0';
   signal any_trigger   : std_logic := '0';
 
   --------------------------------------------------------------------------------
@@ -100,24 +103,27 @@ architecture behavioral of trigger is
 
   constant N_UMBRELLA    : integer := 48;
   constant N_CUBE_BOT    : integer := 12;
-  constant N_CUBE        : integer := 44;
+  constant N_CUBE_TOP    : integer := 12;
+  constant N_CUBE        : integer := 32;
   constant N_CORTINA     : integer := 52;
   constant N_CUBE_CORNER : integer := 4;
 
   constant N_OUTER_TOF : integer := N_UMBRELLA + N_CORTINA;
-  constant N_INNER_TOF : integer := N_CUBE_CORNER + N_CUBE + N_CUBE_BOT;
+  constant N_INNER_TOF : integer := N_CUBE_CORNER + N_CUBE + N_CUBE_BOT + N_CUBE_TOP;
 
   type hit_array_t is array (integer range <>)
     of std_logic_vector(1 downto 0);
 
   signal cube        : hit_array_t(N_CUBE-1 downto 0);
   signal cube_bot    : hit_array_t(N_CUBE_BOT-1 downto 0);
+  signal cube_top    : hit_array_t(N_CUBE_TOP-1 downto 0);
   signal cube_corner : hit_array_t(N_CUBE_CORNER-1 downto 0);
   signal umbrella    : hit_array_t(N_UMBRELLA-1 downto 0);
   signal cortina     : hit_array_t(N_CORTINA-1 downto 0);
 
   signal cube_hit, cube_beta               : std_logic_vector(N_CUBE-1 downto 0);
   signal cube_bot_hit, cube_bot_beta       : std_logic_vector(N_CUBE_BOT-1 downto 0);
+  signal cube_top_hit, cube_top_beta       : std_logic_vector(N_CUBE_TOP-1 downto 0);
   signal cube_corner_hit, cube_corner_beta : std_logic_vector(N_CUBE_CORNER-1 downto 0);
   signal umbrella_hit, umbrella_beta       : std_logic_vector(N_UMBRELLA-1 downto 0);
   signal cortina_hit, cortina_beta         : std_logic_vector(N_CORTINA-1 downto 0);
@@ -134,6 +140,9 @@ architecture behavioral of trigger is
   signal track_trigger_en    : std_logic;
   signal track_trigger_urand : std_logic_vector (31 downto 0) := (others => '0');
 
+  signal track_central_en    : std_logic;
+  signal track_central_urand : std_logic_vector (31 downto 0) := (others => '0');
+
   signal trig_sources        : std_logic_vector(15 downto 0) := (others => '0');
   signal trig_sources_reg    : std_logic_vector(15 downto 0) := (others => '0');
   signal pedestal_trig       : std_logic;
@@ -142,6 +151,7 @@ architecture behavioral of trigger is
 
   signal cube_cnts        : integer range 0 to N_CUBE;
   signal cube_bot_cnts    : integer range 0 to N_CUBE_BOT;
+  signal cube_top_cnts    : integer range 0 to N_CUBE_BOT;
   signal cube_corner_cnts : integer range 0 to N_CUBE_CORNER;
   signal umbrella_cnts    : integer range 0 to N_UMBRELLA;
   signal cortina_cnts     : integer range 0 to N_CORTINA;
@@ -274,6 +284,14 @@ begin
   process (clk) is
   begin
     if (rising_edge(clk)) then
+      -- this needs to be delayed by 1 clock cycle compared to track trigger because the umbrella / cube top come out 1 cycle early
+      track_central <= '1' when (track_central_en = '1' and umbrella_cnts >= 1 and cube_top_cnts >= 1) else '0';
+    end if;
+  end process;
+
+  process (clk) is
+  begin
+    if (rising_edge(clk)) then
       any_trigger <= (or_reduce(hit_bitmap) and any_hit_trigger_en);
     end if;
   end process;
@@ -288,6 +306,9 @@ begin
   cube_bot_cnt : entity work.count1s
     generic map (SIZE => cube_bot_hit'length)
     port map (clock   => clk, d => cube_bot_hit, cnt => cube_bot_cnts);
+  cube_top_cnt : entity work.count1s
+    generic map (SIZE => cube_top_hit'length)
+    port map (clock   => clk, d => cube_top_hit, cnt => cube_top_cnts);
   umbrella_cnt : entity work.count1s
     generic map (SIZE => umbrella_hit'length)
     port map (clock   => clk, d => umbrella_hit, cnt => umbrella_cnts);
@@ -325,6 +346,9 @@ begin
       cube_bot_beta <= map_beta(cube_bot);
       cube_bot_hit  <= map_anyhit(cube_bot);
 
+      cube_top_beta <= map_beta(cube_top);
+      cube_top_hit  <= map_anyhit(cube_top);
+
       cube_corner_beta <= map_beta(cube_corner);
       cube_corner_hit  <= map_anyhit(cube_corner);
 
@@ -337,8 +361,8 @@ begin
     end if;
   end process;
 
-  inner_tof_hit  <= cube_hit & cube_bot_hit & cube_corner_hit;
-  inner_tof_beta <= cube_beta;  -- exclude the bottom and corner from the beta test
+  inner_tof_hit  <= cube_hit & cube_top_hit & cube_bot_hit & cube_corner_hit;
+  inner_tof_beta <= cube_beta & cube_top_beta;  -- exclude the bottom and corner from the beta test
   outer_tof_hit  <= umbrella_hit & cortina_hit;
   outer_tof_beta <= umbrella_beta & cortina_beta;
 
@@ -356,50 +380,38 @@ begin
 
     --START: autoinsert mapping
 
-    cube(0)  <= hits_i(61);  -- panel= 1 paddle=  1 station=cube; LTB DSI2 J3 Ch11 Bit5
-    cube(1)  <= hits_i(60);  -- panel= 1 paddle=  2 station=cube; LTB DSI2 J3 Ch 9 Bit4
-    cube(2)  <= hits_i(59);  -- panel= 1 paddle=  3 station=cube; LTB DSI2 J3 Ch 7 Bit3
-    cube(3)  <= hits_i(58);  -- panel= 1 paddle=  4 station=cube; LTB DSI2 J3 Ch 5 Bit2
-    cube(4)  <= hits_i(57);  -- panel= 1 paddle=  5 station=cube; LTB DSI2 J3 Ch 3 Bit1
-    cube(5)  <= hits_i(56);  -- panel= 1 paddle=  6 station=cube; LTB DSI2 J3 Ch 1 Bit0
-    cube(6)  <= hits_i(127);  -- panel= 1 paddle=  7 station=cube; LTB DSI4 J1 Ch16 Bit7
-    cube(7)  <= hits_i(126);  -- panel= 1 paddle=  8 station=cube; LTB DSI4 J1 Ch14 Bit6
-    cube(8)  <= hits_i(125);  -- panel= 1 paddle=  9 station=cube; LTB DSI4 J1 Ch12 Bit5
-    cube(9)  <= hits_i(124);  -- panel= 1 paddle= 10 station=cube; LTB DSI4 J1 Ch10 Bit4
-    cube(10) <= hits_i(123);  -- panel= 1 paddle= 11 station=cube; LTB DSI4 J1 Ch 8 Bit3
-    cube(11) <= hits_i(122);  -- panel= 1 paddle= 12 station=cube; LTB DSI4 J1 Ch 6 Bit2
-    cube(12) <= hits_i(62);  -- panel= 3 paddle= 25 station=cube; LTB DSI2 J3 Ch14 Bit6
-    cube(13) <= hits_i(63);  -- panel= 3 paddle= 26 station=cube; LTB DSI2 J3 Ch16 Bit7
-    cube(14) <= hits_i(69);  -- panel= 3 paddle= 27 station=cube; LTB DSI2 J4 Ch12 Bit5
-    cube(15) <= hits_i(68);  -- panel= 3 paddle= 28 station=cube; LTB DSI2 J4 Ch10 Bit4
-    cube(16) <= hits_i(67);  -- panel= 3 paddle= 29 station=cube; LTB DSI2 J4 Ch 8 Bit3
-    cube(17) <= hits_i(66);  -- panel= 3 paddle= 30 station=cube; LTB DSI2 J4 Ch 6 Bit2
-    cube(18) <= hits_i(65);  -- panel= 3 paddle= 31 station=cube; LTB DSI2 J4 Ch 4 Bit1
-    cube(19) <= hits_i(64);  -- panel= 3 paddle= 32 station=cube; LTB DSI2 J4 Ch 2 Bit0
-    cube(20) <= hits_i(92);  -- panel= 4 paddle= 33 station=cube; LTB DSI3 J2 Ch10 Bit4
-    cube(21) <= hits_i(91);  -- panel= 4 paddle= 34 station=cube; LTB DSI3 J2 Ch 8 Bit3
-    cube(22) <= hits_i(93);  -- panel= 4 paddle= 35 station=cube; LTB DSI3 J2 Ch12 Bit5
-    cube(23) <= hits_i(90);  -- panel= 4 paddle= 36 station=cube; LTB DSI3 J2 Ch 6 Bit2
-    cube(24) <= hits_i(94);  -- panel= 4 paddle= 37 station=cube; LTB DSI3 J2 Ch14 Bit6
-    cube(25) <= hits_i(89);  -- panel= 4 paddle= 38 station=cube; LTB DSI3 J2 Ch 4 Bit1
-    cube(26) <= hits_i(95);  -- panel= 4 paddle= 39 station=cube; LTB DSI3 J2 Ch16 Bit7
-    cube(27) <= hits_i(88);  -- panel= 4 paddle= 40 station=cube; LTB DSI3 J2 Ch 2 Bit0
-    cube(28) <= hits_i(121);  -- panel= 5 paddle= 41 station=cube; LTB DSI4 J1 Ch 4 Bit1
-    cube(29) <= hits_i(120);  -- panel= 5 paddle= 42 station=cube; LTB DSI4 J1 Ch 2 Bit0
-    cube(30) <= hits_i(114);  -- panel= 5 paddle= 43 station=cube; LTB DSI3 J5 Ch 6 Bit2
-    cube(31) <= hits_i(115);  -- panel= 5 paddle= 44 station=cube; LTB DSI3 J5 Ch 8 Bit3
-    cube(32) <= hits_i(116);  -- panel= 5 paddle= 45 station=cube; LTB DSI3 J5 Ch10 Bit4
-    cube(33) <= hits_i(117);  -- panel= 5 paddle= 46 station=cube; LTB DSI3 J5 Ch12 Bit5
-    cube(34) <= hits_i(118);  -- panel= 5 paddle= 47 station=cube; LTB DSI3 J5 Ch14 Bit6
-    cube(35) <= hits_i(119);  -- panel= 5 paddle= 48 station=cube; LTB DSI3 J5 Ch16 Bit7
-    cube(36) <= hits_i(148);  -- panel= 6 paddle= 49 station=cube; LTB DSI4 J4 Ch10 Bit4
-    cube(37) <= hits_i(147);  -- panel= 6 paddle= 50 station=cube; LTB DSI4 J4 Ch 8 Bit3
-    cube(38) <= hits_i(149);  -- panel= 6 paddle= 51 station=cube; LTB DSI4 J4 Ch12 Bit5
-    cube(39) <= hits_i(146);  -- panel= 6 paddle= 52 station=cube; LTB DSI4 J4 Ch 6 Bit2
-    cube(40) <= hits_i(150);  -- panel= 6 paddle= 53 station=cube; LTB DSI4 J4 Ch14 Bit6
-    cube(41) <= hits_i(145);  -- panel= 6 paddle= 54 station=cube; LTB DSI4 J4 Ch 4 Bit1
-    cube(42) <= hits_i(151);  -- panel= 6 paddle= 55 station=cube; LTB DSI4 J4 Ch16 Bit7
-    cube(43) <= hits_i(144);  -- panel= 6 paddle= 56 station=cube; LTB DSI4 J4 Ch 2 Bit0
+    cube(0)  <= hits_i(62);  -- panel= 3 paddle= 25 station=cube; LTB DSI2 J3 Ch14 Bit6
+    cube(1)  <= hits_i(63);  -- panel= 3 paddle= 26 station=cube; LTB DSI2 J3 Ch16 Bit7
+    cube(2)  <= hits_i(69);  -- panel= 3 paddle= 27 station=cube; LTB DSI2 J4 Ch12 Bit5
+    cube(3)  <= hits_i(68);  -- panel= 3 paddle= 28 station=cube; LTB DSI2 J4 Ch10 Bit4
+    cube(4)  <= hits_i(67);  -- panel= 3 paddle= 29 station=cube; LTB DSI2 J4 Ch 8 Bit3
+    cube(5)  <= hits_i(66);  -- panel= 3 paddle= 30 station=cube; LTB DSI2 J4 Ch 6 Bit2
+    cube(6)  <= hits_i(65);  -- panel= 3 paddle= 31 station=cube; LTB DSI2 J4 Ch 4 Bit1
+    cube(7)  <= hits_i(64);  -- panel= 3 paddle= 32 station=cube; LTB DSI2 J4 Ch 2 Bit0
+    cube(8)  <= hits_i(92);  -- panel= 4 paddle= 33 station=cube; LTB DSI3 J2 Ch10 Bit4
+    cube(9)  <= hits_i(91);  -- panel= 4 paddle= 34 station=cube; LTB DSI3 J2 Ch 8 Bit3
+    cube(10) <= hits_i(93);  -- panel= 4 paddle= 35 station=cube; LTB DSI3 J2 Ch12 Bit5
+    cube(11) <= hits_i(90);  -- panel= 4 paddle= 36 station=cube; LTB DSI3 J2 Ch 6 Bit2
+    cube(12) <= hits_i(94);  -- panel= 4 paddle= 37 station=cube; LTB DSI3 J2 Ch14 Bit6
+    cube(13) <= hits_i(89);  -- panel= 4 paddle= 38 station=cube; LTB DSI3 J2 Ch 4 Bit1
+    cube(14) <= hits_i(95);  -- panel= 4 paddle= 39 station=cube; LTB DSI3 J2 Ch16 Bit7
+    cube(15) <= hits_i(88);  -- panel= 4 paddle= 40 station=cube; LTB DSI3 J2 Ch 2 Bit0
+    cube(16) <= hits_i(121);  -- panel= 5 paddle= 41 station=cube; LTB DSI4 J1 Ch 4 Bit1
+    cube(17) <= hits_i(120);  -- panel= 5 paddle= 42 station=cube; LTB DSI4 J1 Ch 2 Bit0
+    cube(18) <= hits_i(114);  -- panel= 5 paddle= 43 station=cube; LTB DSI3 J5 Ch 6 Bit2
+    cube(19) <= hits_i(115);  -- panel= 5 paddle= 44 station=cube; LTB DSI3 J5 Ch 8 Bit3
+    cube(20) <= hits_i(116);  -- panel= 5 paddle= 45 station=cube; LTB DSI3 J5 Ch10 Bit4
+    cube(21) <= hits_i(117);  -- panel= 5 paddle= 46 station=cube; LTB DSI3 J5 Ch12 Bit5
+    cube(22) <= hits_i(118);  -- panel= 5 paddle= 47 station=cube; LTB DSI3 J5 Ch14 Bit6
+    cube(23) <= hits_i(119);  -- panel= 5 paddle= 48 station=cube; LTB DSI3 J5 Ch16 Bit7
+    cube(24) <= hits_i(148);  -- panel= 6 paddle= 49 station=cube; LTB DSI4 J4 Ch10 Bit4
+    cube(25) <= hits_i(147);  -- panel= 6 paddle= 50 station=cube; LTB DSI4 J4 Ch 8 Bit3
+    cube(26) <= hits_i(149);  -- panel= 6 paddle= 51 station=cube; LTB DSI4 J4 Ch12 Bit5
+    cube(27) <= hits_i(146);  -- panel= 6 paddle= 52 station=cube; LTB DSI4 J4 Ch 6 Bit2
+    cube(28) <= hits_i(150);  -- panel= 6 paddle= 53 station=cube; LTB DSI4 J4 Ch14 Bit6
+    cube(29) <= hits_i(145);  -- panel= 6 paddle= 54 station=cube; LTB DSI4 J4 Ch 4 Bit1
+    cube(30) <= hits_i(151);  -- panel= 6 paddle= 55 station=cube; LTB DSI4 J4 Ch16 Bit7
+    cube(31) <= hits_i(144);  -- panel= 6 paddle= 56 station=cube; LTB DSI4 J4 Ch 2 Bit0
 
     umbrella(0)  <= hits_i(165);  -- panel= 7 paddle= 61 station=umbrella; LTB DSI5 J1 Ch11 Bit5
     umbrella(1)  <= hits_i(164);  -- panel= 7 paddle= 62 station=umbrella; LTB DSI5 J1 Ch 9 Bit4
@@ -449,6 +461,19 @@ begin
     umbrella(45) <= hits_i(22);  -- panel=13 paddle=106 station=umbrella; LTB DSI1 J3 Ch13 Bit6
     umbrella(46) <= hits_i(21);  -- panel=13 paddle=107 station=umbrella; LTB DSI1 J3 Ch11 Bit5
     umbrella(47) <= hits_i(20);  -- panel=13 paddle=108 station=umbrella; LTB DSI1 J3 Ch 9 Bit4
+
+    cube_top(0)  <= hits_i(61);  -- panel= 1 paddle=  1 station=cube_top; LTB DSI2 J3 Ch11 Bit5
+    cube_top(1)  <= hits_i(60);  -- panel= 1 paddle=  2 station=cube_top; LTB DSI2 J3 Ch 9 Bit4
+    cube_top(2)  <= hits_i(59);  -- panel= 1 paddle=  3 station=cube_top; LTB DSI2 J3 Ch 7 Bit3
+    cube_top(3)  <= hits_i(58);  -- panel= 1 paddle=  4 station=cube_top; LTB DSI2 J3 Ch 5 Bit2
+    cube_top(4)  <= hits_i(57);  -- panel= 1 paddle=  5 station=cube_top; LTB DSI2 J3 Ch 3 Bit1
+    cube_top(5)  <= hits_i(56);  -- panel= 1 paddle=  6 station=cube_top; LTB DSI2 J3 Ch 1 Bit0
+    cube_top(6)  <= hits_i(127);  -- panel= 1 paddle=  7 station=cube_top; LTB DSI4 J1 Ch16 Bit7
+    cube_top(7)  <= hits_i(126);  -- panel= 1 paddle=  8 station=cube_top; LTB DSI4 J1 Ch14 Bit6
+    cube_top(8)  <= hits_i(125);  -- panel= 1 paddle=  9 station=cube_top; LTB DSI4 J1 Ch12 Bit5
+    cube_top(9)  <= hits_i(124);  -- panel= 1 paddle= 10 station=cube_top; LTB DSI4 J1 Ch10 Bit4
+    cube_top(10) <= hits_i(123);  -- panel= 1 paddle= 11 station=cube_top; LTB DSI4 J1 Ch 8 Bit3
+    cube_top(11) <= hits_i(122);  -- panel= 1 paddle= 12 station=cube_top; LTB DSI4 J1 Ch 6 Bit2
 
     cube_bot(0)  <= hits_i(72);  -- panel= 2 paddle= 13 station=cube_bot; LTB DSI2 J5 Ch 2 Bit0
     cube_bot(1)  <= hits_i(73);  -- panel= 2 paddle= 14 station=cube_bot; LTB DSI2 J5 Ch 4 Bit1
@@ -594,7 +619,8 @@ begin
   -- Trigger Source OR
   --------------------------------------------------------------------------------
 
-  trig_sources <= "0000000"
+  trig_sources <= "000000"
+                  & track_central
                   & track_trigger
                   & force_trigger_i
                   & any_trigger
@@ -614,6 +640,7 @@ begin
       pedestal_trig <= force_trigger_i or
                        (any_trigger and any_hit_trigger_is_global) or
                        (track_trigger and track_trigger_is_global) or
+                       (track_central and track_central_is_global) or
                        read_all_channels;
 
       pre_trigger <= not busy_i

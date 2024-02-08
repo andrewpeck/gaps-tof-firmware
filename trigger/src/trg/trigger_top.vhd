@@ -23,9 +23,11 @@ entity trigger_top is
 
     any_hit_trigger_is_global : in std_logic;
     track_trigger_is_global   : in std_logic;
+    track_central_is_global   : in std_logic;
 
     any_hit_trigger_prescale : in std_logic_vector (31 downto 0);
     track_trigger_prescale   : in std_logic_vector (31 downto 0);
+    track_central_prescale   : in std_logic_vector (31 downto 0);
 
     hit_thresh : in std_logic_vector (1 downto 0);
 
@@ -875,8 +877,10 @@ begin
       event_cnt_reset           => event_cnt_reset,
       any_hit_trigger_is_global => any_hit_trigger_is_global,
       track_trigger_is_global   => track_trigger_is_global,
+      track_central_is_global   => track_central_is_global,
       any_hit_trigger_prescale  => any_hit_trigger_prescale,
       track_trigger_prescale    => track_trigger_prescale,
+      track_central_prescale    => track_central_prescale,
       hit_thresh                => hit_thresh,
       read_all_channels         => read_all_channels,
       hits_i                    => hits_i,

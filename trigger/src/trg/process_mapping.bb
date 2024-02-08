@@ -39,6 +39,8 @@
 
           (= index 2) "cube_bot"
 
+          (= index 1) "cube_top"
+
           (and (>= index 1)
                (<= index 6)) "cube"
 
@@ -253,7 +255,7 @@
 (let [data-map (csv-to-map "mapping.csv")]
 
   (when (:map-ltb args)
-    (doseq [station [ "cube" "umbrella" "cube_bot" "cube_corner" "cortina"]]
+    (doseq [station [ "cube" "umbrella" "cube_top" "cube_bot" "cube_corner" "cortina"]]
       (let [paddles (->> data-map
                          (remove #(= :B (:paddle-end %)))
                          (filter #(= (:station %) station)))]

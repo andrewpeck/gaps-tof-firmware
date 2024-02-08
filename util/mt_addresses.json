@@ -77,6 +77,12 @@
         "mask": 2,
         "description": "1 makes the TRACK trigger read all paddles."
     },
+    "MT.TRACK_CENTRAL_IS_GLOBAL": {
+        "adr": 11,
+        "permission": "rw",
+        "mask": 4,
+        "description": "1 makes the TRACK central read all paddles."
+    },
     "MT.EVENT_CNT_RESET": {
         "adr": 12,
         "permission": "w",
@@ -424,6 +430,12 @@
         "permission": "rw",
         "mask": 4294967295,
         "description": "Prescale value for the Inner + Outer Track Trigger. 0 == 0% (off), 2**32-1 == 100%"
+    },
+    "MT.TRACK_CENTRAL_PRESCALE": {
+        "adr": 66,
+        "permission": "rw",
+        "mask": 4294967295,
+        "description": "Prescale value for the Umbrella + Cube Top Track Trigger. 0 == 0% (off), 2**32-1 == 100%"
     },
     "MT.CHANNEL_MASK.LT0": {
         "adr": 80,
