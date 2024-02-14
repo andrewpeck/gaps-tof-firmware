@@ -42,13 +42,13 @@ $(CREATE_LIST):
 	@echo -------------------------------------------------------------------------------- $(COLORIZE)
 	@echo Creating Project $(patsubst create_%,%,$@)                                       $(COLORIZE)
 	@echo -------------------------------------------------------------------------------- $(COLORIZE)
-	@time Hog/CreateProject.sh $(patsubst create_%,%,$@)                                   $(COLORIZE)
+	@time Hog/Do CREATE $(patsubst create_%,%,$@)                                          $(COLORIZE)
 
 $(PROJECT_LIST):
 	@echo -------------------------------------------------------------------------------- $(COLORIZE)
 	@echo Launching Hog Workflow $@                                                        $(COLORIZE)
 	@echo -------------------------------------------------------------------------------- $(COLORIZE)
-	@time Hog/LaunchWorkflow.sh $@                                                         $(COLORIZE)
+	@time Hog/Do WORKFLOW $@                                                               $(COLORIZE)
 
 $(OPEN_LIST):
 	vivado Projects/$(patsubst open_%,%,$@)/$(patsubst open_%,%,$@).xpr &
