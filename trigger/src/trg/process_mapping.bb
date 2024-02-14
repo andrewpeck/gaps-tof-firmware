@@ -168,7 +168,7 @@
   [data-map]
 
   (try (let [ch (dec (:ch (:rb-num+channel data-map))) ; channel within the RB; 0-7
-             half (if  (= :B (:harting-half data-map)) 1 0) ; which 1/2 of the harting connector?
+             half (if  (= :B (:harting-half data-map)) 0 1) ; which 1/2 of the harting connector?
              harting (:rb-harting data-map) ; which harting connector?
              dsi (dec (:dsi-slot data-map)) ; which DSI?
              index (+ ch
