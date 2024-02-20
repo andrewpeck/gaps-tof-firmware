@@ -129,7 +129,7 @@
         "adr": 15,
         "permission": "rw",
         "mask": 7936,
-        "description": "Number of 100MHz clock cycles to integrate the LTB hits to determine which MTB to read out."
+        "description": "Number of 100MHz clock cycles to integrate the LTB hits to determine which RBs to read out."
     },
     "MT.RB_READ_ALL_CHANNELS": {
         "adr": 15,

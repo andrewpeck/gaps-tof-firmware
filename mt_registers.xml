@@ -148,7 +148,7 @@
           address="0xF"
           permission="rw"
           mask="0x1f00"
-          description="Number of 100MHz clock cycles to integrate the LTB hits to determine which MTB to read out."
+          description="Number of 100MHz clock cycles to integrate the LTB hits to determine which RBs to read out."
           fw_default="0x1f"
           fw_signal="rb_window"/>
 
