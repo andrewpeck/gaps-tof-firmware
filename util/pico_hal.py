@@ -109,6 +109,10 @@ def wReg(reg : str, data : int, verify : bool = False):
     adr = node["adr"]
     mask = node["mask"]
     shift = get_lsb(mask)
+
+    if (data << shift) | mask != mask:
+        raise ValueError(f"Writing {data} to {reg}. Register can only store a maximum of {mask >> shift}"
+
     r = (0xffffffff ^ mask) & rAdr(adr)
     r |= data << shift
     wAdr(adr, r, verify=verify)
