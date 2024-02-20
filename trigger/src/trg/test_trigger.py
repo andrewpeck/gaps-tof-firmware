@@ -31,6 +31,12 @@ def set_hits(dut, value):
 async def gaps_trigger_test_any_global(dut):
     await gaps_trigger_test(dut, trig="any", is_global=1)
 
+@cocotb.test()
+async def gaps_trigger_test_rb_window(dut):
+    await gaps_trigger_test(dut, trig="any", is_global=1, rb_window=0)
+    await gaps_trigger_test(dut, trig="any", is_global=1, rb_window=1)
+    await gaps_trigger_test(dut, trig="any", is_global=1, rb_window=10)
+    await gaps_trigger_test(dut, trig="any", is_global=1, rb_window=30)
 
 @cocotb.test()
 async def gaps_trigger_test_any_local(dut):

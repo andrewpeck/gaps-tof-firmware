@@ -35,6 +35,10 @@ begin
         count <= window;
         reg   <= d;
 
+        if (window=0) then
+          trg_o <= '1';
+        end if;
+
       elsif (count > 0) then
         reg   <= reg or d;
         count <= count - 1;
