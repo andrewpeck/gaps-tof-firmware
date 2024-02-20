@@ -33,10 +33,11 @@ async def gaps_trigger_test_any_global(dut):
 
 @cocotb.test()
 async def gaps_trigger_test_rb_window(dut):
-    await gaps_trigger_test(dut, trig="any", is_global=1, rb_window=0)
-    await gaps_trigger_test(dut, trig="any", is_global=1, rb_window=1)
-    await gaps_trigger_test(dut, trig="any", is_global=1, rb_window=10)
-    await gaps_trigger_test(dut, trig="any", is_global=1, rb_window=30)
+    await gaps_trigger_test(dut, trig="any", is_global=0, rb_window=0)
+    await gaps_trigger_test(dut, trig="any", is_global=0, rb_window=1)
+    await gaps_trigger_test(dut, trig="any", is_global=0, rb_window=10)
+    await gaps_trigger_test(dut, trig="any", is_global=0, rb_window=30)
+    await gaps_trigger_test(dut, trig="any", is_global=0, rb_window=31)
 
 @cocotb.test()
 async def gaps_trigger_test_any_local(dut):

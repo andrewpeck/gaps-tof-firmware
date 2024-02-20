@@ -83,7 +83,7 @@ architecture behavioral of trigger is
   type hit_bitmap_dlyline_t is array (integer range <>) of channel_bitmask_t;
   signal hit_bitmap_dly       : hit_bitmap_dlyline_t (HIT_BITMAP_LATENCY-1 downto 0);
 
-  constant DEADCNT_MAX : integer                        := 31;
+  constant DEADCNT_MAX : integer                        := 32;
   signal dead          : std_logic                      := '0';
   signal deadcnt       : integer range 0 to DEADCNT_MAX := 0;
 
@@ -761,6 +761,8 @@ begin
   -- Enforce some minimal deadtime between triggers,
   -- give the SiLi some time to respond
   --------------------------------------------------------------------------------
+
+  assert DEADCNT_MAX >= 2**rb_window_i'length report "DEADCNT should be greater than integration window" severity error;
 
   process (clk) is
   begin
