@@ -137,9 +137,9 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
     for _ in range(128):
         await RisingEdge(dut.clk)
 
-    dut.event_cnt_reset = 1
+    dut.event_cnt_reset.value = 1
     await RisingEdge(dut.clk)
-    dut.event_cnt_reset = 0
+    dut.event_cnt_reset.value = 0
 
     # event loop
     for evt in range(10):
