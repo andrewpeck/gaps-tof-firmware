@@ -677,8 +677,8 @@ begin
 
   integrator_inst : entity work.integrator
     generic map (
-      MAX   => 31,
-      WIDTH => rb_ch_bitmap'length
+      WINDOWB => rb_window_i'length,
+      WIDTH   => rb_ch_bitmap'length
       )
     port map (
       clk    => clk,
@@ -686,7 +686,7 @@ begin
       trg_o  => rb_trigger,
       d      => rb_ch_bitmap,           -- align to pretrigger
       q      => rb_ch_integrated,
-      window => to_integer(unsigned(rb_window_i))
+      window => rb_window_i
       );
 
   process (clk) is

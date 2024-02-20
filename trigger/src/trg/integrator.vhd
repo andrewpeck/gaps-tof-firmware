@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 
 entity integrator is
   generic(
-    MAX   : natural;
+    WINDOWB : natural;
     WIDTH : natural
     );
   port(
@@ -14,12 +14,12 @@ entity integrator is
     trg_o  : out std_logic;
     d      : in  std_logic_vector(WIDTH-1 downto 0);
     q      : out std_logic_vector(WIDTH-1 downto 0);
-    window : in  natural
+    window : in  std_logic_vector(WINDOWB-1 downto 0)
     );
 end integrator;
 
 architecture behavioral of integrator is
-  signal count : natural range 0 to MAX := 0;
+  signal count : natural range 0 to 2**WINDOWB-1 := 0;
   signal reg   : std_logic_vector(WIDTH-1 downto 0);
 begin
 
@@ -32,10 +32,10 @@ begin
       trg_o <= '0';
 
       if (trg_i = '1') then
-        count <= window;
+        count <= to_integer(unsigned(window));
         reg   <= d;
 
-        if (window=0) then
+        if (to_integer(unsigned(window))=0) then
           trg_o <= '1';
         end if;
 
