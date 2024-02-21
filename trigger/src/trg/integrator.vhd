@@ -6,7 +6,7 @@ use ieee.numeric_std.all;
 entity integrator is
   generic(
     WINDOWB : natural;
-    WIDTH : natural
+    WIDTH   : natural
     );
   port(
     clk    : in  std_logic;
@@ -35,7 +35,7 @@ begin
         count <= to_integer(unsigned(window));
         reg   <= d;
 
-        if (to_integer(unsigned(window))=0) then
+        if (to_integer(unsigned(window)) = 0) then
           trg_o <= '1';
         end if;
 

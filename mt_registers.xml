@@ -149,7 +149,7 @@
           permission="rw"
           mask="0x1f00"
           description="Number of 100MHz clock cycles to integrate the LTB hits to determine which RBs to read out."
-          fw_default="0x1f"
+          fw_default="0x1"
           fw_signal="rb_window"/>
 
     <node id="RB_READ_ALL_CHANNELS"
