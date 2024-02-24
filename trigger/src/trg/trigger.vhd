@@ -612,6 +612,13 @@ begin
         track_trigger_en <= '0';
       end if;
 
+      if (track_central_prescale /= x"00000000" and
+          track_central_prescale > track_central_urand) then
+        track_central_en <= '1';
+      else
+        track_central_en <= '0';
+      end if;
+
     end if;
   end process;
 
