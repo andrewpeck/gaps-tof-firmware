@@ -339,6 +339,11 @@ def set_tiu_data_src(val : int):
 def set_tiu_emulation_mode(val : int):
     wReg("MT.TIU_EMULATION_MODE", val)
 
+def set_int_wind(val : int):
+    wReg("MT.RB_INTEGRATION_WINDOW", val)
+    rd = rReg("MT.RB_INTEGRATION_WINDOW")
+    print("Integration window set to %d" % rd)
+
 def set_tiu_emu_busy_cnt(val : int):
     wReg("MT.TIU_EMU_BUSY_CNT", val)
 
@@ -507,6 +512,7 @@ if __name__ == '__main__':
     argParser.add_argument('--check_clocks',          action='store_true', default=False, help="Check DSI loopback clock frequencies")
     argParser.add_argument('--tiu_data_src',          action='store',                     help="Set source of TIU link: 1 = J11, 0 = J3")
     argParser.add_argument('--tiu_emulation_mode',    action='store',                     help="Set TIU emulation mode; 1 = emulate, 0 = TIU")
+    argParser.add_argument('--set_int_wind',          action='store',                     help="Set RB integration window")
     argParser.add_argument('--tiu_emu_busy_cnt',      action='store',                     help="Number of 10 ns clock cycles for the TIU to be busy")
 
     args = argParser.parse_args()
@@ -525,6 +531,8 @@ if __name__ == '__main__':
         set_tiu_data_src(int(args.tiu_data_src))
     if args.tiu_emulation_mode:
         set_tiu_emulation_mode(int(args.tiu_emulation_mode))
+    if args.set_int_wind:
+        set_int_wind(int(args.set_int_wind))
     if args.tiu_emu_busy_cnt:
         set_tiu_emu_busy_cnt(int(args.tiu_emu_busy_cnt))
     if args.trig_rates:
