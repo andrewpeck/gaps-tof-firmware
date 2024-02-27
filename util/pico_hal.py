@@ -352,6 +352,11 @@ def set_track_trigger(val : int):
     rd = rReg("MT.TRACK_TRIGGER_PRESCALE")
     print("Track trigger prescale set to %d" % rd)
 
+def set_track_central(val : int):
+    wReg("MT.TRACK_CENTRAL_PRESCALE", val)
+    rd = rReg("MT.TRACK_CENTRAL_PRESCALE")
+    print("Track central prescale set to %d" % rd)
+
 def set_trig_generate(val : int):
     wReg("MT.TRIG_GEN_RATE", val)
 
@@ -479,8 +484,11 @@ if __name__ == '__main__':
     argParser.add_argument('--any_trig_dis',          action='store_true', default=False, help="Disable ANY trigger")
     argParser.add_argument('--track_trig_en',         action='store_true', default=False, help="Enable TRACK trigger")
     argParser.add_argument('--track_trig_dis',        action='store_true', default=False, help="Disable TRACK trigger")
+    argParser.add_argument('--track_central_en',      action='store_true', default=False, help="Enable CENTRAL trigger")
+    argParser.add_argument('--track_central_dis',     action='store_true', default=False, help="Disable CENTRAL trigger")
     argParser.add_argument('--any_trig_prescale',     action='store',      default=False, help="Set prescale for ANY trigger")
     argParser.add_argument('--track_trig_prescale',   action='store',      default=False, help="Set prescale for TRACK trigger")
+    argParser.add_argument('--track_central_prescale',action='store',      default=False, help="Set prescale for TRACK central")
     argParser.add_argument('--trig_rates',            action='store_true', default=False, help="Read the trigger rates")
     argParser.add_argument('--ltb_status',            action='store_true', default=False, help="Read LTB link status")
     argParser.add_argument('--trig_set_hz',           action='store',                     help="Set the poisson trigger generator rate in Hz")
@@ -553,9 +561,15 @@ if __name__ == '__main__':
         set_track_trigger(0xffffffff)
     if args.track_trig_dis:
         set_track_trigger(0)
+    if args.track_central_en:
+        set_track_central(0xffffffff)
+    if args.track_central_dis:
+        set_track_central(0)
 
     if args.track_trig_prescale:
         set_track_trigger(args.track_trig_prescale)
+    if args.track_central_prescale:
+        set_track_central(args.track_central_prescale)
     if args.any_trig_prescale:
         set_any_trigger(args.any_trig_prescale)
 
