@@ -583,16 +583,21 @@ begin
     port map (
       clk   => clk,
       rst_n => not reset,
-      u     => any_hit_trigger_urand
-      );
+      u     => any_hit_trigger_urand);
 
   urand_inf_track_trig : entity work.urand_inf
     generic map (SEED => 2)
     port map (
       clk   => clk,
       rst_n => not reset,
-      u     => track_trigger_urand
-      );
+      u     => track_trigger_urand);
+
+  urand_inf_track_central : entity work.urand_inf
+    generic map (SEED => 2)
+    port map (
+      clk   => clk,
+      rst_n => not reset,
+      u     => track_central_urand);
 
   process (clk) is
   begin
