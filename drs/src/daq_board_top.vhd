@@ -129,7 +129,7 @@ architecture Behavioral of top_readout_board is
   signal ram_b_occ_rst        : std_logic;
   signal ram_toggle_request   : std_logic;
 
-  signal drs_data         : std_logic_vector (13 downto 0);
+  signal drs_data         : std_logic_vector (27 downto 0);
   signal drs_rden         : std_logic := '0';
   signal drs_data_valid   : std_logic;
   signal drs_dwrite_sync  : std_logic;
@@ -276,7 +276,7 @@ architecture Behavioral of top_readout_board is
   signal spy_valid : std_logic                      := '0';
 
   -- ADC Readout
-  signal drs_data_xfifo  : std_logic_vector (13 downto 0);
+  signal drs_data_xfifo  : std_logic_vector (27 downto 0);
   signal drs_valid_xfifo : std_logic := '0';
   signal drs_fifo_empty  : std_logic := '0';
 
@@ -610,9 +610,9 @@ begin
         probe21(13)           => event_queue_request,
         probe21(14)           => event_queue_empty,
         probe21(15)           => daq_ready,
-        probe22(13 downto 0)  => drs_data,
+        probe22(13 downto 0)  => drs_data(13 downto 0),
         probe22(14)           => drs_data_valid,
-        probe22(28 downto 15) => drs_data_xfifo,
+        probe22(28 downto 15) => drs_data_xfifo(13 downto 0),
         probe22(29)           => drs_valid_xfifo,
         probe22(30)           => drs_rden,
         probe22(31)           => mt_trigger_data_xdeco,
@@ -1013,8 +1013,8 @@ begin
   daq_fifo_inst : entity work.fifo_sync
     generic map (
       DEPTH     => 1024,
-      WR_WIDTH  => 14,
-      RD_WIDTH  => 14
+      WR_WIDTH  => 28,
+      RD_WIDTH  => 28
       )
     port map (
       rst    => reset or soft_reset_buf,
@@ -1062,9 +1062,11 @@ begin
       dtap_i      => dtap_cnt,
       drs_temp_i  => drs_temp,
 
-      drs_data_i  => drs_data_xfifo,
-      drs_valid_i => drs_valid_xfifo,
-      drs_rden_o  => drs_rden,
+      drs_data_i   => drs_data_xfifo(13 downto 0),
+      drs_ch_i     => drs_data_xfifo(17 downto 14),
+      drs_cell_i   => drs_data_xfifo(27 downto 18),
+      drs_valid_i  => drs_valid_xfifo,
+      drs_rden_o   => drs_rden,
 
       data_o      => fifo_data_out,
       valid_o     => fifo_data_wen,

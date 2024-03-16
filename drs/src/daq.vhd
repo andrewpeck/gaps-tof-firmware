@@ -42,10 +42,12 @@ entity daq is
     dtap_i         : in std_logic_vector (15 downto 0);
     drs_temp_i     : in std_logic_vector (15 downto 0);
 
-    drs_busy_i  : in  std_logic;
-    drs_data_i  : in  std_logic_vector (13 downto 0);
-    drs_valid_i : in  std_logic;
-    drs_rden_o  : out std_logic := '0';
+    drs_busy_i   : in  std_logic;
+    drs_data_i   : in  std_logic_vector (13 downto 0);
+    drs_ch_i     : in  std_logic_vector (3 downto 0);
+    drs_cell_i   : in  std_logic_vector (9 downto 0);
+    drs_valid_i  : in  std_logic;
+    drs_rden_o   : out std_logic := '0';
 
     data_o  : out std_logic_vector (g_WORD_SIZE-1 downto 0);  -- receive 16 bits / bx
     valid_o : out std_logic;
@@ -116,6 +118,9 @@ architecture behavioral of daq is
   signal packet_timed_out : std_logic := '0';
 
   signal dav : boolean := false;
+
+  signal channel_sync_err : std_logic := '0';
+  signal cell_sync_err : std_logic := '0';
 
   -- get the first channel which will be read out from a given channel mask
   function get_first_channel (chmask : std_logic_vector)
@@ -233,7 +238,10 @@ architecture behavioral of daq is
 
 begin
 
-  packet_crc_en <= if_then_else ((dav and state /= TAIL_state and state /= CRC32_state), '1', '0');
+  channel_sync_err <= '0' when to_integer(unsigned(drs_cell_i))=state_word_cnt else '1';
+  cell_sync_err    <= '0' when to_integer(unsigned(drs_ch_i))=channel_id else '1';
+
+  packet_crc_en  <= if_then_else ((dav and state /= TAIL_state and state /= CRC32_state), '1', '0');
   channel_crc_en <= if_then_else (
     (state = CALC_CH_CRC_state) or
     ((state_word_cnt > 0) and dav and state = PAYLOAD_state), '1', '0');
@@ -523,9 +531,8 @@ begin
             dav  <= true;
             data <= x"fffe";
           elsif (drs_valid_i = '1' and num_channels > 0) then
-            data <= xor_reduce(drs_data_i(13 downto 7)) & xor_reduce(drs_data_i(6 downto 0))  -- parity bits
-                    & drs_data_i;                                                             -- adc data
-            dav <= true;
+            data <= channel_sync_err & cell_sync_err & drs_data_i;
+            dav  <= true;
           end if;
 
         when CALC_CH_CRC_state =>

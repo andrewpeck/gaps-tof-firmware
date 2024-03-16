@@ -16,6 +16,8 @@
 - [Master Trigger External IO](#master-trigger-external-io)
 - [Trigger Latency](#trigger-latency)
 - [Gitlab runner registration](#gitlab-runner-registration)
+- [Updating mapping](#updating-mapping)
+- [Updating trigger](#updating-trigger)
 
 ## Organization
 
@@ -177,7 +179,9 @@ no files are missing, the build directory is clean, and so on.
 | TIMESTAMP | `[47:0]`        | \# of 33MHz clocks elapsed since resync                               |
 | PAYLOAD   | 0 to XXXX words | `HEADER[15:0]` = Channel ID                                           |
 |           |                 | —– begin block data —–                                                |
-|           |                 | `DATA[13:0]` = ADC data `DATA[15:14]` parity                          |
+|           |                 | `DATA[13:0]` = ADC data                                               |
+|           |                 | `DATA[14]` = Cell Sync Err                                            |
+|           |                 | `DATA[15]` = Channel Sync Err                                         |
 |           |                 | —– end block: len = ROI words —–                                      |
 |           |                 | `TRAILER[31:0]` = crc32                                               |
 | STOP CELL | `[15:0]`        | Stop cell of the DRS                                                  |

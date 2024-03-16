@@ -10,8 +10,7 @@
 // TODO: tmr
 
 module drs #(
-  parameter TMR_INST      = 0,
-  parameter READ_WIDTH    = 14
+  parameter READ_WIDTH    = 28
 ) (
     //------------------------------------------------------------------------------------------------------------------
     // system
@@ -182,8 +181,8 @@ reg [3:0] drs_addr=0;
 reg        drs_reinit_request = 0;
 reg        drs_old_roi_mode   = 0;
 
-reg [15:0] fifo_wdata=0;
-reg        fifo_wen=0;
+reg [READ_WIDTH-1:0] fifo_wdata=0;
+reg                  fifo_wen=0;
 
 wire shift_out_config_done = (drs_sr_count == 7);
 
@@ -296,7 +295,6 @@ always_ff @(posedge clock) begin
           drs_reinit_request   <= 0;
           drs_denable_o        <= 0;
           drs_rd_tmp_count     <= drs_rd_tmp_count + 1'b1;
-
 
     end // fini
 
@@ -525,18 +523,18 @@ always_ff @(posedge clock) begin
           drs_rd_tmp_count <= drs_rd_tmp_count + 1'b1;
 
           // clock in the first 10 bits to get the stop cell
-          if (drs_rd_tmp_count < (srout_latency_i+10)) begin
+          if (drs_rd_tmp_count < (16'(srout_latency_i)+16'(10))) begin
             drs_stop_cell[0]   <= drs_srout;
             drs_stop_cell[9:1] <= drs_stop_cell[8:0];
           end
 
           // If the DRS4 is configured for channel cascading or daisy-
-          //   chaining, it is necessary to know which the current chan-
-          //   nel is where the sampling has been stopped. This can be
+          //   chaining, it is necessary to know which the current channel
+          //   is where the sampling has been stopped. This can be
           //   determined by addressing the Write Shift Register with
           // A3-A0 = 1101 b  and by applying clock pulses to the
-          // SRCLK input. If the DRS4 is configured in single chan-
-          //   nel mode and the sampling stopped at channel i, then 8-i
+          // SRCLK input. If the DRS4 is configured in single channel
+          //   mode and the sampling stopped at channel i, then 8-i
           //   clock pulses will reveal the 1 at the WSROUT and the
           //   SROUT outputs.
 
@@ -549,11 +547,14 @@ always_ff @(posedge clock) begin
           if (drs_rd_tmp_count > {10'b0, drs_ctl_adc_latency}) begin
 
              if (diagnostic_mode)
-               fifo_wdata[13:0] <= {4'b0, drs_sample_count};
+               fifo_wdata <= {9'b0, drs_sample_count};
              else
-               fifo_wdata[13:0]  <= adc_data[13:0];  // ADC data
+               fifo_wdata <= {drs_sample_count,
+                              drs_addr,
+                              adc_data[13:0]};  // ADC data
 
-            fifo_wen          <= 1'b1;
+            fifo_wen <= 1;
+
             drs_sample_count  <= drs_sample_count + 1'b1;
           end
 
@@ -848,7 +849,7 @@ end // and always
 // Output FIFO
 //----------------------------------------------------------------------------------------------------------------------
 
-assign fifo_wdata_o = fifo_wdata[READ_WIDTH-1:0];
+assign fifo_wdata_o = fifo_wdata;
 assign fifo_wen_o   = fifo_wen;
 
 //------------------------------------------------------------------------------
