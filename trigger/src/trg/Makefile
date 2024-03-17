@@ -17,8 +17,7 @@ rbmap:
 	@mv tmp.vhd rb_map.vhd
 
 update_mapping:
-	wget --output-document="mapping.csv" \
-		"https://docs.google.com/spreadsheets/d/1i41fsmLf7IjfYbr1coTo9V4uk3t1GXAGgt0aOeCkeeA/export?format=csv&gid=0"
+	wget --output-document='mapping-validated.json' https://raw.githubusercontent.com/GAPS-Collab/gaps-tof-channel-mapping/master/mapping-validated.json
 
 process_mapping:
 	bb process_mapping.bb --map-ltb

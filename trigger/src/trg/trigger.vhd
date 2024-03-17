@@ -380,171 +380,172 @@ begin
 
     --START: autoinsert mapping
 
-    cube(0)  <= hits_i(62);  -- panel= 3 paddle= 25 station=cube; LTB DSI2 J3 Ch14 Bit6
-    cube(1)  <= hits_i(63);  -- panel= 3 paddle= 26 station=cube; LTB DSI2 J3 Ch16 Bit7
-    cube(2)  <= hits_i(69);  -- panel= 3 paddle= 27 station=cube; LTB DSI2 J4 Ch12 Bit5
-    cube(3)  <= hits_i(68);  -- panel= 3 paddle= 28 station=cube; LTB DSI2 J4 Ch10 Bit4
-    cube(4)  <= hits_i(67);  -- panel= 3 paddle= 29 station=cube; LTB DSI2 J4 Ch 8 Bit3
-    cube(5)  <= hits_i(66);  -- panel= 3 paddle= 30 station=cube; LTB DSI2 J4 Ch 6 Bit2
-    cube(6)  <= hits_i(65);  -- panel= 3 paddle= 31 station=cube; LTB DSI2 J4 Ch 4 Bit1
-    cube(7)  <= hits_i(64);  -- panel= 3 paddle= 32 station=cube; LTB DSI2 J4 Ch 2 Bit0
-    cube(8)  <= hits_i(92);  -- panel= 4 paddle= 33 station=cube; LTB DSI3 J2 Ch10 Bit4
-    cube(9)  <= hits_i(91);  -- panel= 4 paddle= 34 station=cube; LTB DSI3 J2 Ch 8 Bit3
-    cube(10) <= hits_i(93);  -- panel= 4 paddle= 35 station=cube; LTB DSI3 J2 Ch12 Bit5
-    cube(11) <= hits_i(90);  -- panel= 4 paddle= 36 station=cube; LTB DSI3 J2 Ch 6 Bit2
-    cube(12) <= hits_i(94);  -- panel= 4 paddle= 37 station=cube; LTB DSI3 J2 Ch14 Bit6
-    cube(13) <= hits_i(89);  -- panel= 4 paddle= 38 station=cube; LTB DSI3 J2 Ch 4 Bit1
-    cube(14) <= hits_i(95);  -- panel= 4 paddle= 39 station=cube; LTB DSI3 J2 Ch16 Bit7
-    cube(15) <= hits_i(88);  -- panel= 4 paddle= 40 station=cube; LTB DSI3 J2 Ch 2 Bit0
-    cube(16) <= hits_i(121);  -- panel= 5 paddle= 41 station=cube; LTB DSI4 J1 Ch 4 Bit1
-    cube(17) <= hits_i(120);  -- panel= 5 paddle= 42 station=cube; LTB DSI4 J1 Ch 2 Bit0
-    cube(18) <= hits_i(114);  -- panel= 5 paddle= 43 station=cube; LTB DSI3 J5 Ch 6 Bit2
-    cube(19) <= hits_i(115);  -- panel= 5 paddle= 44 station=cube; LTB DSI3 J5 Ch 8 Bit3
-    cube(20) <= hits_i(116);  -- panel= 5 paddle= 45 station=cube; LTB DSI3 J5 Ch10 Bit4
-    cube(21) <= hits_i(117);  -- panel= 5 paddle= 46 station=cube; LTB DSI3 J5 Ch12 Bit5
-    cube(22) <= hits_i(118);  -- panel= 5 paddle= 47 station=cube; LTB DSI3 J5 Ch14 Bit6
-    cube(23) <= hits_i(119);  -- panel= 5 paddle= 48 station=cube; LTB DSI3 J5 Ch16 Bit7
-    cube(24) <= hits_i(148);  -- panel= 6 paddle= 49 station=cube; LTB DSI4 J4 Ch10 Bit4
-    cube(25) <= hits_i(147);  -- panel= 6 paddle= 50 station=cube; LTB DSI4 J4 Ch 8 Bit3
-    cube(26) <= hits_i(149);  -- panel= 6 paddle= 51 station=cube; LTB DSI4 J4 Ch12 Bit5
-    cube(27) <= hits_i(146);  -- panel= 6 paddle= 52 station=cube; LTB DSI4 J4 Ch 6 Bit2
-    cube(28) <= hits_i(150);  -- panel= 6 paddle= 53 station=cube; LTB DSI4 J4 Ch14 Bit6
-    cube(29) <= hits_i(145);  -- panel= 6 paddle= 54 station=cube; LTB DSI4 J4 Ch 4 Bit1
-    cube(30) <= hits_i(151);  -- panel= 6 paddle= 55 station=cube; LTB DSI4 J4 Ch16 Bit7
-    cube(31) <= hits_i(144);  -- panel= 6 paddle= 56 station=cube; LTB DSI4 J4 Ch 2 Bit0
 
-    umbrella(0)  <= hits_i(165);  -- panel= 7 paddle= 61 station=umbrella; LTB DSI5 J1 Ch11 Bit5
-    umbrella(1)  <= hits_i(164);  -- panel= 7 paddle= 62 station=umbrella; LTB DSI5 J1 Ch 9 Bit4
-    umbrella(2)  <= hits_i(163);  -- panel= 7 paddle= 63 station=umbrella; LTB DSI5 J1 Ch 7 Bit3
-    umbrella(3)  <= hits_i(162);  -- panel= 7 paddle= 64 station=umbrella; LTB DSI5 J1 Ch 5 Bit2
-    umbrella(4)  <= hits_i(161);  -- panel= 7 paddle= 65 station=umbrella; LTB DSI5 J1 Ch 3 Bit1
-    umbrella(5)  <= hits_i(160);  -- panel= 7 paddle= 66 station=umbrella; LTB DSI5 J1 Ch 1 Bit0
-    umbrella(6)  <= hits_i(8);  -- panel= 7 paddle= 67 station=umbrella; LTB DSI1 J2 Ch 2 Bit0
-    umbrella(7)  <= hits_i(9);  -- panel= 7 paddle= 68 station=umbrella; LTB DSI1 J2 Ch 4 Bit1
-    umbrella(8)  <= hits_i(10);  -- panel= 7 paddle= 69 station=umbrella; LTB DSI1 J2 Ch 6 Bit2
-    umbrella(9)  <= hits_i(11);  -- panel= 7 paddle= 70 station=umbrella; LTB DSI1 J2 Ch 8 Bit3
-    umbrella(10) <= hits_i(12);  -- panel= 7 paddle= 71 station=umbrella; LTB DSI1 J2 Ch10 Bit4
-    umbrella(11) <= hits_i(13);  -- panel= 7 paddle= 72 station=umbrella; LTB DSI1 J2 Ch12 Bit5
-    umbrella(12) <= hits_i(166);  -- panel= 8 paddle= 73 station=umbrella; LTB DSI5 J1 Ch13 Bit6
-    umbrella(13) <= hits_i(167);  -- panel= 8 paddle= 74 station=umbrella; LTB DSI5 J1 Ch15 Bit7
-    umbrella(14) <= hits_i(16);  -- panel= 8 paddle= 75 station=umbrella; LTB DSI1 J3 Ch 1 Bit0
-    umbrella(15) <= hits_i(17);  -- panel= 8 paddle= 76 station=umbrella; LTB DSI1 J3 Ch 3 Bit1
-    umbrella(16) <= hits_i(18);  -- panel= 8 paddle= 77 station=umbrella; LTB DSI1 J3 Ch 5 Bit2
-    umbrella(17) <= hits_i(19);  -- panel= 8 paddle= 78 station=umbrella; LTB DSI1 J3 Ch 7 Bit3
-    umbrella(18) <= hits_i(199);  -- panel= 9 paddle= 79 station=umbrella; LTB DSI5 J5 Ch15 Bit7
-    umbrella(19) <= hits_i(198);  -- panel= 9 paddle= 80 station=umbrella; LTB DSI5 J5 Ch13 Bit6
-    umbrella(20) <= hits_i(197);  -- panel= 9 paddle= 81 station=umbrella; LTB DSI5 J5 Ch11 Bit5
-    umbrella(21) <= hits_i(196);  -- panel= 9 paddle= 82 station=umbrella; LTB DSI5 J5 Ch 9 Bit4
-    umbrella(22) <= hits_i(195);  -- panel= 9 paddle= 83 station=umbrella; LTB DSI5 J5 Ch 7 Bit3
-    umbrella(23) <= hits_i(194);  -- panel= 9 paddle= 84 station=umbrella; LTB DSI5 J5 Ch 5 Bit2
-    umbrella(24) <= hits_i(193);  -- panel=10 paddle= 85 station=umbrella; LTB DSI5 J5 Ch 3 Bit1
-    umbrella(25) <= hits_i(192);  -- panel=10 paddle= 86 station=umbrella; LTB DSI5 J5 Ch 1 Bit0
-    umbrella(26) <= hits_i(191);  -- panel=10 paddle= 87 station=umbrella; LTB DSI5 J4 Ch15 Bit7
-    umbrella(27) <= hits_i(190);  -- panel=10 paddle= 88 station=umbrella; LTB DSI5 J4 Ch13 Bit6
-    umbrella(28) <= hits_i(189);  -- panel=10 paddle= 89 station=umbrella; LTB DSI5 J4 Ch11 Bit5
-    umbrella(29) <= hits_i(188);  -- panel=10 paddle= 90 station=umbrella; LTB DSI5 J4 Ch 9 Bit4
-    umbrella(30) <= hits_i(14);  -- panel=11 paddle= 91 station=umbrella; LTB DSI1 J2 Ch14 Bit6
-    umbrella(31) <= hits_i(15);  -- panel=11 paddle= 92 station=umbrella; LTB DSI1 J2 Ch16 Bit7
-    umbrella(32) <= hits_i(184);  -- panel=11 paddle= 93 station=umbrella; LTB DSI5 J4 Ch 1 Bit0
-    umbrella(33) <= hits_i(185);  -- panel=11 paddle= 94 station=umbrella; LTB DSI5 J4 Ch 3 Bit1
-    umbrella(34) <= hits_i(186);  -- panel=11 paddle= 95 station=umbrella; LTB DSI5 J4 Ch 5 Bit2
-    umbrella(35) <= hits_i(187);  -- panel=11 paddle= 96 station=umbrella; LTB DSI5 J4 Ch 7 Bit3
-    umbrella(36) <= hits_i(47);  -- panel=12 paddle= 97 station=umbrella; LTB DSI2 J1 Ch15 Bit7
-    umbrella(37) <= hits_i(46);  -- panel=12 paddle= 98 station=umbrella; LTB DSI2 J1 Ch13 Bit6
-    umbrella(38) <= hits_i(45);  -- panel=12 paddle= 99 station=umbrella; LTB DSI2 J1 Ch11 Bit5
-    umbrella(39) <= hits_i(44);  -- panel=12 paddle=100 station=umbrella; LTB DSI2 J1 Ch 9 Bit4
-    umbrella(40) <= hits_i(43);  -- panel=12 paddle=101 station=umbrella; LTB DSI2 J1 Ch 7 Bit3
-    umbrella(41) <= hits_i(42);  -- panel=12 paddle=102 station=umbrella; LTB DSI2 J1 Ch 5 Bit2
-    umbrella(42) <= hits_i(41);  -- panel=13 paddle=103 station=umbrella; LTB DSI2 J1 Ch 3 Bit1
-    umbrella(43) <= hits_i(40);  -- panel=13 paddle=104 station=umbrella; LTB DSI2 J1 Ch 1 Bit0
-    umbrella(44) <= hits_i(23);  -- panel=13 paddle=105 station=umbrella; LTB DSI1 J3 Ch15 Bit7
-    umbrella(45) <= hits_i(22);  -- panel=13 paddle=106 station=umbrella; LTB DSI1 J3 Ch13 Bit6
-    umbrella(46) <= hits_i(21);  -- panel=13 paddle=107 station=umbrella; LTB DSI1 J3 Ch11 Bit5
-    umbrella(47) <= hits_i(20);  -- panel=13 paddle=108 station=umbrella; LTB DSI1 J3 Ch 9 Bit4
+    umbrella(0)  <= hits_i(165);  -- panel= 7 paddle= 61 station=umbrella; LTB DSI5 J1 Ch10 Bit5
+    umbrella(1)  <= hits_i(164);  -- panel= 7 paddle= 62 station=umbrella; LTB DSI5 J1 Ch 8 Bit4
+    umbrella(2)  <= hits_i(163);  -- panel= 7 paddle= 63 station=umbrella; LTB DSI5 J1 Ch 6 Bit3
+    umbrella(3)  <= hits_i(162);  -- panel= 7 paddle= 64 station=umbrella; LTB DSI5 J1 Ch 4 Bit2
+    umbrella(4)  <= hits_i(161);  -- panel= 7 paddle= 65 station=umbrella; LTB DSI5 J1 Ch 2 Bit1
+    umbrella(5)  <= hits_i(160);  -- panel= 7 paddle= 66 station=umbrella; LTB DSI5 J1 Ch 0 Bit0
+    umbrella(6)  <= hits_i(8);  -- panel= 7 paddle= 67 station=umbrella; LTB DSI1 J2 Ch 1 Bit0
+    umbrella(7)  <= hits_i(9);  -- panel= 7 paddle= 68 station=umbrella; LTB DSI1 J2 Ch 3 Bit1
+    umbrella(8)  <= hits_i(10);  -- panel= 7 paddle= 69 station=umbrella; LTB DSI1 J2 Ch 5 Bit2
+    umbrella(9)  <= hits_i(11);  -- panel= 7 paddle= 70 station=umbrella; LTB DSI1 J2 Ch 7 Bit3
+    umbrella(10) <= hits_i(12);  -- panel= 7 paddle= 71 station=umbrella; LTB DSI1 J2 Ch 9 Bit4
+    umbrella(11) <= hits_i(13);  -- panel= 7 paddle= 72 station=umbrella; LTB DSI1 J2 Ch11 Bit5
+    umbrella(12) <= hits_i(166);  -- panel= 8 paddle= 73 station=umbrella; LTB DSI5 J1 Ch12 Bit6
+    umbrella(13) <= hits_i(167);  -- panel= 8 paddle= 74 station=umbrella; LTB DSI5 J1 Ch14 Bit7
+    umbrella(14) <= hits_i(16);  -- panel= 8 paddle= 75 station=umbrella; LTB DSI1 J3 Ch 0 Bit0
+    umbrella(15) <= hits_i(17);  -- panel= 8 paddle= 76 station=umbrella; LTB DSI1 J3 Ch 2 Bit1
+    umbrella(16) <= hits_i(18);  -- panel= 8 paddle= 77 station=umbrella; LTB DSI1 J3 Ch 4 Bit2
+    umbrella(17) <= hits_i(19);  -- panel= 8 paddle= 78 station=umbrella; LTB DSI1 J3 Ch 6 Bit3
+    umbrella(18) <= hits_i(199);  -- panel= 9 paddle= 79 station=umbrella; LTB DSI5 J5 Ch14 Bit7
+    umbrella(19) <= hits_i(198);  -- panel= 9 paddle= 80 station=umbrella; LTB DSI5 J5 Ch12 Bit6
+    umbrella(20) <= hits_i(197);  -- panel= 9 paddle= 81 station=umbrella; LTB DSI5 J5 Ch10 Bit5
+    umbrella(21) <= hits_i(196);  -- panel= 9 paddle= 82 station=umbrella; LTB DSI5 J5 Ch 8 Bit4
+    umbrella(22) <= hits_i(195);  -- panel= 9 paddle= 83 station=umbrella; LTB DSI5 J5 Ch 6 Bit3
+    umbrella(23) <= hits_i(194);  -- panel= 9 paddle= 84 station=umbrella; LTB DSI5 J5 Ch 4 Bit2
+    umbrella(24) <= hits_i(193);  -- panel=10 paddle= 85 station=umbrella; LTB DSI5 J5 Ch 2 Bit1
+    umbrella(25) <= hits_i(192);  -- panel=10 paddle= 86 station=umbrella; LTB DSI5 J5 Ch 0 Bit0
+    umbrella(26) <= hits_i(191);  -- panel=10 paddle= 87 station=umbrella; LTB DSI5 J4 Ch14 Bit7
+    umbrella(27) <= hits_i(190);  -- panel=10 paddle= 88 station=umbrella; LTB DSI5 J4 Ch12 Bit6
+    umbrella(28) <= hits_i(189);  -- panel=10 paddle= 89 station=umbrella; LTB DSI5 J4 Ch10 Bit5
+    umbrella(29) <= hits_i(188);  -- panel=10 paddle= 90 station=umbrella; LTB DSI5 J4 Ch 8 Bit4
+    umbrella(30) <= hits_i(14);  -- panel=11 paddle= 91 station=umbrella; LTB DSI1 J2 Ch13 Bit6
+    umbrella(31) <= hits_i(15);  -- panel=11 paddle= 92 station=umbrella; LTB DSI1 J2 Ch15 Bit7
+    umbrella(32) <= hits_i(184);  -- panel=11 paddle= 93 station=umbrella; LTB DSI5 J4 Ch 0 Bit0
+    umbrella(33) <= hits_i(185);  -- panel=11 paddle= 94 station=umbrella; LTB DSI5 J4 Ch 2 Bit1
+    umbrella(34) <= hits_i(186);  -- panel=11 paddle= 95 station=umbrella; LTB DSI5 J4 Ch 4 Bit2
+    umbrella(35) <= hits_i(187);  -- panel=11 paddle= 96 station=umbrella; LTB DSI5 J4 Ch 6 Bit3
+    umbrella(36) <= hits_i(47);  -- panel=12 paddle= 97 station=umbrella; LTB DSI2 J1 Ch14 Bit7
+    umbrella(37) <= hits_i(46);  -- panel=12 paddle= 98 station=umbrella; LTB DSI2 J1 Ch12 Bit6
+    umbrella(38) <= hits_i(45);  -- panel=12 paddle= 99 station=umbrella; LTB DSI2 J1 Ch10 Bit5
+    umbrella(39) <= hits_i(44);  -- panel=12 paddle=100 station=umbrella; LTB DSI2 J1 Ch 8 Bit4
+    umbrella(40) <= hits_i(43);  -- panel=12 paddle=101 station=umbrella; LTB DSI2 J1 Ch 6 Bit3
+    umbrella(41) <= hits_i(42);  -- panel=12 paddle=102 station=umbrella; LTB DSI2 J1 Ch 4 Bit2
+    umbrella(42) <= hits_i(41);  -- panel=13 paddle=103 station=umbrella; LTB DSI2 J1 Ch 2 Bit1
+    umbrella(43) <= hits_i(40);  -- panel=13 paddle=104 station=umbrella; LTB DSI2 J1 Ch 0 Bit0
+    umbrella(44) <= hits_i(23);  -- panel=13 paddle=105 station=umbrella; LTB DSI1 J3 Ch14 Bit7
+    umbrella(45) <= hits_i(22);  -- panel=13 paddle=106 station=umbrella; LTB DSI1 J3 Ch12 Bit6
+    umbrella(46) <= hits_i(21);  -- panel=13 paddle=107 station=umbrella; LTB DSI1 J3 Ch10 Bit5
+    umbrella(47) <= hits_i(20);  -- panel=13 paddle=108 station=umbrella; LTB DSI1 J3 Ch 8 Bit4
 
-    cube_top(0)  <= hits_i(61);  -- panel= 1 paddle=  1 station=cube_top; LTB DSI2 J3 Ch11 Bit5
-    cube_top(1)  <= hits_i(60);  -- panel= 1 paddle=  2 station=cube_top; LTB DSI2 J3 Ch 9 Bit4
-    cube_top(2)  <= hits_i(59);  -- panel= 1 paddle=  3 station=cube_top; LTB DSI2 J3 Ch 7 Bit3
-    cube_top(3)  <= hits_i(58);  -- panel= 1 paddle=  4 station=cube_top; LTB DSI2 J3 Ch 5 Bit2
-    cube_top(4)  <= hits_i(57);  -- panel= 1 paddle=  5 station=cube_top; LTB DSI2 J3 Ch 3 Bit1
-    cube_top(5)  <= hits_i(56);  -- panel= 1 paddle=  6 station=cube_top; LTB DSI2 J3 Ch 1 Bit0
-    cube_top(6)  <= hits_i(127);  -- panel= 1 paddle=  7 station=cube_top; LTB DSI4 J1 Ch16 Bit7
-    cube_top(7)  <= hits_i(126);  -- panel= 1 paddle=  8 station=cube_top; LTB DSI4 J1 Ch14 Bit6
-    cube_top(8)  <= hits_i(125);  -- panel= 1 paddle=  9 station=cube_top; LTB DSI4 J1 Ch12 Bit5
-    cube_top(9)  <= hits_i(124);  -- panel= 1 paddle= 10 station=cube_top; LTB DSI4 J1 Ch10 Bit4
-    cube_top(10) <= hits_i(123);  -- panel= 1 paddle= 11 station=cube_top; LTB DSI4 J1 Ch 8 Bit3
-    cube_top(11) <= hits_i(122);  -- panel= 1 paddle= 12 station=cube_top; LTB DSI4 J1 Ch 6 Bit2
+    cube(0)  <= hits_i(62);  -- panel= 3 paddle= 25 station=cube side; LTB DSI2 J3 Ch13 Bit6
+    cube(1)  <= hits_i(63);  -- panel= 3 paddle= 26 station=cube side; LTB DSI2 J3 Ch15 Bit7
+    cube(2)  <= hits_i(69);  -- panel= 3 paddle= 27 station=cube side; LTB DSI2 J4 Ch11 Bit5
+    cube(3)  <= hits_i(68);  -- panel= 3 paddle= 28 station=cube side; LTB DSI2 J4 Ch 9 Bit4
+    cube(4)  <= hits_i(67);  -- panel= 3 paddle= 29 station=cube side; LTB DSI2 J4 Ch 7 Bit3
+    cube(5)  <= hits_i(66);  -- panel= 3 paddle= 30 station=cube side; LTB DSI2 J4 Ch 5 Bit2
+    cube(6)  <= hits_i(65);  -- panel= 3 paddle= 31 station=cube side; LTB DSI2 J4 Ch 3 Bit1
+    cube(7)  <= hits_i(64);  -- panel= 3 paddle= 32 station=cube side; LTB DSI2 J4 Ch 1 Bit0
+    cube(8)  <= hits_i(92);  -- panel= 4 paddle= 33 station=cube side; LTB DSI3 J2 Ch 9 Bit4
+    cube(9)  <= hits_i(91);  -- panel= 4 paddle= 34 station=cube side; LTB DSI3 J2 Ch 7 Bit3
+    cube(10) <= hits_i(93);  -- panel= 4 paddle= 35 station=cube side; LTB DSI3 J2 Ch11 Bit5
+    cube(11) <= hits_i(90);  -- panel= 4 paddle= 36 station=cube side; LTB DSI3 J2 Ch 5 Bit2
+    cube(12) <= hits_i(94);  -- panel= 4 paddle= 37 station=cube side; LTB DSI3 J2 Ch13 Bit6
+    cube(13) <= hits_i(89);  -- panel= 4 paddle= 38 station=cube side; LTB DSI3 J2 Ch 3 Bit1
+    cube(14) <= hits_i(95);  -- panel= 4 paddle= 39 station=cube side; LTB DSI3 J2 Ch15 Bit7
+    cube(15) <= hits_i(88);  -- panel= 4 paddle= 40 station=cube side; LTB DSI3 J2 Ch 1 Bit0
+    cube(16) <= hits_i(121);  -- panel= 5 paddle= 41 station=cube side; LTB DSI4 J1 Ch 3 Bit1
+    cube(17) <= hits_i(120);  -- panel= 5 paddle= 42 station=cube side; LTB DSI4 J1 Ch 1 Bit0
+    cube(18) <= hits_i(114);  -- panel= 5 paddle= 43 station=cube side; LTB DSI3 J5 Ch 5 Bit2
+    cube(19) <= hits_i(115);  -- panel= 5 paddle= 44 station=cube side; LTB DSI3 J5 Ch 7 Bit3
+    cube(20) <= hits_i(116);  -- panel= 5 paddle= 45 station=cube side; LTB DSI3 J5 Ch 9 Bit4
+    cube(21) <= hits_i(117);  -- panel= 5 paddle= 46 station=cube side; LTB DSI3 J5 Ch11 Bit5
+    cube(22) <= hits_i(118);  -- panel= 5 paddle= 47 station=cube side; LTB DSI3 J5 Ch13 Bit6
+    cube(23) <= hits_i(119);  -- panel= 5 paddle= 48 station=cube side; LTB DSI3 J5 Ch15 Bit7
+    cube(24) <= hits_i(148);  -- panel= 6 paddle= 49 station=cube side; LTB DSI4 J4 Ch 9 Bit4
+    cube(25) <= hits_i(147);  -- panel= 6 paddle= 50 station=cube side; LTB DSI4 J4 Ch 7 Bit3
+    cube(26) <= hits_i(149);  -- panel= 6 paddle= 51 station=cube side; LTB DSI4 J4 Ch11 Bit5
+    cube(27) <= hits_i(146);  -- panel= 6 paddle= 52 station=cube side; LTB DSI4 J4 Ch 5 Bit2
+    cube(28) <= hits_i(150);  -- panel= 6 paddle= 53 station=cube side; LTB DSI4 J4 Ch13 Bit6
+    cube(29) <= hits_i(145);  -- panel= 6 paddle= 54 station=cube side; LTB DSI4 J4 Ch 3 Bit1
+    cube(30) <= hits_i(151);  -- panel= 6 paddle= 55 station=cube side; LTB DSI4 J4 Ch15 Bit7
+    cube(31) <= hits_i(144);  -- panel= 6 paddle= 56 station=cube side; LTB DSI4 J4 Ch 1 Bit0
 
-    cube_bot(0)  <= hits_i(72);  -- panel= 2 paddle= 13 station=cube_bot; LTB DSI2 J5 Ch 2 Bit0
-    cube_bot(1)  <= hits_i(73);  -- panel= 2 paddle= 14 station=cube_bot; LTB DSI2 J5 Ch 4 Bit1
-    cube_bot(2)  <= hits_i(74);  -- panel= 2 paddle= 15 station=cube_bot; LTB DSI2 J5 Ch 6 Bit2
-    cube_bot(3)  <= hits_i(75);  -- panel= 2 paddle= 16 station=cube_bot; LTB DSI2 J5 Ch 8 Bit3
-    cube_bot(4)  <= hits_i(76);  -- panel= 2 paddle= 17 station=cube_bot; LTB DSI2 J5 Ch10 Bit4
-    cube_bot(5)  <= hits_i(77);  -- panel= 2 paddle= 18 station=cube_bot; LTB DSI2 J5 Ch12 Bit5
-    cube_bot(6)  <= hits_i(106);  -- panel= 2 paddle= 19 station=cube_bot; LTB DSI3 J4 Ch 5 Bit2
-    cube_bot(7)  <= hits_i(107);  -- panel= 2 paddle= 20 station=cube_bot; LTB DSI3 J4 Ch 7 Bit3
-    cube_bot(8)  <= hits_i(108);  -- panel= 2 paddle= 21 station=cube_bot; LTB DSI3 J4 Ch 9 Bit4
-    cube_bot(9)  <= hits_i(109);  -- panel= 2 paddle= 22 station=cube_bot; LTB DSI3 J4 Ch11 Bit5
-    cube_bot(10) <= hits_i(110);  -- panel= 2 paddle= 23 station=cube_bot; LTB DSI3 J4 Ch13 Bit6
-    cube_bot(11) <= hits_i(111);  -- panel= 2 paddle= 24 station=cube_bot; LTB DSI3 J4 Ch15 Bit7
+    cube_top(0)  <= hits_i(61);  -- panel= 1 paddle=  1 station=cube top; LTB DSI2 J3 Ch10 Bit5
+    cube_top(1)  <= hits_i(60);  -- panel= 1 paddle=  2 station=cube top; LTB DSI2 J3 Ch 8 Bit4
+    cube_top(2)  <= hits_i(59);  -- panel= 1 paddle=  3 station=cube top; LTB DSI2 J3 Ch 6 Bit3
+    cube_top(3)  <= hits_i(58);  -- panel= 1 paddle=  4 station=cube top; LTB DSI2 J3 Ch 4 Bit2
+    cube_top(4)  <= hits_i(57);  -- panel= 1 paddle=  5 station=cube top; LTB DSI2 J3 Ch 2 Bit1
+    cube_top(5)  <= hits_i(56);  -- panel= 1 paddle=  6 station=cube top; LTB DSI2 J3 Ch 0 Bit0
+    cube_top(6)  <= hits_i(127);  -- panel= 1 paddle=  7 station=cube top; LTB DSI4 J1 Ch15 Bit7
+    cube_top(7)  <= hits_i(126);  -- panel= 1 paddle=  8 station=cube top; LTB DSI4 J1 Ch13 Bit6
+    cube_top(8)  <= hits_i(125);  -- panel= 1 paddle=  9 station=cube top; LTB DSI4 J1 Ch11 Bit5
+    cube_top(9)  <= hits_i(124);  -- panel= 1 paddle= 10 station=cube top; LTB DSI4 J1 Ch 9 Bit4
+    cube_top(10) <= hits_i(123);  -- panel= 1 paddle= 11 station=cube top; LTB DSI4 J1 Ch 7 Bit3
+    cube_top(11) <= hits_i(122);  -- panel= 1 paddle= 12 station=cube top; LTB DSI4 J1 Ch 5 Bit2
 
-    cube_corner(0) <= hits_i(81);  -- panel=E-X045 paddle= 57 station=cube_corner; LTB DSI3 J1 Ch 4 Bit1
-    cube_corner(1) <= hits_i(102);  -- panel=E-X135 paddle= 58 station=cube_corner; LTB DSI3 J3 Ch14 Bit6
-    cube_corner(2) <= hits_i(129);  -- panel=E-X225 paddle= 59 station=cube_corner; LTB DSI4 J2 Ch 4 Bit1
-    cube_corner(3) <= hits_i(54);  -- panel=E-X315 paddle= 60 station=cube_corner; LTB DSI2 J2 Ch14 Bit6
+    cube_bot(0)  <= hits_i(72);  -- panel= 2 paddle= 13 station=cube bottom; LTB DSI2 J5 Ch 1 Bit0
+    cube_bot(1)  <= hits_i(73);  -- panel= 2 paddle= 14 station=cube bottom; LTB DSI2 J5 Ch 3 Bit1
+    cube_bot(2)  <= hits_i(74);  -- panel= 2 paddle= 15 station=cube bottom; LTB DSI2 J5 Ch 5 Bit2
+    cube_bot(3)  <= hits_i(75);  -- panel= 2 paddle= 16 station=cube bottom; LTB DSI2 J5 Ch 7 Bit3
+    cube_bot(4)  <= hits_i(76);  -- panel= 2 paddle= 17 station=cube bottom; LTB DSI2 J5 Ch 9 Bit4
+    cube_bot(5)  <= hits_i(77);  -- panel= 2 paddle= 18 station=cube bottom; LTB DSI2 J5 Ch11 Bit5
+    cube_bot(6)  <= hits_i(106);  -- panel= 2 paddle= 19 station=cube bottom; LTB DSI3 J4 Ch 4 Bit2
+    cube_bot(7)  <= hits_i(107);  -- panel= 2 paddle= 20 station=cube bottom; LTB DSI3 J4 Ch 6 Bit3
+    cube_bot(8)  <= hits_i(108);  -- panel= 2 paddle= 21 station=cube bottom; LTB DSI3 J4 Ch 8 Bit4
+    cube_bot(9)  <= hits_i(109);  -- panel= 2 paddle= 22 station=cube bottom; LTB DSI3 J4 Ch10 Bit5
+    cube_bot(10) <= hits_i(110);  -- panel= 2 paddle= 23 station=cube bottom; LTB DSI3 J4 Ch12 Bit6
+    cube_bot(11) <= hits_i(111);  -- panel= 2 paddle= 24 station=cube bottom; LTB DSI3 J4 Ch14 Bit7
 
-    cortina(0)  <= hits_i(71);  -- panel=14 paddle=109 station=cortina; LTB DSI2 J4 Ch16 Bit7
-    cortina(1)  <= hits_i(70);  -- panel=14 paddle=110 station=cortina; LTB DSI2 J4 Ch14 Bit6
-    cortina(2)  <= hits_i(79);  -- panel=14 paddle=111 station=cortina; LTB DSI2 J5 Ch16 Bit7
-    cortina(3)  <= hits_i(78);  -- panel=14 paddle=112 station=cortina; LTB DSI2 J5 Ch14 Bit6
-    cortina(4)  <= hits_i(84);  -- panel=14 paddle=113 station=cortina; LTB DSI3 J1 Ch10 Bit4
-    cortina(5)  <= hits_i(83);  -- panel=14 paddle=114 station=cortina; LTB DSI3 J1 Ch 8 Bit3
-    cortina(6)  <= hits_i(82);  -- panel=14 paddle=115 station=cortina; LTB DSI3 J1 Ch 6 Bit2
-    cortina(7)  <= hits_i(48);  -- panel=14 paddle=116 station=cortina; LTB DSI2 J2 Ch 2 Bit0
-    cortina(8)  <= hits_i(49);  -- panel=14 paddle=117 station=cortina; LTB DSI2 J2 Ch 4 Bit1
-    cortina(9)  <= hits_i(50);  -- panel=14 paddle=118 station=cortina; LTB DSI2 J2 Ch 6 Bit2
-    cortina(10) <= hits_i(159);  -- panel=15 paddle=119 station=cortina; LTB DSI4 J5 Ch16 Bit7
-    cortina(11) <= hits_i(158);  -- panel=15 paddle=120 station=cortina; LTB DSI4 J5 Ch14 Bit6
-    cortina(12) <= hits_i(157);  -- panel=15 paddle=121 station=cortina; LTB DSI4 J5 Ch12 Bit5
-    cortina(13) <= hits_i(156);  -- panel=15 paddle=122 station=cortina; LTB DSI4 J5 Ch10 Bit4
-    cortina(14) <= hits_i(155);  -- panel=15 paddle=123 station=cortina; LTB DSI4 J5 Ch 8 Bit3
-    cortina(15) <= hits_i(154);  -- panel=15 paddle=124 station=cortina; LTB DSI4 J5 Ch 6 Bit2
-    cortina(16) <= hits_i(153);  -- panel=15 paddle=125 station=cortina; LTB DSI4 J5 Ch 4 Bit1
-    cortina(17) <= hits_i(152);  -- panel=15 paddle=126 station=cortina; LTB DSI4 J5 Ch 2 Bit0
-    cortina(18) <= hits_i(103);  -- panel=15 paddle=127 station=cortina; LTB DSI3 J3 Ch16 Bit7
-    cortina(19) <= hits_i(80);  -- panel=15 paddle=128 station=cortina; LTB DSI3 J1 Ch 2 Bit0
-    cortina(20) <= hits_i(112);  -- panel=16 paddle=129 station=cortina; LTB DSI3 J5 Ch 2 Bit0
-    cortina(21) <= hits_i(113);  -- panel=16 paddle=130 station=cortina; LTB DSI3 J5 Ch 4 Bit1
-    cortina(22) <= hits_i(104);  -- panel=16 paddle=131 station=cortina; LTB DSI3 J4 Ch 2 Bit0
-    cortina(23) <= hits_i(105);  -- panel=16 paddle=132 station=cortina; LTB DSI3 J4 Ch 4 Bit1
-    cortina(24) <= hits_i(99);  -- panel=16 paddle=133 station=cortina; LTB DSI3 J3 Ch 8 Bit3
-    cortina(25) <= hits_i(100);  -- panel=16 paddle=134 station=cortina; LTB DSI3 J3 Ch10 Bit4
-    cortina(26) <= hits_i(101);  -- panel=16 paddle=135 station=cortina; LTB DSI3 J3 Ch12 Bit5
-    cortina(27) <= hits_i(135);  -- panel=16 paddle=136 station=cortina; LTB DSI4 J2 Ch16 Bit7
-    cortina(28) <= hits_i(134);  -- panel=16 paddle=137 station=cortina; LTB DSI4 J2 Ch14 Bit6
-    cortina(29) <= hits_i(133);  -- panel=16 paddle=138 station=cortina; LTB DSI4 J2 Ch12 Bit5
-    cortina(30) <= hits_i(136);  -- panel=17 paddle=139 station=cortina; LTB DSI4 J3 Ch 2 Bit0
-    cortina(31) <= hits_i(137);  -- panel=17 paddle=140 station=cortina; LTB DSI4 J3 Ch 4 Bit1
-    cortina(32) <= hits_i(138);  -- panel=17 paddle=141 station=cortina; LTB DSI4 J3 Ch 6 Bit2
-    cortina(33) <= hits_i(139);  -- panel=17 paddle=142 station=cortina; LTB DSI4 J3 Ch 8 Bit3
-    cortina(34) <= hits_i(140);  -- panel=17 paddle=143 station=cortina; LTB DSI4 J3 Ch10 Bit4
-    cortina(35) <= hits_i(141);  -- panel=17 paddle=144 station=cortina; LTB DSI4 J3 Ch12 Bit5
-    cortina(36) <= hits_i(142);  -- panel=17 paddle=145 station=cortina; LTB DSI4 J3 Ch14 Bit6
-    cortina(37) <= hits_i(143);  -- panel=17 paddle=146 station=cortina; LTB DSI4 J3 Ch16 Bit7
-    cortina(38) <= hits_i(128);  -- panel=17 paddle=147 station=cortina; LTB DSI4 J2 Ch 2 Bit0
-    cortina(39) <= hits_i(55);  -- panel=17 paddle=148 station=cortina; LTB DSI2 J2 Ch16 Bit7
-    cortina(40) <= hits_i(85);  -- panel=18 paddle=149 station=cortina; LTB DSI3 J1 Ch12 Bit5
-    cortina(41) <= hits_i(86);  -- panel=18 paddle=150 station=cortina; LTB DSI3 J1 Ch14 Bit6
-    cortina(42) <= hits_i(87);  -- panel=18 paddle=151 station=cortina; LTB DSI3 J1 Ch16 Bit7
-    cortina(43) <= hits_i(96);  -- panel=19 paddle=152 station=cortina; LTB DSI3 J3 Ch 1 Bit0
-    cortina(44) <= hits_i(97);  -- panel=19 paddle=153 station=cortina; LTB DSI3 J3 Ch 3 Bit1
-    cortina(45) <= hits_i(98);  -- panel=19 paddle=154 station=cortina; LTB DSI3 J3 Ch 5 Bit2
-    cortina(46) <= hits_i(130);  -- panel=20 paddle=155 station=cortina; LTB DSI4 J2 Ch 5 Bit2
-    cortina(47) <= hits_i(131);  -- panel=20 paddle=156 station=cortina; LTB DSI4 J2 Ch 7 Bit3
-    cortina(48) <= hits_i(132);  -- panel=20 paddle=157 station=cortina; LTB DSI4 J2 Ch 9 Bit4
-    cortina(49) <= hits_i(51);  -- panel=21 paddle=158 station=cortina; LTB DSI2 J2 Ch 8 Bit3
-    cortina(50) <= hits_i(52);  -- panel=21 paddle=159 station=cortina; LTB DSI2 J2 Ch10 Bit4
-    cortina(51) <= hits_i(53);  -- panel=21 paddle=160 station=cortina; LTB DSI2 J2 Ch12 Bit5
+    cube_corner(0) <= hits_i(81);  -- panel=E-X045 paddle= 57 station=corner; LTB DSI3 J1 Ch 3 Bit1
+    cube_corner(1) <= hits_i(102);  -- panel=E-X135 paddle= 58 station=corner; LTB DSI3 J3 Ch13 Bit6
+    cube_corner(2) <= hits_i(129);  -- panel=E-X225 paddle= 59 station=corner; LTB DSI4 J2 Ch 3 Bit1
+    cube_corner(3) <= hits_i(54);  -- panel=E-X315 paddle= 60 station=corner; LTB DSI2 J2 Ch13 Bit6
+
+    cortina(0)  <= hits_i(71);  -- panel=14 paddle=109 station=cortina; LTB DSI2 J4 Ch15 Bit7
+    cortina(1)  <= hits_i(70);  -- panel=14 paddle=110 station=cortina; LTB DSI2 J4 Ch13 Bit6
+    cortina(2)  <= hits_i(79);  -- panel=14 paddle=111 station=cortina; LTB DSI2 J5 Ch15 Bit7
+    cortina(3)  <= hits_i(78);  -- panel=14 paddle=112 station=cortina; LTB DSI2 J5 Ch13 Bit6
+    cortina(4)  <= hits_i(84);  -- panel=14 paddle=113 station=cortina; LTB DSI3 J1 Ch 9 Bit4
+    cortina(5)  <= hits_i(83);  -- panel=14 paddle=114 station=cortina; LTB DSI3 J1 Ch 7 Bit3
+    cortina(6)  <= hits_i(82);  -- panel=14 paddle=115 station=cortina; LTB DSI3 J1 Ch 5 Bit2
+    cortina(7)  <= hits_i(48);  -- panel=14 paddle=116 station=cortina; LTB DSI2 J2 Ch 1 Bit0
+    cortina(8)  <= hits_i(49);  -- panel=14 paddle=117 station=cortina; LTB DSI2 J2 Ch 3 Bit1
+    cortina(9)  <= hits_i(50);  -- panel=14 paddle=118 station=cortina; LTB DSI2 J2 Ch 5 Bit2
+    cortina(10) <= hits_i(159);  -- panel=15 paddle=119 station=cortina; LTB DSI4 J5 Ch15 Bit7
+    cortina(11) <= hits_i(158);  -- panel=15 paddle=120 station=cortina; LTB DSI4 J5 Ch13 Bit6
+    cortina(12) <= hits_i(157);  -- panel=15 paddle=121 station=cortina; LTB DSI4 J5 Ch11 Bit5
+    cortina(13) <= hits_i(156);  -- panel=15 paddle=122 station=cortina; LTB DSI4 J5 Ch 9 Bit4
+    cortina(14) <= hits_i(155);  -- panel=15 paddle=123 station=cortina; LTB DSI4 J5 Ch 7 Bit3
+    cortina(15) <= hits_i(154);  -- panel=15 paddle=124 station=cortina; LTB DSI4 J5 Ch 5 Bit2
+    cortina(16) <= hits_i(153);  -- panel=15 paddle=125 station=cortina; LTB DSI4 J5 Ch 3 Bit1
+    cortina(17) <= hits_i(152);  -- panel=15 paddle=126 station=cortina; LTB DSI4 J5 Ch 1 Bit0
+    cortina(18) <= hits_i(103);  -- panel=15 paddle=127 station=cortina; LTB DSI3 J3 Ch15 Bit7
+    cortina(19) <= hits_i(80);  -- panel=15 paddle=128 station=cortina; LTB DSI3 J1 Ch 1 Bit0
+    cortina(20) <= hits_i(112);  -- panel=16 paddle=129 station=cortina; LTB DSI3 J5 Ch 1 Bit0
+    cortina(21) <= hits_i(113);  -- panel=16 paddle=130 station=cortina; LTB DSI3 J5 Ch 3 Bit1
+    cortina(22) <= hits_i(104);  -- panel=16 paddle=131 station=cortina; LTB DSI3 J4 Ch 1 Bit0
+    cortina(23) <= hits_i(105);  -- panel=16 paddle=132 station=cortina; LTB DSI3 J4 Ch 3 Bit1
+    cortina(24) <= hits_i(99);  -- panel=16 paddle=133 station=cortina; LTB DSI3 J3 Ch 7 Bit3
+    cortina(25) <= hits_i(100);  -- panel=16 paddle=134 station=cortina; LTB DSI3 J3 Ch 9 Bit4
+    cortina(26) <= hits_i(101);  -- panel=16 paddle=135 station=cortina; LTB DSI3 J3 Ch11 Bit5
+    cortina(27) <= hits_i(135);  -- panel=16 paddle=136 station=cortina; LTB DSI4 J2 Ch15 Bit7
+    cortina(28) <= hits_i(134);  -- panel=16 paddle=137 station=cortina; LTB DSI4 J2 Ch13 Bit6
+    cortina(29) <= hits_i(133);  -- panel=16 paddle=138 station=cortina; LTB DSI4 J2 Ch11 Bit5
+    cortina(30) <= hits_i(136);  -- panel=17 paddle=139 station=cortina; LTB DSI4 J3 Ch 1 Bit0
+    cortina(31) <= hits_i(137);  -- panel=17 paddle=140 station=cortina; LTB DSI4 J3 Ch 3 Bit1
+    cortina(32) <= hits_i(138);  -- panel=17 paddle=141 station=cortina; LTB DSI4 J3 Ch 5 Bit2
+    cortina(33) <= hits_i(139);  -- panel=17 paddle=142 station=cortina; LTB DSI4 J3 Ch 7 Bit3
+    cortina(34) <= hits_i(140);  -- panel=17 paddle=143 station=cortina; LTB DSI4 J3 Ch 9 Bit4
+    cortina(35) <= hits_i(141);  -- panel=17 paddle=144 station=cortina; LTB DSI4 J3 Ch11 Bit5
+    cortina(36) <= hits_i(142);  -- panel=17 paddle=145 station=cortina; LTB DSI4 J3 Ch13 Bit6
+    cortina(37) <= hits_i(143);  -- panel=17 paddle=146 station=cortina; LTB DSI4 J3 Ch15 Bit7
+    cortina(38) <= hits_i(128);  -- panel=17 paddle=147 station=cortina; LTB DSI4 J2 Ch 1 Bit0
+    cortina(39) <= hits_i(55);  -- panel=17 paddle=148 station=cortina; LTB DSI2 J2 Ch15 Bit7
+    cortina(40) <= hits_i(85);  -- panel=18 paddle=149 station=cortina; LTB DSI3 J1 Ch11 Bit5
+    cortina(41) <= hits_i(86);  -- panel=18 paddle=150 station=cortina; LTB DSI3 J1 Ch13 Bit6
+    cortina(42) <= hits_i(87);  -- panel=18 paddle=151 station=cortina; LTB DSI3 J1 Ch15 Bit7
+    cortina(43) <= hits_i(96);  -- panel=19 paddle=152 station=cortina; LTB DSI3 J3 Ch 0 Bit0
+    cortina(44) <= hits_i(97);  -- panel=19 paddle=153 station=cortina; LTB DSI3 J3 Ch 2 Bit1
+    cortina(45) <= hits_i(98);  -- panel=19 paddle=154 station=cortina; LTB DSI3 J3 Ch 4 Bit2
+    cortina(46) <= hits_i(130);  -- panel=20 paddle=155 station=cortina; LTB DSI4 J2 Ch 4 Bit2
+    cortina(47) <= hits_i(131);  -- panel=20 paddle=156 station=cortina; LTB DSI4 J2 Ch 6 Bit3
+    cortina(48) <= hits_i(132);  -- panel=20 paddle=157 station=cortina; LTB DSI4 J2 Ch 8 Bit4
+    cortina(49) <= hits_i(51);  -- panel=21 paddle=158 station=cortina; LTB DSI2 J2 Ch 7 Bit3
+    cortina(50) <= hits_i(52);  -- panel=21 paddle=159 station=cortina; LTB DSI2 J2 Ch 9 Bit4
+    cortina(51) <= hits_i(53);  -- panel=21 paddle=160 station=cortina; LTB DSI2 J2 Ch11 Bit5
 
     --END: autoinsert mapping
 
