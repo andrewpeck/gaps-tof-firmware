@@ -329,6 +329,12 @@
                   fw_default="0x3039"
                   fw_signal="drs_temp" />
 
+            <node id="RAT_HOUSEKEEPING" address="0xC" permission="rw"
+                  description="32 bit RAT housekeeping data. Meaning is software defined."
+                  mask="0xffffffff"
+                  fw_signal="rat_housekeeping"
+                  fw_default="0x00000000"/>
+
         </node> <!--FPGA-->
 
 

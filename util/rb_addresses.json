@@ -398,6 +398,13 @@
         "description": "Copy of the I2C DRS temperature reading",
         "adr8": 172
     },
+    "DRS.FPGA.RAT_HOUSEKEEPING": {
+        "adr": 44,
+        "permission": "rw",
+        "mask": 4294967295,
+        "description": "32 bit RAT housekeeping data. Meaning is software defined.",
+        "adr8": 176
+    },
     "DRS.DAQ.INJECT_DEBUG_PACKET": {
         "adr": 48,
         "permission": "w",

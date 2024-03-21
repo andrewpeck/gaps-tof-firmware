@@ -36,6 +36,7 @@ entity daq is
     board_id       : in std_logic_vector (7 downto 0);
     sync_err_i     : in std_logic;
     dna_i          : in std_logic_vector (63 downto 0);
+    housekeeping_i : in std_logic_vector (31 downto 0);
     hash_i         : in std_logic_vector (31 downto 0);
     timestamp_i    : in std_logic_vector (47 downto 0);
     roi_size_i     : in std_logic_vector (9 downto 0);
@@ -61,7 +62,7 @@ end daq;
 architecture behavioral of daq is
 
   type state_t is (IDLE_state, ERR_state, HEAD_state, STATUS_state, LENGTH_state, ROI_state,
-                   DNA_state, RSVD0_state, RSVD1_state, RSVD2_state, HASH_state, ID_state,
+                   DNA_state, RSVD0_state, HOUSEKEEPING_state, HASH_state, ID_state,
                    CHMASK_state, EVENT_CNT_state, DTAP_state, DRS_TEMP_state,
                    TIMESTAMP_state, CALC_CH_CRC_state, CH_CRC_state, CH_HEADER_state, PAYLOAD_state,
                    STOP_CELL_state, CALC_CRC32_state, CRC32_state, TAIL_state, PAD_state,
@@ -86,16 +87,15 @@ architecture behavioral of daq is
 
   signal status         : std_logic_vector (15 downto 0) := (others => '0');
   signal rsvd0          : std_logic_vector (15 downto 0) := (others => '0');
-  signal rsvd1          : std_logic_vector (15 downto 0) := (others => '0');
-  signal rsvd2          : std_logic_vector (15 downto 0) := (others => '0');
   signal packet_length  : std_logic_vector (15 downto 0) := (others => '0');
   signal packet_padding : natural range 0 to g_PACKET_PAD;
   signal payload_size   : natural                        := 0;
   signal num_channels   : natural range 0 to 15          := 0;
   signal id             : std_logic_vector (15 downto 0) := (others => '0');
 
-  signal mask          : std_logic_vector (17 downto 0)       := (others => '0');
-  signal event_cnt     : std_logic_vector (event_cnt_i'range) := (others => '0');
+  signal mask         : std_logic_vector (17 downto 0)          := (others => '0');
+  signal event_cnt    : std_logic_vector (event_cnt_i'range)    := (others => '0');
+  signal housekeeping : std_logic_vector (housekeeping_i'range) := (others => '0');
 
   signal timestamp : std_logic_vector (timestamp_i'range) := (others => '0');
   signal dna       : std_logic_vector (15 downto 0)       := (others => '0');
@@ -219,8 +219,7 @@ architecture behavioral of daq is
       + packet_length'length / g_WORD_SIZE
       + dna'length / g_WORD_SIZE
       + rsvd0'length / g_WORD_SIZE
-      + rsvd1'length / g_WORD_SIZE
-      + rsvd2'length / g_WORD_SIZE
+      + housekeeping'length / g_WORD_SIZE
       + hash'length / g_WORD_SIZE
       + data'length / g_WORD_SIZE       -- roi
       + data'length / g_WORD_SIZE       -- stop cell
@@ -298,6 +297,7 @@ begin
           dna          <= x"3210";
           hash         <= x"3210";
           event_cnt    <= x"76543210";
+          housekeeping <= x"12341234";
           timestamp    <= x"BA9876543210";
         else
 
@@ -323,6 +323,7 @@ begin
           num_channels <= count_ones (mask_i);
           mask         <= "000000000" & mask_i;
           event_cnt    <= event_cnt_i;
+          housekeeping <= housekeeping_i;
           timestamp    <= timestamp_i;
         end if;
       end if;
@@ -397,19 +398,21 @@ begin
           dav   <= true;
 
         when RSVD0_state =>
-          state <= RSVD1_state;
+          state <= HOUSEKEEPING_state;
           data  <= x"0000";
           dav   <= true;
 
-        when RSVD1_state =>
-          state <= RSVD2_state;
-          data  <= x"0000";
-          dav   <= true;
+        when HOUSEKEEPING_state =>
 
-        when RSVD2_state =>
-          state <= HASH_state;
-          data  <= x"0000";
-          dav   <= true;
+          if (state_word_cnt = housekeeping'length / g_WORD_SIZE - 1) then
+            state          <= HASH_state;
+            state_word_cnt <= 0;
+          else
+            state_word_cnt <= state_word_cnt + 1;
+          end if;
+
+          data <= data_sel(g_MSB_FIRST, g_WORD_SIZE, EVENT_CNT_WORDS, state_word_cnt, housekeeping);
+          dav  <= true;
 
         when HASH_state =>
 
