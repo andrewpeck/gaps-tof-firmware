@@ -181,6 +181,7 @@ architecture structural of gaps_mt is
   signal rb_readout_cnt_snap : std_logic;
   signal rb_readout_flag : std_logic_vector (NUM_RBS-1 downto 0);
   signal rb_ch_bitmap    : std_logic_vector (NUM_RBS*8-1 downto 0);
+  signal rb_board_list   : std_logic_vector (NUM_RBS-1 downto 0);
   signal rb_busy         : std_logic_vector (NUM_RBS-1 downto 0);
   signal rb_window       : std_logic_vector (4 downto 0);
 
@@ -842,7 +843,8 @@ begin
       -- Generate a 1 bit flag for every RB channel in the system to indicate
       -- whether it should read out or not. A RB trigger is just the reduce_or
       -- of its mask
-      rb_ch_bitmap_o => rb_ch_bitmap,
+      rb_ch_bitmap_o  => rb_ch_bitmap,
+      rb_board_list_o => rb_board_list,
 
       -- Lower latency copy of the global trigger which will arive before the
       -- event counter. For non-latency critical uses the global
@@ -1110,12 +1112,13 @@ begin
       clock           => clock,
       reset_i         => reset,
       trig_sources_i  => trig_sources,
-      trigger_i       => global_trigger,
+      trigger_i       => rb_trigger,
       event_cnt_i     => event_cnt,
       timestamp_i     => std_logic_vector(timestamp),
       tiu_timestamp_i => timestamp_latch,
       tiu_gps_i       => tiu_gps,
       hits_i          => hits_xtrig,
+      rb_list_i       => rb_board_list,
       data_o          => daq_data,
       data_valid_o    => daq_data_valid,
       data_last_o     => daq_last,

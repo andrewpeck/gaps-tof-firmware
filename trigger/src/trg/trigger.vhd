@@ -56,6 +56,7 @@ entity trigger is
     lost_trigger_o   : out std_logic;
     rb_trigger_o     : out std_logic;
     rb_ch_bitmap_o   : out std_logic_vector (NUM_RBS*8-1 downto 0) := (others => '0');
+    rb_board_list_o  : out std_logic_vector (NUM_RBS-1 downto 0)   := (others => '0');
     event_cnt_o      : out std_logic_vector (31 downto 0)
     );
 end trigger;
@@ -708,9 +709,13 @@ begin
       rb_trigger_o <= rb_trigger;
       if (rb_trigger = '1') then
         if (pedestal_trig_latch = '1') then
-          rb_ch_bitmap_o <= (others => '1');
+          rb_ch_bitmap_o  <= (others => '1');
+          rb_board_list_o <= (others => '1');
         else
           rb_ch_bitmap_o <= rb_ch_integrated;
+          for I in 0 to NUM_RBS-1 loop
+            rb_board_list_o(I) <= or_reduce(rb_ch_integrated((I+1)*8-1 downto I*8));
+          end loop;
         end if;
       end if;
     end if;

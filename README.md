@@ -245,6 +245,8 @@ bits per trigger.
 |               |          | 8: track trigger                                                  |
 |               |          | 9: central track trigger                                          |
 |               |          | other bits unallocated                                            |
+| RB_MASK_0     | `[31:0]` | RBs \[31:0\] are triggered                                        |
+| RB_MASK_1     | `[31:0]` | RBs \[49:32\] are triggered                                       |
 | BOARD_MASK    | `[31:0]` | 25 bits indicating boards which local trigger boards are read out |
 | HITS          | –        | Variable sized, 16 bits / board \* n_boards                       |
 | PAD           | `[15:0]` | Optional, only here if the \# of LTBs read is odd                 |

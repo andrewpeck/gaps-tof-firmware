@@ -22,6 +22,7 @@ entity mtb_daq is
     -- this is an array of 25*8 = 200 thresholds, where each threshold is a 2 bit value
     -- 200 thresholds = 400 bits, 16 bits / ltb
     hits_i : in threshold_array_t;
+    rb_list_i : in std_logic_vector(49 downto 0);
 
     -- trigger + metadata
     trigger_i   : in std_logic;
@@ -48,7 +49,7 @@ architecture behavioral of mtb_daq is
 
   type state_t is (IDLE_state, HEADER_state, EVENT_CNT_state,
                    TIU_TIMESTAMP_state, TIMESTAMP_state, TIU_GPS_state,
-                   TRIG_SOURCE_state, BOARD_MASK_state, HITS_state, PAD_state, CRC_CALC_state,
+                   TRIG_SOURCE_state, RB_LIST_state, BOARD_MASK_state, HITS_state, PAD_state, CRC_CALC_state,
                    CRC_state, TRAILER_state);
 
   signal state : state_t := IDLE_state;
@@ -68,7 +69,8 @@ architecture behavioral of mtb_daq is
   -- Hit Stable Copy
   --------------------------------------------------------------------------------
 
-  signal hits : threshold_array_t;
+  signal hits    : threshold_array_t;
+  signal rb_list : std_logic_vector(63 downto 0);
 
   --------------------------------------------------------------------------------
   -- 1 bit / paddle hitmask
@@ -249,6 +251,7 @@ begin
             state         <= HEADER_state;
             event_cnt     <= event_cnt_i;
             hits          <= hits_i;
+            rb_list       <= "00000000000000" & rb_list_i;
             data_o        <= x"AAAA";
             data_valid_o  <= '1';
             crc_en        <= '1';
@@ -356,7 +359,22 @@ begin
           data_valid_o <= '1';
           crc_en       <= '1';
           packet_size  <= packet_size + 1;
-          state        <= BOARD_MASK_state;
+          state        <= RB_LIST_state;
+
+        when RB_LIST_state =>
+
+          if (state_word_cnt = 1) then
+            state          <= BOARD_MASK_state;
+            state_word_cnt <= 0;
+          else
+            state_word_cnt <= state_word_cnt + 1;
+          end if;
+
+          -- transmit a header, calculate the hitmask
+          data_o       <= data_sel(g_MSB_FIRST, g_WORD_SIZE, 2, state_word_cnt, rb_list);
+          data_valid_o <= '1';
+          crc_en       <= '1';
+          packet_size  <= packet_size + 1;
 
         when BOARD_MASK_state =>
 
