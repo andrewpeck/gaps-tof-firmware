@@ -154,39 +154,38 @@ no files are missing, the build directory is clean, and so on.
 
 ## RB Dataformat
 
-| Field     | Len             | Description                                                           |
-|-----------|-----------------|-----------------------------------------------------------------------|
-| HEAD      | `[15:0]`        | 0xAAAA                                                                |
-| STATUS    | `[15:0]`        | `[0]` = empty event fragment                                          |
-|           |                 | `[1]` = drs was busy (lost trigger)                                   |
-|           |                 | `[2]` = locked                                                        |
-|           |                 | `[3]` = locked (past second)                                          |
-|           |                 | `[15:4]` = 12 bit FPGA temperature                                    |
-| LEN       | `[15:0]`        | length of packet in 2 byte words                                      |
-| ROI       | `[15:0]`        | size of region of interest                                            |
-| DNA       | `[15:0]`        | Zynq7000 Device DNA bits \[63:48\] ^ \[47:32\] ^ \[31:16\] ^ \[15:0\] |
-| RSVD0     | `[15:0]`        | Reserved                                                              |
-| RSVD1     | `[15:0]`        | Reserved                                                              |
-| RSVD2     | `[15:0]`        | Reserved                                                              |
-| FW_HASH   | `[15:0]`        | First 16 bits of Git Hash                                             |
-| ID        | `[15:0]`        | `[15:8]` = readout board ID                                           |
-|           |                 | `[7:0]` = reserved                                                    |
-| CH_MASK   | `[15:0]`        | `[8:0]` = Channel Enable Mask '1'=ON                                  |
-|           |                 | `[15:9]` reserved                                                     |
-| EVENT_CNT | `[31:0]`        | Event ID Received From Trigger                                        |
-| DTAP      | `[15:0]`        | DTAP Frequency in 100Hz                                               |
-| DRS_TEMP  | `[15:0]`        | DRS temperature, written by software                                  |
-| TIMESTAMP | `[47:0]`        | \# of 33MHz clocks elapsed since resync                               |
-| PAYLOAD   | 0 to XXXX words | `HEADER[15:0]` = Channel ID                                           |
-|           |                 | —– begin block data —–                                                |
-|           |                 | `DATA[13:0]` = ADC data                                               |
-|           |                 | `DATA[14]` = Cell Sync Err                                            |
-|           |                 | `DATA[15]` = Channel Sync Err                                         |
-|           |                 | —– end block: len = ROI words —–                                      |
-|           |                 | `TRAILER[31:0]` = crc32                                               |
-| STOP CELL | `[15:0]`        | Stop cell of the DRS                                                  |
-| CRC32     | `[31:0]`        | Packet CRC (excluding Trailer)                                        |
-| TAIL      | `[15:0]`        | 0x5555                                                                |
+| Field            | Len             | Description                                                           |
+|------------------|-----------------|-----------------------------------------------------------------------|
+| HEAD             | `[15:0]`        | 0xAAAA                                                                |
+| STATUS           | `[15:0]`        | `[0]` = empty event fragment                                          |
+|                  |                 | `[1]` = drs was busy (lost trigger)                                   |
+|                  |                 | `[2]` = locked                                                        |
+|                  |                 | `[3]` = locked (past second)                                          |
+|                  |                 | `[15:4]` = 12 bit FPGA temperature                                    |
+| LEN              | `[15:0]`        | length of packet in 2 byte words                                      |
+| ROI              | `[15:0]`        | size of region of interest                                            |
+| DNA              | `[15:0]`        | Zynq7000 Device DNA bits \[63:48\] ^ \[47:32\] ^ \[31:16\] ^ \[15:0\] |
+| RSVD0            | `[15:0]`        | Reserved                                                              |
+| RAT_HOUSEKEEPING | `[31:0]`        | Software Defined                                                      |
+| FW_HASH          | `[15:0]`        | First 16 bits of Git Hash                                             |
+| ID               | `[15:0]`        | `[15:8]` = readout board ID                                           |
+|                  |                 | `[7:0]` = reserved                                                    |
+| CH_MASK          | `[15:0]`        | `[8:0]` = Channel Enable Mask '1'=ON                                  |
+|                  |                 | `[15:9]` reserved                                                     |
+| EVENT_CNT        | `[31:0]`        | Event ID Received From Trigger                                        |
+| DTAP             | `[15:0]`        | DTAP Frequency in 100Hz                                               |
+| DRS_TEMP         | `[15:0]`        | DRS temperature, written by software                                  |
+| TIMESTAMP        | `[47:0]`        | \# of 33MHz clocks elapsed since resync                               |
+| PAYLOAD          | 0 to XXXX words | `HEADER[15:0]` = Channel ID                                           |
+|                  |                 | —– begin block data —–                                                |
+|                  |                 | `DATA[13:0]` = ADC data                                               |
+|                  |                 | `DATA[14]` = Cell Sync Err                                            |
+|                  |                 | `DATA[15]` = Channel Sync Err                                         |
+|                  |                 | —– end block: len = ROI words —–                                      |
+|                  |                 | `TRAILER[31:0]` = crc32                                               |
+| STOP CELL        | `[15:0]`        | Stop cell of the DRS                                                  |
+| CRC32            | `[31:0]`        | Packet CRC (excluding Trailer)                                        |
+| TAIL             | `[15:0]`        | 0x5555                                                                |
 
 ## Master Trigger to RB Data Format
 
