@@ -169,7 +169,8 @@ no files are missing, the build directory is clean, and so on.
 | RAT_HOUSEKEEPING | `[31:0]`        | Software Defined                                                      |
 | FW_HASH          | `[15:0]`        | First 16 bits of Git Hash                                             |
 | ID               | `[15:0]`        | `[15:8]` = readout board ID                                           |
-|                  |                 | `[7:0]` = reserved                                                    |
+|                  |                 | `[7:6]` = reserved                                                    |
+|                  |                 | `[5:0]` = MTB link id                                                 |
 | CH_MASK          | `[15:0]`        | `[8:0]` = Channel Enable Mask '1'=ON                                  |
 |                  |                 | `[15:9]` reserved                                                     |
 | EVENT_CNT        | `[31:0]`        | Event ID Received From Trigger                                        |

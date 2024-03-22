@@ -34,6 +34,7 @@ entity daq is
     loss_of_lock_i : in std_logic;
     lock_stable    : in std_logic;
     board_id       : in std_logic_vector (7 downto 0);
+    link_id        : in std_logic_vector (5 downto 0);
     sync_err_i     : in std_logic;
     dna_i          : in std_logic_vector (63 downto 0);
     housekeeping_i : in std_logic_vector (31 downto 0);
@@ -307,9 +308,9 @@ begin
           status(3)           <= lock_stable;
           status(15 downto 4) <= temperature_i;
 
-          id(0)           <= '0';
           id(15 downto 8) <= board_id;
-          id (7 downto 1) <= (others => '0');
+          id (7 downto 6) <= (others => '0');
+          id (5 downto 0) <= link_id;
 
           roi_size     <= to_int (roi_size_i);
           fragment     <= fragment_i;

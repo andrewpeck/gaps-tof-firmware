@@ -1058,6 +1058,7 @@ begin
       ack_o  => daq_acknowledge,
 
       board_id    => board_id,
+      link_id     => mt_link_id,
       sync_err_i  => '0',
       dna_i       => "0000000" & dna,
       hash_i      => GLOBAL_SHA,
