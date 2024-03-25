@@ -363,7 +363,7 @@ begin
 
         when RB_LIST_state =>
 
-          if (state_word_cnt = 1) then
+          if (state_word_cnt = rb_list'length / g_WORD_SIZE - 1) then
             state          <= BOARD_MASK_state;
             state_word_cnt <= 0;
           else
