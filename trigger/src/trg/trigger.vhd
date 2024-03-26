@@ -633,17 +633,26 @@ begin
   -- Trigger Source OR
   --------------------------------------------------------------------------------
 
-  trig_sources <= "000000"
-                  & track_central
-                  & track_trigger
-                  & force_trigger_i
-                  & any_trigger
-                  & gaps_trigger
-                  & '0'
-                  & '0'
-                  & '0'
-                  & '0'
-                  & '0';
+  trig_sources <=
+
+    -- metadata
+    any_hit_trigger_is_global
+    & track_trigger_is_global
+    & track_central_is_global
+    & read_all_channels
+    & "00"
+
+    -- actual trigger sources
+    & track_central
+    & track_trigger
+    & force_trigger_i
+    & any_trigger
+    & gaps_trigger
+    & '0'
+    & '0'
+    & '0'
+    & '0'
+    & '0';
 
   process (clk) is
   begin
@@ -660,7 +669,7 @@ begin
       pre_trigger <= not busy_i
                      and not pre_trigger
                      and not dead
-                     and or_reduce(trig_sources);
+                     and or_reduce(trig_sources(11 downto 0));
     end if;
   end process;
 
