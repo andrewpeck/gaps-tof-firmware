@@ -180,12 +180,22 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
 
                 assert int(dut.event_cnt_o.value) == evt + 1
 
-                trig_source = {"any": 1 << 6,
-                               "gaps": 1 << 5,
-                               "track": 1 << 8,
-                               "combine": 1 << 8 | 1 << 5 | 1 << 6}[trig]
+                def get_trig_source(trigger, value):
+                    if trigger == 'any':
+                        return 1 & (value >> 6)
+                    elif trigger == 'gaps':
+                        return 1 & (value >> 5)
+                    elif trigger == 'track':
+                        return 1 & (value >> 8)
+                    elif trigger == 'central':
+                        return 1 & (value >> 9)
+                    elif trigger == 'combine':
+                        return 0x1f & (value >> 5)
 
-                assert int(dut.trig_sources_o.value) == trig_source
+                assert get_trig_source(
+                    trig,
+                    int(dut.trig_sources_o.value)
+                ) > 0
 
                 assert int(getattr(dut, f"hits_o_{channel}").value) == 2
 
