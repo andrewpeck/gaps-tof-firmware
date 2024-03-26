@@ -96,6 +96,7 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
 
     dut.event_cnt_reset.value = 1
 
+    dut.track_central_is_global.value = is_global
     dut.track_trigger_is_global.value = is_global
     dut.any_hit_trigger_is_global.value = is_global
     dut.read_all_channels.value = is_global
@@ -104,6 +105,11 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
         dut.any_hit_trigger_prescale.value = 2**32 - 1
     else:
         dut.any_hit_trigger_prescale.value = 0
+
+    if trig == "central" or trig == "combine":
+        dut.track_central_prescale.value = 2**32 - 1
+    else:
+        dut.track_central_prescale.value = 0
 
     if trig == "track" or trig == "combine":
         dut.track_trigger_prescale.value = 2**32 - 1
