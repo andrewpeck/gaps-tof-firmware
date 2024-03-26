@@ -31,6 +31,7 @@ def set_hits(dut, value):
 async def gaps_trigger_test_any_global(dut):
     await gaps_trigger_test(dut, trig="any", is_global=1)
 
+
 @cocotb.test()
 async def gaps_trigger_test_rb_window(dut):
     await gaps_trigger_test(dut, trig="any", is_global=0, rb_window=0)
@@ -38,6 +39,7 @@ async def gaps_trigger_test_rb_window(dut):
     await gaps_trigger_test(dut, trig="any", is_global=0, rb_window=10)
     await gaps_trigger_test(dut, trig="any", is_global=0, rb_window=30)
     await gaps_trigger_test(dut, trig="any", is_global=0, rb_window=31)
+
 
 @cocotb.test()
 async def gaps_trigger_test_any_local(dut):
@@ -75,12 +77,14 @@ async def combine_trigger_test_combine_local(dut):
 
 
 @cocotb.test()
-async def single_channel_trigger_test_global (dut):
+async def single_channel_trigger_test_global(dut):
     await gaps_trigger_test(dut, trig="any", is_global=1, single_channel=True)
 
+
 @cocotb.test()
-async def single_channel_trigger_test_local (dut):
+async def single_channel_trigger_test_local(dut):
     await gaps_trigger_test(dut, trig="any", is_global=0, single_channel=True)
+
 
 async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30, single_channel=False):
 
@@ -152,7 +156,7 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
 
         data = 200 * [0]
 
-        channel = 9 
+        channel = 9
 
         if single_channel:
             data = 200 * [0]
@@ -201,7 +205,7 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
         else:
             if not single_channel:
                 assert int(dut.rb_ch_bitmap_o.value) > 0
-            
+
         #     assert int(dut.rb_ch_bitmap_o.value) == 0b11
         # else:
         #     assert int(dut.rb_ch_bitmap_o.value) == \
