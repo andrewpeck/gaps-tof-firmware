@@ -1,23 +1,24 @@
-## Table of Contents <span class="tag" tag-name="TOC_4"><span class="smallcaps">TOC_4</span></span>
+## Table of Contents <span class="tag" data-tag-name="TOC_4"><span class="smallcaps">TOC\_4</span></span>
 
-- [Organization](#organization)
-- [Software dependencies](#software-dependencies)
-- [Register Access](#register-access)
-  - [Address Table](#address-table)
-- [Building the Firmware](#building-the-firmware)
-  - [Special note for 2020.1 and hardware
-    generation](#special-note-for-20201-and-hardware-generation)
-  - [Build instructions](#build-instructions)
-- [DRS Data Flow](#drs-data-flow)
-- [RB Dataformat](#rb-dataformat)
-- [Master Trigger to RB Data Format](#master-trigger-to-rb-data-format)
-- [Local Trigger Data Format](#local-trigger-data-format)
-- [Master Trigger DAQ Data Format](#master-trigger-daq-data-format)
-- [Master Trigger External IO](#master-trigger-external-io)
-- [Trigger Latency](#trigger-latency)
-- [Gitlab runner registration](#gitlab-runner-registration)
-- [Updating mapping](#updating-mapping)
-- [Updating trigger](#updating-trigger)
+  - [Organization](#organization)
+  - [Software dependencies](#software-dependencies)
+  - [Register Access](#register-access)
+      - [Address Table](#address-table)
+  - [Building the Firmware](#building-the-firmware)
+      - [Special note for 2020.1 and hardware
+        generation](#special-note-for-20201-and-hardware-generation)
+      - [Build instructions](#build-instructions)
+  - [DRS Data Flow](#drs-data-flow)
+  - [RB Dataformat](#rb-dataformat)
+  - [Master Trigger to RB Data
+    Format](#master-trigger-to-rb-data-format)
+  - [Local Trigger Data Format](#local-trigger-data-format)
+  - [Master Trigger DAQ Data Format](#master-trigger-daq-data-format)
+  - [Master Trigger External IO](#master-trigger-external-io)
+  - [Trigger Latency](#trigger-latency)
+  - [Gitlab runner registration](#gitlab-runner-registration)
+  - [Updating mapping](#updating-mapping)
+  - [Updating trigger](#updating-trigger)
 
 ## Organization
 
@@ -42,14 +43,14 @@
 
 ## Software dependencies
 
-- Xilinx tools
-  - Vivado 2020.1
-- Build system
-  - git
-  - make
-  - python3.6+
-- Optional
-  - emacs
+  - Xilinx tools
+      - Vivado 2020.1
+  - Build system
+      - git
+      - make
+      - python3.6+
+  - Optional
+      - emacs
 
 ## Register Access
 
@@ -58,11 +59,11 @@ accessed through an AXI⟷Wishbone Bridge
 
 From the Zynq, it appears as a memory-mapped into an address space,
 starting at `Base Address=0x8000_0000` (with a maximum address of
-0x8000_FFFF, giving an effective address space of 16 bits or 65536
+0x8000\_FFFF, giving an effective address space of 16 bits or 65536
 registers).
 
 An interactive client can read and write from registers, by calling
-reg_interface.py
+reg\_interface.py
 
 A python library `rw_reg.py` allows for register access by name
 
@@ -72,8 +73,8 @@ The address table is defined in a "templated" XML file: *registers.xml*
 
 A convenient document describing the address table can be seen at:
 
-- [Readout Board Address Table](regmap/rb_address_table.org)
-- [Master Trigger Address Table](regmap/mt_address_table.org)
+  - [Readout Board Address Table](regmap/rb_address_table.org)
+  - [Master Trigger Address Table](regmap/mt_address_table.org)
 
 To update the address table in the project, make edits directly to
 `rb_registers.xml` or `mt_registers.xml`, then build using
@@ -103,8 +104,8 @@ two work arounds below.
 
 This firmware is using the HOG framework as a build system:
 
-- HOG Documentation: <http://hog-user-docs.web.cern.ch>
-- HOG Source Code: <https://gitlab.cern.ch/hog/Hog>
+  - HOG Documentation: <http://hog-user-docs.web.cern.ch>
+  - HOG Source Code: <https://gitlab.cern.ch/hog/Hog>
 
 Clone project recursively to pull all HOG scripts
 
@@ -147,57 +148,54 @@ no files are missing, the build directory is clean, and so on.
 
 ## DRS Data Flow
 
-<figure>
-<img src="./drs/data-flow.svg" />
-<figcaption>data-flow</figcaption>
-</figure>
+![data-flow](./drs/data-flow.svg)
 
 ## RB Dataformat
 
-| Field            | Len             | Description                                                           |
-|------------------|-----------------|-----------------------------------------------------------------------|
-| HEAD             | `[15:0]`        | 0xAAAA                                                                |
-| STATUS           | `[15:0]`        | `[0]` = empty event fragment                                          |
-|                  |                 | `[1]` = drs was busy (lost trigger)                                   |
-|                  |                 | `[2]` = locked                                                        |
-|                  |                 | `[3]` = locked (past second)                                          |
-|                  |                 | `[15:4]` = 12 bit FPGA temperature                                    |
-| LEN              | `[15:0]`        | length of packet in 2 byte words                                      |
-| ROI              | `[15:0]`        | size of region of interest                                            |
-| DNA              | `[15:0]`        | Zynq7000 Device DNA bits \[63:48\] ^ \[47:32\] ^ \[31:16\] ^ \[15:0\] |
-| RSVD0            | `[15:0]`        | Reserved                                                              |
-| RAT_HOUSEKEEPING | `[31:0]`        | Software Defined                                                      |
-| FW_HASH          | `[15:0]`        | First 16 bits of Git Hash                                             |
-| ID               | `[15:0]`        | `[15:8]` = readout board ID                                           |
-|                  |                 | `[7:6]` = reserved                                                    |
-|                  |                 | `[5:0]` = MTB link id                                                 |
-| CH_MASK          | `[15:0]`        | `[8:0]` = Channel Enable Mask '1'=ON                                  |
-|                  |                 | `[15:9]` reserved                                                     |
-| EVENT_CNT        | `[31:0]`        | Event ID Received From Trigger                                        |
-| DTAP             | `[15:0]`        | DTAP Frequency in 100Hz                                               |
-| DRS_TEMP         | `[15:0]`        | DRS temperature, written by software                                  |
-| TIMESTAMP        | `[47:0]`        | \# of 33MHz clocks elapsed since resync                               |
-| PAYLOAD          | 0 to XXXX words | `HEADER[15:0]` = Channel ID                                           |
-|                  |                 | —– begin block data —–                                                |
-|                  |                 | `DATA[13:0]` = ADC data                                               |
-|                  |                 | `DATA[14]` = Cell Sync Err                                            |
-|                  |                 | `DATA[15]` = Channel Sync Err                                         |
-|                  |                 | —– end block: len = ROI words —–                                      |
-|                  |                 | `TRAILER[31:0]` = crc32                                               |
-| STOP CELL        | `[15:0]`        | Stop cell of the DRS                                                  |
-| CRC32            | `[31:0]`        | Packet CRC (excluding Trailer)                                        |
-| TAIL             | `[15:0]`        | 0x5555                                                                |
+| Field             | Len             | Description                                                           |
+| ----------------- | --------------- | --------------------------------------------------------------------- |
+| HEAD              | `[15:0]`        | 0xAAAA                                                                |
+| STATUS            | `[15:0]`        | `[0]` = empty event fragment                                          |
+|                   |                 | `[1]` = drs was busy (lost trigger)                                   |
+|                   |                 | `[2]` = locked                                                        |
+|                   |                 | `[3]` = locked (past second)                                          |
+|                   |                 | `[15:4]` = 12 bit FPGA temperature                                    |
+| LEN               | `[15:0]`        | length of packet in 2 byte words                                      |
+| ROI               | `[15:0]`        | size of region of interest                                            |
+| DNA               | `[15:0]`        | Zynq7000 Device DNA bits \[63:48\] ^ \[47:32\] ^ \[31:16\] ^ \[15:0\] |
+| RSVD0             | `[15:0]`        | Reserved                                                              |
+| RAT\_HOUSEKEEPING | `[31:0]`        | Software Defined                                                      |
+| FW\_HASH          | `[15:0]`        | First 16 bits of Git Hash                                             |
+| ID                | `[15:0]`        | `[15:8]` = readout board ID                                           |
+|                   |                 | `[7:6]` = reserved                                                    |
+|                   |                 | `[5:0]` = MTB link id                                                 |
+| CH\_MASK          | `[15:0]`        | `[8:0]` = Channel Enable Mask '1'=ON                                  |
+|                   |                 | `[15:9]` reserved                                                     |
+| EVENT\_CNT        | `[31:0]`        | Event ID Received From Trigger                                        |
+| DTAP              | `[15:0]`        | DTAP Frequency in 100Hz                                               |
+| DRS\_TEMP         | `[15:0]`        | DRS temperature, written by software                                  |
+| TIMESTAMP         | `[47:0]`        | \# of 33MHz clocks elapsed since resync                               |
+| PAYLOAD           | 0 to XXXX words | `HEADER[15:0]` = Channel ID                                           |
+|                   |                 | —– begin block data —–                                                |
+|                   |                 | `DATA[13:0]` = ADC data                                               |
+|                   |                 | `DATA[14]` = Cell Sync Err                                            |
+|                   |                 | `DATA[15]` = Channel Sync Err                                         |
+|                   |                 | —– end block: len = ROI words —–                                      |
+|                   |                 | `TRAILER[31:0]` = crc32                                               |
+| STOP CELL         | `[15:0]`        | Stop cell of the DRS                                                  |
+| CRC32             | `[31:0]`        | Packet CRC (excluding Trailer)                                        |
+| TAIL              | `[15:0]`        | 0x5555                                                                |
 
 ## Master Trigger to RB Data Format
 
-| Field    | Len      | Description                                        |
-|----------|----------|----------------------------------------------------|
-| START    | `[0:0]`  | '1' to start                                       |
-| TRIGGER  | `[0:0]`  | '1' initiates a trigger; '0' for an event fragment |
-| CH_MASK  | `[7:0]`  | bitfield set to '1' to readout a channel           |
-| EVENT_ID | `[31:0]` | Event ID                                           |
-| CMD      | `[1:0]`  | 3=resync                                           |
-| CRC8     | `[7:0]`  | lfsr(7:0)=1+x<sup>2+x</sup>4+x<sup>6+x</sup>7+x^8  |
+| Field     | Len      | Description                                        |
+| --------- | -------- | -------------------------------------------------- |
+| START     | `[0:0]`  | '1' to start                                       |
+| TRIGGER   | `[0:0]`  | '1' initiates a trigger; '0' for an event fragment |
+| CH\_MASK  | `[7:0]`  | bitfield set to '1' to readout a channel           |
+| EVENT\_ID | `[31:0]` | Event ID                                           |
+| CMD       | `[1:0]`  | 3=resync                                           |
+| CRC8      | `[7:0]`  | lfsr(7:0)=1+x<sup>2+x</sup>4+x<sup>6+x</sup>7+x^8  |
 
 ## Local Trigger Data Format
 
@@ -231,61 +229,62 @@ bits per trigger.
 
 ## Master Trigger DAQ Data Format
 
-| Field         | Len      | Description                                                       |
-|---------------|----------|-------------------------------------------------------------------|
-| HEADER        | `[31:0]` | 0xAAAA_AAAA                                                       |
-| EVENT_CNT     | `[31:0]` | Event counter                                                     |
-| TIMESTAMP     | `[31:0]` | Internal timestamp at the time of trigger (1 unit = 10 ns)        |
-| TIU_TIMESTAMP | `[31:0]` | Timestamp at the edge of the TIU GPS (1 unit = 10 ns)             |
-| TIU_GPS       | `[47:0]` | Second received from the TIU (format?)                            |
-| TRIG_SOURCE   | `[15:0]` | Bitmask showing all trigger sources                               |
-|               |          | 0-4: reserved                                                     |
-|               |          | 5: gaps trigger                                                   |
-|               |          | 6: any trigger                                                    |
-|               |          | 7: forced trigger                                                 |
-|               |          | 8: track trigger                                                  |
-|               |          | 9: central track trigger                                          |
-|               |          | 10,11: reserved                                                   |
-|               |          | 12: read_all_channels                                             |
-|               |          | 13: track_central_is_global                                       |
-|               |          | 14: track_trigger_is_global                                       |
-|               |          | 15: any_hit_trigger_is_global                                     |
-| RB_MASK_0     | `[31:0]` | RBs \[31:0\] are triggered                                        |
-| RB_MASK_1     | `[31:0]` | RBs \[49:32\] are triggered                                       |
-| BOARD_MASK    | `[31:0]` | 25 bits indicating boards which local trigger boards are read out |
-| HITS          | –        | Variable sized, 16 bits / board \* n_boards                       |
-| PAD           | `[15:0]` | Optional, only here if the \# of LTBs read is odd                 |
-| CRC           | `[31:0]` | CRC32, same polynomial as the RB                                  |
-| TRAILER       | `[31:0]` | 0x5555_5555                                                       |
+| Field          | Len      | Description                                                       |
+| -------------- | -------- | ----------------------------------------------------------------- |
+| HEADER         | `[31:0]` | 0xAAAA\_AAAA                                                      |
+| EVENT\_CNT     | `[31:0]` | Event counter                                                     |
+| TIMESTAMP      | `[31:0]` | Internal timestamp at the time of trigger (1 unit = 10 ns)        |
+| TIU\_TIMESTAMP | `[31:0]` | Timestamp at the edge of the TIU GPS (1 unit = 10 ns)             |
+| TIU\_GPS       | `[47:0]` | Second received from the TIU (format?)                            |
+| TRIG\_SOURCE   | `[15:0]` | Bitmask showing all trigger sources                               |
+|                |          | 0-4: reserved                                                     |
+|                |          | 5: gaps trigger                                                   |
+|                |          | 6: any trigger                                                    |
+|                |          | 7: forced trigger                                                 |
+|                |          | 8: track trigger                                                  |
+|                |          | 9: central track trigger                                          |
+|                |          | 10: configurable trigger                                          |
+|                |          | 11: reserved                                                      |
+|                |          | 12: read\_all\_channels                                           |
+|                |          | 13: track\_central\_is\_global                                    |
+|                |          | 14: track\_trigger\_is\_global                                    |
+|                |          | 15: any\_hit\_trigger\_is\_global                                 |
+| RB\_MASK\_0    | `[31:0]` | RBs \[31:0\] are triggered                                        |
+| RB\_MASK\_1    | `[31:0]` | RBs \[49:32\] are triggered                                       |
+| BOARD\_MASK    | `[31:0]` | 25 bits indicating boards which local trigger boards are read out |
+| HITS           | –        | Variable sized, 16 bits / board \* n\_boards                      |
+| PAD            | `[15:0]` | Optional, only here if the \# of LTBs read is odd                 |
+| CRC            | `[31:0]` | CRC32, same polynomial as the RB                                  |
+| TRAILER        | `[31:0]` | 0x5555\_5555                                                      |
 
 ## Master Trigger External IO
 
 | Signal       | Assignment | Description                                                                                                                                 |
-|--------------|------------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| TIU Busy     | EXT_IN0    | LVDS IN: Busy acknowledgment from the TIU. Trigger should be deasserted only after busy is received.                                        |
-| TIU Timecode | EXT_IN1    | LVDS IN: Asynchronous serial input containing the GPS timestamp.                                                                            |
-| TIU Event ID | EXT_OUT0   | LVDS OUT: Asynchronous serial output containing the event ID                                                                                |
-| TIU Trigger  | EXT_OUT1   | LVDS OUT: Trigger output from the MT to TIU. Asynchronous level which should not be deasserted until the BUSY is received back from the TIU |
+| ------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| TIU Busy     | EXT\_IN0   | LVDS IN: Busy acknowledgment from the TIU. Trigger should be deasserted only after busy is received.                                        |
+| TIU Timecode | EXT\_IN1   | LVDS IN: Asynchronous serial input containing the GPS timestamp.                                                                            |
+| TIU Event ID | EXT\_OUT0  | LVDS OUT: Asynchronous serial output containing the event ID                                                                                |
+| TIU Trigger  | EXT\_OUT1  | LVDS OUT: Trigger output from the MT to TIU. Asynchronous level which should not be deasserted until the BUSY is received back from the TIU |
 
-| Pin        | Function          |
-|------------|-------------------|
-| ext_io(0)  | ext_trigger input |
-| ext_io(1)  | –                 |
-| ext_io(2)  | SDA               |
-| ext_io(3)  | SCL               |
-| ext_io(5)  | hk_ext_clk;       |
-| ext_io(6); | hk_ext_miso       |
-| ext_io(7)  | hk_ext_mosi;      |
-| ext_io(8)  | hk_ext_cs_n(0);   |
-| ext_io(9)  | hk_ext_cs_n(1);   |
-| ext_io(10) | trigger mirror    |
-| ext_io(12) | –                 |
-| ext_io(13) | –                 |
+| Pin         | Function           |
+| ----------- | ------------------ |
+| ext\_io(0)  | ext\_trigger input |
+| ext\_io(1)  | –                  |
+| ext\_io(2)  | SDA                |
+| ext\_io(3)  | SCL                |
+| ext\_io(5)  | hk\_ext\_clk;      |
+| ext\_io(6); | hk\_ext\_miso      |
+| ext\_io(7)  | hk\_ext\_mosi;     |
+| ext\_io(8)  | hk\_ext\_cs\_n(0); |
+| ext\_io(9)  | hk\_ext\_cs\_n(1); |
+| ext\_io(10) | trigger mirror     |
+| ext\_io(12) | –                  |
+| ext\_io(13) | –                  |
 
 ## Trigger Latency
 
 | Item                                 | Delay (ns) | Source               |
-|--------------------------------------|------------|----------------------|
+| ------------------------------------ | ---------- | -------------------- |
 | LTB Analog Frontend (AD8014)         | 0.5        | estimate             |
 | LTB Analog Frontend (ADCMP601)       | 3.5        | datasheet            |
 | LTB Input Routing                    | 1.5        | estimate             |
@@ -310,8 +309,8 @@ bits per trigger.
 Some simple instructions for registering a Gitlab runner
 
 1.  Install gitlab-runner
-
-    - <https://docs.gitlab.com/runner/install/>
+    
+      - <https://docs.gitlab.com/runner/install/>
 
 2.  Execute `gitlab-runner register`
 
@@ -348,7 +347,7 @@ cd trigger/src/trg make
 
 1.  Commit the updated files, push to devel of the repo
 
-git add mapping.csv rb_map.vhd trigger.vhd git commit -m "mtb: Update
+git add mapping.csv rb\_map.vhd trigger.vhd git commit -m "mtb: Update
 link mapping"
 
 1.  Open a merge request from devel -\> master
@@ -363,7 +362,7 @@ For reference in case I am not available sometime and you need things in
 a rush the to update the new firmware is:
 
 1.  clone the firmware
-2.  edit generate_triggers.bb to your liking
+2.  edit generate\_triggers.bb to your liking
 3.  run Make in the same directory. You need awk and babashka installed
 4.  Commit the updated files, push to devel of the repo
 5.  Open a merge request from devel -\> master

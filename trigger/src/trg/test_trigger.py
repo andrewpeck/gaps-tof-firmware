@@ -87,7 +87,6 @@ async def single_channel_trigger_test_local(dut):
 
 
 async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30, single_channel=False):
-
     """Test GAPS trigger"""
 
     cocotb.start_soon(Clock(dut.clk, 10, units="ns").start())  # Create a clock
@@ -99,6 +98,16 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
     dut.track_central_is_global.value = is_global
     dut.track_trigger_is_global.value = is_global
     dut.any_hit_trigger_is_global.value = is_global
+    dut.cube_side_thresh.value = is_global
+    dut.configurable_trigger_en.value = 0
+    dut.cube_side_thresh.value = 0
+    dut.cube_top_thresh.value = 0
+    dut.cube_bot_thresh.value = 0
+    dut.cube_corner_thresh.value = 0
+    dut.umbrella_thresh.value = 0
+    dut.umbrella_center_thresh.value = 0
+    dut.cortina_thresh.value = 0
+
     dut.read_all_channels.value = is_global
 
     if trig == "any" or trig == "combine" or single_channel:

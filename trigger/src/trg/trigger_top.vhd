@@ -33,6 +33,16 @@ entity trigger_top is
 
     read_all_channels : in std_logic := '1';
 
+    -- configurable trigger parameters
+    configurable_trigger_en : in std_logic;
+    cube_side_thresh        : in std_logic_vector (7 downto 0);
+    cube_top_thresh         : in std_logic_vector (7 downto 0);
+    cube_bot_thresh         : in std_logic_vector (7 downto 0);
+    cube_corner_thresh      : in std_logic_vector (7 downto 0);
+    umbrella_thresh         : in std_logic_vector (7 downto 0);
+    umbrella_center_thresh  : in std_logic_vector (7 downto 0);
+    cortina_thresh          : in std_logic_vector (7 downto 0);
+
     -- this is an array of 25*8 = 200 thresholds, where each threshold is a 2
     -- bit value
     hits_i_0 : in std_logic_vector(1 downto 0) := (others => '0');
@@ -890,6 +900,14 @@ begin
       inner_tof_thresh          => inner_tof_thresh,
       outer_tof_thresh          => outer_tof_thresh,
       total_tof_thresh          => total_tof_thresh,
+      configurable_trigger_en   => configurable_trigger_en,
+      cube_side_thresh          => cube_side_thresh,
+      cube_top_thresh           => cube_top_thresh,
+      cube_bot_thresh           => cube_bot_thresh,
+      cube_corner_thresh        => cube_corner_thresh,
+      umbrella_thresh           => umbrella_thresh,
+      umbrella_center_thresh    => umbrella_center_thresh,
+      cortina_thresh            => cortina_thresh,
       busy_i                    => busy_i,
       rb_busy_i                 => rb_busy_i,
       rb_window_i               => rb_window_i,

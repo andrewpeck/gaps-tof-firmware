@@ -198,7 +198,46 @@
           description="Threshold for the hit bitmap. Threshold must be > this number."
           fw_default="0x0"
           fw_signal="hit_thresh"/>
-
+    <node id="CONFIGURABLE_TRIGGER_EN" address="0x14" permission="rw"
+          mask="0x80000000"
+          description="Enable the configurable trigger"
+          fw_default="0x0"
+          fw_signal="configurable_trigger_en"/>
+    <node id="CUBE_SIDE_THRESH" address="0x15" permission="rw"
+          mask="0x000000ff"
+          description="Threshold for the hit bitmap. Threshold must be > this number."
+          fw_default="0x00"
+          fw_signal="cube_side_thresh"/>
+    <node id="CUBE_TOP_THRESH" address="0x15" permission="rw"
+          mask="0x0000ff00"
+          description="Threshold for the hit bitmap. Threshold must be > this number."
+          fw_default="0x00"
+          fw_signal="cube_top_thresh"/>
+    <node id="CUBE_BOT_THRESH" address="0x15" permission="rw"
+          mask="0x00ff0000"
+          description="Threshold for the hit bitmap. Threshold must be > this number."
+          fw_default="0x00"
+          fw_signal="cube_bot_thresh"/>
+    <node id="CUBE_CORNER_THRESH" address="0x15" permission="rw"
+          mask="0xff000000"
+          description="Threshold for the hit bitmap. Threshold must be > this number."
+          fw_default="0x00"
+          fw_signal="cube_corner_thresh"/>
+    <node id="UMBRELLA_THRESH" address="0x16" permission="rw"
+          mask="0x000000ff"
+          description="Threshold for the hit bitmap. Threshold must be > this number."
+          fw_default="0x00"
+          fw_signal="umbrella_thresh"/>
+    <node id="UMBRELLA_CENTER_THRESH" address="0x16" permission="rw"
+          mask="0x0000ff00"
+          description="Threshold for the hit bitmap. Threshold must be > this number."
+          fw_default="0x00"
+          fw_signal="umbrella_center_thresh"/>
+    <node id="CORTINA_THRESH" address="0x16" permission="rw"
+          mask="0x00ff0000"
+          description="Threshold for the hit bitmap. Threshold must be > this number."
+          fw_default="0x00"
+          fw_signal="cortina_thresh"/>
     <node id="TRIGGER_RATE" address="0x17" permission="r"
           description="Rate of triggers in Hz"
           mask="0x00ffffff"

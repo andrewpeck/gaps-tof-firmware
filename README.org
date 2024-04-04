@@ -245,7 +245,8 @@ trigger.
 |               |          | 7: forced trigger                                                 |
 |               |          | 8: track trigger                                                  |
 |               |          | 9: central track trigger                                          |
-|               |          | 10,11: reserved                                                   |
+|               |          | 10: configurable trigger                                          |
+|               |          | 11: reserved                                                      |
 |               |          | 12: read_all_channels                                             |
 |               |          | 13: track_central_is_global                                       |
 |               |          | 14: track_trigger_is_global                                       |

@@ -44,6 +44,16 @@ entity trigger is
     outer_tof_thresh : in std_logic_vector (7 downto 0);
     total_tof_thresh : in std_logic_vector (7 downto 0);
 
+    -- configurable trigger parameters
+    configurable_trigger_en : in std_logic;
+    cube_side_thresh        : in std_logic_vector (7 downto 0);
+    cube_top_thresh         : in std_logic_vector (7 downto 0);
+    cube_bot_thresh         : in std_logic_vector (7 downto 0);
+    cube_corner_thresh      : in std_logic_vector (7 downto 0);
+    umbrella_thresh         : in std_logic_vector (7 downto 0);
+    umbrella_center_thresh  : in std_logic_vector (7 downto 0);
+    cortina_thresh          : in std_logic_vector (7 downto 0);
+
     busy_i      : in std_logic;
     rb_busy_i   : in std_logic_vector(NUM_RBS-1 downto 0);
     rb_window_i : in std_logic_vector(4 downto 0);
@@ -88,10 +98,11 @@ architecture behavioral of trigger is
   signal dead          : std_logic                      := '0';
   signal deadcnt       : integer range 0 to DEADCNT_MAX := 0;
 
-  signal gaps_trigger  : std_logic := '0';
-  signal track_trigger : std_logic := '0';
-  signal track_central : std_logic := '0';
-  signal any_trigger   : std_logic := '0';
+  signal gaps_trigger         : std_logic := '0';
+  signal configurable_trigger : std_logic := '0';
+  signal track_trigger        : std_logic := '0';
+  signal track_central        : std_logic := '0';
+  signal any_trigger          : std_logic := '0';
 
   --------------------------------------------------------------------------------
   -- Detector Mapping
@@ -102,12 +113,13 @@ architecture behavioral of trigger is
   constant BETA : std_logic_vector (1 downto 0) := "10";
   constant VETO : std_logic_vector (1 downto 0) := "11";
 
-  constant N_UMBRELLA    : integer := 48;
-  constant N_CUBE_BOT    : integer := 12;
-  constant N_CUBE_TOP    : integer := 12;
-  constant N_CUBE        : integer := 32;
-  constant N_CORTINA     : integer := 52;
-  constant N_CUBE_CORNER : integer := 4;
+  constant N_UMBRELLA        : integer := 48;
+  constant N_UMBRELLA_CENTER : integer := 12;
+  constant N_CUBE_BOT        : integer := 12;
+  constant N_CUBE_TOP        : integer := 12;
+  constant N_CUBE            : integer := 32;
+  constant N_CORTINA         : integer := 52;
+  constant N_CUBE_CORNER     : integer := 4;
 
   constant N_OUTER_TOF : integer := N_UMBRELLA + N_CORTINA;
   constant N_INNER_TOF : integer := N_CUBE_CORNER + N_CUBE + N_CUBE_BOT + N_CUBE_TOP;
@@ -115,22 +127,24 @@ architecture behavioral of trigger is
   type hit_array_t is array (integer range <>)
     of std_logic_vector(1 downto 0);
 
-  signal cube        : hit_array_t(N_CUBE-1 downto 0);
-  signal cube_bot    : hit_array_t(N_CUBE_BOT-1 downto 0);
-  signal cube_top    : hit_array_t(N_CUBE_TOP-1 downto 0);
-  signal cube_corner : hit_array_t(N_CUBE_CORNER-1 downto 0);
-  signal umbrella    : hit_array_t(N_UMBRELLA-1 downto 0);
-  signal cortina     : hit_array_t(N_CORTINA-1 downto 0);
+  signal cube            : hit_array_t(N_CUBE-1 downto 0);
+  signal cube_bot        : hit_array_t(N_CUBE_BOT-1 downto 0);
+  signal cube_top        : hit_array_t(N_CUBE_TOP-1 downto 0);
+  signal cube_corner     : hit_array_t(N_CUBE_CORNER-1 downto 0);
+  signal umbrella        : hit_array_t(N_UMBRELLA-1 downto 0);
+  signal cortina         : hit_array_t(N_CORTINA-1 downto 0);
+  signal umbrella_center : hit_array_t(N_UMBRELLA_CENTER-1 downto 0);
 
-  signal cube_hit, cube_beta               : std_logic_vector(N_CUBE-1 downto 0);
-  signal cube_bot_hit, cube_bot_beta       : std_logic_vector(N_CUBE_BOT-1 downto 0);
-  signal cube_top_hit, cube_top_beta       : std_logic_vector(N_CUBE_TOP-1 downto 0);
-  signal cube_corner_hit, cube_corner_beta : std_logic_vector(N_CUBE_CORNER-1 downto 0);
-  signal umbrella_hit, umbrella_beta       : std_logic_vector(N_UMBRELLA-1 downto 0);
-  signal cortina_hit, cortina_beta         : std_logic_vector(N_CORTINA-1 downto 0);
-  signal inner_tof_hit                     : std_logic_vector(N_INNER_TOF-1 downto 0);
-  signal inner_tof_beta                    : std_logic_vector(N_INNER_TOF-N_CUBE_BOT-N_CUBE_CORNER-1 downto 0);
-  signal outer_tof_hit, outer_tof_beta     : std_logic_vector(N_OUTER_TOF-1 downto 0);
+  signal cube_side_hit, cube_side_beta             : std_logic_vector(N_CUBE-1 downto 0);
+  signal cube_bot_hit, cube_bot_beta               : std_logic_vector(N_CUBE_BOT-1 downto 0);
+  signal cube_top_hit, cube_top_beta               : std_logic_vector(N_CUBE_TOP-1 downto 0);
+  signal cube_corner_hit, cube_corner_beta         : std_logic_vector(N_CUBE_CORNER-1 downto 0);
+  signal umbrella_hit, umbrella_beta               : std_logic_vector(N_UMBRELLA-1 downto 0);
+  signal umbrella_center_hit, umbrella_center_beta : std_logic_vector(N_UMBRELLA_CENTER-1 downto 0);
+  signal cortina_hit, cortina_beta                 : std_logic_vector(N_CORTINA-1 downto 0);
+  signal inner_tof_hit                             : std_logic_vector(N_INNER_TOF-1 downto 0);
+  signal inner_tof_beta                            : std_logic_vector(N_INNER_TOF-N_CUBE_BOT-N_CUBE_CORNER-1 downto 0);
+  signal outer_tof_hit, outer_tof_beta             : std_logic_vector(N_OUTER_TOF-1 downto 0);
 
   signal or_inner_tof_beta : std_logic;
   signal or_outer_tof_beta : std_logic;
@@ -150,19 +164,27 @@ architecture behavioral of trigger is
   signal pedestal_trig_latch : std_logic                     := '0';
   signal rb_trigger          : std_logic                     := '0';
 
-  signal cube_cnts        : integer range 0 to N_CUBE;
-  signal cube_bot_cnts    : integer range 0 to N_CUBE_BOT;
-  signal cube_top_cnts    : integer range 0 to N_CUBE_BOT;
-  signal cube_corner_cnts : integer range 0 to N_CUBE_CORNER;
-  signal umbrella_cnts    : integer range 0 to N_UMBRELLA;
-  signal cortina_cnts     : integer range 0 to N_CORTINA;
-  signal inner_tof_cnts   : integer range 0 to N_INNER_TOF;
-  signal outer_tof_cnts   : integer range 0 to N_OUTER_TOF;
-  signal total_tof_cnts   : integer range 0 to N_OUTER_TOF + N_INNER_TOF;
+  signal cube_side_cnts       : integer range 0 to N_CUBE;
+  signal cube_bot_cnts        : integer range 0 to N_CUBE_BOT;
+  signal cube_top_cnts        : integer range 0 to N_CUBE_BOT;
+  signal cube_corner_cnts     : integer range 0 to N_CUBE_CORNER;
+  signal umbrella_cnts        : integer range 0 to N_UMBRELLA;
+  signal umbrella_center_cnts : integer range 0 to N_UMBRELLA_CENTER;
+  signal cortina_cnts         : integer range 0 to N_CORTINA;
+  signal inner_tof_cnts       : integer range 0 to N_INNER_TOF;
+  signal outer_tof_cnts       : integer range 0 to N_OUTER_TOF;
+  signal total_tof_cnts       : integer range 0 to N_OUTER_TOF + N_INNER_TOF;
 
-  signal inner_tof_over_thresh : std_logic := '0';
-  signal outer_tof_over_thresh : std_logic := '0';
-  signal total_tof_over_thresh : std_logic := '0';
+  signal inner_tof_over_thresh       : std_logic := '0';
+  signal outer_tof_over_thresh       : std_logic := '0';
+  signal total_tof_over_thresh       : std_logic := '0';
+  signal cube_side_over_thresh       : std_logic := '0';
+  signal cube_bot_over_thresh        : std_logic := '0';
+  signal cube_top_over_thresh        : std_logic := '0';
+  signal cube_corner_over_thresh     : std_logic := '0';
+  signal umbrella_over_thresh        : std_logic := '0';
+  signal umbrella_center_over_thresh : std_logic := '0';
+  signal cortina_over_thresh         : std_logic := '0';
 
   function map_beta (d : hit_array_t)
     return std_logic_vector is
@@ -269,9 +291,27 @@ begin
   -- Gaps Trigger
   --------------------------------------------------------------------------------
 
-  inner_tof_over_thresh <= '1' when (inner_tof_cnts >= to_integer(unsigned(inner_tof_thresh))) else '0';
-  outer_tof_over_thresh <= '1' when (outer_tof_cnts >= to_integer(unsigned(outer_tof_thresh))) else '0';
-  total_tof_over_thresh <= '1' when (total_tof_cnts >= to_integer(unsigned(total_tof_thresh))) else '0';
+  inner_tof_over_thresh       <= '1' when (inner_tof_cnts >= to_integer(unsigned(inner_tof_thresh)))           else '0';
+  outer_tof_over_thresh       <= '1' when (outer_tof_cnts >= to_integer(unsigned(outer_tof_thresh)))           else '0';
+  total_tof_over_thresh       <= '1' when (total_tof_cnts >= to_integer(unsigned(total_tof_thresh)))           else '0';
+  cube_side_over_thresh       <= '1' when cube_side_cnts >= to_integer(unsigned(cube_side_thresh))             else '0';
+  cube_bot_over_thresh        <= '1' when cube_bot_cnts >= to_integer(unsigned(cube_bot_thresh))               else '0';
+  cube_top_over_thresh        <= '1' when cube_top_cnts >= to_integer(unsigned(cube_top_thresh))               else '0';
+  cube_corner_over_thresh     <= '1' when cube_corner_cnts >= to_integer(unsigned(cube_corner_thresh))         else '0';
+  umbrella_over_thresh        <= '1' when umbrella_cnts >= to_integer(unsigned(umbrella_thresh))               else '0';
+  umbrella_center_over_thresh <= '1' when umbrella_center_cnts >= to_integer(unsigned(umbrella_center_thresh)) else '0';
+  cortina_over_thresh         <= '1' when cortina_cnts >= to_integer(unsigned(cortina_thresh))                 else '0';
+
+  configurable_trigger <= configurable_trigger_en and
+                          (inner_tof_over_thresh and
+                           outer_tof_over_thresh and
+                           cube_side_over_thresh and
+                           cube_bot_over_thresh and
+                           cube_top_over_thresh and
+                           cube_corner_over_thresh and
+                           umbrella_over_thresh and
+                           umbrella_center_over_thresh and
+                           cortina_over_thresh);
 
   gaps_trigger <= gaps_trigger_en and
                   (not require_beta or or_inner_tof_beta) and
@@ -301,9 +341,9 @@ begin
   -- Counters
   --------------------------------------------------------------------------------
 
-  cube_cnt : entity work.count1s
-    generic map (SIZE => cube_hit'length)
-    port map (clock   => clk, d => cube_hit, cnt => cube_cnts);
+  cube_side_cnt : entity work.count1s
+    generic map (SIZE => cube_side_hit'length)
+    port map (clock   => clk, d => cube_side_hit, cnt => cube_side_cnts);
   cube_bot_cnt : entity work.count1s
     generic map (SIZE => cube_bot_hit'length)
     port map (clock   => clk, d => cube_bot_hit, cnt => cube_bot_cnts);
@@ -313,6 +353,9 @@ begin
   umbrella_cnt : entity work.count1s
     generic map (SIZE => umbrella_hit'length)
     port map (clock   => clk, d => umbrella_hit, cnt => umbrella_cnts);
+  umbrella_center_cnt : entity work.count1s
+    generic map (SIZE => umbrella_center_hit'length)
+    port map (clock   => clk, d => umbrella_center_hit, cnt => umbrella_center_cnts);
   cortina_cnt : entity work.count1s
     generic map (SIZE => cortina_hit'length)
     port map (clock   => clk, d => cortina_hit, cnt => cortina_cnts);
@@ -341,8 +384,8 @@ begin
   begin
     if (rising_edge(clk)) then
 
-      cube_beta <= map_beta(cube);
-      cube_hit  <= map_anyhit(cube);
+      cube_side_beta <= map_beta(cube);
+      cube_side_hit  <= map_anyhit(cube);
 
       cube_bot_beta <= map_beta(cube_bot);
       cube_bot_hit  <= map_anyhit(cube_bot);
@@ -356,14 +399,17 @@ begin
       umbrella_beta <= map_beta(umbrella);
       umbrella_hit  <= map_anyhit(umbrella);
 
+      umbrella_center_beta <= map_beta(umbrella_center);
+      umbrella_center_hit  <= map_anyhit(umbrella_center);
+
       cortina_beta <= map_beta(cortina);
       cortina_hit  <= map_anyhit(cortina);
 
     end if;
   end process;
 
-  inner_tof_hit  <= cube_hit & cube_top_hit & cube_bot_hit & cube_corner_hit;
-  inner_tof_beta <= cube_beta & cube_top_beta;  -- exclude the bottom and corner from the beta test
+  inner_tof_hit  <= cube_side_hit & cube_top_hit & cube_bot_hit & cube_corner_hit;
+  inner_tof_beta <= cube_side_beta & cube_top_beta;  -- exclude the bottom and corner from the beta test
   outer_tof_hit  <= umbrella_hit & cortina_hit;
   outer_tof_beta <= umbrella_beta & cortina_beta;
 
@@ -548,6 +594,19 @@ begin
     cortina(50) <= hits_i(52);  -- panel=21 paddle=159 station=cortina; LTB DSI2 J2 Ch 9 Bit4
     cortina(51) <= hits_i(53);  -- panel=21 paddle=160 station=cortina; LTB DSI2 J2 Ch11 Bit5
 
+    umbrella_center(0)  <= hits_i(165);  -- panel= 7 paddle= 61 station=umbrella_center; LTB DSI5 J1 Ch10 Bit5
+    umbrella_center(1)  <= hits_i(164);  -- panel= 7 paddle= 62 station=umbrella_center; LTB DSI5 J1 Ch 8 Bit4
+    umbrella_center(2)  <= hits_i(163);  -- panel= 7 paddle= 63 station=umbrella_center; LTB DSI5 J1 Ch 6 Bit3
+    umbrella_center(3)  <= hits_i(162);  -- panel= 7 paddle= 64 station=umbrella_center; LTB DSI5 J1 Ch 4 Bit2
+    umbrella_center(4)  <= hits_i(161);  -- panel= 7 paddle= 65 station=umbrella_center; LTB DSI5 J1 Ch 2 Bit1
+    umbrella_center(5)  <= hits_i(160);  -- panel= 7 paddle= 66 station=umbrella_center; LTB DSI5 J1 Ch 0 Bit0
+    umbrella_center(6)  <= hits_i(8);  -- panel= 7 paddle= 67 station=umbrella_center; LTB DSI1 J2 Ch 1 Bit0
+    umbrella_center(7)  <= hits_i(9);  -- panel= 7 paddle= 68 station=umbrella_center; LTB DSI1 J2 Ch 3 Bit1
+    umbrella_center(8)  <= hits_i(10);  -- panel= 7 paddle= 69 station=umbrella_center; LTB DSI1 J2 Ch 5 Bit2
+    umbrella_center(9)  <= hits_i(11);  -- panel= 7 paddle= 70 station=umbrella_center; LTB DSI1 J2 Ch 7 Bit3
+    umbrella_center(10) <= hits_i(12);  -- panel= 7 paddle= 71 station=umbrella_center; LTB DSI1 J2 Ch 9 Bit4
+    umbrella_center(11) <= hits_i(13);  -- panel= 7 paddle= 72 station=umbrella_center; LTB DSI1 J2 Ch11 Bit5
+
     --END: autoinsert mapping
 
   end process;
@@ -640,9 +699,10 @@ begin
     & track_trigger_is_global
     & track_central_is_global
     & read_all_channels
-    & "00"
+    & "0"
 
     -- actual trigger sources
+    & configurable_trigger
     & track_central
     & track_trigger
     & force_trigger_i

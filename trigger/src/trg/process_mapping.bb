@@ -117,13 +117,25 @@
 (let [data-map (json/parse-stream (io/reader "mapping-validated.json") true)]
 
   (when (:map-ltb args)
+
     (doseq [station [ "cube" "umbrella" "cube side" "cube top" "cube bottom" "corner" "cortina"]]
       (let [paddles (->> data-map
                          (remove #(= "B" (:paddle_end %)))
                          (filter #(= (:panel_type %) station)))]
         (doseq [ltbmap (map vector  paddles (range (count paddles)))]
           (println (format-ltb-map (first ltbmap) (last ltbmap))))
-        (println ""))))
+        (println "")))
+
+    (let [station "umbrella_center"
+          paddles (->> data-map
+                       (remove #(= "B" (:paddle_end %)))
+                       (filter #(= (:panel_type %) "umbrella"))
+                       (filter #(= (:panel_number %) 7))
+                       (map #(assoc % :panel_type "umbrella_center")))]
+
+      (doseq [ltbmap (map vector  paddles (range (count paddles)))]
+        (println (format-ltb-map (first ltbmap) (last ltbmap))))
+      (println "")))
 
   (when (:map-rb args)
 

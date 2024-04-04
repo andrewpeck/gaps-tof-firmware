@@ -101,6 +101,22 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |HIT_THRESH | ~0x14~ | ~0x50~ | ~[29:28]~ | rw | ~0x0~ | Threshold for the hit bitmap. Threshold must be > this number. | 
 |------------+---+---+---------+-----+-----+----------------------------|
+|CONFIGURABLE_TRIGGER_EN | ~0x14~ | ~0x50~ | ~31~ | rw | ~0x0~ | Enable the configurable trigger | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|CUBE_SIDE_THRESH | ~0x15~ | ~0x54~ | ~[7:0]~ | rw | ~0x0~ | Threshold for the hit bitmap. Threshold must be > this number. | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|CUBE_TOP_THRESH | ~0x15~ | ~0x54~ | ~[15:8]~ | rw | ~0x0~ | Threshold for the hit bitmap. Threshold must be > this number. | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|CUBE_BOT_THRESH | ~0x15~ | ~0x54~ | ~[23:16]~ | rw | ~0x0~ | Threshold for the hit bitmap. Threshold must be > this number. | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|CUBE_CORNER_THRESH | ~0x15~ | ~0x54~ | ~[31:24]~ | rw | ~0x0~ | Threshold for the hit bitmap. Threshold must be > this number. | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|UMBRELLA_THRESH | ~0x16~ | ~0x58~ | ~[7:0]~ | rw | ~0x0~ | Threshold for the hit bitmap. Threshold must be > this number. | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|UMBRELLA_CENTER_THRESH | ~0x16~ | ~0x58~ | ~[15:8]~ | rw | ~0x0~ | Threshold for the hit bitmap. Threshold must be > this number. | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|CORTINA_THRESH | ~0x16~ | ~0x58~ | ~[23:16]~ | rw | ~0x0~ | Threshold for the hit bitmap. Threshold must be > this number. | 
+|------------+---+---+---------+-----+-----+----------------------------|
 |TRIGGER_RATE | ~0x17~ | ~0x5c~ | ~[23:0]~ | r |  | Rate of triggers in Hz | 
 |------------+---+---+---------+-----+-----+----------------------------|
 |LOST_TRIGGER_RATE | ~0x18~ | ~0x60~ | ~[23:0]~ | r |  | Rate of lost triggers in Hz | 

@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_MT_NUM_REGS : integer := 169;
+    constant REG_MT_NUM_REGS : integer := 171;
     constant REG_MT_ADDRESS_MSB : integer := 9;
     constant REG_MT_ADDRESS_LSB : integer := 0;
     constant REG_LOOPBACK_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
@@ -151,6 +151,45 @@ package registers is
     constant REG_HIT_THRESH_MSB    : integer := 29;
     constant REG_HIT_THRESH_LSB     : integer := 28;
     constant REG_HIT_THRESH_DEFAULT : std_logic_vector(29 downto 28) := "00";
+
+    constant REG_CONFIGURABLE_TRIGGER_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"14";
+    constant REG_CONFIGURABLE_TRIGGER_EN_BIT    : integer := 31;
+    constant REG_CONFIGURABLE_TRIGGER_EN_DEFAULT : std_logic := '0';
+
+    constant REG_CUBE_SIDE_THRESH_ADDR    : std_logic_vector(9 downto 0) := "00" & x"15";
+    constant REG_CUBE_SIDE_THRESH_MSB    : integer := 7;
+    constant REG_CUBE_SIDE_THRESH_LSB     : integer := 0;
+    constant REG_CUBE_SIDE_THRESH_DEFAULT : std_logic_vector(7 downto 0) := x"00";
+
+    constant REG_CUBE_TOP_THRESH_ADDR    : std_logic_vector(9 downto 0) := "00" & x"15";
+    constant REG_CUBE_TOP_THRESH_MSB    : integer := 15;
+    constant REG_CUBE_TOP_THRESH_LSB     : integer := 8;
+    constant REG_CUBE_TOP_THRESH_DEFAULT : std_logic_vector(15 downto 8) := x"00";
+
+    constant REG_CUBE_BOT_THRESH_ADDR    : std_logic_vector(9 downto 0) := "00" & x"15";
+    constant REG_CUBE_BOT_THRESH_MSB    : integer := 23;
+    constant REG_CUBE_BOT_THRESH_LSB     : integer := 16;
+    constant REG_CUBE_BOT_THRESH_DEFAULT : std_logic_vector(23 downto 16) := x"00";
+
+    constant REG_CUBE_CORNER_THRESH_ADDR    : std_logic_vector(9 downto 0) := "00" & x"15";
+    constant REG_CUBE_CORNER_THRESH_MSB    : integer := 31;
+    constant REG_CUBE_CORNER_THRESH_LSB     : integer := 24;
+    constant REG_CUBE_CORNER_THRESH_DEFAULT : std_logic_vector(31 downto 24) := x"00";
+
+    constant REG_UMBRELLA_THRESH_ADDR    : std_logic_vector(9 downto 0) := "00" & x"16";
+    constant REG_UMBRELLA_THRESH_MSB    : integer := 7;
+    constant REG_UMBRELLA_THRESH_LSB     : integer := 0;
+    constant REG_UMBRELLA_THRESH_DEFAULT : std_logic_vector(7 downto 0) := x"00";
+
+    constant REG_UMBRELLA_CENTER_THRESH_ADDR    : std_logic_vector(9 downto 0) := "00" & x"16";
+    constant REG_UMBRELLA_CENTER_THRESH_MSB    : integer := 15;
+    constant REG_UMBRELLA_CENTER_THRESH_LSB     : integer := 8;
+    constant REG_UMBRELLA_CENTER_THRESH_DEFAULT : std_logic_vector(15 downto 8) := x"00";
+
+    constant REG_CORTINA_THRESH_ADDR    : std_logic_vector(9 downto 0) := "00" & x"16";
+    constant REG_CORTINA_THRESH_MSB    : integer := 23;
+    constant REG_CORTINA_THRESH_LSB     : integer := 16;
+    constant REG_CORTINA_THRESH_DEFAULT : std_logic_vector(23 downto 16) := x"00";
 
     constant REG_TRIGGER_RATE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"17";
     constant REG_TRIGGER_RATE_MSB    : integer := 23;

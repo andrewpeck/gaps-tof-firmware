@@ -203,6 +203,54 @@
         "mask": 805306368,
         "description": "Threshold for the hit bitmap. Threshold must be > this number."
     },
+    "MT.CONFIGURABLE_TRIGGER_EN": {
+        "adr": 20,
+        "permission": "rw",
+        "mask": 2147483648,
+        "description": "Enable the configurable trigger"
+    },
+    "MT.CUBE_SIDE_THRESH": {
+        "adr": 21,
+        "permission": "rw",
+        "mask": 255,
+        "description": "Threshold for the hit bitmap. Threshold must be > this number."
+    },
+    "MT.CUBE_TOP_THRESH": {
+        "adr": 21,
+        "permission": "rw",
+        "mask": 65280,
+        "description": "Threshold for the hit bitmap. Threshold must be > this number."
+    },
+    "MT.CUBE_BOT_THRESH": {
+        "adr": 21,
+        "permission": "rw",
+        "mask": 16711680,
+        "description": "Threshold for the hit bitmap. Threshold must be > this number."
+    },
+    "MT.CUBE_CORNER_THRESH": {
+        "adr": 21,
+        "permission": "rw",
+        "mask": 4278190080,
+        "description": "Threshold for the hit bitmap. Threshold must be > this number."
+    },
+    "MT.UMBRELLA_THRESH": {
+        "adr": 22,
+        "permission": "rw",
+        "mask": 255,
+        "description": "Threshold for the hit bitmap. Threshold must be > this number."
+    },
+    "MT.UMBRELLA_CENTER_THRESH": {
+        "adr": 22,
+        "permission": "rw",
+        "mask": 65280,
+        "description": "Threshold for the hit bitmap. Threshold must be > this number."
+    },
+    "MT.CORTINA_THRESH": {
+        "adr": 22,
+        "permission": "rw",
+        "mask": 16711680,
+        "description": "Threshold for the hit bitmap. Threshold must be > this number."
+    },
     "MT.TRIGGER_RATE": {
         "adr": 23,
         "permission": "r",
