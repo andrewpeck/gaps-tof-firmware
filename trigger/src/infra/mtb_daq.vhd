@@ -99,14 +99,6 @@ architecture behavioral of mtb_daq is
   signal crc             : std_logic_vector (31 downto 0);
 
   --------------------------------------------------------------------------------
-  -- Timeout
-  --------------------------------------------------------------------------------
-
-  constant TIMEOUT_MAX   : natural                        := 2**10-1;
-  signal timeout_counter : natural range 0 to TIMEOUT_MAX := 0;
-  signal timed_out       : std_logic                      := '0';
-
-  --------------------------------------------------------------------------------
   -- Helper Functions
   --------------------------------------------------------------------------------
 
