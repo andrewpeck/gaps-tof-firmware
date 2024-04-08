@@ -106,7 +106,7 @@ architecture behavioral of mtb_daq is
   function calc_ltb_sel (mask : std_logic_vector) return natural is
     alias a : std_logic_vector(mask'length - 1 downto 0) is mask;
   begin
-    for I in mask'range loop
+    for I in 0 to mask'length-1 loop
       if a(I) = '1' then
         return I;
       end if;
