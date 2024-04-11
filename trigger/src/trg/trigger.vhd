@@ -216,7 +216,8 @@ architecture behavioral of trigger is
   -- Global trigger
   --------------------------------------------------------------------------------
 
-  signal pre_trigger : std_logic := '0';
+  signal pre_trigger     : std_logic := '0';
+  signal want_pretrigger : std_logic := '0';
 
   -- flatten the 200 inputs from a threshold to just a bitmask meaning that a
   -- channel is either on or off
@@ -714,6 +715,15 @@ begin
     & '0'
     & '0';
 
+  -- indicate that we want to make a pretrigger;
+  -- the logic is broken out into this want signal so that we can track lost triggers separately
+  -- 1) a trigger source has fired
+  -- 2) we aren't in the fixed deadtime
+  -- 3) and pretrigger is not high (so that we don't double trigger before the deadtime kicks in)
+  want_pretrigger <= not pre_trigger
+                     and not dead
+                     and or_reduce(trig_sources(11 downto 0));
+
   process (clk) is
   begin
     if (rising_edge(clk)) then
@@ -726,10 +736,9 @@ begin
                        (track_central and track_central_is_global) or
                        read_all_channels;
 
-      pre_trigger <= not busy_i
-                     and not pre_trigger
-                     and not dead
-                     and or_reduce(trig_sources(11 downto 0));
+      pre_trigger    <= not busy_i and want_pretrigger;
+      lost_trigger_o <= busy_i and want_pretrigger;
+
     end if;
   end process;
 
@@ -796,8 +805,6 @@ begin
 
   pre_trigger_o <= pre_trigger;
 
-
-
   process (clk) is
   begin
     if (rising_edge(clk)) then
@@ -814,7 +821,6 @@ begin
         hit_bitmap_dly(I) <= hit_bitmap_dly(I-1);
       end loop;
 
-      lost_trigger_o   <= busy_i and pre_trigger;
       global_trigger_o <= pre_trigger;  -- delay by 1 clock to align with event count
 
       if (pre_trigger) then
@@ -824,7 +830,6 @@ begin
 
       if (reset) then
         global_trigger_o <= '0';
-        lost_trigger_o   <= '0';
       end if;
 
     end if;
