@@ -1301,6 +1301,12 @@
         "mask": 33554431,
         "description": "Set fire bits for channels 175 to 199"
     },
+    "MT.TIU_BUSY_LENGTH": {
+        "adr": 287,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "Length in 10ns cycles of the last TIU busy flag"
+    },
     "MT.XADC.CALIBRATION": {
         "adr": 288,
         "permission": "r",

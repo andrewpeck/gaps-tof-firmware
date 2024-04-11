@@ -1001,6 +1001,12 @@
 
     </node>
 
+    <node id="TIU_BUSY_LENGTH"
+          address="0x11f"
+          permission="r"
+          mask="0xffffffff"
+          description="Length in 10ns cycles of the last TIU busy flag"
+          fw_signal="tiu_busy_length"/>
 
     <node id="XADC" address="0x120"
           description="Zynq XADC">

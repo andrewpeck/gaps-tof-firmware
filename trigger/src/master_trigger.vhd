@@ -236,12 +236,13 @@ architecture structural of gaps_mt is
   signal tiu_emulation_mode : std_logic;
   signal tiu_emu_busy_cnt   : std_logic_vector (17 downto 0);
 
-  signal tiu_busy_i    : std_logic;
-  signal tiu_serial_o  : std_logic;
-  signal tiu_gps_i     : std_logic;
-  signal tiu_trigger_o : std_logic;
-  signal tiu_bad       : std_logic;
-  signal tiu_use_aux   : std_logic := '0';
+  signal tiu_busy_length : std_logic_vector (31 downto 0) := (others => '0');
+  signal tiu_busy_i      : std_logic;
+  signal tiu_serial_o    : std_logic;
+  signal tiu_gps_i       : std_logic;
+  signal tiu_trigger_o   : std_logic;
+  signal tiu_bad         : std_logic;
+  signal tiu_use_aux     : std_logic := '0';
 
   -- 1 bit trigger for rb; this is just the OR of the channel_select
   signal rb_triggers    : std_logic_vector (NUM_RBS-1 downto 0);
@@ -1034,6 +1035,8 @@ begin
       tiu_serial_o  => tiu_serial_o,
       tiu_gps_i     => tiu_gps_i,
       tiu_trigger_o => tiu_trigger_o,
+
+      tiu_busy_length_o => tiu_busy_length,
 
       tiu_bad_o     => tiu_bad,
 
@@ -1899,18 +1902,19 @@ begin
   regs_addresses(156)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"06";
   regs_addresses(157)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"07";
   regs_addresses(158)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"08";
-  regs_addresses(159)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"20";
-  regs_addresses(160)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"21";
-  regs_addresses(161)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"22";
-  regs_addresses(162)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"23";
-  regs_addresses(163)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"00";
-  regs_addresses(164)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"01";
-  regs_addresses(165)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"02";
-  regs_addresses(166)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"03";
-  regs_addresses(167)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"04";
-  regs_addresses(168)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"05";
-  regs_addresses(169)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"06";
-  regs_addresses(170)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"07";
+  regs_addresses(159)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"1f";
+  regs_addresses(160)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"20";
+  regs_addresses(161)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"21";
+  regs_addresses(162)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"22";
+  regs_addresses(163)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "01" & x"23";
+  regs_addresses(164)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"00";
+  regs_addresses(165)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"01";
+  regs_addresses(166)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"02";
+  regs_addresses(167)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"03";
+  regs_addresses(168)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"04";
+  regs_addresses(169)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"05";
+  regs_addresses(170)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"06";
+  regs_addresses(171)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"07";
 
   -- Connect read signals
   regs_read_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB) <= loopback;
@@ -2123,22 +2127,23 @@ begin
   regs_read_arr(156)(REG_PULSER_CH_125_149_MSB downto REG_PULSER_CH_125_149_LSB) <= ltb_pulser_mask (149 downto 125);
   regs_read_arr(157)(REG_PULSER_CH_150_174_MSB downto REG_PULSER_CH_150_174_LSB) <= ltb_pulser_mask (174 downto 150);
   regs_read_arr(158)(REG_PULSER_CH_175_199_MSB downto REG_PULSER_CH_175_199_LSB) <= ltb_pulser_mask (199 downto 175);
-  regs_read_arr(159)(REG_XADC_CALIBRATION_MSB downto REG_XADC_CALIBRATION_LSB) <= calibration;
-  regs_read_arr(159)(REG_XADC_VCCPINT_MSB downto REG_XADC_VCCPINT_LSB) <= vccpint;
-  regs_read_arr(160)(REG_XADC_VCCPAUX_MSB downto REG_XADC_VCCPAUX_LSB) <= vccpaux;
-  regs_read_arr(160)(REG_XADC_VCCODDR_MSB downto REG_XADC_VCCODDR_LSB) <= vccoddr;
-  regs_read_arr(161)(REG_XADC_TEMP_MSB downto REG_XADC_TEMP_LSB) <= temp;
-  regs_read_arr(161)(REG_XADC_VCCINT_MSB downto REG_XADC_VCCINT_LSB) <= vccint;
-  regs_read_arr(162)(REG_XADC_VCCAUX_MSB downto REG_XADC_VCCAUX_LSB) <= vccaux;
-  regs_read_arr(162)(REG_XADC_VCCBRAM_MSB downto REG_XADC_VCCBRAM_LSB) <= vccbram;
-  regs_read_arr(163)(REG_HOG_GLOBAL_DATE_MSB downto REG_HOG_GLOBAL_DATE_LSB) <= GLOBAL_DATE;
-  regs_read_arr(164)(REG_HOG_GLOBAL_TIME_MSB downto REG_HOG_GLOBAL_TIME_LSB) <= GLOBAL_TIME;
-  regs_read_arr(165)(REG_HOG_GLOBAL_VER_MSB downto REG_HOG_GLOBAL_VER_LSB) <= GLOBAL_VER;
-  regs_read_arr(166)(REG_HOG_GLOBAL_SHA_MSB downto REG_HOG_GLOBAL_SHA_LSB) <= GLOBAL_SHA;
-  regs_read_arr(167)(REG_HOG_TOP_SHA_MSB downto REG_HOG_TOP_SHA_LSB) <= TOP_SHA;
-  regs_read_arr(168)(REG_HOG_TOP_VER_MSB downto REG_HOG_TOP_VER_LSB) <= TOP_VER;
-  regs_read_arr(169)(REG_HOG_HOG_SHA_MSB downto REG_HOG_HOG_SHA_LSB) <= HOG_SHA;
-  regs_read_arr(170)(REG_HOG_HOG_VER_MSB downto REG_HOG_HOG_VER_LSB) <= HOG_VER;
+  regs_read_arr(159)(REG_TIU_BUSY_LENGTH_MSB downto REG_TIU_BUSY_LENGTH_LSB) <= tiu_busy_length;
+  regs_read_arr(160)(REG_XADC_CALIBRATION_MSB downto REG_XADC_CALIBRATION_LSB) <= calibration;
+  regs_read_arr(160)(REG_XADC_VCCPINT_MSB downto REG_XADC_VCCPINT_LSB) <= vccpint;
+  regs_read_arr(161)(REG_XADC_VCCPAUX_MSB downto REG_XADC_VCCPAUX_LSB) <= vccpaux;
+  regs_read_arr(161)(REG_XADC_VCCODDR_MSB downto REG_XADC_VCCODDR_LSB) <= vccoddr;
+  regs_read_arr(162)(REG_XADC_TEMP_MSB downto REG_XADC_TEMP_LSB) <= temp;
+  regs_read_arr(162)(REG_XADC_VCCINT_MSB downto REG_XADC_VCCINT_LSB) <= vccint;
+  regs_read_arr(163)(REG_XADC_VCCAUX_MSB downto REG_XADC_VCCAUX_LSB) <= vccaux;
+  regs_read_arr(163)(REG_XADC_VCCBRAM_MSB downto REG_XADC_VCCBRAM_LSB) <= vccbram;
+  regs_read_arr(164)(REG_HOG_GLOBAL_DATE_MSB downto REG_HOG_GLOBAL_DATE_LSB) <= GLOBAL_DATE;
+  regs_read_arr(165)(REG_HOG_GLOBAL_TIME_MSB downto REG_HOG_GLOBAL_TIME_LSB) <= GLOBAL_TIME;
+  regs_read_arr(166)(REG_HOG_GLOBAL_VER_MSB downto REG_HOG_GLOBAL_VER_LSB) <= GLOBAL_VER;
+  regs_read_arr(167)(REG_HOG_GLOBAL_SHA_MSB downto REG_HOG_GLOBAL_SHA_LSB) <= GLOBAL_SHA;
+  regs_read_arr(168)(REG_HOG_TOP_SHA_MSB downto REG_HOG_TOP_SHA_LSB) <= TOP_SHA;
+  regs_read_arr(169)(REG_HOG_TOP_VER_MSB downto REG_HOG_TOP_VER_LSB) <= TOP_VER;
+  regs_read_arr(170)(REG_HOG_HOG_SHA_MSB downto REG_HOG_HOG_SHA_LSB) <= HOG_SHA;
+  regs_read_arr(171)(REG_HOG_HOG_VER_MSB downto REG_HOG_HOG_VER_LSB) <= HOG_VER;
 
   -- Connect write signals
   loopback <= regs_write_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB);

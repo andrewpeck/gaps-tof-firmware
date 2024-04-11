@@ -514,6 +514,16 @@ LTB Channel Pulser
 |CH_175_199 | ~0x108~ | ~0x420~ | ~[24:0]~ | rw | ~0x0~ | Set fire bits for channels 175 to 199 | 
 |------------+---+---+---------+-----+-----+----------------------------|
 
+*MT*
+
+Implements various control and monitoring functions of the DRS Logic
+
+|------------+-------+-------+---------+------+-----+----------------------------|
+| Node       |  Adr  | Adr8  | Bits    | Perm | Def | Description                |
+|------------+-------+-------+---------+------+-----+----------------------------|
+|TIU_BUSY_LENGTH | ~0x11f~ | ~0x47c~ | ~[31:0]~ | r |  | Length in 10ns cycles of the last TIU busy flag | 
+|------------+---+---+---------+-----+-----+----------------------------|
+
 *MT.XADC*
 
 Zynq XADC

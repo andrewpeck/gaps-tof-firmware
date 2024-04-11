@@ -37,6 +37,8 @@ entity tiu is
 
     -- outputs
 
+    tiu_busy_length_o : out std_logic_vector (31 downto 0);
+
     tiu_bad_o : out std_logic := '0';
 
     global_busy_o : out std_logic;
@@ -52,10 +54,12 @@ end tiu;
 
 architecture behavioral of tiu is
 
-  constant CLK_PERIOD          : real    := 1000000.0/real(FREQ);
-  constant tiu_trigger_cnt_max : integer := integer(1.05 / CLK_PERIOD);
+  constant CLK_PERIOD_US          : real    := 1000000.0/real(FREQ);
+  constant tiu_trigger_cnt_max : integer := integer(1.05 / CLK_PERIOD_US);
   constant tiu_busy_cnt_max    : integer := 2**tiu_emu_busy_cnt_i'length-1;
 
+  signal tiu_busy_i_rising, tiu_busy_i_falling : std_logic;
+  signal tiu_busy_i_reg : std_logic := '0';
   signal tiu_busy : std_logic := '0';
   signal tiu_gps  : std_logic := '0';
 
@@ -109,6 +113,8 @@ architecture behavioral of tiu is
   signal pps            : std_logic := '0';
   signal second_cnt     : unsigned (31 downto 0);
   signal sub_second_cnt : integer range 0 to FREQ - 1;
+
+  signal tiu_busy_cnt   : unsigned (31 downto 0);
 
 begin
 
@@ -545,5 +551,27 @@ begin
 
     end if;
   end process;
+
+  tiu_busy_i_rising <= tiu_busy_i and not tiu_busy_i_reg;
+  tiu_busy_i_falling <= not tiu_busy_i and tiu_busy_i_reg;
+
+  process (clock) is
+  begin
+    if (rising_edge(clock)) then
+      tiu_busy_i_reg <= tiu_busy_i;
+
+      if tiu_busy_i_falling = '1' then
+        tiu_busy_length_o <= std_logic_vector(tiu_busy_cnt);
+      end if;
+
+      if tiu_busy_i = '1' then
+        tiu_busy_cnt <= tiu_busy_cnt + 1;
+      elsif tiu_busy_i = '0' then
+        tiu_busy_cnt <= (others => '0');
+      end if;
+
+    end if;
+  end process;
+
 
 end behavioral;
