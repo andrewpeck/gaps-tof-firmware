@@ -242,9 +242,6 @@ architecture structural of gaps_mt is
   signal tiu_bad         : std_logic;
   signal tiu_use_aux     : std_logic := '0';
 
-  -- 1 bit trigger for rb; this is just the OR of the channel_select
-  signal rb_triggers    : std_logic_vector (NUM_RBS-1 downto 0);
-
   -- 1 bit for each paddle; 1 to select it for readout in the hitmask
   signal channel_select : channel_bitmask_t;
 
@@ -302,9 +299,6 @@ architecture structural of gaps_mt is
   signal hit_cnt_reset : std_logic;
   signal cnt_snap      : std_logic;
   signal ipb_clk       : std_logic;
-
-  signal eth_ipb_rbus : ipb_rbus;
-  signal eth_ipb_wbus : ipb_wbus;
 
   constant IPB_MASTERS : integer := 1;
 
