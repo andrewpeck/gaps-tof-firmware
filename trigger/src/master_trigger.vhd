@@ -287,6 +287,8 @@ architecture structural of gaps_mt is
   signal daq_pkt_size_xfifo   : std_logic_vector (15 downto 0) := (others => '0');
   signal daq_pkt_size_masked  : std_logic_vector (15 downto 0) := (others => '0');
   signal daq_pkt_size_rd_en   : std_logic                      := '0';
+  signal daq_pkt_num_events   : std_logic_vector (13 downto 0) := (others => '0');
+
   signal daq_pkt_size_rd_en_r : std_logic                      := '0';
   signal daq_pkt_size_rd_done : std_logic                      := '0';
   signal daq_pkt_size_valid   : std_logic                      := '0';
@@ -1177,11 +1179,13 @@ begin
 
   mtb_event_fifo_inst : entity work.fifo_sync
     generic map (
-      DEPTH     => 8192,
-      WR_WIDTH  => 16,
-      RD_WIDTH  => 16,
-      READ_MODE => "std",
-      RD_LATENCY => 1
+      ADV_FEATURES => "1400", -- data valid, rd_data_count
+      DEPTH        => 8192,
+      WR_WIDTH     => 16,
+      RD_WIDTH     => 16,
+      read_mode    => "std",
+      RD_LATENCY   => 1,
+      RD_CNT_WIDTH => daq_pkt_num_events'length
       )
     port map (
       rst    => reset or daq_reset or daq_empty,
@@ -1192,6 +1196,7 @@ begin
       din    => daq_pkt_size,
 
       -- out
+      rd_cnt => daq_pkt_num_events,
       rd_en  => daq_pkt_size_rd_en,
       dout   => daq_pkt_size_xfifo,
       valid  => daq_pkt_size_valid,
@@ -1940,6 +1945,7 @@ begin
   regs_read_arr(17)(REG_EVENT_QUEUE_DATA_MSB downto REG_EVENT_QUEUE_DATA_LSB) <= daq_data_xfifo;
   regs_read_arr(18)(REG_EVENT_QUEUE_FULL_BIT) <= daq_full;
   regs_read_arr(18)(REG_EVENT_QUEUE_EMPTY_BIT) <= daq_empty;
+  regs_read_arr(19)(REG_EVENT_QUEUE_NUM_EVENTS_MSB downto REG_EVENT_QUEUE_NUM_EVENTS_LSB) <= daq_pkt_num_events;
   regs_read_arr(19)(REG_EVENT_QUEUE_SIZE_MSB downto REG_EVENT_QUEUE_SIZE_LSB) <= daq_pkt_size_masked;
   regs_read_arr(20)(REG_INNER_TOF_THRESH_MSB downto REG_INNER_TOF_THRESH_LSB) <= inner_tof_thresh;
   regs_read_arr(20)(REG_OUTER_TOF_THRESH_MSB downto REG_OUTER_TOF_THRESH_LSB) <= outer_tof_thresh;

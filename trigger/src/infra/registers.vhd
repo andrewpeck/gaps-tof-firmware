@@ -120,6 +120,10 @@ package registers is
     constant REG_EVENT_QUEUE_EMPTY_ADDR    : std_logic_vector(9 downto 0) := "00" & x"12";
     constant REG_EVENT_QUEUE_EMPTY_BIT    : integer := 1;
 
+    constant REG_EVENT_QUEUE_NUM_EVENTS_ADDR    : std_logic_vector(9 downto 0) := "00" & x"13";
+    constant REG_EVENT_QUEUE_NUM_EVENTS_MSB    : integer := 13;
+    constant REG_EVENT_QUEUE_NUM_EVENTS_LSB     : integer := 0;
+
     constant REG_EVENT_QUEUE_SIZE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"13";
     constant REG_EVENT_QUEUE_SIZE_MSB    : integer := 31;
     constant REG_EVENT_QUEUE_SIZE_LSB     : integer := 16;

@@ -161,6 +161,12 @@
         "mask": 2,
         "description": "DAQ Buffer Empty"
     },
+    "MT.EVENT_QUEUE.NUM_EVENTS": {
+        "adr": 19,
+        "permission": "r",
+        "mask": 16383,
+        "description": "DAQ Buffer Number of Events"
+    },
     "MT.EVENT_QUEUE.SIZE": {
         "adr": 19,
         "permission": "r",
