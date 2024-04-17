@@ -823,12 +823,12 @@ begin
 
       global_trigger_o <= pre_trigger;  -- delay by 1 clock to align with event count
 
-      if (pre_trigger) then
+      if (pre_trigger = '1') then
         trig_sources_o      <= trig_sources_reg;
         pedestal_trig_latch <= pedestal_trig;
       end if;
 
-      if (reset) then
+      if (reset = '1') then
         global_trigger_o <= '0';
       end if;
 

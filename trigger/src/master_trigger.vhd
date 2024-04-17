@@ -55,8 +55,6 @@ entity gaps_mt is
 
     sys_clk_i : in std_logic; -- built-in 100Mhz callisto xo
 
-    rst_button_i : in std_logic; -- built-in callisto reset button
-
     -- RGMII interface
 
     rgmii_mdio    : inout std_logic;
