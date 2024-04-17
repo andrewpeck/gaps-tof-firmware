@@ -1155,7 +1155,7 @@ begin
 
   mtb_fifo_inst : entity work.fifo_sync
     generic map (
-      DEPTH     => 4*16384,
+      DEPTH     => 8*16384,
       WR_WIDTH  => 16,
       RD_WIDTH  => 32
       )
