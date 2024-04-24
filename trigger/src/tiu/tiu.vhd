@@ -29,6 +29,7 @@ entity tiu is
     send_event_cnt_on_timeout : in std_logic := '1';
     tiu_emulation_mode        : in std_logic;
     tiu_emu_busy_cnt_i        : in std_logic_vector (17 downto 0);
+    tiu_busy_ignore_i         : in std_logic;
 
     -- mt trigger signals
     trigger_i   : in std_logic;
@@ -39,7 +40,8 @@ entity tiu is
 
     tiu_busy_length_o : out std_logic_vector (31 downto 0);
 
-    tiu_bad_o : out std_logic := '0';
+    tiu_bad_o   : out std_logic := '0';
+    tiu_stuck_o : out std_logic := '0';
 
     global_busy_o : out std_logic;
 
@@ -116,6 +118,9 @@ architecture behavioral of tiu is
 
   signal tiu_busy_cnt   : unsigned (31 downto 0);
 
+  constant tiu_stuck_cnt_max : integer := 1_000_000_000;
+  signal tiu_stuck_cnt       : unsigned (31 downto 0);
+
 begin
 
   ila_mt_inst : ila_mt
@@ -170,7 +175,7 @@ begin
       probe14(31 downto 0)  => (others => '0')
       );
 
-  tiu_busy <= tiu_emu_busy when tiu_emulation_mode = '1' else tiu_busy_i;
+  tiu_busy <= tiu_emu_busy when tiu_emulation_mode = '1' else (tiu_busy_i and not tiu_busy_ignore_i);
   tiu_gps  <= tiu_emu_gps  when tiu_emulation_mode = '1' else tiu_gps_i;
 
   --------------------------------------------------------------------------------
@@ -184,7 +189,8 @@ begin
   --  3) When ACK is received, send the event counter
   --  4) When ACK is deasserted, ready for the next trigger
 
-  ready_for_trigger <= '1' when tiu_tx_busy = '0' and
+  ready_for_trigger <= '1' when
+                       tiu_tx_busy = '0' and
                        tiu_busy = '0' and
                        tiu_trigger = '0' and
                        tiu_timeout = '0' and
@@ -549,6 +555,23 @@ begin
         tiu_bad_o <= '0';
       end if;
 
+    end if;
+  end process;
+
+  process (clock) is
+  begin
+    if (rising_edge(clock)) then
+      if tiu_busy_i = '0' then
+        tiu_stuck_cnt <= (others => '0');
+      elsif (tiu_stuck_cnt < tiu_stuck_cnt_max) then
+        tiu_stuck_cnt <= tiu_stuck_cnt + 1;
+      end if;
+
+      if (tiu_stuck_cnt = tiu_stuck_cnt_max) then
+        tiu_stuck_o <= '1';
+      else
+        tiu_stuck_o <= '0';
+        end if;
     end if;
   end process;
 

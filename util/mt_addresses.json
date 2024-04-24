@@ -119,6 +119,18 @@
         "mask": 1,
         "description": "1 means that the tiu link is not working"
     },
+    "MT.TIU_BUSY_STUCK": {
+        "adr": 15,
+        "permission": "r",
+        "mask": 2,
+        "description": "1 means the TIU has been stuck high for a long time"
+    },
+    "MT.TIU_BUSY_IGNORE": {
+        "adr": 15,
+        "permission": "rw",
+        "mask": 4,
+        "description": "1 means the the MTB should ignore the TIU busy flag (e.g. because it is stuck)"
+    },
     "MT.LT_INPUT_STRETCH": {
         "adr": 15,
         "permission": "rw",

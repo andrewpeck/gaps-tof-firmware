@@ -57,11 +57,6 @@ entity gaps_mt is
 
     -- RGMII interface
 
-    rgmii_mdio    : inout std_logic;
-    rgmii_mdc     : inout std_logic;
-    rgmii_int_n   : in    std_logic := '1';
-    rgmii_reset_n : out   std_logic := '1';
-
     rgmii_clk125 : in std_logic;
 
     rgmii_rx_clk : in  std_logic;
@@ -126,7 +121,6 @@ architecture structural of gaps_mt is
 
   signal lt_data_i_aux_p : std_logic_vector (NUM_LT_MT_AUX-1 downto 0) := (others => '0');
   signal lt_data_i_aux_n : std_logic_vector (NUM_LT_MT_AUX-1 downto 0) := (others => '0');
-  signal lt_data_i_aux   : std_logic_vector (NUM_LT_MT_AUX-1 downto 0) := (others => '0');
 
   signal timestamp       : unsigned (31 downto 0) := (others => '0');
   signal timestamp_latch : std_logic_vector (31 downto 0) := (others => '0');
@@ -240,10 +234,9 @@ architecture structural of gaps_mt is
   signal tiu_gps_i       : std_logic;
   signal tiu_trigger_o   : std_logic;
   signal tiu_bad         : std_logic;
+  signal tiu_stuck       : std_logic;
+  signal tiu_busy_ignore : std_logic;
   signal tiu_use_aux     : std_logic := '0';
-
-  -- 1 bit for each paddle; 1 to select it for readout in the hitmask
-  signal channel_select : channel_bitmask_t;
 
   signal fb_clk, fb_clk_i : std_logic_vector (fb_clk_p'range);
   signal fb_clock_rates   : t_std32_array(fb_clk_p'range);
@@ -1037,6 +1030,7 @@ begin
       -- config
       send_event_cnt_on_timeout => '1',
       tiu_emulation_mode        => tiu_emulation_mode,
+      tiu_busy_ignore_i         => tiu_busy_ignore,
       tiu_emu_busy_cnt_i        => tiu_emu_busy_cnt,
 
       -- mt trigger signals
@@ -1931,6 +1925,8 @@ begin
   regs_read_arr(14)(REG_TIU_USE_AUX_LINK_BIT) <= tiu_use_aux;
   regs_read_arr(14)(REG_TIU_EMU_BUSY_CNT_MSB downto REG_TIU_EMU_BUSY_CNT_LSB) <= tiu_emu_busy_cnt;
   regs_read_arr(15)(REG_TIU_BAD_BIT) <= tiu_bad;
+  regs_read_arr(15)(REG_TIU_BUSY_STUCK_BIT) <= tiu_stuck;
+  regs_read_arr(15)(REG_TIU_BUSY_IGNORE_BIT) <= tiu_busy_ignore;
   regs_read_arr(15)(REG_LT_INPUT_STRETCH_MSB downto REG_LT_INPUT_STRETCH_LSB) <= lt_input_stretch;
   regs_read_arr(15)(REG_RB_INTEGRATION_WINDOW_MSB downto REG_RB_INTEGRATION_WINDOW_LSB) <= rb_window;
   regs_read_arr(15)(REG_RB_READ_ALL_CHANNELS_BIT) <= read_all_channels;
@@ -2153,6 +2149,7 @@ begin
   tiu_emulation_mode <= regs_write_arr(14)(REG_TIU_EMULATION_MODE_BIT);
   tiu_use_aux <= regs_write_arr(14)(REG_TIU_USE_AUX_LINK_BIT);
   tiu_emu_busy_cnt <= regs_write_arr(14)(REG_TIU_EMU_BUSY_CNT_MSB downto REG_TIU_EMU_BUSY_CNT_LSB);
+  tiu_busy_ignore <= regs_write_arr(15)(REG_TIU_BUSY_IGNORE_BIT);
   lt_input_stretch <= regs_write_arr(15)(REG_LT_INPUT_STRETCH_MSB downto REG_LT_INPUT_STRETCH_LSB);
   rb_window <= regs_write_arr(15)(REG_RB_INTEGRATION_WINDOW_MSB downto REG_RB_INTEGRATION_WINDOW_LSB);
   read_all_channels <= regs_write_arr(15)(REG_RB_READ_ALL_CHANNELS_BIT);
@@ -3293,6 +3290,7 @@ begin
   regs_defaults(14)(REG_TIU_EMULATION_MODE_BIT) <= REG_TIU_EMULATION_MODE_DEFAULT;
   regs_defaults(14)(REG_TIU_USE_AUX_LINK_BIT) <= REG_TIU_USE_AUX_LINK_DEFAULT;
   regs_defaults(14)(REG_TIU_EMU_BUSY_CNT_MSB downto REG_TIU_EMU_BUSY_CNT_LSB) <= REG_TIU_EMU_BUSY_CNT_DEFAULT;
+  regs_defaults(15)(REG_TIU_BUSY_IGNORE_BIT) <= REG_TIU_BUSY_IGNORE_DEFAULT;
   regs_defaults(15)(REG_LT_INPUT_STRETCH_MSB downto REG_LT_INPUT_STRETCH_LSB) <= REG_LT_INPUT_STRETCH_DEFAULT;
   regs_defaults(15)(REG_RB_INTEGRATION_WINDOW_MSB downto REG_RB_INTEGRATION_WINDOW_LSB) <= REG_RB_INTEGRATION_WINDOW_DEFAULT;
   regs_defaults(15)(REG_RB_READ_ALL_CHANNELS_BIT) <= REG_RB_READ_ALL_CHANNELS_DEFAULT;

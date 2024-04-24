@@ -136,6 +136,21 @@
           description="1 means that the tiu link is not working"
           fw_signal="tiu_bad"/>
 
+    <node id="TIU_BUSY_STUCK"
+          address="0xF"
+          permission="r"
+          mask="0x2"
+          description="1 means the TIU has been stuck high for a long time"
+          fw_signal="tiu_stuck"/>
+
+    <node id="TIU_BUSY_IGNORE"
+          address="0xF"
+          permission="rw"
+          mask="0x4"
+          description="1 means the the MTB should ignore the TIU busy flag (e.g. because it is stuck)"
+          fw_default="0x0"
+          fw_signal="tiu_busy_ignore"/>
+
     <node id="LT_INPUT_STRETCH"
           address="0xF"
           permission="rw"

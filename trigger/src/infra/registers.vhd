@@ -93,6 +93,13 @@ package registers is
     constant REG_TIU_BAD_ADDR    : std_logic_vector(9 downto 0) := "00" & x"0f";
     constant REG_TIU_BAD_BIT    : integer := 0;
 
+    constant REG_TIU_BUSY_STUCK_ADDR    : std_logic_vector(9 downto 0) := "00" & x"0f";
+    constant REG_TIU_BUSY_STUCK_BIT    : integer := 1;
+
+    constant REG_TIU_BUSY_IGNORE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"0f";
+    constant REG_TIU_BUSY_IGNORE_BIT    : integer := 2;
+    constant REG_TIU_BUSY_IGNORE_DEFAULT : std_logic := '0';
+
     constant REG_LT_INPUT_STRETCH_ADDR    : std_logic_vector(9 downto 0) := "00" & x"0f";
     constant REG_LT_INPUT_STRETCH_MSB    : integer := 7;
     constant REG_LT_INPUT_STRETCH_LSB     : integer := 4;
