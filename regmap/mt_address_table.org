@@ -578,6 +578,18 @@ HOG Parameters
 |HOG_VER | ~0x207~ | ~0x81c~ | ~[31:0]~ | r |  | HOG Version | 
 |------------+---+---+---------+-----+-----+----------------------------|
 
+*MT*
+
+Implements various control and monitoring functions of the DRS Logic
+
+|------------+-------+-------+---------+------+-----+----------------------------|
+| Node       |  Adr  | Adr8  | Bits    | Perm | Def | Description                |
+|------------+-------+-------+---------+------+-----+----------------------------|
+|TRIG_CYCLIC_EN | ~0x240~ | ~0x900~ | ~0~ | rw | ~0x0~ | Interval of cyclic triggers | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|TRIG_CYCLIC_INTERVAL | ~0x241~ | ~0x904~ | ~[31:0]~ | rw | ~0x0~ | Interval of cyclic triggers | 
+|------------+---+---+---------+-----+-----+----------------------------|
+
 
 * Module SPI 	 adr = ~0x1000~
 

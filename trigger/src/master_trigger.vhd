@@ -189,8 +189,14 @@ architecture structural of gaps_mt is
   signal trig_rate       : std_logic_vector (23 downto 0) := (others => '0');
   signal lost_trig_rate  : std_logic_vector (23 downto 0) := (others => '0');
 
-  signal trig_gen_rate   : std_logic_vector (31 downto 0) := (others => '0');
-  signal trig_gen        : std_logic                      := '0';
+  signal trig_gen_rate        : std_logic_vector (31 downto 0) := (others => '0');
+  signal trig_gen             : std_logic                      := '0';
+
+  signal trig_cyclic_cnt      : unsigned (31 downto 0)         := (others => '0');
+  signal trig_cyclic_interval : std_logic_vector (31 downto 0) := (others => '0');
+  signal trig_cyclic          : std_logic                      := '0';
+  signal trig_cyclic_en       : std_logic                      := '0';
+
   signal ext_trigger     : std_logic := '0';
   signal ext_trigger_r0  : std_logic := '0';
   signal ext_trigger_r1  : std_logic := '0';
@@ -801,7 +807,7 @@ begin
 
       hit_thresh      => hit_thresh,
 
-      force_trigger_i => trigger_ipb or trig_gen, -- or ext_trigger
+      force_trigger_i => trigger_ipb or trig_gen or trig_cyclic, -- or ext_trigger
 
       -- busy logic from the SiLi should prevent any trigger from forming
       busy_i => global_busy,
@@ -869,6 +875,25 @@ begin
       rate       => trig_gen_rate,
       trig       => trig_gen
       );
+
+  process (clock) is
+  begin
+    if (rising_edge(clock)) then
+
+      trig_cyclic <= trig_cyclic_en when (trig_cyclic_cnt = unsigned(trig_cyclic_interval)) else '0';
+
+      if (reset) then
+        trig_cyclic_cnt <= (others => '0');
+      else
+        if (trig_cyclic_cnt < unsigned(trig_cyclic_interval)) then
+          trig_cyclic_cnt <= trig_cyclic_cnt + 1;
+        else
+          trig_cyclic_cnt <= (others => '0');
+        end if;
+      end if;
+
+    end if;
+  end process;
 
   --------------------------------------------------------------------------------
   -- External Trigger Input
@@ -1906,6 +1931,8 @@ begin
   regs_addresses(169)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"05";
   regs_addresses(170)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"06";
   regs_addresses(171)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"07";
+  regs_addresses(172)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"40";
+  regs_addresses(173)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"41";
 
   -- Connect read signals
   regs_read_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB) <= loopback;
@@ -2138,6 +2165,8 @@ begin
   regs_read_arr(169)(REG_HOG_TOP_VER_MSB downto REG_HOG_TOP_VER_LSB) <= TOP_VER;
   regs_read_arr(170)(REG_HOG_HOG_SHA_MSB downto REG_HOG_HOG_SHA_LSB) <= HOG_SHA;
   regs_read_arr(171)(REG_HOG_HOG_VER_MSB downto REG_HOG_HOG_VER_LSB) <= HOG_VER;
+  regs_read_arr(172)(REG_TRIG_CYCLIC_EN_BIT) <= trig_cyclic_en;
+  regs_read_arr(173)(REG_TRIG_CYCLIC_INTERVAL_MSB downto REG_TRIG_CYCLIC_INTERVAL_LSB) <= trig_cyclic_interval;
 
   -- Connect write signals
   loopback <= regs_write_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB);
@@ -2255,6 +2284,8 @@ begin
   ltb_pulser_mask (149 downto 125) <= regs_write_arr(156)(REG_PULSER_CH_125_149_MSB downto REG_PULSER_CH_125_149_LSB);
   ltb_pulser_mask (174 downto 150) <= regs_write_arr(157)(REG_PULSER_CH_150_174_MSB downto REG_PULSER_CH_150_174_LSB);
   ltb_pulser_mask (199 downto 175) <= regs_write_arr(158)(REG_PULSER_CH_175_199_MSB downto REG_PULSER_CH_175_199_LSB);
+  trig_cyclic_en <= regs_write_arr(172)(REG_TRIG_CYCLIC_EN_BIT);
+  trig_cyclic_interval <= regs_write_arr(173)(REG_TRIG_CYCLIC_INTERVAL_MSB downto REG_TRIG_CYCLIC_INTERVAL_LSB);
 
   -- Connect write pulse signals
   trigger_ipb <= regs_write_pulse_arr(8);
@@ -3396,6 +3427,8 @@ begin
   regs_defaults(156)(REG_PULSER_CH_125_149_MSB downto REG_PULSER_CH_125_149_LSB) <= REG_PULSER_CH_125_149_DEFAULT;
   regs_defaults(157)(REG_PULSER_CH_150_174_MSB downto REG_PULSER_CH_150_174_LSB) <= REG_PULSER_CH_150_174_DEFAULT;
   regs_defaults(158)(REG_PULSER_CH_175_199_MSB downto REG_PULSER_CH_175_199_LSB) <= REG_PULSER_CH_175_199_DEFAULT;
+  regs_defaults(172)(REG_TRIG_CYCLIC_EN_BIT) <= REG_TRIG_CYCLIC_EN_DEFAULT;
+  regs_defaults(173)(REG_TRIG_CYCLIC_INTERVAL_MSB downto REG_TRIG_CYCLIC_INTERVAL_LSB) <= REG_TRIG_CYCLIC_INTERVAL_DEFAULT;
 
   -- Define writable regs
   regs_writable_arr(0) <= '1';
@@ -3495,6 +3528,8 @@ begin
   regs_writable_arr(156) <= '1';
   regs_writable_arr(157) <= '1';
   regs_writable_arr(158) <= '1';
+  regs_writable_arr(172) <= '1';
+  regs_writable_arr(173) <= '1';
 
 --==== Registers end ============================================================================
 end structural;

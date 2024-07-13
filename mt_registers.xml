@@ -1070,6 +1070,19 @@
       <node id="HOG_SHA"     mask="0xFFFFFFFF" permission="r" address="0x6" description="HOG SHA"            fw_signal="HOG_SHA"/>
       <node id="HOG_VER"     mask="0xFFFFFFFF" permission="r" address="0x7" description="HOG Version"        fw_signal="HOG_VER"/>
     </node> <!--HOG-->
+
+    <node id="TRIG_CYCLIC_EN" address="0x240" permission="rw"
+          description="Interval of cyclic triggers"
+          mask="0x1"
+          fw_default="0x0"
+          fw_signal="trig_cyclic_en"/>
+
+    <node id="TRIG_CYCLIC_INTERVAL" address="0x241" permission="rw"
+          description="Interval of cyclic triggers"
+          mask="0xffffffff"
+          fw_default="0x00000000"
+          fw_signal="trig_cyclic_interval"/>
+
   </node> <!--MT-->
 
   <node id="SPI"

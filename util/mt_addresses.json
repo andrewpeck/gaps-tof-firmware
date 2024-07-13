@@ -1421,6 +1421,18 @@
         "mask": 4294967295,
         "description": "HOG Version"
     },
+    "MT.TRIG_CYCLIC_EN": {
+        "adr": 576,
+        "permission": "rw",
+        "mask": 1,
+        "description": "Interval of cyclic triggers"
+    },
+    "MT.TRIG_CYCLIC_INTERVAL": {
+        "adr": 577,
+        "permission": "rw",
+        "mask": 4294967295,
+        "description": "Interval of cyclic triggers"
+    },
     "SPI.d0": {
         "adr": 0,
         "permission": "rw",
