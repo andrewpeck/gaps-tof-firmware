@@ -69,6 +69,8 @@ begin
 
   busy_o <= '1' when STATE /= IDLE_state else '0';
 
+  packet_buf <= STOP_LEVEL & event_cnt & START_LEVEL;
+
   process (clock, reset)
   begin
 
@@ -86,9 +88,10 @@ begin
           state_bit_cnt <= 0;
           serial_o      <= IDLE_LEVEL;
 
+          -- this transition is caused by the pre-trigger when the event ID is not yet available
+          -- it will get updated in the next clock cycle
           if (trg_i = '1') then
-            state      <= DATA_state;
-            packet_buf <= STOP_LEVEL & event_cnt & START_LEVEL;
+            state <= DATA_state;
           end if;
 
         when DATA_state =>
