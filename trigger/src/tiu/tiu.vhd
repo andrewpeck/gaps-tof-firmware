@@ -258,7 +258,7 @@ begin
 
   tiu_tx_inst : entity work.tiu_tx
     generic map (
-      EVENTCNTB => 32,
+      EVENTCNTB => EVENTCNTB,
       DIV       => 100
       )
     port map (
