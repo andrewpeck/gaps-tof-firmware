@@ -217,11 +217,11 @@ begin
       if (ready_for_trigger = '1' and trigger_i = '1') then
         tiu_trigger     <= '1';
         tiu_trigger_cnt <= tiu_trigger_cnt_max;
-        event_cnt       <= event_cnt_i;
 
       -- when the busy/ack is received, deassert the trigger output and start the
       -- event count serializer
       elsif (tiu_trigger = '1' and tiu_busy = '1') then
+        event_cnt       <= event_cnt_i;
         tiu_init_tx     <= '1';
         tiu_trigger     <= '0';
         tiu_trigger_cnt <= 0;
