@@ -57,7 +57,7 @@ end tiu;
 architecture behavioral of tiu is
 
   constant CLK_PERIOD_US          : real    := 1000000.0/real(FREQ);
-  constant tiu_trigger_cnt_max : integer := integer(1.05 / CLK_PERIOD_US);
+  constant tiu_timeout_cnt_max : integer := integer(1.05 / CLK_PERIOD_US);
   constant tiu_busy_cnt_max    : integer := 2**tiu_emu_busy_cnt_i'length-1;
 
   signal tiu_busy_i_rising, tiu_busy_i_falling : std_logic;
@@ -65,13 +65,16 @@ architecture behavioral of tiu is
   signal tiu_busy : std_logic := '0';
   signal tiu_gps  : std_logic := '0';
 
+  type tx_init_state_t is (WAIT_FOR_TRIGGER, WAIT_FOR_BUSY, INIT_TX, WAIT_FOR_SERIAL);
+  signal tx_init_state : tx_init_state_t := WAIT_FOR_TRIGGER;
+
   --------------------------------------------------------------------------------
   -- Trigger Logic
   --------------------------------------------------------------------------------
 
   signal tiu_triggered     : std_logic                              := '0';
   signal event_cnt         : std_logic_vector (event_cnt_i'range)   := (others => '0');
-  signal tiu_trigger_cnt   : integer range 0 to tiu_trigger_cnt_max := 0;
+  signal tiu_timeout_cnt   : integer range 0 to tiu_timeout_cnt_max := 0;
   signal ready_for_trigger : std_logic;
   signal tiu_tx_busy       : std_logic                              := '0';
   signal tiu_init_tx       : std_logic                              := '0';
@@ -147,7 +150,7 @@ begin
       probe3(7)             => '0',
       probe4(4 downto 0)    => (others => '0'),
       probe4(5)             => tiu_emulation_mode,
-      probe4(6)             => tiu_busy,
+      probe4(6)             => '0',
       probe4(7)             => '0',
       probe5(0)             => tiu_timebyte_dav,
       probe6(0)             => '0',
@@ -157,13 +160,13 @@ begin
       probe10(31 downto 0)  => event_cnt,
       probe11(31 downto 0)  => timestamp_o,
       probe12(31 downto 0)  => timestamp_i,
-      probe13(0)            => tiu_tx_busy,
+      probe13(0)            => '0',
       probe13(1)            => tiu_init_tx,
       probe13(2)            => tiu_timeout,
       probe13(3)            => ready_for_trigger,
       probe13(4)            => tiu_tx_busy,
       probe13(5)            => tiu_init_tx,
-      probe13(6)            => tiu_timeout,
+      probe13(6)            => '0',
       probe13(7)            => tiu_falling,
       probe13(15 downto 8)  => tiu_timebyte,
       probe13(19 downto 16) => std_logic_vector(to_unsigned(tiu_byte_cnt, 4)),
@@ -189,12 +192,7 @@ begin
   --  3) When ACK is received, send the event counter
   --  4) When ACK is deasserted, ready for the next trigger
 
-  ready_for_trigger <= '1' when
-                       tiu_tx_busy = '0' and
-                       tiu_busy = '0' and
-                       tiu_triggered = '0' and
-                       tiu_timeout = '0' and
-                       tiu_trigger_cnt = 0 else '0';
+  ready_for_trigger <= '1' when tiu_triggered = '0' else '0';
 
   -- or the statemachine derived tiu_triggered signal with the async
   -- source of the trigger so that it is activated 1 clock cycle ahead of the
@@ -203,51 +201,71 @@ begin
   -- over and held high until the ack comes back from the tiu
   tiu_trigger_o <= tiu_triggered or (ready_for_trigger and trigger_i);
 
+  tiu_triggered <= '0' when (tx_init_state = WAIT_FOR_TRIGGER) else '1';
+
   global_busy_o <= not ready_for_trigger;
 
   process (clock) is
   begin
     if (rising_edge(clock)) then
 
-      tiu_init_tx   <= '0';
-      tiu_triggered <= '0';
-      tiu_timeout   <= '0';
+      tiu_timeout     <= '0';
 
-      -- start a trigger
-      if (ready_for_trigger = '1' and trigger_i = '1') then
-        tiu_triggered   <= '1';
-        tiu_trigger_cnt <= tiu_trigger_cnt_max;
+      case tx_init_state is
 
-      -- when the busy/ack is received, deassert the trigger output and start the
-      -- event count serializer
-      elsif (tiu_triggered = '1' and tiu_busy = '1') then
-        event_cnt       <= event_cnt_i;
-        tiu_init_tx     <= '1';
-        tiu_triggered   <= '0';
-        tiu_trigger_cnt <= 0;
+        when WAIT_FOR_TRIGGER =>
 
-      -- still waiting for the busy
-      elsif (tiu_triggered = '1' and tiu_trigger_cnt > 0) then
-        tiu_trigger_cnt <= tiu_trigger_cnt - 1;
-        tiu_triggered   <= '1';
+          -- start a trigger
+          if (ready_for_trigger = '1' and trigger_i = '1') then
+            tiu_timeout_cnt <= tiu_timeout_cnt_max;
+            tx_init_state   <= WAIT_FOR_BUSY;
+          end if;
 
-      -- timeout
-      elsif (tiu_triggered = '1' and tiu_trigger_cnt = 0) then
-        tiu_trigger_cnt <= 0;
-        tiu_triggered   <= '0';
-        tiu_timeout     <= '1';
+        -- when the busy/ack is received, deassert the trigger output and start the
+        -- event count serializer
+        when WAIT_FOR_BUSY =>
 
-        if (send_event_cnt_on_timeout = '1') then
-          tiu_init_tx <= '1';
-        end if;
+          event_cnt <= event_cnt_i;
 
-      -- else:
-      --  + waiting for busy to be deasserted
-      --  + ???
-      else
-        tiu_trigger_cnt <= 0;
-        tiu_triggered   <= '0';
-      end if;
+          -- acknowledgement received
+          if tiu_busy = '1' or tiu_busy_ignore_i = '1' then
+            tx_init_state <= INIT_TX;
+            tiu_init_tx <= '1';
+
+          -- still waiting for the busy
+          elsif (tiu_timeout_cnt > 0) then
+            tiu_timeout_cnt <= tiu_timeout_cnt - 1;
+
+          -- timeout
+          elsif (tiu_timeout_cnt = 0) then
+
+            tiu_timeout     <= '1';
+
+            if (send_event_cnt_on_timeout = '1') then
+              tx_init_state <= INIT_TX;
+              tiu_init_tx <= '1';
+            else
+              tx_init_state <= WAIT_FOR_TRIGGER;
+            end if;
+
+          end if;
+
+        when INIT_TX =>
+
+          tx_init_state <= WAIT_FOR_SERIAL;
+
+        when WAIT_FOR_SERIAL =>
+
+          tiu_init_tx <= '0';
+
+          if (tiu_tx_busy = '0') then
+            tx_init_state <= WAIT_FOR_TRIGGER;
+          end if;
+
+        when others =>
+          tx_init_state   <= WAIT_FOR_TRIGGER;
+
+      end case;
 
     end if;
   end process;
