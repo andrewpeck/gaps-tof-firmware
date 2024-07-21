@@ -19,7 +19,7 @@ async def tiu_test_comms(dut):
     dut.trigger_i.value = 0
     dut.tiu_emulation_mode.value = 1
     dut.timestamp_i.value = 1
-    dut.event_cnt_i.value = 1
+    dut.event_cnt_i.value = 0
 
     # RESET
     dut.reset.value = 1
@@ -28,24 +28,26 @@ async def tiu_test_comms(dut):
         dut.event_cnt_i.value += 1
     dut.reset.value = 0
 
-    # TRIGGER
-    await RisingEdge(dut.clock)
-    dut.event_cnt_i.value += 1
-    dut.trigger_i.value = 1
-    await RisingEdge(dut.clock)
-    dut.event_cnt_i.value += 1
-    dut.trigger_i.value = 0
+    for trigger in range(5):
 
-    #
-    for i in range(10000):
-        if i == 100:
-            dut.tiu_busy_i.value = 1
-        if i == 200:
-            dut.tiu_busy_i.value = 0
+        # TRIGGER
         await RisingEdge(dut.clock)
+        dut.event_cnt_i.value += 1
+        dut.trigger_i.value = 1
+        await RisingEdge(dut.clock)
+        dut.event_cnt_i.value += 1
+        dut.trigger_i.value = 0
 
-    for i in range(100):
-        await RisingEdge(dut.clock)
+        #
+        for i in range(10000):
+            if i == 100:
+                dut.tiu_busy_i.value = 1
+            if i == 200:
+                dut.tiu_busy_i.value = 0
+            await RisingEdge(dut.clock)
+
+        for i in range(10):
+            await RisingEdge(dut.clock)
 
 
 def test_tiu():
