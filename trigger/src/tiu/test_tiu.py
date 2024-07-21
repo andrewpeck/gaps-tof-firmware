@@ -1,20 +1,15 @@
 #!/usr/bin/env python3
 import os
-import random
-import pytest
 
 import cocotb
-from cocotb_test.simulator import run
-from cocotb.utils import get_sim_time
-from cocotb.triggers import Timer
 from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge
+from cocotb_test.simulator import run
+
 
 @cocotb.test()
 async def tiu_test_comms(dut):
     """Test communication with the TIU"""
-
-    PERIOD=36
 
     cocotb.start_soon(Clock(dut.clock, 5, units="ns").start())  # Create a clock
 
@@ -55,7 +50,6 @@ async def tiu_test_comms(dut):
 def test_tiu():
 
     tests_dir = os.path.abspath(os.path.dirname(__file__))
-    rtl_dir = os.path.abspath(os.path.join(tests_dir, '..', 'src'))
     module = os.path.splitext(os.path.basename(__file__))[0]
 
     vhdl_sources = [
