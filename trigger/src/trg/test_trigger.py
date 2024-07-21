@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 import os
-import random
 
 import cocotb
-from cocotb_test.simulator import run
 from cocotb.clock import Clock, Timer
-from cocotb.triggers import RisingEdge, FallingEdge
+from cocotb.triggers import FallingEdge, RisingEdge
+from cocotb_test.simulator import run
 
 # monitor that the trigger signal is always asserted when the event counter increments
 
@@ -22,6 +21,14 @@ async def monitor_trig_width(dut):
         await RisingEdge(dut.clk)
 
 
+async def busy_logic(dut):
+    await RisingEdge(dut.rb_trigger_o)
+    await RisingEdge(dut.clk)
+    dut.busy_i.value = 1
+    await Timer(1, units="us")
+    dut.busy_i.value = 0
+
+
 def set_hits(dut, value):
     for i, val in enumerate(value):
         getattr(dut, f"hits_i_{i}").value = val
@@ -34,11 +41,10 @@ async def gaps_trigger_test_any_global(dut):
 
 @cocotb.test()
 async def gaps_trigger_test_rb_window(dut):
-    await gaps_trigger_test(dut, trig="any", is_global=0, rb_window=0)
-    await gaps_trigger_test(dut, trig="any", is_global=0, rb_window=1)
-    await gaps_trigger_test(dut, trig="any", is_global=0, rb_window=10)
-    await gaps_trigger_test(dut, trig="any", is_global=0, rb_window=30)
-    await gaps_trigger_test(dut, trig="any", is_global=0, rb_window=31)
+    await gaps_trigger_test(dut, trig="any", is_global=1, rb_window=0)
+    await gaps_trigger_test(dut, trig="any", is_global=1, rb_window=1)
+    await gaps_trigger_test(dut, trig="any", is_global=1, rb_window=10)
+    await gaps_trigger_test(dut, trig="any", is_global=1, rb_window=30)
 
 
 @cocotb.test()
@@ -92,6 +98,7 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
     cocotb.start_soon(Clock(dut.clk, 10, units="ns").start())  # Create a clock
 
     # cocotb.start_soon(monitor_trig_width(dut))
+    cocotb.start_soon(busy_logic(dut))
 
     dut.event_cnt_reset.value = 1
 
@@ -179,7 +186,12 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
         else:
             data = 200 * [2]
 
+        if dut.busy_i.value == 1:
+            await FallingEdge(dut.busy_i)
+
         set_hits(dut, data)
+        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk)
         await RisingEdge(dut.clk)
         set_hits(dut, 200 * [0])
 
@@ -266,9 +278,8 @@ def test_trigger():
         toplevel="trigger_top",
         parameters={"DEBUG": False},
         compile_args=["--std=08"],
-        simulation_args=["--ieee-asserts=disable"],
         toplevel_lang="vhdl",
-        gui=0,
+        gui=1,
         waves=1,
     )
 
