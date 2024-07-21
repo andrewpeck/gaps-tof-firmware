@@ -38,14 +38,15 @@ async def tiu_test_comms(dut):
 
     #
     for i in range(10000):
-        if i==100:
+        if i == 100:
             dut.tiu_busy_i.value = 1
-        if i==200:
+        if i == 200:
             dut.tiu_busy_i.value = 0
         await RisingEdge(dut.clock)
 
     for i in range(100):
         await RisingEdge(dut.clock)
+
 
 def test_tiu():
 
@@ -72,6 +73,7 @@ def test_tiu():
         gui=1,
         waves=1
     )
+
 
 if __name__ == "__main__":
     test_tiu()
