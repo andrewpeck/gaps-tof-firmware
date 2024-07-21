@@ -1059,7 +1059,7 @@ begin
       tiu_emu_busy_cnt_i        => tiu_emu_busy_cnt,
 
       -- mt trigger signals
-      trigger_i         => pre_trigger or global_trigger,
+      pre_trigger_i     => pre_trigger or global_trigger,
       event_cnt_i       => event_cnt,
       timestamp_i       => std_logic_vector(timestamp),
 

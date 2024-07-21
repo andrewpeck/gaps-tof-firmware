@@ -32,9 +32,9 @@ entity tiu is
     tiu_busy_ignore_i         : in std_logic;
 
     -- mt trigger signals
-    trigger_i   : in std_logic;
-    event_cnt_i : in std_logic_vector (EVENTCNTB-1 downto 0);
-    timestamp_i : in std_logic_vector (TIMESTAMPB-1 downto 0);
+    pre_trigger_i : in std_logic;
+    event_cnt_i   : in std_logic_vector (EVENTCNTB-1 downto 0);
+    timestamp_i   : in std_logic_vector (TIMESTAMPB-1 downto 0);
 
     -- outputs
 
@@ -46,9 +46,9 @@ entity tiu is
     global_busy_o : out std_logic;
 
     tiu_gps_valid_o : out std_logic;
-    tiu_gps_o       : out std_logic_vector (GPSB-1 downto 0);
+    tiu_gps_o       : out std_logic_vector (GPSB-1 downto 0) := (others => '0');
 
-    timestamp_o       : out std_logic_vector (TIMESTAMPB-1 downto 0);
+    timestamp_o       : out std_logic_vector (TIMESTAMPB-1 downto 0) := (others => '0');
     timestamp_valid_o : out std_logic
 
     );
@@ -65,8 +65,8 @@ architecture behavioral of tiu is
   signal tiu_busy : std_logic := '0';
   signal tiu_gps  : std_logic := '0';
 
-  type tx_init_state_t is (WAIT_FOR_TRIGGER, WAIT_FOR_BUSY, INIT_TX, WAIT_FOR_SERIAL);
-  signal tx_init_state : tx_init_state_t := WAIT_FOR_TRIGGER;
+  type tx_init_state_t is (READY_FOR_TRIGGER, WAIT_FOR_BUSY, INIT_TX, WAIT_FOR_SERIAL);
+  signal tx_init_state : tx_init_state_t := READY_FOR_TRIGGER;
 
   --------------------------------------------------------------------------------
   -- Trigger Logic
@@ -75,7 +75,6 @@ architecture behavioral of tiu is
   signal tiu_triggered     : std_logic                              := '0';
   signal event_cnt         : std_logic_vector (event_cnt_i'range)   := (others => '0');
   signal tiu_timeout_cnt   : integer range 0 to tiu_timeout_cnt_max := 0;
-  signal ready_for_trigger : std_logic;
   signal tiu_tx_busy       : std_logic                              := '0';
   signal tiu_init_tx       : std_logic                              := '0';
   signal tiu_timeout       : std_logic                              := '0';
@@ -135,7 +134,7 @@ begin
       probe2(1)             => tiu_serial_o,
       probe2(2)             => tiu_gps,
       probe2(3)             => tiu_triggered,
-      probe2(4)             => trigger_i,
+      probe2(4)             => pre_trigger_i,
       probe2(5)             => global_busy_o,
       probe2(6)             => timestamp_valid_o,
       probe2(7)             => tiu_gps_valid_o,
@@ -163,7 +162,7 @@ begin
       probe13(0)            => '0',
       probe13(1)            => tiu_init_tx,
       probe13(2)            => tiu_timeout,
-      probe13(3)            => ready_for_trigger,
+      probe13(3)            => '0',
       probe13(4)            => tiu_tx_busy,
       probe13(5)            => tiu_init_tx,
       probe13(6)            => '0',
@@ -184,39 +183,34 @@ begin
   --------------------------------------------------------------------------------
   -- Trigger Out
   --------------------------------------------------------------------------------
-
-  -- upon receiving a trigger, we should:
-  --  1) assert the trigger output
-  --  2) wait a for 1.05 us for the ACK signal (busy) to come from the SiLI
-  --     - If ACK does not come, timeout and do ???
-  --  3) When ACK is received, send the event counter
-  --  4) When ACK is deasserted, ready for the next trigger
-
-  ready_for_trigger <= '1' when tiu_triggered = '0' else '0';
-
   -- or the statemachine derived tiu_triggered signal with the async
   -- source of the trigger so that it is activated 1 clock cycle ahead of the
   -- state machine. this reduces latency by 1 clock. thanks to the OR, once the
   -- state machine takes effect the active hi trigger signal will get taken
   -- over and held high until the ack comes back from the tiu
-  tiu_trigger_o <= tiu_triggered or (ready_for_trigger and trigger_i);
-
-  tiu_triggered <= '0' when (tx_init_state = WAIT_FOR_TRIGGER) else '1';
-
-  global_busy_o <= not ready_for_trigger;
+  tiu_trigger_o <= tiu_triggered or pre_trigger_i;
+  tiu_triggered <= '0' when (tx_init_state = READY_FOR_TRIGGER) else '1';
+  global_busy_o <= tiu_triggered;
 
   process (clock) is
   begin
     if (rising_edge(clock)) then
 
+      -- upon receiving a trigger, we should:
+      --  1) assert the trigger output
+      --  2) wait a for 1.05 us for the ACK signal (busy) to come from the SiLI
+      --     - If ACK does not come, timeout and do ???
+      --  3) When ACK is received, send the event counter
+      --  4) When ACK is deasserted, ready for the next trigger
+
       tiu_timeout     <= '0';
 
       case tx_init_state is
 
-        when WAIT_FOR_TRIGGER =>
+        when READY_FOR_TRIGGER =>
 
           -- start a trigger
-          if (ready_for_trigger = '1' and trigger_i = '1') then
+          if (pre_trigger_i = '1') then
             tiu_timeout_cnt <= tiu_timeout_cnt_max;
             tx_init_state   <= WAIT_FOR_BUSY;
           end if;
@@ -245,7 +239,7 @@ begin
               tx_init_state <= INIT_TX;
               tiu_init_tx <= '1';
             else
-              tx_init_state <= WAIT_FOR_TRIGGER;
+              tx_init_state <= READY_FOR_TRIGGER;
             end if;
 
           end if;
@@ -259,13 +253,17 @@ begin
           tiu_init_tx <= '0';
 
           if (tiu_tx_busy = '0') then
-            tx_init_state <= WAIT_FOR_TRIGGER;
+            tx_init_state <= READY_FOR_TRIGGER;
           end if;
 
         when others =>
-          tx_init_state   <= WAIT_FOR_TRIGGER;
+          tx_init_state   <= READY_FOR_TRIGGER;
 
       end case;
+
+      if (reset='1') then
+        tx_init_state   <= READY_FOR_TRIGGER;
+      end if;
 
     end if;
   end process;
