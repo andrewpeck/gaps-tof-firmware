@@ -106,8 +106,8 @@ architecture behavioral of tiu is
   signal tiu_emu_word     : std_logic_vector (GPSB-1 downto 0)  := (others => '0');
   signal tiu_emu_byte_cnt : integer range 0 to GPSB/8-1         := 0;
 
-  type busy_state_t is (IDLE, WAITING_FOR_BUSY, BUSY);
-  signal tiu_busy_state : busy_state_t := IDLE;
+  type emu_busy_state_t is (IDLE, WAITING_FOR_BUSY, BUSY);
+  signal tiu_emu_busy_state : emu_busy_state_t := IDLE;
 
   type gps_rx_state_t is (IDLE, WAIT_FOR_EMPTY, LOAD, WAIT_FOR_BUSY);
   signal gps_rx_state : gps_rx_state_t := IDLE;
@@ -427,14 +427,14 @@ begin
   begin
     if (rising_edge(clock)) then
 
-      case tiu_busy_state is
+      case tiu_emu_busy_state is
 
         when IDLE =>
 
           tiu_emu_busy <= '0';
 
           if (tiu_triggered = '1') then
-            tiu_busy_state   <= WAITING_FOR_BUSY;
+            tiu_emu_busy_state   <= WAITING_FOR_BUSY;
             tiu_emu_busy_cnt <= 100;
           end if;
 
@@ -445,7 +445,7 @@ begin
           if (tiu_emu_busy_cnt > 0) then
             tiu_emu_busy_cnt <= tiu_emu_busy_cnt - 1;
           elsif (tiu_emu_busy_cnt = 0) then
-            tiu_busy_state   <= BUSY;
+            tiu_emu_busy_state   <= BUSY;
             tiu_emu_busy_cnt <= to_integer(unsigned(tiu_emu_busy_cnt_i));
           end if;
 
@@ -456,17 +456,17 @@ begin
           if (tiu_emu_busy_cnt > 0) then
             tiu_emu_busy_cnt <= tiu_emu_busy_cnt - 1;
           elsif (tiu_emu_busy_cnt = 0) then
-            tiu_busy_state <= IDLE;
+            tiu_emu_busy_state <= IDLE;
           end if;
 
         when others =>
 
-          tiu_busy_state <= IDLE;
+          tiu_emu_busy_state <= IDLE;
 
       end case;
 
       if (reset = '1') then
-        tiu_busy_state <= IDLE;
+        tiu_emu_busy_state <= IDLE;
       end if;
 
     end if;
