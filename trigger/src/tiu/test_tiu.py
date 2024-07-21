@@ -17,7 +17,7 @@ async def tiu_test_comms(dut):
     dut.tiu_busy_i.value = 0
     dut.tiu_gps_i.value = 0
     dut.trigger_i.value = 0
-    dut.tiu_emulation_mode.value = 1
+    dut.tiu_emulation_mode.value = 0
     dut.timestamp_i.value = 1
     dut.event_cnt_i.value = 0
 
