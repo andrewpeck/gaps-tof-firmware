@@ -65,7 +65,7 @@ architecture behavioral of tiu is
   signal tiu_busy : std_logic := '0';
   signal tiu_gps  : std_logic := '0';
 
-  type tx_init_state_t is (READY_FOR_TRIGGER, WAIT_FOR_BUSY, INIT_TX, WAIT_FOR_SERIAL);
+  type tx_init_state_t is (READY_FOR_TRIGGER, WAIT_FOR_BUSY, INIT_TX, WAIT_FOR_READY);
   signal tx_init_state : tx_init_state_t := READY_FOR_TRIGGER;
 
   --------------------------------------------------------------------------------
@@ -190,7 +190,7 @@ begin
   -- over and held high until the ack comes back from the tiu
   tiu_trigger_o <= tiu_triggered or pre_trigger_i;
   tiu_triggered <= '0' when (tx_init_state = READY_FOR_TRIGGER) else '1';
-  global_busy_o <= tiu_triggered;
+  global_busy_o <= tiu_triggered or tiu_busy;
 
   process (clock) is
   begin
@@ -210,7 +210,7 @@ begin
         when READY_FOR_TRIGGER =>
 
           -- start a trigger
-          if (pre_trigger_i = '1') then
+          if (tiu_busy='0' and pre_trigger_i = '1') then
             tiu_timeout_cnt <= tiu_timeout_cnt_max;
             tx_init_state   <= WAIT_FOR_BUSY;
           end if;
@@ -246,13 +246,13 @@ begin
 
         when INIT_TX =>
 
-          tx_init_state <= WAIT_FOR_SERIAL;
+          tx_init_state <= WAIT_FOR_READY;
 
-        when WAIT_FOR_SERIAL =>
+        when WAIT_FOR_READY =>
 
           tiu_init_tx <= '0';
 
-          if (tiu_tx_busy = '0') then
+          if (tiu_tx_busy = '0' and tiu_busy = '0') then
             tx_init_state <= READY_FOR_TRIGGER;
           end if;
 
