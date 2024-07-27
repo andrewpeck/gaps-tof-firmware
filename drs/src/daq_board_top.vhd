@@ -131,12 +131,12 @@ architecture Behavioral of top_readout_board is
   signal ram_b_occ_rst        : std_logic;
   signal ram_toggle_request   : std_logic;
 
-  signal drs_data         : std_logic_vector (27 downto 0);
-  signal drs_rden         : std_logic := '0';
-  signal drs_data_valid   : std_logic;
-  signal drs_dwrite_sync  : std_logic;
-  signal drs_dwrite_async : std_logic;
-  signal drs_dwrite_mask  : std_logic := '1';
+  signal drs_data                : std_logic_vector (27 downto 0);
+  signal drs_rden                : std_logic;
+  signal drs_data_valid          : std_logic;
+  signal drs_dwrite_xdrs         : std_logic;
+  signal drs_dwrite_xtrig        : std_logic;
+  signal drs_dwrite_wait_ch_mask : std_logic := '1';
 
   -- Trigger Signals
   signal start_readout         : std_logic := '0';
@@ -566,7 +566,7 @@ begin
         probe2(70)            => trigger_enable,
         probe2(71)            => soft_reset_trg,
         probe3(15 downto 0)   => fifo_data_out,
-        probe3(16)            => drs_dwrite_async,
+        probe3(16)            => drs_dwrite_xtrig,
         probe3(17)            => daq_ready,
         probe3(18)            => ext_trigger_i,
         probe3(27 downto 19)  => readout_mask,
@@ -782,7 +782,9 @@ begin
   -- Trigger output
   --------------------------------------------------------------------------------
 
-  drs_dwrite_o <= drs_dwrite_mask and drs_dwrite_sync and drs_dwrite_async;
+  -- drs_dwrite_xtrig is asserted immediately based on the trigger firing
+  -- drs_dwrite_xdrs is asserted by the DRS module much later, after start readout
+  drs_dwrite_o <= drs_dwrite_wait_ch_mask and drs_dwrite_xdrs and drs_dwrite_xtrig;
 
   trigger_mux_inst : entity work.trigger_mux
     generic map (
@@ -804,7 +806,7 @@ begin
       master_trigger => mt_trigger_mode and mt_trigger,
 
       trigger_o => trigger,
-      dwrite_o  => drs_dwrite_async
+      dwrite_o  => drs_dwrite_xtrig
       );
 
   --------------------------------------------------------------------------------
@@ -877,16 +879,16 @@ begin
     if (rising_edge(clock)) then
       if (mt_trigger_mode='0') then
         start_readout   <= trigger;
-        drs_dwrite_mask <= '1';
+        drs_dwrite_wait_ch_mask <= '1';
       else
         start_readout <= mt_mask_valid;
 
         -- when we get a trigger, dwrite goes low, keep it low until we get the
         -- mask and the drs module itself takes over the dwrite
         if (trigger = '1') then
-          drs_dwrite_mask <= '0';
-        elsif (drs_dwrite_sync = '0') then
-          drs_dwrite_mask <= '1';
+          drs_dwrite_wait_ch_mask <= '0';
+        elsif (drs_dwrite_xdrs = '0') then
+          drs_dwrite_wait_ch_mask <= '1';
         end if;
 
       end if;
@@ -929,7 +931,7 @@ begin
       drs_addr_o      => drs_addr_o(3 downto 0),
       drs_nreset_o    => drs_nreset_o,
       drs_denable_o   => drs_denable_o,
-      drs_dwrite_o    => drs_dwrite_sync,
+      drs_dwrite_o    => drs_dwrite_xdrs,
       drs_rsrload_o   => drs_rsrload_o,
       drs_srclk_en_o  => drs_srclk_en,
       drs_srin_o      => drs_srin_o,
