@@ -129,7 +129,7 @@ begin
               trg        <= '1';
               trg_fast_o <= '1'; -- TRIGGER
             else
-              fragment <= fragment_en_i;
+              fragment <= '1';
             end if;
 
           when MASK_state =>
@@ -137,7 +137,13 @@ begin
             trg_fast_o      <= '0'; -- UNTRIGGER
 
             if (state_bit_cnt = MASKB - 1) then
-              mask          <= mask_buf(MASKB-1 downto 1) & serial_i;
+
+              if (fragment = '1') then
+                mask <= (others => '0');
+              else
+                mask <= mask_buf(MASKB-1 downto 1) & serial_i;
+              end if;
+
               state         <= EVENTCNT_state;
               state_bit_cnt <= 0;
               mask_valid    <= '1';
@@ -250,7 +256,7 @@ begin
   begin
     if (rising_edge(outclk)) then
 
-      fifo_wr_o   <= (fragment or trg) and done_pulse;
+      fifo_wr_o   <= ((fragment and fragment_en_i) or trg) and done_pulse;
       fragment_o  <= fragment;
 
       trg_r             <= trg; 
