@@ -347,7 +347,7 @@
             <node id="DAQ_FRAGMENT_EN" address="0x1" permission="rw"
                 description="1 to enable daq fragments (header only packets) when the DRS is busy"
                 mask="0x1"
-                fw_default="0x1"
+                fw_default="0x0"
                 fw_signal="daq_fragment_en" />
             <node id="DAQ_BUSY" address="0x1" permission="r"
                 description="1 = DAQ is still busy reading out"
