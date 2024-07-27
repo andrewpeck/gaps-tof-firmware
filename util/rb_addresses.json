@@ -664,6 +664,13 @@
         "description": "Count the number of times the event queue has been written to",
         "adr8": 520
     },
+    "DRS.AUTO_PURGE_MODE": {
+        "adr": 131,
+        "permission": "rw",
+        "mask": 1,
+        "description": "1 for the DAQ to automatically purge any remaining data from the DRS fifo after readout",
+        "adr8": 524
+    },
     "DRS.DMA.RAM_A_OCC_RST": {
         "adr": 256,
         "permission": "w",

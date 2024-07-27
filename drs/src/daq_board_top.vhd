@@ -333,6 +333,11 @@ architecture Behavioral of top_readout_board is
   signal daq_fragment_en       : std_logic := '0';
   signal daq_acknowledge       : std_logic := '0';
 
+  signal auto_purge_mode   : std_logic;
+  signal auto_purge        : std_logic;
+
+  signal drs_fifo_reset    : std_logic;
+
   signal xfifo_fragment  : std_logic_vector (0 downto 0);
   signal xfifo_trigger   : std_logic_vector (0 downto 0);
   signal xfifo_busy      : std_logic_vector (0 downto 0);
@@ -752,7 +757,7 @@ begin
       RD_WIDTH  => event_queue_din'length
       )
     port map (
-      rst    => reset or soft_reset_buf or soft_reset_trg,
+      rst    => reset or soft_reset_buf or soft_reset_trg or (auto_purge and not daq_fragment_en),
       clk    => clock,
       wr_en  => event_queue_wr_en,
       rd_en  => event_queue_rd_en,
@@ -1016,22 +1021,38 @@ begin
   -- DAQ
   -------------------------------------------------------------------------------
 
-  daq_fifo_inst : entity work.fifo_sync
+  process (clock) is
+  begin
+    if (rising_edge(clock)) then
+      if (readout_complete='1' and auto_purge_mode = '1') then
+        auto_purge <= readout_complete;
+      end if;
+    end if;
+  end process;
+
+  process (clock) is
+  begin
+    if (rising_edge(clock)) then
+      drs_fifo_reset <= reset or soft_reset_buf or auto_purge;
+    end if;
+  end process;
+
+  drs_fifo_inst : entity work.fifo_sync
     generic map (
       DEPTH     => 1024,
       WR_WIDTH  => 28,
       RD_WIDTH  => 28
       )
     port map (
-      rst    => reset or soft_reset_buf,
-      clk    => clock,                  -- daq_clock
-      wr_en  => drs_data_valid,
-      rd_en  => drs_rden,
-      din    => drs_data,
-      dout   => drs_data_xfifo,
-      valid  => drs_valid_xfifo,
-      full   => open,
-      empty  => drs_fifo_empty
+      rst      => drs_fifo_reset,
+      clk      => clock,                -- daq_clock
+      wr_en    => drs_data_valid,
+      rd_en    => drs_rden,
+      din      => drs_data,
+      dout     => drs_data_xfifo,
+      valid    => drs_valid_xfifo,
+      full     => open,
+      empty    => drs_fifo_empty
       );
 
   daq_event_cnt <= xfifo_event_cnt   when mt_trigger_mode = '1' else event_counter;
@@ -1382,12 +1403,13 @@ begin
   regs_addresses(60)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"80";
   regs_addresses(61)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"81";
   regs_addresses(62)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"82";
-  regs_addresses(63)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"00";
-  regs_addresses(64)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"01";
-  regs_addresses(65)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"02";
-  regs_addresses(66)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"03";
-  regs_addresses(67)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"04";
-  regs_addresses(68)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"05";
+  regs_addresses(63)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"83";
+  regs_addresses(64)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"00";
+  regs_addresses(65)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"01";
+  regs_addresses(66)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"02";
+  regs_addresses(67)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"03";
+  regs_addresses(68)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"04";
+  regs_addresses(69)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"05";
 
   -- Connect read signals
   regs_read_arr(0)(REG_CHIP_DMODE_BIT) <= drs_dmode;
@@ -1471,9 +1493,10 @@ begin
   regs_read_arr(59)(REG_HOG_HOG_VER_MSB downto REG_HOG_HOG_VER_LSB) <= HOG_VER;
   regs_read_arr(61)(REG_CNT_START_READOUT_MSB downto REG_CNT_START_READOUT_LSB) <= start_readout_counter;
   regs_read_arr(62)(REG_CNT_EVENT_WR_EN_MSB downto REG_CNT_EVENT_WR_EN_LSB) <= event_queue_wr_counter;
-  regs_read_arr(65)(REG_DMA_RAM_A_OCCUPANCY_MSB downto REG_DMA_RAM_A_OCCUPANCY_LSB) <= ram_buff_a_occupancy;
-  regs_read_arr(66)(REG_DMA_RAM_B_OCCUPANCY_MSB downto REG_DMA_RAM_B_OCCUPANCY_LSB) <= ram_buff_b_occupancy;
-  regs_read_arr(67)(REG_DMA_DMA_POINTER_MSB downto REG_DMA_DMA_POINTER_LSB) <= dma_pointer;
+  regs_read_arr(63)(REG_AUTO_PURGE_MODE_BIT) <= auto_purge_mode;
+  regs_read_arr(66)(REG_DMA_RAM_A_OCCUPANCY_MSB downto REG_DMA_RAM_A_OCCUPANCY_LSB) <= ram_buff_a_occupancy;
+  regs_read_arr(67)(REG_DMA_RAM_B_OCCUPANCY_MSB downto REG_DMA_RAM_B_OCCUPANCY_LSB) <= ram_buff_b_occupancy;
+  regs_read_arr(68)(REG_DMA_DMA_POINTER_MSB downto REG_DMA_DMA_POINTER_LSB) <= dma_pointer;
 
   -- Connect write signals
   drs_dmode <= regs_write_arr(0)(REG_CHIP_DMODE_BIT);
@@ -1515,6 +1538,7 @@ begin
   trigger_enable <= regs_write_arr(39)(REG_TRIGGER_TRIGGER_ENABLE_BIT);
   trig_gen_rate <= regs_write_arr(51)(REG_TRIG_GEN_RATE_MSB downto REG_TRIG_GEN_RATE_LSB);
   cnt_snap_dis <= regs_write_arr(60)(REG_CNT_SNAP_DIS_BIT);
+  auto_purge_mode <= regs_write_arr(63)(REG_AUTO_PURGE_MODE_BIT);
 
   -- Connect write pulse signals
   drs_start <= regs_write_pulse_arr(7);
@@ -1530,9 +1554,9 @@ begin
   mt_prbs_rst <= regs_write_pulse_arr(36);
   cnt_reset <= regs_write_pulse_arr(50);
   cnt_snap <= regs_write_pulse_arr(60);
-  ram_a_occ_rst <= regs_write_pulse_arr(63);
-  ram_b_occ_rst <= regs_write_pulse_arr(64);
-  ram_toggle_request <= regs_write_pulse_arr(68);
+  ram_a_occ_rst <= regs_write_pulse_arr(64);
+  ram_b_occ_rst <= regs_write_pulse_arr(65);
+  ram_toggle_request <= regs_write_pulse_arr(69);
 
   -- Connect write done signals
 
@@ -1701,6 +1725,7 @@ begin
   regs_defaults(39)(REG_TRIGGER_TRIGGER_ENABLE_BIT) <= REG_TRIGGER_TRIGGER_ENABLE_DEFAULT;
   regs_defaults(51)(REG_TRIG_GEN_RATE_MSB downto REG_TRIG_GEN_RATE_LSB) <= REG_TRIG_GEN_RATE_DEFAULT;
   regs_defaults(60)(REG_CNT_SNAP_DIS_BIT) <= REG_CNT_SNAP_DIS_DEFAULT;
+  regs_defaults(63)(REG_AUTO_PURGE_MODE_BIT) <= REG_AUTO_PURGE_MODE_DEFAULT;
 
   -- Define writable regs
   regs_writable_arr(0) <= '1';
@@ -1722,6 +1747,7 @@ begin
   regs_writable_arr(39) <= '1';
   regs_writable_arr(51) <= '1';
   regs_writable_arr(60) <= '1';
+  regs_writable_arr(63) <= '1';
 
   -- --==== Registers end ============================================================================
 

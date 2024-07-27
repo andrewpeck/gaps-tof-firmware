@@ -333,6 +333,7 @@
     CNT\_SNAP\_DIS & \texttt{0x80} & \texttt{[1:1]} & w & \texttt{0x1} & 1 disables counter snapping; values continuously update \\\hline
     CNT\_START\_READOUT & \texttt{0x81} & \texttt{[31:0]} & r & \texttt{} & Count the number of times the DRS readout has started \\\hline
     CNT\_EVENT\_WR\_EN & \texttt{0x82} & \texttt{[31:0]} & r & \texttt{} & Count the number of times the event queue has been written to \\\hline
+    AUTO\_PURGE\_MODE & \texttt{0x83} & \texttt{[0:0]} & rw & \texttt{0x1} & 1 for the DAQ to automatically purge any remaining data from the DRS fifo after readout \\\hline
     \end{tabularx}
     \vspace{5mm}
 
