@@ -753,7 +753,7 @@ begin
       RD_WIDTH  => event_queue_din'length
       )
     port map (
-      rst    => reset or soft_reset_buf,
+      rst    => reset or soft_reset_buf or soft_reset_trg,
       clk    => clock,
       wr_en  => event_queue_wr_en,
       rd_en  => event_queue_rd_en,
