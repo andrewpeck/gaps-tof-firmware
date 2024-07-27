@@ -269,13 +269,6 @@ architecture Behavioral of top_readout_board is
   signal drs_busy_timer        : natural range 0 to 65535 := 0;
   signal drs_busy_timer_stable : natural range 0 to 65535 := 0;
 
-  signal spy_data  : std_logic_vector (15 downto 0) := (others => '0');
-  signal spy_full  : std_logic                      := '0';
-  signal spy_empty : std_logic                      := '0';
-  signal spy_reset : std_logic                      := '0';
-  signal spy_rd_en : std_logic                      := '0';
-  signal spy_valid : std_logic                      := '0';
-
   -- ADC Readout
   signal drs_data_xfifo  : std_logic_vector (27 downto 0);
   signal drs_valid_xfifo : std_logic := '0';
@@ -1101,31 +1094,6 @@ begin
     end if;
   end process;
 
-
-  -------------------------------------------------------------------------------
-  -- Spybuffer
-  -------------------------------------------------------------------------------
-
-  -- fifo to read data through the "spybuffer"
-  spy_fifo_inst : entity work.fifo_async
-    generic map (
-      DEPTH    => 16384,
-      WR_WIDTH => 16,
-      RD_WIDTH => 16
-      )
-    port map (
-      rst    => reset or spy_reset or soft_reset_buf,
-      wr_clk => clock,                  -- daq_clock
-      rd_clk => clock,
-      wr_en  => fifo_data_wen,
-      rd_en  => spy_rd_en,
-      din    => fifo_data_out,
-      dout   => spy_data,
-      valid  => spy_valid,
-      full   => spy_full,
-      empty  => spy_empty
-      );
-
   -------------------------------------------------------------------------------
   -- Soft Error Mitigation
   -------------------------------------------------------------------------------
@@ -1402,15 +1370,12 @@ begin
   regs_addresses(57)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"65";
   regs_addresses(58)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"66";
   regs_addresses(59)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"67";
-  regs_addresses(60)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"70";
-  regs_addresses(61)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"71";
-  regs_addresses(62)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"72";
-  regs_addresses(63)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"00";
-  regs_addresses(64)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"01";
-  regs_addresses(65)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"02";
-  regs_addresses(66)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"03";
-  regs_addresses(67)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"04";
-  regs_addresses(68)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"05";
+  regs_addresses(60)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"00";
+  regs_addresses(61)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"01";
+  regs_addresses(62)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"02";
+  regs_addresses(63)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"03";
+  regs_addresses(64)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"04";
+  regs_addresses(65)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"05";
 
   -- Connect read signals
   regs_read_arr(0)(REG_CHIP_DMODE_BIT) <= drs_dmode;
@@ -1492,12 +1457,9 @@ begin
   regs_read_arr(57)(REG_HOG_TOP_VER_MSB downto REG_HOG_TOP_VER_LSB) <= REPO_VER;
   regs_read_arr(58)(REG_HOG_HOG_SHA_MSB downto REG_HOG_HOG_SHA_LSB) <= HOG_SHA;
   regs_read_arr(59)(REG_HOG_HOG_VER_MSB downto REG_HOG_HOG_VER_LSB) <= HOG_VER;
-  regs_read_arr(61)(REG_SPY_DATA_MSB downto REG_SPY_DATA_LSB) <= spy_data;
-  regs_read_arr(62)(REG_SPY_FULL_BIT) <= spy_full;
-  regs_read_arr(62)(REG_SPY_EMPTY_BIT) <= spy_empty;
-  regs_read_arr(65)(REG_DMA_RAM_A_OCCUPANCY_MSB downto REG_DMA_RAM_A_OCCUPANCY_LSB) <= ram_buff_a_occupancy;
-  regs_read_arr(66)(REG_DMA_RAM_B_OCCUPANCY_MSB downto REG_DMA_RAM_B_OCCUPANCY_LSB) <= ram_buff_b_occupancy;
-  regs_read_arr(67)(REG_DMA_DMA_POINTER_MSB downto REG_DMA_DMA_POINTER_LSB) <= dma_pointer;
+  regs_read_arr(62)(REG_DMA_RAM_A_OCCUPANCY_MSB downto REG_DMA_RAM_A_OCCUPANCY_LSB) <= ram_buff_a_occupancy;
+  regs_read_arr(63)(REG_DMA_RAM_B_OCCUPANCY_MSB downto REG_DMA_RAM_B_OCCUPANCY_LSB) <= ram_buff_b_occupancy;
+  regs_read_arr(64)(REG_DMA_DMA_POINTER_MSB downto REG_DMA_DMA_POINTER_LSB) <= dma_pointer;
 
   -- Connect write signals
   drs_dmode <= regs_write_arr(0)(REG_CHIP_DMODE_BIT);
@@ -1552,15 +1514,13 @@ begin
   force_trig <= regs_write_pulse_arr(33);
   mt_prbs_rst <= regs_write_pulse_arr(36);
   cnt_reset <= regs_write_pulse_arr(50);
-  spy_reset <= regs_write_pulse_arr(60);
-  ram_a_occ_rst <= regs_write_pulse_arr(63);
-  ram_b_occ_rst <= regs_write_pulse_arr(64);
-  ram_toggle_request <= regs_write_pulse_arr(68);
+  ram_a_occ_rst <= regs_write_pulse_arr(60);
+  ram_b_occ_rst <= regs_write_pulse_arr(61);
+  ram_toggle_request <= regs_write_pulse_arr(65);
 
   -- Connect write done signals
 
   -- Connect read pulse signals
-  spy_rd_en <= regs_read_pulse_arr(61);
 
   -- Connect counter instances
 
@@ -1658,7 +1618,6 @@ begin
   -- Connect rate instances
 
   -- Connect read ready signals
-    regs_read_ready_arr(61) <= spy_valid;
 
   -- Defaults
   regs_defaults(0)(REG_CHIP_DMODE_BIT) <= REG_CHIP_DMODE_DEFAULT;

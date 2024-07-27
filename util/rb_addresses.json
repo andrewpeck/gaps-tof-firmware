@@ -636,34 +636,6 @@
         "description": "HOG Version",
         "adr8": 412
     },
-    "DRS.SPY.RESET": {
-        "adr": 112,
-        "permission": "w",
-        "mask": 1,
-        "description": "Spy Buffer Reset",
-        "adr8": 448
-    },
-    "DRS.SPY.DATA": {
-        "adr": 113,
-        "permission": "r",
-        "mask": 65535,
-        "description": "Spy Read Data",
-        "adr8": 452
-    },
-    "DRS.SPY.FULL": {
-        "adr": 114,
-        "permission": "r",
-        "mask": 1,
-        "description": "Spy Buffer Full",
-        "adr8": 456
-    },
-    "DRS.SPY.EMPTY": {
-        "adr": 114,
-        "permission": "r",
-        "mask": 2,
-        "description": "Spy Buffer Empty",
-        "adr8": 456
-    },
     "DRS.DMA.RAM_A_OCC_RST": {
         "adr": 256,
         "permission": "w",

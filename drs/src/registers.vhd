@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_DRS_NUM_REGS : integer := 69;
+    constant REG_DRS_NUM_REGS : integer := 66;
     constant REG_DRS_ADDRESS_MSB : integer := 9;
     constant REG_DRS_ADDRESS_LSB : integer := 0;
     constant REG_CHIP_DMODE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
@@ -248,7 +248,7 @@ package registers is
 
     constant REG_DAQ_DAQ_FRAGMENT_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"31";
     constant REG_DAQ_DAQ_FRAGMENT_EN_BIT    : integer := 0;
-    constant REG_DAQ_DAQ_FRAGMENT_EN_DEFAULT : std_logic := '1';
+    constant REG_DAQ_DAQ_FRAGMENT_EN_DEFAULT : std_logic := '0';
 
     constant REG_DAQ_DAQ_BUSY_ADDR    : std_logic_vector(9 downto 0) := "00" & x"31";
     constant REG_DAQ_DAQ_BUSY_BIT    : integer := 1;
@@ -370,19 +370,6 @@ package registers is
     constant REG_HOG_HOG_VER_ADDR    : std_logic_vector(9 downto 0) := "00" & x"67";
     constant REG_HOG_HOG_VER_MSB    : integer := 31;
     constant REG_HOG_HOG_VER_LSB     : integer := 0;
-
-    constant REG_SPY_RESET_ADDR    : std_logic_vector(9 downto 0) := "00" & x"70";
-    constant REG_SPY_RESET_BIT    : integer := 0;
-
-    constant REG_SPY_DATA_ADDR    : std_logic_vector(9 downto 0) := "00" & x"71";
-    constant REG_SPY_DATA_MSB    : integer := 15;
-    constant REG_SPY_DATA_LSB     : integer := 0;
-
-    constant REG_SPY_FULL_ADDR    : std_logic_vector(9 downto 0) := "00" & x"72";
-    constant REG_SPY_FULL_BIT    : integer := 0;
-
-    constant REG_SPY_EMPTY_ADDR    : std_logic_vector(9 downto 0) := "00" & x"72";
-    constant REG_SPY_EMPTY_BIT    : integer := 1;
 
     constant REG_DMA_RAM_A_OCC_RST_ADDR    : std_logic_vector(9 downto 0) := "01" & x"00";
     constant REG_DMA_RAM_A_OCC_RST_BIT    : integer := 0;

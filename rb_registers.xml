@@ -491,13 +491,6 @@
             <node id="HOG_VER"     mask="0xFFFFFFFF" permission="r" address="0x7" description="HOG Version"        fw_signal="HOG_VER"/>
         </node> <!--HOG-->
 
-        <node id="SPY" address="0x70" description = "Spy Buffer">
-            <node id="RESET" permission="w" address="0x0" mask="0x00000001" description="Spy Buffer Reset" fw_write_pulse_signal="spy_reset"/>
-            <node id="DATA"  permission="r" address="0x1" mask="0x0000FFFF" description="Spy Read Data"
-                fw_signal="spy_data" fw_read_pulse_signal="spy_rd_en" fw_read_ready_signal="spy_valid"/>
-            <node id="FULL"  permission="r" address="0x2" mask="0x00000001" description="Spy Buffer Full"  fw_signal="spy_full"/>
-            <node id="EMPTY" permission="r" address="0x2" mask="0x00000002" description="Spy Buffer Empty" fw_signal="spy_empty"/>
-        </node>
         <node id="DMA" address="0x100" description = "DMA and ram buffer occupancy">
             <node id="RAM_A_OCC_RST"   permission="w" address="0x0" mask="0x00000001" description="Sets RAM buffer a counter to 0" fw_write_pulse_signal="ram_a_occ_rst"/>
             <node id="RAM_B_OCC_RST"   permission="w" address="0x1" mask="0x00000001" description="Sets RAM buffer b counter to 0" fw_write_pulse_signal="ram_b_occ_rst"/>
