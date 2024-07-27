@@ -92,7 +92,9 @@ begin
 
           soft_reset_done      <= '1';
           soft_reset_flush_cnt <= SOFT_RESET_FLUSH_CNT_MAX;
-          soft_reset_trg       <= '0';  -- trigger reset should be held high
+
+          -- trigger reset should be held high during any reset process and only deasserted during idle
+          soft_reset_trg       <= '0';
 
           if (soft_reset_i = '1') then
             soft_rst_state <= AUTO_RESET;
