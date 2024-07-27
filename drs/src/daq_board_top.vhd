@@ -748,7 +748,7 @@ begin
 
   event_fifo_inst : entity work.fifo_sync
     generic map (
-      DEPTH     => 128,
+      DEPTH     => 32,
       WR_WIDTH  => event_queue_din'length,
       RD_WIDTH  => event_queue_din'length
       )
