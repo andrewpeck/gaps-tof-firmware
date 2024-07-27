@@ -199,10 +199,11 @@ architecture Behavioral of top_readout_board is
   signal mt_trigger_mode : std_logic := '1';
 
   -- DAQ
-  signal daq_busy            : std_logic := '0';
-  signal daq_ready           : std_logic := '0';
+  signal daq_sync_err        : std_logic;
+  signal daq_busy            : std_logic;
+  signal daq_ready           : std_logic;
   signal debug_packet_inject : std_logic;
-  signal dma_idle            : std_logic := '0';
+  signal dma_idle            : std_logic;
 
   signal sem_correction          : std_logic;
   signal sem_uncorrectable_error : std_logic;
@@ -595,7 +596,7 @@ begin
         probe17               => drs_busy,
         probe18               => (others => '0'),
         probe19               => trigger,
-        probe20               => '0',
+        probe20               => daq_sync_err,
         probe21(8 downto 0)   => daq_mask,
         probe21(9)            => drs_reinit,
         probe21(10)           => drs_start,
@@ -1070,6 +1071,7 @@ begin
 
       data_o      => fifo_data_out,
       valid_o     => fifo_data_wen,
+      sync_err_o  => daq_sync_err,
       busy_o      => daq_busy,
       ready_o     => daq_ready,
       done_o      => readout_complete

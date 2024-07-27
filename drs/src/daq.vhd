@@ -51,11 +51,12 @@ entity daq is
     drs_valid_i  : in  std_logic;
     drs_rden_o   : out std_logic := '0';
 
-    data_o  : out std_logic_vector (g_WORD_SIZE-1 downto 0);  -- receive 16 bits / bx
-    valid_o : out std_logic;
-    busy_o  : out std_logic;
-    ready_o : out std_logic;
-    done_o  : out std_logic
+    data_o     : out std_logic_vector (g_WORD_SIZE-1 downto 0);  -- receive 16 bits / bx
+    valid_o    : out std_logic;
+    sync_err_o : out std_logic := '0';
+    busy_o     : out std_logic;
+    ready_o    : out std_logic;
+    done_o     : out std_logic
 
     );
 end daq;
@@ -237,6 +238,8 @@ architecture behavioral of daq is
   end function;
 
 begin
+
+  sync_err_o <= cell_sync_err or channel_sync_err;
 
   channel_sync_err <= '0' when to_integer(unsigned(drs_cell_i))=state_word_cnt else '1';
   cell_sync_err    <= '0' when to_integer(unsigned(drs_ch_i))=channel_id else '1';
