@@ -19,7 +19,7 @@ entity mt_rx is
     serial_i : in std_logic;
     enable_i : in std_logic;
 
-    trg_o         : out std_logic := '0';
+    trg_pulse_o   : out std_logic := '0';
     trg_fast_o    : out std_logic := '0';
     fragment_o    : out std_logic := '0';
     fragment_en_i : in  std_logic := '0';
@@ -78,7 +78,7 @@ architecture rtl of mt_rx is
   constant WAIT_CNT_MAX : integer                         := 2**12-1;
   signal wait_cnt       : natural range 0 to WAIT_CNT_MAX := 0;
 
-  signal done : std_logic := '0';
+  signal done_pulse : std_logic := '0';
 
 begin
 
@@ -103,8 +103,6 @@ begin
 
       if (enable_i = '1') then
 
-        trg_fast_o      <= '0';
-
         case state is
 
           when IDLE_state =>
@@ -115,7 +113,7 @@ begin
             crc_valid       <= '0';
             trg             <= '0';
             fragment        <= '0';
-
+            trg_fast_o      <= '0';
             state_bit_cnt <= 0;
 
             -- receive the start bit
@@ -129,12 +127,14 @@ begin
 
             if (serial_i = '1') then
               trg        <= '1';
-              trg_fast_o <= '1';
+              trg_fast_o <= '1'; -- TRIGGER
             else
               fragment <= fragment_en_i;
             end if;
 
           when MASK_state =>
+
+            trg_fast_o      <= '0'; -- UNTRIGGER
 
             if (state_bit_cnt = MASKB - 1) then
               mask          <= mask_buf(MASKB-1 downto 1) & serial_i;
@@ -244,15 +244,14 @@ begin
     end if;
   end process;
 
-  done <= (event_cnt_valid and not event_cnt_valid_r);
+  done_pulse <= (event_cnt_valid and not event_cnt_valid_r);
 
   process (outclk) is
   begin
     if (rising_edge(outclk)) then
 
-      fifo_wr_o  <= (fragment or trg) and done;
-      trg_o      <= trg_fast_o or (trg and not trg_r);
-      fragment_o <= fragment;
+      fifo_wr_o   <= (fragment or trg) and done_pulse;
+      fragment_o  <= fragment;
 
       trg_r             <= trg; 
       event_cnt_valid_r <= event_cnt_valid; 
@@ -262,7 +261,8 @@ begin
 
       -- make these rising edge sensitive on the outclk so they are only 1
       -- clock wide and can be used as write enables
-      event_cnt_valid_o <= done; 
+      event_cnt_valid_o <= done_pulse;
+      trg_pulse_o       <= trg and not trg_r;
       mask_valid_o      <= mask_valid and not mask_valid_r;
       cmd_valid_o       <= cmd_valid and not cmd_valid_r;
       crc_valid_o       <= crc_valid and not crc_valid_r;

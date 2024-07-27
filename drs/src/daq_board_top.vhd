@@ -192,12 +192,11 @@ architecture Behavioral of top_readout_board is
   signal trig_gen        : std_logic                      := '0';
   signal trig_gen_gated  : std_logic                      := '0';
 
-  signal mt_trigger                  : std_logic := '0';
-  signal mt_trigger_fast             : std_logic := '0';
-  signal mt_fragment                 : std_logic := '0';
-  signal cnt_reset                   : std_logic := '0';
+  signal mt_trigger  : std_logic := '0';
+  signal mt_fragment : std_logic := '0';
+  signal cnt_reset   : std_logic := '0';
 
-  signal mt_trigger_mode             : std_logic := '1';
+  signal mt_trigger_mode : std_logic := '1';
 
   -- DAQ
   signal daq_busy            : std_logic := '0';
@@ -603,7 +602,7 @@ begin
         probe17               => drs_busy,
         probe18               => (others => '0'),
         probe19               => trigger,
-        probe20               => mt_trigger,
+        probe20               => '0',
         probe21(8 downto 0)   => daq_mask,
         probe21(9)            => drs_reinit,
         probe21(10)           => drs_start,
@@ -645,8 +644,8 @@ begin
 
       -- provide a 200MHz copy of the trigger signal for a fast route to dwrite
       -- and a 33MHz copy for the rest of the logic
-      trg_fast_o    => mt_trigger_fast,
-      trg_o         => mt_trigger,
+      trg_fast_o    => mt_trigger,
+      trg_pulse_o   => open,
       fragment_o    => mt_fragment,
       fragment_en_i => daq_fragment_en,
 
@@ -808,7 +807,7 @@ begin
 
       force_trig => force_trig or (trig_gen_gated and not drs_busy),
 
-      master_trigger => mt_trigger_mode and (mt_trigger or mt_trigger_fast),
+      master_trigger => mt_trigger_mode and mt_trigger,
 
       trigger_o => trigger,
       dwrite_o  => drs_dwrite_async
