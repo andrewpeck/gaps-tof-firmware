@@ -8,7 +8,10 @@ use unisim.vcomponents.all;
 
 entity trigger_mux is
 
-  generic(TRIGGER_OS_MAX : natural := 3);
+  generic(
+    DISABLE_EXT_TRIGGER : boolean := true;
+    TRIGGER_OS_MAX : natural := 3
+    );
 
   port(
     clock : in std_logic;
@@ -108,7 +111,7 @@ begin
   ext_trigger_async <= ext_trigger_i when ext_trigger_active_hi_ff = '1' else not ext_trigger_i;
 
   -- ext_trigger is the OR of the async and one-shotted synchronous trigger
-  ext_trigger <= ext_trigger_en_ff and (ext_trigger_async);
+  ext_trigger <= ext_trigger_en_ff and (ext_trigger_async) when not DISABLE_EXT_TRIGGER else '0';
 
   --
   trigger <= enable and (ext_trigger or master_trigger or force_trig_ff);

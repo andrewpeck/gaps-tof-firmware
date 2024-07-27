@@ -792,12 +792,16 @@ begin
   drs_dwrite_o <= drs_dwrite_mask and drs_dwrite_sync and drs_dwrite_async;
 
   trigger_mux_inst : entity work.trigger_mux
-    generic map (TRIGGER_OS_MAX => 3)
+    generic map (
+      TRIGGER_OS_MAX      => 3,
+      DISABLE_EXT_TRIGGER => true
+      )
     port map (
       clock => clock,
 
       enable => trigger_enable and not soft_reset_trg,
 
+      -- 2024/07/27 disabled EXT trigger at compile time with DISABLE_EXT_TRIGGER flag
       ext_trigger_i         => ext_trigger_i or mt_level_trigger,
       ext_trigger_en        => ext_trigger_en,
       ext_trigger_active_hi => ext_trigger_active_hi,
