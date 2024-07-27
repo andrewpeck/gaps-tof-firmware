@@ -353,6 +353,10 @@
                 description="1 = DAQ is still busy reading out"
                 mask="0x2"
                 fw_signal="daq_busy" />
+            <!-- <node id="DAQ_SYNC_ERR_RECOVERY" address="0x1" permission="r" -->
+            <!--     description="1 = attempt recovery on sync error" -->
+            <!--     mask="0x4" -->
+            <!--     fw_signal="daq_sync_err_recovery" /> -->
         </node> <!--DAQ-->
 
         <node id="TRIGGER" address="0x40"
@@ -490,6 +494,33 @@
             <node id="HOG_SHA"     mask="0xFFFFFFFF" permission="r" address="0x6" description="HOG SHA"            fw_signal="HOG_SHA"/>
             <node id="HOG_VER"     mask="0xFFFFFFFF" permission="r" address="0x7" description="HOG Version"        fw_signal="HOG_VER"/>
         </node> <!--HOG-->
+
+        <node id="CNT_SNAP" address="0x80" permission="w"
+              description="1 to freeze counters for readout"
+              mask="0x1"
+              fw_write_pulse_signal="cnt_snap"/>
+
+        <node id="CNT_SNAP_DIS" address="0x80" permission="w"
+              description="1 disables counter snapping; values continuously update"
+              mask="0x2"
+              fw_default="0x1"
+              fw_signal="cnt_snap_dis"/>
+
+        <node id="CNT_START_READOUT" address="0x81" permission="r"
+              description="Count the number of times the DRS readout has started"
+              mask="0xffffffff"
+              fw_cnt_snap_signal="cnt_snap or cnt_snap_dis"
+              fw_cnt_en_signal="start_readout"
+              fw_cnt_reset_signal="reset or cnt_reset"
+              fw_signal="start_readout_counter"/>
+
+        <node id="CNT_EVENT_WR_EN" address="0x82" permission="r"
+              description="Count the number of times the event queue has been written to"
+              mask="0xffffffff"
+              fw_cnt_snap_signal="cnt_snap or cnt_snap_dis"
+              fw_cnt_en_signal="event_queue_wr_en"
+              fw_cnt_reset_signal="reset or cnt_reset"
+              fw_signal="event_queue_wr_counter"/>
 
         <node id="DMA" address="0x100" description = "DMA and ram buffer occupancy">
             <node id="RAM_A_OCC_RST"   permission="w" address="0x0" mask="0x00000001" description="Sets RAM buffer a counter to 0" fw_write_pulse_signal="ram_a_occ_rst"/>

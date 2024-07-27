@@ -636,6 +636,34 @@
         "description": "HOG Version",
         "adr8": 412
     },
+    "DRS.CNT_SNAP": {
+        "adr": 128,
+        "permission": "w",
+        "mask": 1,
+        "description": "1 to freeze counters for readout",
+        "adr8": 512
+    },
+    "DRS.CNT_SNAP_DIS": {
+        "adr": 128,
+        "permission": "w",
+        "mask": 2,
+        "description": "1 disables counter snapping; values continuously update",
+        "adr8": 512
+    },
+    "DRS.CNT_START_READOUT": {
+        "adr": 129,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "Count the number of times the DRS readout has started",
+        "adr8": 516
+    },
+    "DRS.CNT_EVENT_WR_EN": {
+        "adr": 130,
+        "permission": "r",
+        "mask": 4294967295,
+        "description": "Count the number of times the event queue has been written to",
+        "adr8": 520
+    },
     "DRS.DMA.RAM_A_OCC_RST": {
         "adr": 256,
         "permission": "w",

@@ -317,6 +317,27 @@
 
 
     \noindent
+    \subsection*{\textcolor{parentcolor}{\textbf{DRS}}}
+
+    \vspace{4mm}
+    \noindent
+    Implements various control and monitoring functions of the DRS Logic
+    \noindent
+
+    \keepXColumns
+    \begin{tabularx}{\linewidth}{ | l | l | r | c | l | X | }
+    \hline
+    \textbf{Node} & \textbf{Adr} & \textbf{Bits} & \textbf{Perm} & \textbf{Def} & \textbf{Description} \\\hline
+    \nopagebreak
+    CNT\_SNAP & \texttt{0x80} & \texttt{[0:0]} & w & Pulse & 1 to freeze counters for readout \\\hline
+    CNT\_SNAP\_DIS & \texttt{0x80} & \texttt{[1:1]} & w & \texttt{0x1} & 1 disables counter snapping; values continuously update \\\hline
+    CNT\_START\_READOUT & \texttt{0x81} & \texttt{[31:0]} & r & \texttt{} & Count the number of times the DRS readout has started \\\hline
+    CNT\_EVENT\_WR\_EN & \texttt{0x82} & \texttt{[31:0]} & r & \texttt{} & Count the number of times the event queue has been written to \\\hline
+    \end{tabularx}
+    \vspace{5mm}
+
+
+    \noindent
     \subsection*{\textcolor{parentcolor}{\textbf{DRS.DMA}}}
 
     \vspace{4mm}

@@ -192,9 +192,12 @@ architecture Behavioral of top_readout_board is
   signal trig_gen        : std_logic                      := '0';
   signal trig_gen_gated  : std_logic                      := '0';
 
-  signal mt_trigger  : std_logic := '0';
-  signal mt_fragment : std_logic := '0';
-  signal cnt_reset   : std_logic := '0';
+  signal mt_trigger   : std_logic := '0';
+  signal mt_fragment  : std_logic := '0';
+
+  signal cnt_reset    : std_logic := '0';
+  signal cnt_snap     : std_logic := '0';
+  signal cnt_snap_dis : std_logic := '0';
 
   signal mt_trigger_mode : std_logic := '1';
 
@@ -316,6 +319,8 @@ architecture Behavioral of top_readout_board is
   signal cnt_readouts : std_logic_vector (31 downto 0) := (others => '0');
   signal cnt_lost_events : std_logic_vector (15 downto 0) := (others => '0');
   signal event_counter : std_logic_vector (31 downto 0) := (others => '0');
+  signal start_readout_counter : std_logic_vector (31 downto 0) := (others => '0');
+  signal event_queue_wr_counter : std_logic_vector (31 downto 0) := (others => '0');
   ------ Register signals end ----------------------------------------------
 
   signal daq_event_cnt         : std_logic_vector(31 downto 0);
@@ -1374,12 +1379,15 @@ begin
   regs_addresses(57)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"65";
   regs_addresses(58)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"66";
   regs_addresses(59)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"67";
-  regs_addresses(60)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"00";
-  regs_addresses(61)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"01";
-  regs_addresses(62)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"02";
-  regs_addresses(63)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"03";
-  regs_addresses(64)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"04";
-  regs_addresses(65)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"05";
+  regs_addresses(60)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"80";
+  regs_addresses(61)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"81";
+  regs_addresses(62)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "00" & x"82";
+  regs_addresses(63)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"00";
+  regs_addresses(64)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"01";
+  regs_addresses(65)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"02";
+  regs_addresses(66)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"03";
+  regs_addresses(67)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"04";
+  regs_addresses(68)(REG_DRS_ADDRESS_MSB downto REG_DRS_ADDRESS_LSB) <= "01" & x"05";
 
   -- Connect read signals
   regs_read_arr(0)(REG_CHIP_DMODE_BIT) <= drs_dmode;
@@ -1461,9 +1469,11 @@ begin
   regs_read_arr(57)(REG_HOG_TOP_VER_MSB downto REG_HOG_TOP_VER_LSB) <= REPO_VER;
   regs_read_arr(58)(REG_HOG_HOG_SHA_MSB downto REG_HOG_HOG_SHA_LSB) <= HOG_SHA;
   regs_read_arr(59)(REG_HOG_HOG_VER_MSB downto REG_HOG_HOG_VER_LSB) <= HOG_VER;
-  regs_read_arr(62)(REG_DMA_RAM_A_OCCUPANCY_MSB downto REG_DMA_RAM_A_OCCUPANCY_LSB) <= ram_buff_a_occupancy;
-  regs_read_arr(63)(REG_DMA_RAM_B_OCCUPANCY_MSB downto REG_DMA_RAM_B_OCCUPANCY_LSB) <= ram_buff_b_occupancy;
-  regs_read_arr(64)(REG_DMA_DMA_POINTER_MSB downto REG_DMA_DMA_POINTER_LSB) <= dma_pointer;
+  regs_read_arr(61)(REG_CNT_START_READOUT_MSB downto REG_CNT_START_READOUT_LSB) <= start_readout_counter;
+  regs_read_arr(62)(REG_CNT_EVENT_WR_EN_MSB downto REG_CNT_EVENT_WR_EN_LSB) <= event_queue_wr_counter;
+  regs_read_arr(65)(REG_DMA_RAM_A_OCCUPANCY_MSB downto REG_DMA_RAM_A_OCCUPANCY_LSB) <= ram_buff_a_occupancy;
+  regs_read_arr(66)(REG_DMA_RAM_B_OCCUPANCY_MSB downto REG_DMA_RAM_B_OCCUPANCY_LSB) <= ram_buff_b_occupancy;
+  regs_read_arr(67)(REG_DMA_DMA_POINTER_MSB downto REG_DMA_DMA_POINTER_LSB) <= dma_pointer;
 
   -- Connect write signals
   drs_dmode <= regs_write_arr(0)(REG_CHIP_DMODE_BIT);
@@ -1504,6 +1514,7 @@ begin
   mt_trigger_mode <= regs_write_arr(37)(REG_TRIGGER_MT_TRIGGER_MODE_BIT);
   trigger_enable <= regs_write_arr(39)(REG_TRIGGER_TRIGGER_ENABLE_BIT);
   trig_gen_rate <= regs_write_arr(51)(REG_TRIG_GEN_RATE_MSB downto REG_TRIG_GEN_RATE_LSB);
+  cnt_snap_dis <= regs_write_arr(60)(REG_CNT_SNAP_DIS_BIT);
 
   -- Connect write pulse signals
   drs_start <= regs_write_pulse_arr(7);
@@ -1518,9 +1529,10 @@ begin
   force_trig <= regs_write_pulse_arr(33);
   mt_prbs_rst <= regs_write_pulse_arr(36);
   cnt_reset <= regs_write_pulse_arr(50);
-  ram_a_occ_rst <= regs_write_pulse_arr(60);
-  ram_b_occ_rst <= regs_write_pulse_arr(61);
-  ram_toggle_request <= regs_write_pulse_arr(65);
+  cnt_snap <= regs_write_pulse_arr(60);
+  ram_a_occ_rst <= regs_write_pulse_arr(63);
+  ram_b_occ_rst <= regs_write_pulse_arr(64);
+  ram_toggle_request <= regs_write_pulse_arr(68);
 
   -- Connect write done signals
 
@@ -1619,6 +1631,32 @@ begin
   );
 
 
+  COUNTER_CNT_START_READOUT : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 32
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => reset or cnt_reset,
+      en_i      => start_readout,
+      snap_i    => cnt_snap or cnt_snap_dis,
+      count_o   => start_readout_counter
+  );
+
+
+  COUNTER_CNT_EVENT_WR_EN : entity work.counter_snap
+  generic map (
+      g_COUNTER_WIDTH  => 32
+  )
+  port map (
+      ref_clk_i => clock,
+      reset_i   => reset or cnt_reset,
+      en_i      => event_queue_wr_en,
+      snap_i    => cnt_snap or cnt_snap_dis,
+      count_o   => event_queue_wr_counter
+  );
+
+
   -- Connect rate instances
 
   -- Connect read ready signals
@@ -1662,6 +1700,7 @@ begin
   regs_defaults(37)(REG_TRIGGER_MT_TRIGGER_MODE_BIT) <= REG_TRIGGER_MT_TRIGGER_MODE_DEFAULT;
   regs_defaults(39)(REG_TRIGGER_TRIGGER_ENABLE_BIT) <= REG_TRIGGER_TRIGGER_ENABLE_DEFAULT;
   regs_defaults(51)(REG_TRIG_GEN_RATE_MSB downto REG_TRIG_GEN_RATE_LSB) <= REG_TRIG_GEN_RATE_DEFAULT;
+  regs_defaults(60)(REG_CNT_SNAP_DIS_BIT) <= REG_CNT_SNAP_DIS_DEFAULT;
 
   -- Define writable regs
   regs_writable_arr(0) <= '1';
@@ -1682,6 +1721,7 @@ begin
   regs_writable_arr(37) <= '1';
   regs_writable_arr(39) <= '1';
   regs_writable_arr(51) <= '1';
+  regs_writable_arr(60) <= '1';
 
   -- --==== Registers end ============================================================================
 
