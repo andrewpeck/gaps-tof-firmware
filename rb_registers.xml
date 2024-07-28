@@ -347,10 +347,6 @@
                 description="1 = DAQ is still busy reading out"
                 mask="0x2"
                 fw_signal="daq_busy" />
-            <!-- <node id="DAQ_SYNC_ERR_RECOVERY" address="0x1" permission="r" -->
-            <!--     description="1 = attempt recovery on sync error" -->
-            <!--     mask="0x4" -->
-            <!--     fw_signal="daq_sync_err_recovery" /> -->
         </node> <!--DAQ-->
 
         <node id="TRIGGER" address="0x40"
