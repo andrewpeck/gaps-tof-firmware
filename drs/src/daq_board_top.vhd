@@ -348,6 +348,7 @@ architecture Behavioral of top_readout_board is
 
   signal event_queue_valid   : std_logic := '0';
   signal event_queue_wr_en   : std_logic := '0';
+  signal event_queue_reset   : std_logic := '0';
   signal event_queue_request : std_logic := '0';
   signal event_queue_rd_en   : std_logic := '0';
   signal event_queue_empty   : std_logic := '0';
@@ -751,6 +752,8 @@ begin
 
   event_queue_wr_en <= trigger_enable and mt_fifo_wr_req and ready_to_trigger;
 
+  event_queue_reset <= reset or soft_reset_buf or not ready_to_trigger or (auto_purge and not daq_fragment_en) when rising_edge(clock);
+
   event_fifo_inst : entity work.fifo_sync
     generic map (
       DEPTH     => 32,
@@ -758,7 +761,7 @@ begin
       RD_WIDTH  => event_queue_din'length
       )
     port map (
-      rst    => reset or soft_reset_buf or not ready_to_trigger or (auto_purge and not daq_fragment_en),
+      rst    => event_queue_reset,
       clk    => clock,
       wr_en  => event_queue_wr_en,
       rd_en  => event_queue_rd_en,
