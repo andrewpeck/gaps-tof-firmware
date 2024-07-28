@@ -141,6 +141,7 @@ architecture Behavioral of top_readout_board is
   -- Trigger Signals
   signal start_readout         : std_logic := '0';
   signal trigger               : std_logic := '0';
+  signal ready_to_trigger         : std_logic := '0';
 
   signal adc_posneg            : std_logic;
   signal srout_posneg          : std_logic;
@@ -748,7 +749,7 @@ begin
     end if;
   end process;
 
-  event_queue_wr_en <= trigger_enable and mt_fifo_wr_req and not soft_reset_trg;
+  event_queue_wr_en <= trigger_enable and mt_fifo_wr_req and ready_to_trigger;
 
   event_fifo_inst : entity work.fifo_sync
     generic map (
@@ -757,7 +758,7 @@ begin
       RD_WIDTH  => event_queue_din'length
       )
     port map (
-      rst    => reset or soft_reset_buf or soft_reset_trg or (auto_purge and not daq_fragment_en),
+      rst    => reset or soft_reset_buf or not ready_to_trigger or (auto_purge and not daq_fragment_en),
       clk    => clock,
       wr_en  => event_queue_wr_en,
       rd_en  => event_queue_rd_en,
@@ -792,6 +793,13 @@ begin
   -- Trigger output
   --------------------------------------------------------------------------------
 
+  process (clock) is
+  begin
+    if (rising_edge(clock)) then
+      ready_to_trigger <= trigger_enable and not (soft_reset_trg or reset);
+    end if;
+  end process;
+
   -- drs_dwrite_xtrig is asserted immediately based on the trigger firing
   -- drs_dwrite_xdrs is asserted by the DRS module much later, after start readout
   drs_dwrite_o <= drs_dwrite_wait_ch_mask and drs_dwrite_xdrs and drs_dwrite_xtrig;
@@ -804,7 +812,7 @@ begin
     port map (
       clock => clock,
 
-      enable => trigger_enable and not soft_reset_trg,
+      enable => ready_to_trigger,
 
       -- 2024/07/27 disabled EXT trigger at compile time with DISABLE_EXT_TRIGGER flag
       ext_trigger_i         => ext_trigger_i or mt_level_trigger,
@@ -910,7 +918,7 @@ begin
       clock     => clock,
       ila_clock => clock,
       reset     => reset or drs_reset or soft_reset_drs,
-      trigger_i => start_readout and not soft_reset_trg,
+      trigger_i => start_readout and ready_to_trigger,
 
       posneg_i        => adc_posneg,
       srout_posneg_i  => srout_posneg,
@@ -1077,7 +1085,7 @@ begin
       housekeeping_i => rat_housekeeping,
       mask_i         => daq_mask,
       drs_busy_i     => daq_drs_busy,
-      trigger_i      => daq_trigger and not soft_reset_trg,
+      trigger_i      => daq_trigger and ready_to_trigger,
       fragment_i     => daq_fragment_en and daq_fragment,
 
       ack_o  => daq_acknowledge,
