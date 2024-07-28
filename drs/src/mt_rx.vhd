@@ -16,8 +16,10 @@ entity mt_rx is
     clock    : in std_logic;
     outclk   : in std_logic;
     reset    : in std_logic;
+    en       : in std_logic;
+
     serial_i : in std_logic;
-    enable_i : in std_logic;
+    dav_i : in std_logic;
 
     trg_pulse_o   : out std_logic := '0';
     trg_fast_o    : out std_logic := '0';
@@ -101,7 +103,7 @@ begin
 
     if (rising_edge(clock)) then
 
-      if (enable_i = '1') then
+      if (dav_i = '1') then
 
         case state is
 
@@ -117,7 +119,7 @@ begin
             state_bit_cnt <= 0;
 
             -- receive the start bit
-            if (serial_i = '1') then
+            if (en = '1' and serial_i = '1') then
               state <= DWRITE_state;
             end if;
 

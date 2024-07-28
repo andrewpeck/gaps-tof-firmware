@@ -141,7 +141,7 @@ architecture Behavioral of top_readout_board is
   -- Trigger Signals
   signal start_readout         : std_logic := '0';
   signal trigger               : std_logic := '0';
-  signal ready_to_trigger         : std_logic := '0';
+  signal ready_to_trigger      : std_logic := '0';
 
   signal adc_posneg            : std_logic;
   signal srout_posneg          : std_logic;
@@ -259,7 +259,6 @@ architecture Behavioral of top_readout_board is
   signal soft_reset_dma, soft_reset_dma_en : std_logic;
   signal soft_reset_ptr, soft_reset_ptr_en : std_logic;
   signal soft_reset_buf, soft_reset_buf_en : std_logic;
-  signal soft_reset_trg, soft_reset_trg_en : std_logic;
   signal soft_reset_wait_daq               : std_logic;
   signal soft_reset_wait_drs               : std_logic;
   signal soft_reset_wait_dma               : std_logic;
@@ -576,7 +575,7 @@ begin
         probe2(68)            => xfifo_trigger(0),
         probe2(69)            => mt_trigger_mode, 
         probe2(70)            => trigger_enable,
-        probe2(71)            => soft_reset_trg,
+        probe2(71)            => '0',
         probe3(15 downto 0)   => fifo_data_out,
         probe3(16)            => drs_dwrite_xtrig,
         probe3(17)            => daq_ready,
@@ -647,6 +646,7 @@ begin
       clock  => trg_clk_oversample,
       outclk => clock,
       reset  => reset,
+      en     => ready_to_trigger,
 
       -- provide a 200MHz copy of the trigger signal for a fast route to dwrite
       -- and a 33MHz copy for the rest of the logic
@@ -656,7 +656,7 @@ begin
       fragment_en_i => daq_fragment_en,
 
       serial_i    => mt_trigger_data,
-      enable_i    => mt_trigger_mode and mt_trigger_dav,
+      dav_i       => mt_trigger_mode and mt_trigger_dav,
       cmd_o       => mt_cmd,
       cmd_valid_o => mt_cmd_valid,
 
@@ -752,7 +752,7 @@ begin
 
   event_queue_wr_en <= trigger_enable and mt_fifo_wr_req and ready_to_trigger;
 
-  event_queue_reset <= reset or soft_reset_buf or not ready_to_trigger or (auto_purge and not daq_fragment_en) when rising_edge(clock);
+  event_queue_reset <= reset or soft_reset_buf or (auto_purge and not daq_fragment_en) when rising_edge(clock);
 
   event_fifo_inst : entity work.fifo_sync
     generic map (
@@ -799,7 +799,7 @@ begin
   process (clock) is
   begin
     if (rising_edge(clock)) then
-      ready_to_trigger <= trigger_enable and not (soft_reset_trg or reset);
+      ready_to_trigger <= trigger_enable and soft_reset_done and not reset;
     end if;
   end process;
 
@@ -1017,13 +1017,11 @@ begin
       soft_reset_dma      => soft_reset_dma,
       soft_reset_ptr      => soft_reset_ptr,
       soft_reset_buf      => soft_reset_buf,
-      soft_reset_trg      => soft_reset_trg,
       soft_reset_drs_en   => soft_reset_drs_en,
       soft_reset_daq_en   => soft_reset_daq_en,
       soft_reset_dma_en   => soft_reset_dma_en,
       soft_reset_ptr_en   => soft_reset_ptr_en,
       soft_reset_buf_en   => soft_reset_buf_en,
-      soft_reset_trg_en   => soft_reset_trg_en,
       soft_reset_wait_daq => soft_reset_wait_daq,
       soft_reset_wait_drs => soft_reset_wait_drs,
       soft_reset_wait_dma => soft_reset_wait_dma);
@@ -1450,7 +1448,6 @@ begin
   regs_read_arr(18)(REG_READOUT_SOFT_RESET_DAQ_EN_BIT) <= soft_reset_daq_en;
   regs_read_arr(18)(REG_READOUT_SOFT_RESET_DMA_EN_BIT) <= soft_reset_dma_en;
   regs_read_arr(18)(REG_READOUT_SOFT_RESET_PTR_EN_BIT) <= soft_reset_ptr_en;
-  regs_read_arr(18)(REG_READOUT_SOFT_RESET_TRG_EN_BIT) <= soft_reset_trg_en;
   regs_read_arr(18)(REG_READOUT_SOFT_RESET_BUF_EN_BIT) <= soft_reset_buf_en;
   regs_read_arr(18)(REG_READOUT_SOFT_RESET_WAIT_DRS_BIT) <= soft_reset_wait_drs;
   regs_read_arr(18)(REG_READOUT_SOFT_RESET_WAIT_DAQ_BIT) <= soft_reset_wait_daq;
@@ -1532,7 +1529,6 @@ begin
   soft_reset_daq_en <= regs_write_arr(18)(REG_READOUT_SOFT_RESET_DAQ_EN_BIT);
   soft_reset_dma_en <= regs_write_arr(18)(REG_READOUT_SOFT_RESET_DMA_EN_BIT);
   soft_reset_ptr_en <= regs_write_arr(18)(REG_READOUT_SOFT_RESET_PTR_EN_BIT);
-  soft_reset_trg_en <= regs_write_arr(18)(REG_READOUT_SOFT_RESET_TRG_EN_BIT);
   soft_reset_buf_en <= regs_write_arr(18)(REG_READOUT_SOFT_RESET_BUF_EN_BIT);
   soft_reset_wait_drs <= regs_write_arr(18)(REG_READOUT_SOFT_RESET_WAIT_DRS_BIT);
   soft_reset_wait_daq <= regs_write_arr(18)(REG_READOUT_SOFT_RESET_WAIT_DAQ_BIT);
@@ -1719,7 +1715,6 @@ begin
   regs_defaults(18)(REG_READOUT_SOFT_RESET_DAQ_EN_BIT) <= REG_READOUT_SOFT_RESET_DAQ_EN_DEFAULT;
   regs_defaults(18)(REG_READOUT_SOFT_RESET_DMA_EN_BIT) <= REG_READOUT_SOFT_RESET_DMA_EN_DEFAULT;
   regs_defaults(18)(REG_READOUT_SOFT_RESET_PTR_EN_BIT) <= REG_READOUT_SOFT_RESET_PTR_EN_DEFAULT;
-  regs_defaults(18)(REG_READOUT_SOFT_RESET_TRG_EN_BIT) <= REG_READOUT_SOFT_RESET_TRG_EN_DEFAULT;
   regs_defaults(18)(REG_READOUT_SOFT_RESET_BUF_EN_BIT) <= REG_READOUT_SOFT_RESET_BUF_EN_DEFAULT;
   regs_defaults(18)(REG_READOUT_SOFT_RESET_WAIT_DRS_BIT) <= REG_READOUT_SOFT_RESET_WAIT_DRS_DEFAULT;
   regs_defaults(18)(REG_READOUT_SOFT_RESET_WAIT_DAQ_BIT) <= REG_READOUT_SOFT_RESET_WAIT_DAQ_DEFAULT;

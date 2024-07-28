@@ -28,13 +28,11 @@ entity soft_reset is
     soft_reset_dma      : out std_logic;
     soft_reset_ptr      : out std_logic;
     soft_reset_buf      : out std_logic;
-    soft_reset_trg      : out std_logic;
     soft_reset_drs_en   : in  std_logic;
     soft_reset_daq_en   : in  std_logic;
     soft_reset_dma_en   : in  std_logic;
     soft_reset_ptr_en   : in  std_logic;
     soft_reset_buf_en   : in  std_logic;
-    soft_reset_trg_en   : in  std_logic;
     soft_reset_wait_daq : in  std_logic;
     soft_reset_wait_drs : in  std_logic;
     soft_reset_wait_dma : in  std_logic
@@ -43,9 +41,9 @@ end;
 
 architecture rtl of soft_reset is
 
-  type soft_rst_state_t is (IDLE, AUTO_RESET, DIS_TRIGGER,
+  type soft_rst_state_t is (IDLE, AUTO_RESET,
                             WAIT_DRS, WAIT_DAQ, WAIT_DMA,
-                            RST_POINTER, FLUSH);
+                            RST_POINTER, FLUSH, HALT);
 
   signal soft_rst_state      : soft_rst_state_t;
   signal soft_rst_state_last : soft_rst_state_t;
@@ -85,7 +83,7 @@ begin
         when AUTO_RESET =>
 
           if (reset = '0') then
-            soft_rst_state <= DIS_TRIGGER;
+            soft_rst_state <= WAIT_DRS;
           end if;
 
         when IDLE =>
@@ -94,16 +92,10 @@ begin
           soft_reset_flush_cnt <= SOFT_RESET_FLUSH_CNT_MAX;
 
           -- trigger reset should be held high during any reset process and only deasserted during idle
-          soft_reset_trg       <= '0';
 
           if (soft_reset_i = '1') then
             soft_rst_state <= AUTO_RESET;
           end if;
-
-        when DIS_TRIGGER =>
-
-          soft_rst_state <= WAIT_DRS;
-          soft_reset_trg <= soft_reset_trg_en;
 
         when WAIT_DRS =>
 
@@ -143,6 +135,15 @@ begin
         when FLUSH =>
 
           soft_reset_buf <= soft_reset_buf_en;
+
+          if (soft_reset_flush_cnt = 0 or watchdog_timeout = '1') then
+            soft_rst_state       <= HALT;
+            soft_reset_flush_cnt <= SOFT_RESET_FLUSH_CNT_MAX;
+          else
+            soft_reset_flush_cnt <= soft_reset_flush_cnt - 1;
+          end if;
+
+        when HALT =>
 
           if (soft_reset_flush_cnt = 0 or watchdog_timeout = '1') then
             soft_rst_state <= IDLE;

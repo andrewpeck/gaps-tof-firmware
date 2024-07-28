@@ -244,13 +244,6 @@
         "description": "Soft reset occupancy pointer.",
         "adr8": 116
     },
-    "DRS.READOUT.SOFT_RESET_TRG_EN": {
-        "adr": 29,
-        "permission": "rw",
-        "mask": 16,
-        "description": "Soft reset triggers.",
-        "adr8": 116
-    },
     "DRS.READOUT.SOFT_RESET_BUF_EN": {
         "adr": 29,
         "permission": "rw",

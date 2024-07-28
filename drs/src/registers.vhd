@@ -149,10 +149,6 @@ package registers is
     constant REG_READOUT_SOFT_RESET_PTR_EN_BIT    : integer := 3;
     constant REG_READOUT_SOFT_RESET_PTR_EN_DEFAULT : std_logic := '1';
 
-    constant REG_READOUT_SOFT_RESET_TRG_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1d";
-    constant REG_READOUT_SOFT_RESET_TRG_EN_BIT    : integer := 4;
-    constant REG_READOUT_SOFT_RESET_TRG_EN_DEFAULT : std_logic := '1';
-
     constant REG_READOUT_SOFT_RESET_BUF_EN_ADDR    : std_logic_vector(9 downto 0) := "00" & x"1d";
     constant REG_READOUT_SOFT_RESET_BUF_EN_BIT    : integer := 5;
     constant REG_READOUT_SOFT_RESET_BUF_EN_DEFAULT : std_logic := '1';

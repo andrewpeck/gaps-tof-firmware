@@ -209,12 +209,6 @@
                 fw_signal="soft_reset_ptr_en"
                 fw_default="0x1" />
 
-            <node id="SOFT_RESET_TRG_EN" address="0xD" permission="rw"
-                description="Soft reset triggers."
-                mask="0x0010"
-                fw_signal="soft_reset_trg_en"
-                fw_default="0x1" />
-
             <node id="SOFT_RESET_BUF_EN" address="0xD" permission="rw"
                 description="Soft reset buffers."
                 mask="0x0020"
