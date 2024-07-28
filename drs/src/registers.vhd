@@ -384,7 +384,7 @@ package registers is
 
     constant REG_AUTO_PURGE_MODE_ADDR    : std_logic_vector(9 downto 0) := "00" & x"83";
     constant REG_AUTO_PURGE_MODE_BIT    : integer := 0;
-    constant REG_AUTO_PURGE_MODE_DEFAULT : std_logic := '1';
+    constant REG_AUTO_PURGE_MODE_DEFAULT : std_logic := '0';
 
     constant REG_DMA_RAM_A_OCC_RST_ADDR    : std_logic_vector(9 downto 0) := "01" & x"00";
     constant REG_DMA_RAM_A_OCC_RST_BIT    : integer := 0;

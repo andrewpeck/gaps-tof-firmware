@@ -519,7 +519,7 @@
         <node id="AUTO_PURGE_MODE" address="0x83" permission="rw"
               description="1 for the DAQ to automatically purge any remaining data from the DRS fifo after readout"
               mask="0x1"
-              fw_default="0x1"
+              fw_default="0x0"
               fw_signal="auto_purge_mode"/>
 
         <node id="DMA" address="0x100" description = "DMA and ram buffer occupancy">

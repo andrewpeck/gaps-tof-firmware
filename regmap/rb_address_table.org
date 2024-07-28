@@ -298,7 +298,7 @@ Implements various control and monitoring functions of the DRS Logic
 |-------------------+--------+---------+----------+------+-------+-----------------------------------------------------------------------------------------|
 | CNT_EVENT_WR_EN   | ~0x82~ | ~0x208~ | ~[31:0]~ | r    |       | Count the number of times the event queue has been written to                           |
 |-------------------+--------+---------+----------+------+-------+-----------------------------------------------------------------------------------------|
-| AUTO_PURGE_MODE   | ~0x83~ | ~0x20c~ | ~0~      | rw   | ~0x1~ | 1 for the DAQ to automatically purge any remaining data from the DRS fifo after readout |
+| AUTO_PURGE_MODE   | ~0x83~ | ~0x20c~ | ~0~      | rw   | ~0x0~ | 1 for the DAQ to automatically purge any remaining data from the DRS fifo after readout |
 |-------------------+--------+---------+----------+------+-------+-----------------------------------------------------------------------------------------|
 
 *DRS.DMA*
