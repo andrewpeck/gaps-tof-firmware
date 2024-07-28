@@ -1034,7 +1034,9 @@ begin
   begin
     if (rising_edge(clock)) then
       if (readout_complete='1' and auto_purge_mode = '1') then
-        auto_purge <= readout_complete;
+        auto_purge <= '1';
+      else
+        auto_purge <= '0';
       end if;
     end if;
   end process;
