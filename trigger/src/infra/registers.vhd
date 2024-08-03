@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_MT_NUM_REGS : integer := 179;
+    constant REG_MT_NUM_REGS : integer := 180;
     constant REG_MT_ADDRESS_MSB : integer := 9;
     constant REG_MT_ADDRESS_LSB : integer := 0;
     constant REG_LOOPBACK_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
@@ -1065,27 +1065,31 @@ package registers is
     constant REG_LT_LINK_EN0_ADDR    : std_logic_vector(9 downto 0) := "10" & x"42";
     constant REG_LT_LINK_EN0_MSB    : integer := 9;
     constant REG_LT_LINK_EN0_LSB     : integer := 0;
-    constant REG_LT_LINK_EN0_DEFAULT : std_logic_vector(9 downto 0) := "00" & x"00";
+    constant REG_LT_LINK_EN0_DEFAULT : std_logic_vector(9 downto 0) := "11" & x"ff";
 
     constant REG_LT_LINK_EN1_ADDR    : std_logic_vector(9 downto 0) := "10" & x"43";
     constant REG_LT_LINK_EN1_MSB    : integer := 9;
     constant REG_LT_LINK_EN1_LSB     : integer := 0;
-    constant REG_LT_LINK_EN1_DEFAULT : std_logic_vector(9 downto 0) := "00" & x"00";
+    constant REG_LT_LINK_EN1_DEFAULT : std_logic_vector(9 downto 0) := "11" & x"ff";
 
     constant REG_LT_LINK_EN2_ADDR    : std_logic_vector(9 downto 0) := "10" & x"44";
     constant REG_LT_LINK_EN2_MSB    : integer := 9;
     constant REG_LT_LINK_EN2_LSB     : integer := 0;
-    constant REG_LT_LINK_EN2_DEFAULT : std_logic_vector(9 downto 0) := "00" & x"00";
+    constant REG_LT_LINK_EN2_DEFAULT : std_logic_vector(9 downto 0) := "11" & x"ff";
 
     constant REG_LT_LINK_EN3_ADDR    : std_logic_vector(9 downto 0) := "10" & x"45";
     constant REG_LT_LINK_EN3_MSB    : integer := 9;
     constant REG_LT_LINK_EN3_LSB     : integer := 0;
-    constant REG_LT_LINK_EN3_DEFAULT : std_logic_vector(9 downto 0) := "00" & x"00";
+    constant REG_LT_LINK_EN3_DEFAULT : std_logic_vector(9 downto 0) := "11" & x"ff";
 
     constant REG_LT_LINK_EN4_ADDR    : std_logic_vector(9 downto 0) := "10" & x"46";
     constant REG_LT_LINK_EN4_MSB    : integer := 9;
     constant REG_LT_LINK_EN4_LSB     : integer := 0;
-    constant REG_LT_LINK_EN4_DEFAULT : std_logic_vector(9 downto 0) := "00" & x"00";
+    constant REG_LT_LINK_EN4_DEFAULT : std_logic_vector(9 downto 0) := "11" & x"ff";
+
+    constant REG_LT_LINK_AUTOMASK_ADDR    : std_logic_vector(9 downto 0) := "10" & x"47";
+    constant REG_LT_LINK_AUTOMASK_BIT    : integer := 0;
+    constant REG_LT_LINK_AUTOMASK_DEFAULT : std_logic := '1';
 
 
 end registers;

@@ -117,8 +117,9 @@ architecture structural of gaps_mt is
   signal lt_data_i_pri   : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '0');
   signal lt_data_i_inv   : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '1');
 
-  signal lt_link_rdy     : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '1');
-  signal lt_link_en      : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '1');
+  signal lt_link_rdy         : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '1');
+  signal lt_link_en          : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '1');
+  signal lt_link_automask_en : std_logic                                   := '0';
 
   signal lt_data_i_aux_p : std_logic_vector (NUM_LT_MT_AUX-1 downto 0) := (others => '0');
   signal lt_data_i_aux_n : std_logic_vector (NUM_LT_MT_AUX-1 downto 0) := (others => '0');
@@ -158,8 +159,6 @@ architecture structural of gaps_mt is
     := (others => (others => '0'));
 
   signal lt_input_stretch : std_logic_vector (3 downto 0) := (others => '0');
-
-  signal dsi_link_en : std_logic_vector(lt_data_i_pri_p'range);
 
   signal discrim, hits_masked, hits_xtrig : threshold_array_t;   -- 1d array of 25 * 8 discrim
 
@@ -635,18 +634,6 @@ begin
   --
   --------------------------------------------------------------------------------
 
-  -- automatically disable dsi links which have bad feedback clocks
-  process (clk200) is
-  begin
-    if (rising_edge(clk200)) then
-      dsi_link_en <= repeat(fb_clk_ok(4), NUM_LT_MT_PRI/NUM_DSI) &
-                     repeat(fb_clk_ok(3), NUM_LT_MT_PRI/NUM_DSI) &
-                     repeat(fb_clk_ok(2), NUM_LT_MT_PRI/NUM_DSI) &
-                     repeat(fb_clk_ok(1), NUM_LT_MT_PRI/NUM_DSI) &
-                     repeat(fb_clk_ok(0), NUM_LT_MT_PRI/NUM_DSI);
-    end if;
-  end process;
-
   -- dole out all 75 lt data inputs into 50 primary inputs,
   -- and 25 auxillary inputs
   pri_assign : for I in 0 to NUM_LT_MT_PRI - 1 generate
@@ -689,10 +676,11 @@ begin
         clk2x => clk400,
 
         -- clock and data from lt boards
-        data_i  => lt_data_i_pri,
-        inv     => lt_data_i_inv,
-        rdy_o   => lt_link_rdy,
-        link_en => dsi_link_en,
+        data_i      => lt_data_i_pri,
+        inv         => lt_data_i_inv,
+        rdy_o       => lt_link_rdy,
+        link_en     => lt_link_en,
+        automask_en => lt_link_automask_en,
 
         -- sr delay settings (in units of 1 clock cycle)
         coarse_delays_i => coarse_delays,
@@ -1939,6 +1927,7 @@ begin
   regs_addresses(176)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"44";
   regs_addresses(177)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"45";
   regs_addresses(178)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"46";
+  regs_addresses(179)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"47";
 
   -- Connect read signals
   regs_read_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB) <= loopback;
@@ -2178,6 +2167,7 @@ begin
   regs_read_arr(176)(REG_LT_LINK_EN2_MSB downto REG_LT_LINK_EN2_LSB) <= lt_link_en((2+1)*10-1 downto 2*10);
   regs_read_arr(177)(REG_LT_LINK_EN3_MSB downto REG_LT_LINK_EN3_LSB) <= lt_link_en((3+1)*10-1 downto 3*10);
   regs_read_arr(178)(REG_LT_LINK_EN4_MSB downto REG_LT_LINK_EN4_LSB) <= lt_link_en((4+1)*10-1 downto 4*10);
+  regs_read_arr(179)(REG_LT_LINK_AUTOMASK_BIT) <= lt_link_automask_en;
 
   -- Connect write signals
   loopback <= regs_write_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB);
@@ -2302,6 +2292,7 @@ begin
   lt_link_en((2+1)*10-1 downto 2*10) <= regs_write_arr(176)(REG_LT_LINK_EN2_MSB downto REG_LT_LINK_EN2_LSB);
   lt_link_en((3+1)*10-1 downto 3*10) <= regs_write_arr(177)(REG_LT_LINK_EN3_MSB downto REG_LT_LINK_EN3_LSB);
   lt_link_en((4+1)*10-1 downto 4*10) <= regs_write_arr(178)(REG_LT_LINK_EN4_MSB downto REG_LT_LINK_EN4_LSB);
+  lt_link_automask_en <= regs_write_arr(179)(REG_LT_LINK_AUTOMASK_BIT);
 
   -- Connect write pulse signals
   trigger_ipb <= regs_write_pulse_arr(8);
@@ -3450,6 +3441,7 @@ begin
   regs_defaults(176)(REG_LT_LINK_EN2_MSB downto REG_LT_LINK_EN2_LSB) <= REG_LT_LINK_EN2_DEFAULT;
   regs_defaults(177)(REG_LT_LINK_EN3_MSB downto REG_LT_LINK_EN3_LSB) <= REG_LT_LINK_EN3_DEFAULT;
   regs_defaults(178)(REG_LT_LINK_EN4_MSB downto REG_LT_LINK_EN4_LSB) <= REG_LT_LINK_EN4_DEFAULT;
+  regs_defaults(179)(REG_LT_LINK_AUTOMASK_BIT) <= REG_LT_LINK_AUTOMASK_DEFAULT;
 
   -- Define writable regs
   regs_writable_arr(0) <= '1';
@@ -3556,6 +3548,7 @@ begin
   regs_writable_arr(176) <= '1';
   regs_writable_arr(177) <= '1';
   regs_writable_arr(178) <= '1';
+  regs_writable_arr(179) <= '1';
 
 --==== Registers end ============================================================================
 end structural;

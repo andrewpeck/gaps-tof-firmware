@@ -1463,6 +1463,12 @@
         "mask": 1023,
         "description": "DSI 4 RX Link Enable"
     },
+    "MT.LT_LINK_AUTOMASK": {
+        "adr": 583,
+        "permission": "rw",
+        "mask": 1,
+        "description": "1 to enable automatic LT link masking"
+    },
     "SPI.d0": {
         "adr": 0,
         "permission": "rw",

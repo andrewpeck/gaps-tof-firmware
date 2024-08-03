@@ -33,6 +33,7 @@ entity lt_input_processor is
     stretch      : in  std_logic_vector(3 downto 0);
     coarse_delay : in  coarse_delay_t;
     en           : in  std_logic;
+    automask_en  : in  std_logic;
     inv          : in  std_logic;
 
     spy_o        : out std_logic;
@@ -166,7 +167,7 @@ begin
     generic map (WORD_SIZE => NUM_LT_BITS)
     port map (
       clock   => clk,
-      reset   => reset or not en,
+      reset   => reset or (automask_en and not rdy) or not en,
       data_i  => data_dly,
       valid_o => valid,
       data_o  => data_o,

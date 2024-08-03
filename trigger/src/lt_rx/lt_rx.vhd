@@ -45,6 +45,7 @@ entity lt_rx is
     inv             : in std_logic_vector (NUM_INPUTS-1 downto 0);
     coarse_delays_i : in lt_coarse_delays_array_t;
 
+    automask_en     : in  std_logic;
     rdy_o           : out std_logic_vector (NUM_INPUTS-1 downto 0);
 
     data_i : in std_logic_vector (NUM_INPUTS-1 downto 0);
@@ -118,6 +119,7 @@ begin
         en           => link_en(I),
         inv          => inv(I),
         spy_o        => spy(I),
+        automask_en  => automask_en,
         rdy_o        => rdy_o(I),
 
         data_i  => data_i(I),

@@ -589,15 +589,17 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |TRIG_CYCLIC_INTERVAL | ~0x241~ | ~0x904~ | ~[31:0]~ | rw | ~0x0~ | Interval of cyclic triggers | 
 |------------+---+---+---------+-----+-----+----------------------------|
-|LT_LINK_EN0 | ~0x242~ | ~0x908~ | ~[9:0]~ | rw | ~0x0~ | DSI 0 RX Link Enable | 
+|LT_LINK_EN0 | ~0x242~ | ~0x908~ | ~[9:0]~ | rw | ~0x3FF~ | DSI 0 RX Link Enable | 
 |------------+---+---+---------+-----+-----+----------------------------|
-|LT_LINK_EN1 | ~0x243~ | ~0x90c~ | ~[9:0]~ | rw | ~0x0~ | DSI 1 RX Link Enable | 
+|LT_LINK_EN1 | ~0x243~ | ~0x90c~ | ~[9:0]~ | rw | ~0x3FF~ | DSI 1 RX Link Enable | 
 |------------+---+---+---------+-----+-----+----------------------------|
-|LT_LINK_EN2 | ~0x244~ | ~0x910~ | ~[9:0]~ | rw | ~0x0~ | DSI 2 RX Link Enable | 
+|LT_LINK_EN2 | ~0x244~ | ~0x910~ | ~[9:0]~ | rw | ~0x3FF~ | DSI 2 RX Link Enable | 
 |------------+---+---+---------+-----+-----+----------------------------|
-|LT_LINK_EN3 | ~0x245~ | ~0x914~ | ~[9:0]~ | rw | ~0x0~ | DSI 3 RX Link Enable | 
+|LT_LINK_EN3 | ~0x245~ | ~0x914~ | ~[9:0]~ | rw | ~0x3FF~ | DSI 3 RX Link Enable | 
 |------------+---+---+---------+-----+-----+----------------------------|
-|LT_LINK_EN4 | ~0x246~ | ~0x918~ | ~[9:0]~ | rw | ~0x0~ | DSI 4 RX Link Enable | 
+|LT_LINK_EN4 | ~0x246~ | ~0x918~ | ~[9:0]~ | rw | ~0x3FF~ | DSI 4 RX Link Enable | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|LT_LINK_AUTOMASK | ~0x247~ | ~0x91c~ | ~0~ | rw | ~0x1~ | 1 to enable automatic LT link masking | 
 |------------+---+---+---------+-----+-----+----------------------------|
 
 
