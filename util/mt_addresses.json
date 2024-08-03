@@ -1433,6 +1433,36 @@
         "mask": 4294967295,
         "description": "Interval of cyclic triggers"
     },
+    "MT.LT_LINK_EN0": {
+        "adr": 578,
+        "permission": "rw",
+        "mask": 1023,
+        "description": "DSI 0 RX Link Enable"
+    },
+    "MT.LT_LINK_EN1": {
+        "adr": 579,
+        "permission": "rw",
+        "mask": 1023,
+        "description": "DSI 1 RX Link Enable"
+    },
+    "MT.LT_LINK_EN2": {
+        "adr": 580,
+        "permission": "rw",
+        "mask": 1023,
+        "description": "DSI 2 RX Link Enable"
+    },
+    "MT.LT_LINK_EN3": {
+        "adr": 581,
+        "permission": "rw",
+        "mask": 1023,
+        "description": "DSI 3 RX Link Enable"
+    },
+    "MT.LT_LINK_EN4": {
+        "adr": 582,
+        "permission": "rw",
+        "mask": 1023,
+        "description": "DSI 4 RX Link Enable"
+    },
     "SPI.d0": {
         "adr": 0,
         "permission": "rw",

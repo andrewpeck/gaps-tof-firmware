@@ -118,6 +118,7 @@ architecture structural of gaps_mt is
   signal lt_data_i_inv   : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '1');
 
   signal lt_link_rdy     : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '1');
+  signal lt_link_en      : std_logic_vector (NUM_LT_MT_PRI-1 downto 0) := (others => '1');
 
   signal lt_data_i_aux_p : std_logic_vector (NUM_LT_MT_AUX-1 downto 0) := (others => '0');
   signal lt_data_i_aux_n : std_logic_vector (NUM_LT_MT_AUX-1 downto 0) := (others => '0');
@@ -1933,6 +1934,11 @@ begin
   regs_addresses(171)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"07";
   regs_addresses(172)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"40";
   regs_addresses(173)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"41";
+  regs_addresses(174)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"42";
+  regs_addresses(175)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"43";
+  regs_addresses(176)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"44";
+  regs_addresses(177)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"45";
+  regs_addresses(178)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"46";
 
   -- Connect read signals
   regs_read_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB) <= loopback;
@@ -2167,6 +2173,11 @@ begin
   regs_read_arr(171)(REG_HOG_HOG_VER_MSB downto REG_HOG_HOG_VER_LSB) <= HOG_VER;
   regs_read_arr(172)(REG_TRIG_CYCLIC_EN_BIT) <= trig_cyclic_en;
   regs_read_arr(173)(REG_TRIG_CYCLIC_INTERVAL_MSB downto REG_TRIG_CYCLIC_INTERVAL_LSB) <= trig_cyclic_interval;
+  regs_read_arr(174)(REG_LT_LINK_EN0_MSB downto REG_LT_LINK_EN0_LSB) <= lt_link_en((0+1)*10-1 downto 0*10);
+  regs_read_arr(175)(REG_LT_LINK_EN1_MSB downto REG_LT_LINK_EN1_LSB) <= lt_link_en((1+1)*10-1 downto 1*10);
+  regs_read_arr(176)(REG_LT_LINK_EN2_MSB downto REG_LT_LINK_EN2_LSB) <= lt_link_en((2+1)*10-1 downto 2*10);
+  regs_read_arr(177)(REG_LT_LINK_EN3_MSB downto REG_LT_LINK_EN3_LSB) <= lt_link_en((3+1)*10-1 downto 3*10);
+  regs_read_arr(178)(REG_LT_LINK_EN4_MSB downto REG_LT_LINK_EN4_LSB) <= lt_link_en((4+1)*10-1 downto 4*10);
 
   -- Connect write signals
   loopback <= regs_write_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB);
@@ -2286,6 +2297,11 @@ begin
   ltb_pulser_mask (199 downto 175) <= regs_write_arr(158)(REG_PULSER_CH_175_199_MSB downto REG_PULSER_CH_175_199_LSB);
   trig_cyclic_en <= regs_write_arr(172)(REG_TRIG_CYCLIC_EN_BIT);
   trig_cyclic_interval <= regs_write_arr(173)(REG_TRIG_CYCLIC_INTERVAL_MSB downto REG_TRIG_CYCLIC_INTERVAL_LSB);
+  lt_link_en((0+1)*10-1 downto 0*10) <= regs_write_arr(174)(REG_LT_LINK_EN0_MSB downto REG_LT_LINK_EN0_LSB);
+  lt_link_en((1+1)*10-1 downto 1*10) <= regs_write_arr(175)(REG_LT_LINK_EN1_MSB downto REG_LT_LINK_EN1_LSB);
+  lt_link_en((2+1)*10-1 downto 2*10) <= regs_write_arr(176)(REG_LT_LINK_EN2_MSB downto REG_LT_LINK_EN2_LSB);
+  lt_link_en((3+1)*10-1 downto 3*10) <= regs_write_arr(177)(REG_LT_LINK_EN3_MSB downto REG_LT_LINK_EN3_LSB);
+  lt_link_en((4+1)*10-1 downto 4*10) <= regs_write_arr(178)(REG_LT_LINK_EN4_MSB downto REG_LT_LINK_EN4_LSB);
 
   -- Connect write pulse signals
   trigger_ipb <= regs_write_pulse_arr(8);
@@ -3429,6 +3445,11 @@ begin
   regs_defaults(158)(REG_PULSER_CH_175_199_MSB downto REG_PULSER_CH_175_199_LSB) <= REG_PULSER_CH_175_199_DEFAULT;
   regs_defaults(172)(REG_TRIG_CYCLIC_EN_BIT) <= REG_TRIG_CYCLIC_EN_DEFAULT;
   regs_defaults(173)(REG_TRIG_CYCLIC_INTERVAL_MSB downto REG_TRIG_CYCLIC_INTERVAL_LSB) <= REG_TRIG_CYCLIC_INTERVAL_DEFAULT;
+  regs_defaults(174)(REG_LT_LINK_EN0_MSB downto REG_LT_LINK_EN0_LSB) <= REG_LT_LINK_EN0_DEFAULT;
+  regs_defaults(175)(REG_LT_LINK_EN1_MSB downto REG_LT_LINK_EN1_LSB) <= REG_LT_LINK_EN1_DEFAULT;
+  regs_defaults(176)(REG_LT_LINK_EN2_MSB downto REG_LT_LINK_EN2_LSB) <= REG_LT_LINK_EN2_DEFAULT;
+  regs_defaults(177)(REG_LT_LINK_EN3_MSB downto REG_LT_LINK_EN3_LSB) <= REG_LT_LINK_EN3_DEFAULT;
+  regs_defaults(178)(REG_LT_LINK_EN4_MSB downto REG_LT_LINK_EN4_LSB) <= REG_LT_LINK_EN4_DEFAULT;
 
   -- Define writable regs
   regs_writable_arr(0) <= '1';
@@ -3530,6 +3551,11 @@ begin
   regs_writable_arr(158) <= '1';
   regs_writable_arr(172) <= '1';
   regs_writable_arr(173) <= '1';
+  regs_writable_arr(174) <= '1';
+  regs_writable_arr(175) <= '1';
+  regs_writable_arr(176) <= '1';
+  regs_writable_arr(177) <= '1';
+  regs_writable_arr(178) <= '1';
 
 --==== Registers end ============================================================================
 end structural;

@@ -166,7 +166,7 @@ begin
     generic map (WORD_SIZE => NUM_LT_BITS)
     port map (
       clock   => clk,
-      reset   => reset or not rdy or not en,
+      reset   => reset or not en,
       data_i  => data_dly,
       valid_o => valid,
       data_o  => data_o,

@@ -1083,6 +1083,17 @@
           fw_default="0x00000000"
           fw_signal="trig_cyclic_interval"/>
 
+    <node id="LT_LINK_EN${DSI_IDX}" address="0x242"
+          generate="true"
+          generate_size="5"
+          generate_address_step="1"
+          generate_idx_var="DSI_IDX"
+          permission="rw"
+          mask="0x3ff"
+          description="DSI ${DSI_IDX} RX Link Enable"
+          fw_default="0x0"
+          fw_signal="lt_link_en((${DSI_IDX}+1)*10-1 downto ${DSI_IDX}*10)" />
+
   </node> <!--MT-->
 
   <node id="SPI"

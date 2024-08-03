@@ -221,7 +221,7 @@ begin
 
           event_cnt <= event_cnt_i;
 
-          -- acknowledgement received
+          -- acknowledgment received
           if tiu_busy = '1' or tiu_busy_ignore_i = '1' then
             tx_init_state <= INIT_TX;
             tiu_init_tx <= '1';
