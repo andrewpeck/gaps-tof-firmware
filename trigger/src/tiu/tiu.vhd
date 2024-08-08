@@ -73,7 +73,7 @@ architecture behavioral of tiu is
   --------------------------------------------------------------------------------
 
   signal pretrigger_latch  : std_logic                              := '0';
-  signal tiu_triggered     : std_logic                              := '0';
+  signal ready_to_trigger  : std_logic                              := '0';
   signal event_cnt         : std_logic_vector (event_cnt_i'range)   := (others => '0');
   signal tiu_timeout_cnt   : integer range 0 to tiu_timeout_cnt_max := 0;
   signal tiu_tx_busy       : std_logic                              := '0';
@@ -134,7 +134,7 @@ begin
       probe2(0)             => tiu_busy_i,
       probe2(1)             => tiu_serial_o,
       probe2(2)             => tiu_gps,
-      probe2(3)             => tiu_triggered,
+      probe2(3)             => ready_to_trigger,
       probe2(4)             => pre_trigger_i,
       probe2(5)             => global_busy_o,
       probe2(6)             => timestamp_valid_o,
@@ -184,14 +184,14 @@ begin
   --------------------------------------------------------------------------------
   -- Trigger Out
   --------------------------------------------------------------------------------
-  -- or the statemachine derived tiu_triggered signal with the async
+  -- or the statemachine derived ready_to_trigger signal with the async
   -- source of the trigger so that it is activated 1 clock cycle ahead of the
   -- state machine. this reduces latency by 1 clock. thanks to the OR, once the
   -- state machine takes effect the active hi trigger signal will get taken
   -- over and held high until the ack comes back from the tiu
-  tiu_trigger_o <= pre_trigger_i or pretrigger_latch;
-  tiu_triggered <= '0' when (tx_init_state = READY_FOR_TRIGGER) else '1';
-  global_busy_o <= tiu_triggered or tiu_busy;
+  tiu_trigger_o    <= pre_trigger_i or pretrigger_latch;
+  ready_to_trigger <= '1' when (tx_init_state = READY_FOR_TRIGGER) else '0';
+  global_busy_o    <= (not ready_to_trigger) or tiu_busy;
 
   process (clock) is
   begin
@@ -453,7 +453,7 @@ begin
 
           tiu_emu_busy <= '0';
 
-          if (tiu_triggered = '1') then
+          if (ready_to_trigger = '0') then
             tiu_emu_busy_state   <= WAITING_FOR_BUSY;
             tiu_emu_busy_cnt <= 100;
           end if;
