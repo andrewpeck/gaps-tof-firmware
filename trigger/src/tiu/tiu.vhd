@@ -72,6 +72,7 @@ architecture behavioral of tiu is
   -- Trigger Logic
   --------------------------------------------------------------------------------
 
+  signal pretrigger_latch  : std_logic                              := '0';
   signal tiu_triggered     : std_logic                              := '0';
   signal event_cnt         : std_logic_vector (event_cnt_i'range)   := (others => '0');
   signal tiu_timeout_cnt   : integer range 0 to tiu_timeout_cnt_max := 0;
@@ -188,7 +189,7 @@ begin
   -- state machine. this reduces latency by 1 clock. thanks to the OR, once the
   -- state machine takes effect the active hi trigger signal will get taken
   -- over and held high until the ack comes back from the tiu
-  tiu_trigger_o <= tiu_triggered or pre_trigger_i;
+  tiu_trigger_o <= pre_trigger_i or pretrigger_latch;
   tiu_triggered <= '0' when (tx_init_state = READY_FOR_TRIGGER) else '1';
   global_busy_o <= tiu_triggered or tiu_busy;
 
@@ -211,8 +212,9 @@ begin
 
           -- start a trigger
           if (tiu_busy='0' and pre_trigger_i = '1') then
-            tiu_timeout_cnt <= tiu_timeout_cnt_max;
-            tx_init_state   <= WAIT_FOR_BUSY;
+            pretrigger_latch <= '1';
+            tiu_timeout_cnt  <= tiu_timeout_cnt_max;
+            tx_init_state    <= WAIT_FOR_BUSY;
           end if;
 
         -- when the busy/ack is received, deassert the trigger output and start the
@@ -223,8 +225,9 @@ begin
 
           -- acknowledgment received
           if tiu_busy = '1' or tiu_busy_ignore_i = '1' then
-            tx_init_state <= INIT_TX;
-            tiu_init_tx <= '1';
+            pretrigger_latch <= '0';
+            tx_init_state    <= INIT_TX;
+            tiu_init_tx      <= '1';
 
           -- still waiting for the busy
           elsif (tiu_timeout_cnt > 0) then
@@ -233,7 +236,8 @@ begin
           -- timeout
           elsif (tiu_timeout_cnt = 0) then
 
-            tiu_timeout     <= '1';
+            pretrigger_latch <= '0';
+            tiu_timeout      <= '1';
 
             if (send_event_cnt_on_timeout = '1') then
               tx_init_state <= INIT_TX;
