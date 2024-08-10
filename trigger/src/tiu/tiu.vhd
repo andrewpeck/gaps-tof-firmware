@@ -228,7 +228,6 @@ begin
           if tiu_busy = '1' or tiu_busy_ignore_i = '1' then
             pretrigger_latch <= '0';
             tx_init_state    <= INIT_TX;
-            tiu_init_tx      <= '1';
 
           -- still waiting for the busy
           elsif (tiu_timeout_cnt > 0) then
@@ -242,7 +241,6 @@ begin
 
             if (send_event_cnt_on_timeout = '1') then
               tx_init_state <= INIT_TX;
-              tiu_init_tx <= '1';
             else
               tx_init_state <= READY_FOR_TRIGGER;
             end if;
@@ -252,10 +250,11 @@ begin
         when INIT_TX =>
 
           tx_init_state <= WAIT_FOR_READY;
+          tiu_init_tx   <= '1';
 
         when WAIT_FOR_READY =>
 
-          if (tiu_tx_busy = '0' and tiu_busy = '0') then
+          if (tiu_init_tx = '0' and tiu_tx_busy = '0' and tiu_busy = '0') then
             tx_init_state <= READY_FOR_TRIGGER;
           end if;
 
