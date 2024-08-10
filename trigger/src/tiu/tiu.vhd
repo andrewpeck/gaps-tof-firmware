@@ -204,6 +204,7 @@ begin
       --  3) When ACK is received, send the event counter
       --  4) When ACK is deasserted, ready for the next trigger
 
+      tiu_init_tx     <= '0';
       tiu_timeout     <= '0';
 
       case tx_init_state is
@@ -253,8 +254,6 @@ begin
           tx_init_state <= WAIT_FOR_READY;
 
         when WAIT_FOR_READY =>
-
-          tiu_init_tx <= '0';
 
           if (tiu_tx_busy = '0' and tiu_busy = '0') then
             tx_init_state <= READY_FOR_TRIGGER;
