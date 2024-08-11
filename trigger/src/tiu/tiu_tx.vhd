@@ -125,13 +125,17 @@ begin
     end if;
   end process;
 
-  div_pulse <= '1' when clk_cnt = 0 else '0';
-
   -- synchronize the clock divider to the trigger signal to avoid time smearing
   -- from 100 to 1 MHz conversion
   process (clock) is
   begin
     if (rising_edge(clock)) then
+
+      if clk_cnt = 0 then
+        div_pulse <= '1';
+      else
+        div_pulse <= '0';
+      end if;
 
       if (clk_cnt = DIV-1 or (state = IDLE_state and trg_i = '1')) then
         clk_cnt <= 0;
