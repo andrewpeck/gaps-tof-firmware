@@ -65,7 +65,7 @@ architecture behavioral of tiu is
   signal tiu_busy : std_logic := '0';
   signal tiu_gps  : std_logic := '0';
 
-  type tx_init_state_t is (READY_FOR_TRIGGER, WAIT_FOR_BUSY, INIT_TX, WAIT_FOR_READY);
+  type tx_init_state_t is (READY_FOR_TRIGGER, WAIT_FOR_BUSY, INIT_TX, WAIT_FOR_TX_DONE, WAIT_FOR_NOT_BUSY);
   signal tx_init_state : tx_init_state_t := READY_FOR_TRIGGER;
 
   --------------------------------------------------------------------------------
@@ -76,7 +76,8 @@ architecture behavioral of tiu is
   signal ready_to_trigger  : std_logic                              := '0';
   signal event_cnt         : std_logic_vector (event_cnt_i'range)   := (others => '0');
   signal tiu_timeout_cnt   : integer range 0 to tiu_timeout_cnt_max := 0;
-  signal tiu_tx_busy       : std_logic                              := '0';
+  signal tiu_tx_busy       : std_logic;
+  signal tiu_tx_done       : std_logic;
   signal tiu_init_tx       : std_logic                              := '0';
   signal tiu_timeout       : std_logic                              := '0';
 
@@ -249,12 +250,18 @@ begin
 
         when INIT_TX =>
 
-          tx_init_state <= WAIT_FOR_READY;
+          tx_init_state <= WAIT_FOR_TX_DONE;
           tiu_init_tx   <= '1';
 
-        when WAIT_FOR_READY =>
+        when WAIT_FOR_TX_DONE =>
 
-          if (tiu_init_tx = '0' and tiu_tx_busy = '0' and tiu_busy = '0') then
+          if (tiu_tx_done = '1') then
+            tx_init_state <= WAIT_FOR_NOT_BUSY;
+          end if;
+
+        when WAIT_FOR_NOT_BUSY =>
+
+          if (tiu_busy = '0') then
             tx_init_state <= READY_FOR_TRIGGER;
           end if;
 
@@ -285,7 +292,8 @@ begin
       serial_o    => tiu_serial_o,
       trg_i       => tiu_init_tx,
       event_cnt_i => event_cnt,
-      busy_o      => tiu_tx_busy
+      busy_o      => tiu_tx_busy,
+      done_o      => tiu_tx_done
       );
 
   --------------------------------------------------------------------------------

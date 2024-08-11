@@ -25,6 +25,7 @@ entity tiu_tx is
     reset    : in  std_logic;
     serial_o : out std_logic;
     busy_o   : out std_logic;
+    done_o   : out std_logic;
 
     trg_i       : in std_logic;
     event_cnt_i : in std_logic_vector (EVENTCNTB-1 downto 0)
@@ -71,15 +72,11 @@ begin
 
   packet_buf <= STOP_LEVEL & event_cnt & START_LEVEL;
 
-  process (clock, reset)
+  process (clock)
   begin
+    if (rising_edge(clock)) then
 
-    if (reset = '1') then
-
-      state    <= IDLE_state;
-      serial_o <= IDLE_LEVEL;
-
-    elsif (rising_edge(clock)) then
+      done_o <= '0';
 
       case state is
 
@@ -114,11 +111,16 @@ begin
           serial_o <= STOP_LEVEL;
 
           if (div_pulse = '1') then
-            state <= IDLE_state;
+            state  <= IDLE_state;
+            done_o <= '1';
           end if;
 
       end case;
 
+      if (reset = '1') then
+        state    <= IDLE_state;
+        serial_o <= IDLE_LEVEL;
+      end if;
 
     end if;
   end process;
