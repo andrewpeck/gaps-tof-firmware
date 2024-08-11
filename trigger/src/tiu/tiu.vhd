@@ -198,7 +198,8 @@ begin
   process (clock) is
   begin
     if (rising_edge(clock)) then
-      tiu_ack_sr(0) <= tiu_busy;
+      -- if we ignore the busy we are always acknowledged
+      tiu_ack_sr(0) <= tiu_busy or tiu_busy_ignore_i;
       for I in 1 to tiu_ack_sr'length-1 loop
         tiu_ack_sr(I) <= tiu_ack_sr(I-1);
       end loop;
@@ -252,10 +253,10 @@ begin
           event_cnt <= event_cnt_i;
 
           -- acknowledgment received
-          if tiu_ack = '1' or tiu_busy_ignore_i = '1' then
+          if tiu_ack = '1' then
             tx_init_state    <= INIT_TX;
 
-          -- still waiting for the busy
+          -- still waiting for the ack
           elsif (tiu_timeout_cnt > 0) then
             tiu_timeout_cnt <= tiu_timeout_cnt - 1;
 
