@@ -63,9 +63,13 @@ architecture behavioral of tiu is
   signal tiu_busy_i_rising, tiu_busy_i_falling : std_logic;
   signal tiu_busy_i_reg : std_logic := '0';
   signal tiu_busy : std_logic := '0';
+
+  signal tiu_ack    : std_logic                    := '0';
+  signal tiu_ack_sr : std_logic_vector(3 downto 0) := (others => '0');
+
   signal tiu_gps  : std_logic := '0';
 
-  type tx_init_state_t is (READY_FOR_TRIGGER, WAIT_FOR_BUSY, INIT_TX, WAIT_FOR_TX_DONE, WAIT_FOR_NOT_BUSY);
+  type tx_init_state_t is (READY_FOR_TRIGGER, WAIT_FOR_ACK, INIT_TX, WAIT_FOR_TX_DONE, WAIT_FOR_NOT_BUSY);
   signal tx_init_state : tx_init_state_t := READY_FOR_TRIGGER;
 
   --------------------------------------------------------------------------------
@@ -113,7 +117,7 @@ architecture behavioral of tiu is
   type emu_busy_state_t is (IDLE, WAITING_FOR_BUSY, BUSY);
   signal tiu_emu_busy_state : emu_busy_state_t := IDLE;
 
-  type gps_rx_state_t is (IDLE, WAIT_FOR_EMPTY, LOAD, WAIT_FOR_BUSY);
+  type gps_rx_state_t is (IDLE, WAIT_FOR_EMPTY, LOAD, WAIT_FOR_ACK);
   signal gps_rx_state : gps_rx_state_t := IDLE;
 
   signal pps            : std_logic := '0';
@@ -151,7 +155,7 @@ begin
       probe2(74 downto 66)  => (others => '0'),
       probe3(3 downto 0)    => std_logic_vector(to_unsigned(tiu_emu_byte_cnt, 4)),
       probe3(4)             => pps,
-      probe3(5)             => '0',
+      probe3(5)             => tiu_ack,
       probe3(6)             => '0',
       probe3(7)             => '0',
       probe4(4 downto 0)    => (others => '0'),
@@ -188,6 +192,21 @@ begin
   tiu_gps  <= tiu_emu_gps  when tiu_emulation_mode = '1' else tiu_gps_i;
 
   --------------------------------------------------------------------------------
+  -- ACK Glitch Filter
+  --------------------------------------------------------------------------------
+
+  process (clock) is
+  begin
+    if (rising_edge(clock)) then
+      tiu_ack_sr(0) <= tiu_busy;
+      for I in 1 to tiu_ack_sr'length-1 loop
+        tiu_ack_sr(I) <= tiu_ack_sr(I-1);
+      end loop;
+      tiu_ack <= and_reduce(tiu_ack_sr);
+    end if;
+  end process;
+
+  --------------------------------------------------------------------------------
   -- Trigger Out
   --------------------------------------------------------------------------------
   -- or the statemachine derived ready_to_trigger signal with the async
@@ -221,17 +240,17 @@ begin
           if (tiu_busy='0' and pre_trigger_i = '1') then
             pretrigger_latch <= '1';
             tiu_timeout_cnt  <= tiu_timeout_cnt_max;
-            tx_init_state    <= WAIT_FOR_BUSY;
+            tx_init_state    <= WAIT_FOR_ACK;
           end if;
 
         -- when the busy/ack is received, deassert the trigger output and start the
         -- event count serializer
-        when WAIT_FOR_BUSY =>
+        when WAIT_FOR_ACK =>
 
           event_cnt <= event_cnt_i;
 
           -- acknowledgment received
-          if tiu_busy = '1' or tiu_busy_ignore_i = '1' then
+          if tiu_ack = '1' or tiu_busy_ignore_i = '1' then
             pretrigger_latch <= '0';
             tx_init_state    <= INIT_TX;
 
@@ -550,9 +569,9 @@ begin
           tiu_emu_byte <= tiu_emu_word(8*(1+tiu_emu_byte_cnt)-1 downto
                                        8*tiu_emu_byte_cnt);
           tiu_emu_dav  <= '1';
-          gps_rx_state <= WAIT_FOR_BUSY;
+          gps_rx_state <= WAIT_FOR_ACK;
 
-        when WAIT_FOR_BUSY =>
+        when WAIT_FOR_ACK =>
 
           -- it takes a few clocks from the load signal until empty goes low,
           -- so make sure we acknowledge the load then go back to wait for idle
