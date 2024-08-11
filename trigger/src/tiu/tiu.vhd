@@ -57,7 +57,7 @@ end tiu;
 architecture behavioral of tiu is
 
   constant CLK_PERIOD_US          : real    := 1000000.0/real(FREQ);
-  constant tiu_timeout_cnt_max : integer := integer(1.05 / CLK_PERIOD_US);
+  constant tiu_timeout_cnt_max : integer := integer(1.05 / CLK_PERIOD_US); -- 105 cycles
   constant tiu_busy_cnt_max    : integer := 2**tiu_emu_busy_cnt_i'length-1;
 
   signal tiu_busy_i_rising, tiu_busy_i_falling : std_logic;
@@ -236,6 +236,8 @@ begin
 
         when READY_FOR_TRIGGER =>
 
+          pretrigger_latch <= '0';
+
           -- start a trigger
           if (tiu_busy='0' and pre_trigger_i = '1') then
             pretrigger_latch <= '1';
@@ -251,7 +253,6 @@ begin
 
           -- acknowledgment received
           if tiu_ack = '1' or tiu_busy_ignore_i = '1' then
-            pretrigger_latch <= '0';
             tx_init_state    <= INIT_TX;
 
           -- still waiting for the busy
@@ -261,7 +262,6 @@ begin
           -- timeout
           elsif (tiu_timeout_cnt = 0) then
 
-            pretrigger_latch <= '0';
             tiu_timeout      <= '1';
 
             if (send_event_cnt_on_timeout = '1') then
@@ -274,8 +274,9 @@ begin
 
         when INIT_TX =>
 
-          tx_init_state <= WAIT_FOR_TX_DONE;
-          tiu_init_tx   <= '1';
+          pretrigger_latch <= '0';
+          tx_init_state    <= WAIT_FOR_TX_DONE;
+          tiu_init_tx      <= '1';
 
         when WAIT_FOR_TX_DONE =>
 
