@@ -211,6 +211,7 @@ architecture structural of gaps_mt is
   signal track_trigger_prescale   : std_logic_vector (31 downto 0);
   signal track_central_prescale   : std_logic_vector (31 downto 0);
   signal any_hit_trigger_prescale : std_logic_vector (31 downto 0);
+  signal gaps_trigger_prescale    : std_logic_vector (31 downto 0);
 
   signal gaps_trigger_en         : std_logic;
   signal configurable_trigger_en : std_logic;
@@ -771,7 +772,7 @@ begin
 
       -- different trigger options are enabled / disabled here
 
-      gaps_trigger_en   => gaps_trigger_en,
+      gaps_trigger_en_i => gaps_trigger_en,
       require_beta      => require_beta,
       inner_tof_thresh  => inner_tof_thresh,
       outer_tof_thresh  => outer_tof_thresh,
@@ -790,9 +791,10 @@ begin
       track_trigger_is_global   => track_trigger_is_global,
       track_central_is_global   => track_central_is_global,
 
+      gaps_trigger_prescale    => gaps_trigger_prescale,
       any_hit_trigger_prescale => any_hit_trigger_prescale,
-      track_trigger_prescale => track_trigger_prescale,
-      track_central_prescale => track_central_prescale,
+      track_trigger_prescale   => track_trigger_prescale,
+      track_central_prescale   => track_central_prescale,
 
       hit_thresh      => hit_thresh,
 
@@ -1928,6 +1930,7 @@ begin
   regs_addresses(177)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"45";
   regs_addresses(178)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"46";
   regs_addresses(179)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"47";
+  regs_addresses(180)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"48";
 
   -- Connect read signals
   regs_read_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB) <= loopback;
@@ -2168,6 +2171,7 @@ begin
   regs_read_arr(177)(REG_LT_LINK_EN3_MSB downto REG_LT_LINK_EN3_LSB) <= lt_link_en((3+1)*10-1 downto 3*10);
   regs_read_arr(178)(REG_LT_LINK_EN4_MSB downto REG_LT_LINK_EN4_LSB) <= lt_link_en((4+1)*10-1 downto 4*10);
   regs_read_arr(179)(REG_LT_LINK_AUTOMASK_BIT) <= lt_link_automask_en;
+  regs_read_arr(180)(REG_GAPS_TRIG_PRESCALE_MSB downto REG_GAPS_TRIG_PRESCALE_LSB) <= gaps_trigger_prescale;
 
   -- Connect write signals
   loopback <= regs_write_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB);
@@ -2293,6 +2297,7 @@ begin
   lt_link_en((3+1)*10-1 downto 3*10) <= regs_write_arr(177)(REG_LT_LINK_EN3_MSB downto REG_LT_LINK_EN3_LSB);
   lt_link_en((4+1)*10-1 downto 4*10) <= regs_write_arr(178)(REG_LT_LINK_EN4_MSB downto REG_LT_LINK_EN4_LSB);
   lt_link_automask_en <= regs_write_arr(179)(REG_LT_LINK_AUTOMASK_BIT);
+  gaps_trigger_prescale <= regs_write_arr(180)(REG_GAPS_TRIG_PRESCALE_MSB downto REG_GAPS_TRIG_PRESCALE_LSB);
 
   -- Connect write pulse signals
   trigger_ipb <= regs_write_pulse_arr(8);
@@ -3442,6 +3447,7 @@ begin
   regs_defaults(177)(REG_LT_LINK_EN3_MSB downto REG_LT_LINK_EN3_LSB) <= REG_LT_LINK_EN3_DEFAULT;
   regs_defaults(178)(REG_LT_LINK_EN4_MSB downto REG_LT_LINK_EN4_LSB) <= REG_LT_LINK_EN4_DEFAULT;
   regs_defaults(179)(REG_LT_LINK_AUTOMASK_BIT) <= REG_LT_LINK_AUTOMASK_DEFAULT;
+  regs_defaults(180)(REG_GAPS_TRIG_PRESCALE_MSB downto REG_GAPS_TRIG_PRESCALE_LSB) <= REG_GAPS_TRIG_PRESCALE_DEFAULT;
 
   -- Define writable regs
   regs_writable_arr(0) <= '1';
@@ -3549,6 +3555,7 @@ begin
   regs_writable_arr(177) <= '1';
   regs_writable_arr(178) <= '1';
   regs_writable_arr(179) <= '1';
+  regs_writable_arr(180) <= '1';
 
 --==== Registers end ============================================================================
 end structural;

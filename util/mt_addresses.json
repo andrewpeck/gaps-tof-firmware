@@ -1469,6 +1469,12 @@
         "mask": 1,
         "description": "1 to enable automatic LT link masking"
     },
+    "MT.GAPS_TRIG_PRESCALE": {
+        "adr": 584,
+        "permission": "rw",
+        "mask": 4294967295,
+        "description": "Prescale value for the GAPS trigger. 0 == 0% (off), 2**32-1 == 100%"
+    },
     "SPI.d0": {
         "adr": 0,
         "permission": "rw",

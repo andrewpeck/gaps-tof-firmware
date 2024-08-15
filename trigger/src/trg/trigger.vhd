@@ -24,6 +24,7 @@ entity trigger is
     track_trigger_is_global   : in std_logic;
     track_central_is_global   : in std_logic;
 
+    gaps_trigger_prescale    : in std_logic_vector (31 downto 0);
     any_hit_trigger_prescale : in std_logic_vector (31 downto 0);
     track_trigger_prescale   : in std_logic_vector (31 downto 0);
     track_central_prescale   : in std_logic_vector (31 downto 0);
@@ -38,11 +39,11 @@ entity trigger is
     hits_o : out threshold_array_t;
 
     -- trigger parameters
-    gaps_trigger_en  : in std_logic;
-    require_beta     : in std_logic;
-    inner_tof_thresh : in std_logic_vector (7 downto 0);
-    outer_tof_thresh : in std_logic_vector (7 downto 0);
-    total_tof_thresh : in std_logic_vector (7 downto 0);
+    gaps_trigger_en_i : in std_logic;
+    require_beta      : in std_logic;
+    inner_tof_thresh  : in std_logic_vector (7 downto 0);
+    outer_tof_thresh  : in std_logic_vector (7 downto 0);
+    total_tof_thresh  : in std_logic_vector (7 downto 0);
 
     -- configurable trigger parameters
     configurable_trigger_en : in std_logic;
@@ -157,6 +158,9 @@ architecture behavioral of trigger is
 
   signal track_central_en    : std_logic;
   signal track_central_urand : std_logic_vector (31 downto 0) := (others => '0');
+
+  signal gaps_trigger_en    : std_logic;
+  signal gaps_trigger_urand : std_logic_vector (31 downto 0) := (others => '0');
 
   signal trig_sources        : std_logic_vector(15 downto 0) := (others => '0');
   signal trig_sources_reg    : std_logic_vector(15 downto 0) := (others => '0');
@@ -647,6 +651,13 @@ begin
       rst_n => not reset,
       u     => any_hit_trigger_urand);
 
+  urand_inf_gaps : entity work.urand_inf
+    generic map (SEED => 1)
+    port map (
+      clk   => clk,
+      rst_n => not reset,
+      u     => gaps_trigger_urand);
+
   urand_inf_track_trig : entity work.urand_inf
     generic map (SEED => 2)
     port map (
@@ -655,7 +666,7 @@ begin
       u     => track_trigger_urand);
 
   urand_inf_track_central : entity work.urand_inf
-    generic map (SEED => 2)
+    generic map (SEED => 3)
     port map (
       clk   => clk,
       rst_n => not reset,
@@ -684,6 +695,13 @@ begin
         track_central_en <= '1';
       else
         track_central_en <= '0';
+      end if;
+
+      if (gaps_trigger_prescale /= x"00000000" and
+          gaps_trigger_prescale > gaps_trigger_urand) then
+        gaps_trigger_en <= gaps_trigger_en_i;
+      else
+        gaps_trigger_en <= '0';
       end if;
 
     end if;

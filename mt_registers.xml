@@ -1100,6 +1100,14 @@
           fw_default="0x1"
           fw_signal="lt_link_automask_en"/>
 
+    <node id="GAPS_TRIG_PRESCALE"
+          address="0x248"
+          permission="rw"
+          mask="0xffffffff"
+          description="Prescale value for the GAPS trigger. 0 == 0% (off), 2**32-1 == 100%"
+          fw_default="0xffffffff"
+          fw_signal="gaps_trigger_prescale"/>
+
   </node> <!--MT-->
 
   <node id="SPI"

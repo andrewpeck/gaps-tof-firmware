@@ -601,6 +601,8 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |LT_LINK_AUTOMASK | ~0x247~ | ~0x91c~ | ~0~ | rw | ~0x1~ | 1 to enable automatic LT link masking | 
 |------------+---+---+---------+-----+-----+----------------------------|
+|GAPS_TRIG_PRESCALE | ~0x248~ | ~0x920~ | ~[31:0]~ | rw | ~0xFFFFFFFF~ | Prescale value for the GAPS trigger. 0 == 0% (off), 2**32-1 == 100% | 
+|------------+---+---+---------+-----+-----+----------------------------|
 
 
 * Module SPI 	 adr = ~0x1000~
