@@ -38,7 +38,7 @@ entity trigger is
     -- this is an array of 25*8 = 200 thresholds, where each threshold is a 2
     -- bit value
     hits_i : in  threshold_array_t;
-    hits_o : out threshold_array_t;
+    hits_o : out threshold_array_t := (others => (others => '0'));
 
     -- trigger parameters
     gaps_trigger_en_i : in std_logic;
@@ -851,7 +851,6 @@ begin
 
       -- this should be delayed to align with the trigger
       hits_dly(0) <= hits_i;
-      hits_o      <= hits_dly(hits_dly'length-1);
       for I in 1 to hits_dly'length-1 loop
         hits_dly(I) <= hits_dly(I-1);
       end loop;
@@ -864,6 +863,7 @@ begin
       global_trigger_o <= pre_trigger;  -- delay by 1 clock to align with event count
 
       if (pre_trigger = '1') then
+        hits_o              <= hits_dly(hits_dly'length-1);
         trig_sources_o      <= trig_sources_reg;
         pedestal_trig_latch <= pedestal_trig;
       end if;
