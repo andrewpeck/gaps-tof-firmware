@@ -38,13 +38,11 @@ architecture rtl of tiu_tx is
   signal clk_cnt   : natural range 0 to DIV-1 := 0;
   signal div_pulse : std_logic                := '0';
 
-  constant LENGTH : natural := 2 + EVENTCNTB;
+  constant LENGTH : natural := EVENTCNTB;
 
-  type state_t is (IDLE_state, DATA_state, STOP_state);
+  type state_t is (IDLE_state, START_state, DATA_state, STOP_state);
   signal state         : state_t                     := IDLE_state;
   signal state_bit_cnt : natural range 0 to LENGTH-1 := 0;
-
-  signal packet_buf : std_logic_vector (LENGTH-1 downto 0) := (others => '0');
 
   function reverse_vector (a : std_logic_vector)
     return std_logic_vector is
@@ -70,8 +68,6 @@ begin
 
   busy_o <= '1' when STATE /= IDLE_state else '0';
 
-  packet_buf <= STOP_LEVEL & event_cnt & START_LEVEL;
-
   process (clock)
   begin
     if (rising_edge(clock)) then
@@ -88,10 +84,21 @@ begin
           -- this transition is caused by the pre-trigger when the event ID is not yet available
           -- it will get updated in the next clock cycle
           if (trg_i = '1') then
+            state    <= START_state;
+            serial_o <= START_LEVEL;
+          end if;
+
+        when START_state =>
+
+          serial_o <= START_LEVEL;
+
+          if (div_pulse = '1') then
             state <= DATA_state;
           end if;
 
         when DATA_state =>
+
+          serial_o <= event_cnt(state_bit_cnt);
 
           if (div_pulse = '1') then
 
@@ -100,8 +107,6 @@ begin
             else
               state_bit_cnt <= state_bit_cnt + 1;
             end if;
-
-            serial_o <= packet_buf(state_bit_cnt);
 
           end if;
 
@@ -131,13 +136,13 @@ begin
   begin
     if (rising_edge(clock)) then
 
-      if clk_cnt = 0 then
+      if clk_cnt = DIV-1 then
         div_pulse <= '1';
       else
         div_pulse <= '0';
       end if;
 
-      if (clk_cnt = DIV-1 or (state = IDLE_state and trg_i = '1')) then
+      if (clk_cnt = DIV-1 or (state = IDLE_state)) then
         clk_cnt <= 0;
       else
         clk_cnt <= clk_cnt + 1;
