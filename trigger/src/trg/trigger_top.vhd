@@ -21,13 +21,15 @@ entity trigger_top is
 
     event_cnt_reset : in std_logic;
 
-    any_hit_trigger_is_global : in std_logic;
-    track_trigger_is_global   : in std_logic;
-    track_central_is_global   : in std_logic;
+    any_hit_trigger_is_global   : in std_logic;
+    track_trigger_is_global     : in std_logic;
+    track_central_is_global     : in std_logic;
+    track_umb_central_is_global : in std_logic;
 
-    any_hit_trigger_prescale : in std_logic_vector (31 downto 0);
-    track_trigger_prescale   : in std_logic_vector (31 downto 0);
-    track_central_prescale   : in std_logic_vector (31 downto 0);
+    any_hit_trigger_prescale   : in std_logic_vector (31 downto 0);
+    track_trigger_prescale     : in std_logic_vector (31 downto 0);
+    track_central_prescale     : in std_logic_vector (31 downto 0);
+    track_umb_central_prescale : in std_logic_vector (31 downto 0);
 
     hit_thresh : in std_logic_vector (1 downto 0);
 
@@ -882,43 +884,45 @@ begin
     generic map (
       DEBUG => DEBUG)
     port map (
-      clk                       => clk,
-      reset                     => reset,
-      event_cnt_reset           => event_cnt_reset,
-      any_hit_trigger_is_global => any_hit_trigger_is_global,
-      track_trigger_is_global   => track_trigger_is_global,
-      track_central_is_global   => track_central_is_global,
-      any_hit_trigger_prescale  => any_hit_trigger_prescale,
-      track_trigger_prescale    => track_trigger_prescale,
-      track_central_prescale    => track_central_prescale,
-      hit_thresh                => hit_thresh,
-      read_all_channels         => read_all_channels,
-      hits_i                    => hits_i,
-      hits_o                    => hits_o,
-      gaps_trigger_en_i         => gaps_trigger_en,
-      gaps_trigger_prescale     => x"ffffffff",
-      require_beta              => require_beta,
-      inner_tof_thresh          => inner_tof_thresh,
-      outer_tof_thresh          => outer_tof_thresh,
-      total_tof_thresh          => total_tof_thresh,
-      configurable_trigger_en   => configurable_trigger_en,
-      cube_side_thresh          => cube_side_thresh,
-      cube_top_thresh           => cube_top_thresh,
-      cube_bot_thresh           => cube_bot_thresh,
-      cube_corner_thresh        => cube_corner_thresh,
-      umbrella_thresh           => umbrella_thresh,
-      umbrella_center_thresh    => umbrella_center_thresh,
-      cortina_thresh            => cortina_thresh,
-      busy_i                    => busy_i,
-      rb_busy_i                 => rb_busy_i,
-      rb_window_i               => rb_window_i,
-      force_trigger_i           => force_trigger_i,
-      trig_sources_o            => trig_sources_o,
-      pre_trigger_o             => pre_trigger_o,
-      global_trigger_o          => global_trigger_o,
-      lost_trigger_o            => lost_trigger_o,
-      rb_trigger_o              => rb_trigger_o,
-      rb_ch_bitmap_o            => rb_ch_bitmap_o,
-      event_cnt_o               => event_cnt_o);
+      clk                         => clk,
+      reset                       => reset,
+      event_cnt_reset             => event_cnt_reset,
+      any_hit_trigger_is_global   => any_hit_trigger_is_global,
+      track_trigger_is_global     => track_trigger_is_global,
+      track_central_is_global     => track_central_is_global,
+      track_umb_central_is_global => track_umb_central_is_global,
+      any_hit_trigger_prescale    => any_hit_trigger_prescale,
+      track_trigger_prescale      => track_trigger_prescale,
+      track_central_prescale      => track_central_prescale,
+      track_umb_central_prescale  => track_umb_central_prescale,
+      hit_thresh                  => hit_thresh,
+      read_all_channels           => read_all_channels,
+      hits_i                      => hits_i,
+      hits_o                      => hits_o,
+      gaps_trigger_en_i           => gaps_trigger_en,
+      gaps_trigger_prescale       => x"ffffffff",
+      require_beta                => require_beta,
+      inner_tof_thresh            => inner_tof_thresh,
+      outer_tof_thresh            => outer_tof_thresh,
+      total_tof_thresh            => total_tof_thresh,
+      configurable_trigger_en     => configurable_trigger_en,
+      cube_side_thresh            => cube_side_thresh,
+      cube_top_thresh             => cube_top_thresh,
+      cube_bot_thresh             => cube_bot_thresh,
+      cube_corner_thresh          => cube_corner_thresh,
+      umbrella_thresh             => umbrella_thresh,
+      umbrella_center_thresh      => umbrella_center_thresh,
+      cortina_thresh              => cortina_thresh,
+      busy_i                      => busy_i,
+      rb_busy_i                   => rb_busy_i,
+      rb_window_i                 => rb_window_i,
+      force_trigger_i             => force_trigger_i,
+      trig_sources_o              => trig_sources_o,
+      pre_trigger_o               => pre_trigger_o,
+      global_trigger_o            => global_trigger_o,
+      lost_trigger_o              => lost_trigger_o,
+      rb_trigger_o                => rb_trigger_o,
+      rb_ch_bitmap_o              => rb_ch_bitmap_o,
+      event_cnt_o                 => event_cnt_o);
 
 end behavioral;

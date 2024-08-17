@@ -20,14 +20,16 @@ entity trigger is
 
     event_cnt_reset : in std_logic;
 
-    any_hit_trigger_is_global : in std_logic;
-    track_trigger_is_global   : in std_logic;
-    track_central_is_global   : in std_logic;
+    any_hit_trigger_is_global   : in std_logic;
+    track_trigger_is_global     : in std_logic;
+    track_central_is_global     : in std_logic;
+    track_umb_central_is_global : in std_logic;
 
-    gaps_trigger_prescale    : in std_logic_vector (31 downto 0);
-    any_hit_trigger_prescale : in std_logic_vector (31 downto 0);
-    track_trigger_prescale   : in std_logic_vector (31 downto 0);
-    track_central_prescale   : in std_logic_vector (31 downto 0);
+    gaps_trigger_prescale      : in std_logic_vector (31 downto 0);
+    any_hit_trigger_prescale   : in std_logic_vector (31 downto 0);
+    track_trigger_prescale     : in std_logic_vector (31 downto 0);
+    track_central_prescale     : in std_logic_vector (31 downto 0);
+    track_umb_central_prescale : in std_logic_vector (31 downto 0);
 
     hit_thresh : in std_logic_vector (1 downto 0);
 
@@ -103,6 +105,7 @@ architecture behavioral of trigger is
   signal configurable_trigger : std_logic := '0';
   signal track_trigger        : std_logic := '0';
   signal track_central        : std_logic := '0';
+  signal track_umb_central    : std_logic := '0';
   signal any_trigger          : std_logic := '0';
 
   --------------------------------------------------------------------------------
@@ -158,6 +161,9 @@ architecture behavioral of trigger is
 
   signal track_central_en    : std_logic;
   signal track_central_urand : std_logic_vector (31 downto 0) := (others => '0');
+
+  signal track_umb_central_en    : std_logic;
+  signal track_umb_central_urand : std_logic_vector (31 downto 0) := (others => '0');
 
   signal gaps_trigger_en    : std_logic;
   signal gaps_trigger_urand : std_logic_vector (31 downto 0) := (others => '0');
@@ -331,7 +337,8 @@ begin
   begin
     if (rising_edge(clk)) then
       -- this needs to be delayed by 1 clock cycle compared to track trigger because the umbrella / cube top come out 1 cycle early
-      track_central <= '1' when (track_central_en = '1' and umbrella_cnts >= 1 and cube_top_cnts >= 1) else '0';
+      track_central     <= '1' when (track_central_en = '1' and umbrella_cnts >= 1 and cube_top_cnts >= 1)            else '0';
+      track_umb_central <= '1' when (track_umb_central_en = '1' and umbrella_center_cnts >= 1 and cube_top_cnts >= 1) else '0';
     end if;
   end process;
 
@@ -672,6 +679,13 @@ begin
       rst_n => not reset,
       u     => track_central_urand);
 
+  urand_inf_track_umb_central : entity work.urand_inf
+    generic map (SEED => 3)
+    port map (
+      clk   => clk,
+      rst_n => not reset,
+      u     => track_umb_central_urand);
+
   process (clk) is
   begin
     if (rising_edge(clk)) then
@@ -697,6 +711,13 @@ begin
         track_central_en <= '0';
       end if;
 
+      if (track_umb_central_prescale /= x"00000000" and
+          track_umb_central_prescale > track_umb_central_urand) then
+        track_umb_central_en <= '1';
+      else
+        track_umb_central_en <= '0';
+      end if;
+
       if (gaps_trigger_prescale /= x"00000000" and
           gaps_trigger_prescale > gaps_trigger_urand) then
         gaps_trigger_en <= gaps_trigger_en_i;
@@ -718,7 +739,7 @@ begin
     & track_trigger_is_global
     & track_central_is_global
     & read_all_channels
-    & "0"
+    & track_umb_central_is_global
 
     -- actual trigger sources
     & configurable_trigger
@@ -727,7 +748,7 @@ begin
     & force_trigger_i
     & any_trigger
     & gaps_trigger
-    & '0'
+    & track_umb_central
     & '0'
     & '0'
     & '0'
@@ -740,7 +761,7 @@ begin
   -- 3) and pretrigger is not high (so that we don't double trigger before the deadtime kicks in)
   want_pretrigger <= not pre_trigger
                      and not dead
-                     and or_reduce(trig_sources(11 downto 0));
+                     and or_reduce(trig_sources(10 downto 0));
 
   process (clk) is
   begin
@@ -752,6 +773,7 @@ begin
                        (any_trigger and any_hit_trigger_is_global) or
                        (track_trigger and track_trigger_is_global) or
                        (track_central and track_central_is_global) or
+                       (track_umb_central and track_umb_central_is_global) or
                        read_all_channels;
 
       pre_trigger    <= not busy_i and want_pretrigger;

@@ -83,6 +83,12 @@
         "mask": 4,
         "description": "1 makes the TRACK central read all paddles."
     },
+    "MT.TRACK_UMB_CENTRAL_IS_GLOBAL": {
+        "adr": 11,
+        "permission": "rw",
+        "mask": 8,
+        "description": "1 makes the TRACK UMB central read all paddles."
+    },
     "MT.EVENT_CNT_RESET": {
         "adr": 12,
         "permission": "w",
@@ -1474,6 +1480,12 @@
         "permission": "rw",
         "mask": 4294967295,
         "description": "Prescale value for the GAPS trigger. 0 == 0% (off), 2**32-1 == 100%"
+    },
+    "MT.TRACK_UMB_CENTRAL_PRESCALE": {
+        "adr": 585,
+        "permission": "rw",
+        "mask": 4294967295,
+        "description": "Prescale value for the Umbrella Center + Cube Top Track Trigger. 0 == 0% (off), 2**32-1 == 100%"
     },
     "SPI.d0": {
         "adr": 0,

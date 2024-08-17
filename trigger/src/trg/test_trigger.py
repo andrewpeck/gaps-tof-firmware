@@ -103,6 +103,7 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
     dut.event_cnt_reset.value = 1
 
     dut.track_central_is_global.value = is_global
+    dut.track_umb_central_is_global.value = is_global
     dut.track_trigger_is_global.value = is_global
     dut.any_hit_trigger_is_global.value = is_global
     dut.cube_side_thresh.value = is_global
@@ -126,6 +127,11 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
         dut.track_central_prescale.value = 2**32 - 1
     else:
         dut.track_central_prescale.value = 0
+
+    if trig == "umb_central" or trig == "combine":
+        dut.track_umb_central_prescale.value = 2**32 - 1
+    else:
+        dut.track_umb_central_prescale.value = 0
 
     if trig == "track" or trig == "combine":
         dut.track_trigger_prescale.value = 2**32 - 1
@@ -210,8 +216,10 @@ async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30
                         return 1 & (value >> 8)
                     elif trigger == 'central':
                         return 1 & (value >> 9)
+                    elif trigger == 'umb_central':
+                        return 1 & (value >> 4)
                     elif trigger == 'combine':
-                        return 0x1f & (value >> 5)
+                        return 0x3f & (value >> 4)
 
                 assert get_trig_source(
                     trig,

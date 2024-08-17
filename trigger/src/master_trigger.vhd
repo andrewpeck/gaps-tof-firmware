@@ -204,14 +204,16 @@ architecture structural of gaps_mt is
 
   signal hit_thresh   : std_logic_vector (1 downto 0);
 
-  signal track_trigger_is_global   : std_logic;
-  signal track_central_is_global   : std_logic;
-  signal any_hit_trigger_is_global : std_logic;
+  signal track_trigger_is_global     : std_logic;
+  signal track_central_is_global     : std_logic;
+  signal track_umb_central_is_global : std_logic;
+  signal any_hit_trigger_is_global   : std_logic;
 
-  signal track_trigger_prescale   : std_logic_vector (31 downto 0);
-  signal track_central_prescale   : std_logic_vector (31 downto 0);
-  signal any_hit_trigger_prescale : std_logic_vector (31 downto 0);
-  signal gaps_trigger_prescale    : std_logic_vector (31 downto 0);
+  signal track_trigger_prescale     : std_logic_vector (31 downto 0);
+  signal track_central_prescale     : std_logic_vector (31 downto 0);
+  signal track_umb_central_prescale : std_logic_vector (31 downto 0);
+  signal any_hit_trigger_prescale   : std_logic_vector (31 downto 0);
+  signal gaps_trigger_prescale      : std_logic_vector (31 downto 0);
 
   signal gaps_trigger_en         : std_logic;
   signal configurable_trigger_en : std_logic;
@@ -787,14 +789,16 @@ begin
       umbrella_center_thresh  => umbrella_center_thresh,
       cortina_thresh          => cortina_thresh,
 
-      any_hit_trigger_is_global => any_hit_trigger_is_global,
-      track_trigger_is_global   => track_trigger_is_global,
-      track_central_is_global   => track_central_is_global,
+      any_hit_trigger_is_global   => any_hit_trigger_is_global,
+      track_trigger_is_global     => track_trigger_is_global,
+      track_central_is_global     => track_central_is_global,
+      track_umb_central_is_global => track_umb_central_is_global,
 
-      gaps_trigger_prescale    => gaps_trigger_prescale,
-      any_hit_trigger_prescale => any_hit_trigger_prescale,
-      track_trigger_prescale   => track_trigger_prescale,
-      track_central_prescale   => track_central_prescale,
+      gaps_trigger_prescale      => gaps_trigger_prescale,
+      any_hit_trigger_prescale   => any_hit_trigger_prescale,
+      track_trigger_prescale     => track_trigger_prescale,
+      track_central_prescale     => track_central_prescale,
+      track_umb_central_prescale => track_umb_central_prescale,
 
       hit_thresh      => hit_thresh,
 
@@ -1931,6 +1935,7 @@ begin
   regs_addresses(178)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"46";
   regs_addresses(179)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"47";
   regs_addresses(180)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"48";
+  regs_addresses(181)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"49";
 
   -- Connect read signals
   regs_read_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB) <= loopback;
@@ -1945,6 +1950,7 @@ begin
   regs_read_arr(11)(REG_ANY_TRIG_IS_GLOBAL_BIT) <= any_hit_trigger_is_global;
   regs_read_arr(11)(REG_TRACK_TRIG_IS_GLOBAL_BIT) <= track_trigger_is_global;
   regs_read_arr(11)(REG_TRACK_CENTRAL_IS_GLOBAL_BIT) <= track_central_is_global;
+  regs_read_arr(11)(REG_TRACK_UMB_CENTRAL_IS_GLOBAL_BIT) <= track_umb_central_is_global;
   regs_read_arr(13)(REG_EVENT_CNT_MSB downto REG_EVENT_CNT_LSB) <= event_cnt;
   regs_read_arr(14)(REG_TIU_EMULATION_MODE_BIT) <= tiu_emulation_mode;
   regs_read_arr(14)(REG_TIU_USE_AUX_LINK_BIT) <= tiu_use_aux;
@@ -2172,6 +2178,7 @@ begin
   regs_read_arr(178)(REG_LT_LINK_EN4_MSB downto REG_LT_LINK_EN4_LSB) <= lt_link_en((4+1)*10-1 downto 4*10);
   regs_read_arr(179)(REG_LT_LINK_AUTOMASK_BIT) <= lt_link_automask_en;
   regs_read_arr(180)(REG_GAPS_TRIG_PRESCALE_MSB downto REG_GAPS_TRIG_PRESCALE_LSB) <= gaps_trigger_prescale;
+  regs_read_arr(181)(REG_TRACK_UMB_CENTRAL_PRESCALE_MSB downto REG_TRACK_UMB_CENTRAL_PRESCALE_LSB) <= track_umb_central_prescale;
 
   -- Connect write signals
   loopback <= regs_write_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB);
@@ -2180,6 +2187,7 @@ begin
   any_hit_trigger_is_global <= regs_write_arr(11)(REG_ANY_TRIG_IS_GLOBAL_BIT);
   track_trigger_is_global <= regs_write_arr(11)(REG_TRACK_TRIG_IS_GLOBAL_BIT);
   track_central_is_global <= regs_write_arr(11)(REG_TRACK_CENTRAL_IS_GLOBAL_BIT);
+  track_umb_central_is_global <= regs_write_arr(11)(REG_TRACK_UMB_CENTRAL_IS_GLOBAL_BIT);
   tiu_emulation_mode <= regs_write_arr(14)(REG_TIU_EMULATION_MODE_BIT);
   tiu_use_aux <= regs_write_arr(14)(REG_TIU_USE_AUX_LINK_BIT);
   tiu_emu_busy_cnt <= regs_write_arr(14)(REG_TIU_EMU_BUSY_CNT_MSB downto REG_TIU_EMU_BUSY_CNT_LSB);
@@ -2298,6 +2306,7 @@ begin
   lt_link_en((4+1)*10-1 downto 4*10) <= regs_write_arr(178)(REG_LT_LINK_EN4_MSB downto REG_LT_LINK_EN4_LSB);
   lt_link_automask_en <= regs_write_arr(179)(REG_LT_LINK_AUTOMASK_BIT);
   gaps_trigger_prescale <= regs_write_arr(180)(REG_GAPS_TRIG_PRESCALE_MSB downto REG_GAPS_TRIG_PRESCALE_LSB);
+  track_umb_central_prescale <= regs_write_arr(181)(REG_TRACK_UMB_CENTRAL_PRESCALE_MSB downto REG_TRACK_UMB_CENTRAL_PRESCALE_LSB);
 
   -- Connect write pulse signals
   trigger_ipb <= regs_write_pulse_arr(8);
@@ -3330,6 +3339,7 @@ begin
   regs_defaults(11)(REG_ANY_TRIG_IS_GLOBAL_BIT) <= REG_ANY_TRIG_IS_GLOBAL_DEFAULT;
   regs_defaults(11)(REG_TRACK_TRIG_IS_GLOBAL_BIT) <= REG_TRACK_TRIG_IS_GLOBAL_DEFAULT;
   regs_defaults(11)(REG_TRACK_CENTRAL_IS_GLOBAL_BIT) <= REG_TRACK_CENTRAL_IS_GLOBAL_DEFAULT;
+  regs_defaults(11)(REG_TRACK_UMB_CENTRAL_IS_GLOBAL_BIT) <= REG_TRACK_UMB_CENTRAL_IS_GLOBAL_DEFAULT;
   regs_defaults(14)(REG_TIU_EMULATION_MODE_BIT) <= REG_TIU_EMULATION_MODE_DEFAULT;
   regs_defaults(14)(REG_TIU_USE_AUX_LINK_BIT) <= REG_TIU_USE_AUX_LINK_DEFAULT;
   regs_defaults(14)(REG_TIU_EMU_BUSY_CNT_MSB downto REG_TIU_EMU_BUSY_CNT_LSB) <= REG_TIU_EMU_BUSY_CNT_DEFAULT;
@@ -3448,6 +3458,7 @@ begin
   regs_defaults(178)(REG_LT_LINK_EN4_MSB downto REG_LT_LINK_EN4_LSB) <= REG_LT_LINK_EN4_DEFAULT;
   regs_defaults(179)(REG_LT_LINK_AUTOMASK_BIT) <= REG_LT_LINK_AUTOMASK_DEFAULT;
   regs_defaults(180)(REG_GAPS_TRIG_PRESCALE_MSB downto REG_GAPS_TRIG_PRESCALE_LSB) <= REG_GAPS_TRIG_PRESCALE_DEFAULT;
+  regs_defaults(181)(REG_TRACK_UMB_CENTRAL_PRESCALE_MSB downto REG_TRACK_UMB_CENTRAL_PRESCALE_LSB) <= REG_TRACK_UMB_CENTRAL_PRESCALE_DEFAULT;
 
   -- Define writable regs
   regs_writable_arr(0) <= '1';
@@ -3556,6 +3567,7 @@ begin
   regs_writable_arr(178) <= '1';
   regs_writable_arr(179) <= '1';
   regs_writable_arr(180) <= '1';
+  regs_writable_arr(181) <= '1';
 
 --==== Registers end ============================================================================
 end structural;

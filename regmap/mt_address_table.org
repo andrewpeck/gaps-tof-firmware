@@ -45,6 +45,8 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |TRACK_CENTRAL_IS_GLOBAL | ~0xb~ | ~0x2c~ | ~2~ | rw | ~0x0~ | 1 makes the TRACK central read all paddles. | 
 |------------+---+---+---------+-----+-----+----------------------------|
+|TRACK_UMB_CENTRAL_IS_GLOBAL | ~0xb~ | ~0x2c~ | ~3~ | rw | ~0x0~ | 1 makes the TRACK UMB central read all paddles. | 
+|------------+---+---+---------+-----+-----+----------------------------|
 |EVENT_CNT_RESET | ~0xc~ | ~0x30~ | ~0~ | w | Pulse | Write 1 to reset the event counter | 
 |------------+---+---+---------+-----+-----+----------------------------|
 |EVENT_CNT | ~0xd~ | ~0x34~ | ~[31:0]~ | r |  | Event Counter | 
@@ -602,6 +604,8 @@ Implements various control and monitoring functions of the DRS Logic
 |LT_LINK_AUTOMASK | ~0x247~ | ~0x91c~ | ~0~ | rw | ~0x1~ | 1 to enable automatic LT link masking | 
 |------------+---+---+---------+-----+-----+----------------------------|
 |GAPS_TRIG_PRESCALE | ~0x248~ | ~0x920~ | ~[31:0]~ | rw | ~0xFFFFFFFF~ | Prescale value for the GAPS trigger. 0 == 0% (off), 2**32-1 == 100% | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|TRACK_UMB_CENTRAL_PRESCALE | ~0x249~ | ~0x924~ | ~[31:0]~ | rw | ~0x0~ | Prescale value for the Umbrella Center + Cube Top Track Trigger. 0 == 0% (off), 2**32-1 == 100% | 
 |------------+---+---+---------+-----+-----+----------------------------|
 
 

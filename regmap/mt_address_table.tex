@@ -65,6 +65,7 @@
     ANY\_TRIG\_IS\_GLOBAL & \texttt{0xb} & \texttt{[0:0]} & rw & \texttt{0x0} & 1 makes the ANY trigger read all paddles. \\\hline
     TRACK\_TRIG\_IS\_GLOBAL & \texttt{0xb} & \texttt{[1:1]} & rw & \texttt{0x0} & 1 makes the TRACK trigger read all paddles. \\\hline
     TRACK\_CENTRAL\_IS\_GLOBAL & \texttt{0xb} & \texttt{[2:2]} & rw & \texttt{0x0} & 1 makes the TRACK central read all paddles. \\\hline
+    TRACK\_UMB\_CENTRAL\_IS\_GLOBAL & \texttt{0xb} & \texttt{[3:3]} & rw & \texttt{0x0} & 1 makes the TRACK UMB central read all paddles. \\\hline
     EVENT\_CNT\_RESET & \texttt{0xc} & \texttt{[0:0]} & w & Pulse & Write 1 to reset the event counter \\\hline
     EVENT\_CNT & \texttt{0xd} & \texttt{[31:0]} & r & \texttt{} & Event Counter \\\hline
     TIU\_EMULATION\_MODE & \texttt{0xe} & \texttt{[0:0]} & rw & \texttt{0x0} & 1 to emulate the TIU \\\hline
@@ -496,6 +497,7 @@
     LT\_LINK\_EN4 & \texttt{0x246} & \texttt{[9:0]} & rw & \texttt{0x3FF} & DSI 4 RX Link Enable \\\hline
     LT\_LINK\_AUTOMASK & \texttt{0x247} & \texttt{[0:0]} & rw & \texttt{0x1} & 1 to enable automatic LT link masking \\\hline
     GAPS\_TRIG\_PRESCALE & \texttt{0x248} & \texttt{[31:0]} & rw & \texttt{0xFFFFFFFF} & Prescale value for the GAPS trigger. 0 == 0\% (off), 2**32-1 == 100\% \\\hline
+    TRACK\_UMB\_CENTRAL\_PRESCALE & \texttt{0x249} & \texttt{[31:0]} & rw & \texttt{0x0} & Prescale value for the Umbrella Center + Cube Top Track Trigger. 0 == 0\% (off), 2**32-1 == 100\% \\\hline
     \end{tabularx}
     \vspace{5mm}
 

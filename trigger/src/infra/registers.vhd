@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_MT_NUM_REGS : integer := 181;
+    constant REG_MT_NUM_REGS : integer := 182;
     constant REG_MT_ADDRESS_MSB : integer := 9;
     constant REG_MT_ADDRESS_LSB : integer := 0;
     constant REG_LOOPBACK_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
@@ -69,6 +69,10 @@ package registers is
     constant REG_TRACK_CENTRAL_IS_GLOBAL_ADDR    : std_logic_vector(9 downto 0) := "00" & x"0b";
     constant REG_TRACK_CENTRAL_IS_GLOBAL_BIT    : integer := 2;
     constant REG_TRACK_CENTRAL_IS_GLOBAL_DEFAULT : std_logic := '0';
+
+    constant REG_TRACK_UMB_CENTRAL_IS_GLOBAL_ADDR    : std_logic_vector(9 downto 0) := "00" & x"0b";
+    constant REG_TRACK_UMB_CENTRAL_IS_GLOBAL_BIT    : integer := 3;
+    constant REG_TRACK_UMB_CENTRAL_IS_GLOBAL_DEFAULT : std_logic := '0';
 
     constant REG_EVENT_CNT_RESET_ADDR    : std_logic_vector(9 downto 0) := "00" & x"0c";
     constant REG_EVENT_CNT_RESET_BIT    : integer := 0;
@@ -1095,6 +1099,11 @@ package registers is
     constant REG_GAPS_TRIG_PRESCALE_MSB    : integer := 31;
     constant REG_GAPS_TRIG_PRESCALE_LSB     : integer := 0;
     constant REG_GAPS_TRIG_PRESCALE_DEFAULT : std_logic_vector(31 downto 0) := x"ffffffff";
+
+    constant REG_TRACK_UMB_CENTRAL_PRESCALE_ADDR    : std_logic_vector(9 downto 0) := "10" & x"49";
+    constant REG_TRACK_UMB_CENTRAL_PRESCALE_MSB    : integer := 31;
+    constant REG_TRACK_UMB_CENTRAL_PRESCALE_LSB     : integer := 0;
+    constant REG_TRACK_UMB_CENTRAL_PRESCALE_DEFAULT : std_logic_vector(31 downto 0) := x"00000000";
 
 
 end registers;
