@@ -242,7 +242,7 @@
             <node id="DRS_DEADTIME" address="0xE" permission="r"
                 description="Measured last deadtime of the DRS in clock cycles"
                 mask="0xFFFF"
-                fw_signal="std_logic_vector(to_unsigned(drs_busy_timer, 16))"/>
+                fw_signal="std_logic_vector(to_unsigned(drs_busy_timer_stable, 16))"/>
 
         </node> <!--READOUT-->
 

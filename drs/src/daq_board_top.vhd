@@ -1456,7 +1456,7 @@ begin
   regs_read_arr(18)(REG_READOUT_SOFT_RESET_WAIT_DMA_BIT) <= soft_reset_wait_dma;
   regs_read_arr(18)(REG_READOUT_SOFT_RESET_DONE_BIT) <= soft_reset_done;
   regs_read_arr(19)(REG_READOUT_SOFT_RESET_WATCHDOG_EN_BIT) <= soft_reset_watchdog_en;
-  regs_read_arr(19)(REG_READOUT_DRS_DEADTIME_MSB downto REG_READOUT_DRS_DEADTIME_LSB) <= std_logic_vector(to_unsigned(drs_busy_timer, 16));
+  regs_read_arr(19)(REG_READOUT_DRS_DEADTIME_MSB downto REG_READOUT_DRS_DEADTIME_LSB) <= std_logic_vector(to_unsigned(drs_busy_timer_stable, 16));
   regs_read_arr(20)(REG_FPGA_DNA_DNA_LSBS_MSB downto REG_FPGA_DNA_DNA_LSBS_LSB) <= dna (31 downto 0);
   regs_read_arr(21)(REG_FPGA_DNA_DNA_MSBS_MSB downto REG_FPGA_DNA_DNA_MSBS_LSB) <= dna (56 downto 32);
   regs_read_arr(22)(REG_FPGA_TIMESTAMP_TIMESTAMP_LSBS_MSB downto REG_FPGA_TIMESTAMP_TIMESTAMP_LSBS_LSB) <= std_logic_vector(timestamp (31 downto 0));
