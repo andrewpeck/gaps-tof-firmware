@@ -498,6 +498,10 @@
     LT\_LINK\_AUTOMASK & \texttt{0x247} & \texttt{[0:0]} & rw & \texttt{0x1} & 1 to enable automatic LT link masking \\\hline
     GAPS\_TRIG\_PRESCALE & \texttt{0x248} & \texttt{[31:0]} & rw & \texttt{0xFFFFFFFF} & Prescale value for the GAPS trigger. 0 == 0\% (off), 2**32-1 == 100\% \\\hline
     TRACK\_UMB\_CENTRAL\_PRESCALE & \texttt{0x249} & \texttt{[31:0]} & rw & \texttt{0x0} & Prescale value for the Umbrella Center + Cube Top Track Trigger. 0 == 0\% (off), 2**32-1 == 100\% \\\hline
+    RB\_BLOCK\_IF\_BUSY\_31\_TO\_0 & \texttt{0x24a} & \texttt{[31:0]} & rw & \texttt{0x0} & Bitmask to specify if a readout board is BUSY then do not trigger (RB slots 31:0) \\\hline
+    RB\_BLOCK\_IF\_BUSY\_49\_TO\_32 & \texttt{0x24b} & \texttt{[17:0]} & rw & \texttt{0x0} & Bitmask to specify if a readout board is BUSY then do not trigger (RB slots 49:32) \\\hline
+    RB\_LOST\_TRIGGER\_RATE & \texttt{0x24c} & \texttt{[23:0]} & r & \texttt{} & Rate of lost triggers due to RB deadtime in Hz \\\hline
+    TIU\_LOST\_TRIGGER\_RATE & \texttt{0x24d} & \texttt{[23:0]} & r & \texttt{} & Rate of lost triggers due to TIU deadtime in Hz \\\hline
     \end{tabularx}
     \vspace{5mm}
 

@@ -1487,6 +1487,30 @@
         "mask": 4294967295,
         "description": "Prescale value for the Umbrella Center + Cube Top Track Trigger. 0 == 0% (off), 2**32-1 == 100%"
     },
+    "MT.RB_BLOCK_IF_BUSY_31_TO_0": {
+        "adr": 586,
+        "permission": "rw",
+        "mask": 4294967295,
+        "description": "Bitmask to specify if a readout board is BUSY then do not trigger (RB slots 31:0)"
+    },
+    "MT.RB_BLOCK_IF_BUSY_49_TO_32": {
+        "adr": 587,
+        "permission": "rw",
+        "mask": 262143,
+        "description": "Bitmask to specify if a readout board is BUSY then do not trigger (RB slots 49:32)"
+    },
+    "MT.RB_LOST_TRIGGER_RATE": {
+        "adr": 588,
+        "permission": "r",
+        "mask": 16777215,
+        "description": "Rate of lost triggers due to RB deadtime in Hz"
+    },
+    "MT.TIU_LOST_TRIGGER_RATE": {
+        "adr": 589,
+        "permission": "r",
+        "mask": 16777215,
+        "description": "Rate of lost triggers due to TIU deadtime in Hz"
+    },
     "SPI.d0": {
         "adr": 0,
         "permission": "rw",

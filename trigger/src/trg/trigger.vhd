@@ -63,14 +63,16 @@ entity trigger is
 
     force_trigger_i : in std_logic;
 
-    trig_sources_o   : out std_logic_vector(15 downto 0)           := (others => '0');
-    pre_trigger_o    : out std_logic;
-    global_trigger_o : out std_logic                               := '0';
-    lost_trigger_o   : out std_logic;
-    rb_trigger_o     : out std_logic;
-    rb_ch_bitmap_o   : out std_logic_vector (NUM_RBS*8-1 downto 0) := (others => '0');
-    rb_board_list_o  : out std_logic_vector (NUM_RBS-1 downto 0)   := (others => '0');
-    event_cnt_o      : out std_logic_vector (31 downto 0)
+    trig_sources_o     : out std_logic_vector(15 downto 0)           := (others => '0');
+    pre_trigger_o      : out std_logic;
+    global_trigger_o   : out std_logic                               := '0';
+    lost_trigger_o     : out std_logic;
+    rb_lost_trigger_o  : out std_logic;
+    tiu_lost_trigger_o : out std_logic;
+    rb_trigger_o       : out std_logic;
+    rb_ch_bitmap_o     : out std_logic_vector (NUM_RBS*8-1 downto 0) := (others => '0');
+    rb_board_list_o    : out std_logic_vector (NUM_RBS-1 downto 0)   := (others => '0');
+    event_cnt_o        : out std_logic_vector (31 downto 0)
     );
 end trigger;
 
@@ -100,6 +102,9 @@ architecture behavioral of trigger is
   constant DEADCNT_MAX : integer                        := 32;
   signal dead          : std_logic                      := '0';
   signal deadcnt       : integer range 0 to DEADCNT_MAX := 0;
+
+  signal rb_busy_block : std_logic;
+  signal busy          : std_logic;
 
   signal gaps_trigger         : std_logic := '0';
   signal configurable_trigger : std_logic := '0';
@@ -763,9 +768,13 @@ begin
                      and not dead
                      and or_reduce(trig_sources(10 downto 0));
 
+  busy <= busy_i or rb_busy_block;
+
   process (clk) is
   begin
     if (rising_edge(clk)) then
+
+      rb_busy_block <= or_reduce(rb_busy_i);
 
       trig_sources_reg <= trig_sources;
 
@@ -776,8 +785,10 @@ begin
                        (track_umb_central and track_umb_central_is_global) or
                        read_all_channels;
 
-      pre_trigger    <= not busy_i and want_pretrigger;
-      lost_trigger_o <= busy_i and want_pretrigger;
+      pre_trigger        <= not busy and want_pretrigger;
+      lost_trigger_o     <= busy and want_pretrigger;
+      rb_lost_trigger_o  <= (not busy_i) and rb_busy_block and want_pretrigger;
+      tiu_lost_trigger_o <= busy_i and (not rb_busy_block) and want_pretrigger;
 
     end if;
   end process;

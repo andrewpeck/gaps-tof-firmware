@@ -607,6 +607,14 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |TRACK_UMB_CENTRAL_PRESCALE | ~0x249~ | ~0x924~ | ~[31:0]~ | rw | ~0x0~ | Prescale value for the Umbrella Center + Cube Top Track Trigger. 0 == 0% (off), 2**32-1 == 100% | 
 |------------+---+---+---------+-----+-----+----------------------------|
+|RB_BLOCK_IF_BUSY_31_TO_0 | ~0x24a~ | ~0x928~ | ~[31:0]~ | rw | ~0x0~ | Bitmask to specify if a readout board is BUSY then do not trigger (RB slots 31:0) | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|RB_BLOCK_IF_BUSY_49_TO_32 | ~0x24b~ | ~0x92c~ | ~[17:0]~ | rw | ~0x0~ | Bitmask to specify if a readout board is BUSY then do not trigger (RB slots 49:32) | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|RB_LOST_TRIGGER_RATE | ~0x24c~ | ~0x930~ | ~[23:0]~ | r |  | Rate of lost triggers due to RB deadtime in Hz | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|TIU_LOST_TRIGGER_RATE | ~0x24d~ | ~0x934~ | ~[23:0]~ | r |  | Rate of lost triggers due to TIU deadtime in Hz | 
+|------------+---+---+---------+-----+-----+----------------------------|
 
 
 * Module SPI 	 adr = ~0x1000~

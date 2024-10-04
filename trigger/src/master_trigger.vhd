@@ -170,24 +170,29 @@ architecture structural of gaps_mt is
   signal ltb_hit, ltb_hit_r, ltb_hit_rr : std_logic_vector (24 downto 0) := (others => '0');
 
   signal rb_readout_cnt_reset : std_logic;
-  signal rb_readout_cnt_snap : std_logic;
-  signal rb_readout_flag : std_logic_vector (NUM_RBS-1 downto 0);
-  signal rb_ch_bitmap    : std_logic_vector (NUM_RBS*8-1 downto 0);
-  signal rb_board_list   : std_logic_vector (NUM_RBS-1 downto 0);
-  signal rb_busy         : std_logic_vector (NUM_RBS-1 downto 0);
-  signal rb_window       : std_logic_vector (4 downto 0);
+  signal rb_readout_cnt_snap  : std_logic;
+  signal rb_readout_flag      : std_logic_vector (NUM_RBS-1 downto 0);
+  signal rb_ch_bitmap         : std_logic_vector (NUM_RBS*8-1 downto 0);
+  signal rb_board_list        : std_logic_vector (NUM_RBS-1 downto 0);
+  signal rb_busy              : std_logic_vector (NUM_RBS-1 downto 0);
+  signal rb_block_if_busy     : std_logic_vector (NUM_RBS-1 downto 0);
+  signal rb_window            : std_logic_vector (4 downto 0);
 
-  signal lost_trigger   : std_logic;
-  signal global_trigger : std_logic;    -- single bit == the baloon triggered somewhere
-  signal rb_trigger     : std_logic;    --
-  signal pre_trigger    : std_logic;    -- 1 clock cycle earlier than global_trigger
-  signal global_busy    : std_logic;
-  signal trig_sources   : std_logic_vector(15 downto 0);
+  signal lost_trigger     : std_logic;
+  signal rb_lost_trigger  : std_logic;
+  signal tiu_lost_trigger : std_logic;
+  signal global_trigger   : std_logic;  -- single bit == the baloon triggered somewhere
+  signal rb_trigger       : std_logic;  --
+  signal pre_trigger      : std_logic;  -- 1 clock cycle earlier than global_trigger
+  signal global_busy      : std_logic;
+  signal trig_sources     : std_logic_vector(15 downto 0);
 
   signal read_all_channels : std_logic := '0';
 
-  signal trig_rate       : std_logic_vector (23 downto 0) := (others => '0');
-  signal lost_trig_rate  : std_logic_vector (23 downto 0) := (others => '0');
+  signal trig_rate          : std_logic_vector (23 downto 0) := (others => '0');
+  signal lost_trig_rate     : std_logic_vector (23 downto 0) := (others => '0');
+  signal tiu_lost_trig_rate : std_logic_vector (23 downto 0) := (others => '0');
+  signal rb_lost_trig_rate  : std_logic_vector (23 downto 0) := (others => '0');
 
   signal trig_gen_rate        : std_logic_vector (31 downto 0) := (others => '0');
   signal trig_gen             : std_logic                      := '0';
@@ -822,7 +827,7 @@ begin
       --    triggering if too many RBs are busy, but what is the threshold?
       --  + does the SiLi deadtime dominate the deadtime and the RBs don't even matter?
 
-      rb_busy_i => rb_busy,
+      rb_busy_i => rb_busy and rb_block_if_busy,
 
       -- Setting this parameter to '1' makes it so that all channels in all RBs
       -- are read for every event.. it is a global readout mode as opposed to
@@ -844,7 +849,9 @@ begin
       event_cnt_o      => event_cnt,
 
       -- Trigger could have been generated but the SiLi was dead :(
-      lost_trigger_o => lost_trigger,   --
+      lost_trigger_o     => lost_trigger,      --
+      rb_lost_trigger_o  => rb_lost_trigger,   --
+      tiu_lost_trigger_o => tiu_lost_trigger,  --
 
       -- Generate a 1 bit flag for every RB channel in the system to indicate
       -- whether it should read out or not. A RB trigger is just the reduce_or
@@ -945,6 +952,30 @@ begin
       reset_i => reset,
       en_i    => lost_trigger,
       rate_o  => lost_trig_rate
+      );
+
+  rate_counter_rb_lost_trigger : entity work.rate_counter
+    generic map (
+      g_CLK_FREQUENCY => std_logic_vector(to_unsigned(CLK_FREQ,32)),
+      g_COUNTER_WIDTH => 24
+      )
+    port map (
+      clk_i   => clock,
+      reset_i => reset,
+      en_i    => rb_lost_trigger,
+      rate_o  => rb_lost_trig_rate
+      );
+
+  rate_counter_tiu_lost_trigger : entity work.rate_counter
+    generic map (
+      g_CLK_FREQUENCY => std_logic_vector(to_unsigned(CLK_FREQ,32)),
+      g_COUNTER_WIDTH => 24
+      )
+    port map (
+      clk_i   => clock,
+      reset_i => reset,
+      en_i    => tiu_lost_trigger,
+      rate_o  => tiu_lost_trig_rate
       );
 
   --------------------------------------------------------------------------------
@@ -1936,6 +1967,10 @@ begin
   regs_addresses(179)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"47";
   regs_addresses(180)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"48";
   regs_addresses(181)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"49";
+  regs_addresses(182)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"4a";
+  regs_addresses(183)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"4b";
+  regs_addresses(184)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"4c";
+  regs_addresses(185)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"4d";
 
   -- Connect read signals
   regs_read_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB) <= loopback;
@@ -2179,6 +2214,10 @@ begin
   regs_read_arr(179)(REG_LT_LINK_AUTOMASK_BIT) <= lt_link_automask_en;
   regs_read_arr(180)(REG_GAPS_TRIG_PRESCALE_MSB downto REG_GAPS_TRIG_PRESCALE_LSB) <= gaps_trigger_prescale;
   regs_read_arr(181)(REG_TRACK_UMB_CENTRAL_PRESCALE_MSB downto REG_TRACK_UMB_CENTRAL_PRESCALE_LSB) <= track_umb_central_prescale;
+  regs_read_arr(182)(REG_RB_BLOCK_IF_BUSY_31_TO_0_MSB downto REG_RB_BLOCK_IF_BUSY_31_TO_0_LSB) <= rb_block_if_busy(31 downto 0);
+  regs_read_arr(183)(REG_RB_BLOCK_IF_BUSY_49_TO_32_MSB downto REG_RB_BLOCK_IF_BUSY_49_TO_32_LSB) <= rb_block_if_busy(49 downto 32);
+  regs_read_arr(184)(REG_RB_LOST_TRIGGER_RATE_MSB downto REG_RB_LOST_TRIGGER_RATE_LSB) <= rb_lost_trig_rate;
+  regs_read_arr(185)(REG_TIU_LOST_TRIGGER_RATE_MSB downto REG_TIU_LOST_TRIGGER_RATE_LSB) <= tiu_lost_trig_rate;
 
   -- Connect write signals
   loopback <= regs_write_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB);
@@ -2307,6 +2346,8 @@ begin
   lt_link_automask_en <= regs_write_arr(179)(REG_LT_LINK_AUTOMASK_BIT);
   gaps_trigger_prescale <= regs_write_arr(180)(REG_GAPS_TRIG_PRESCALE_MSB downto REG_GAPS_TRIG_PRESCALE_LSB);
   track_umb_central_prescale <= regs_write_arr(181)(REG_TRACK_UMB_CENTRAL_PRESCALE_MSB downto REG_TRACK_UMB_CENTRAL_PRESCALE_LSB);
+  rb_block_if_busy(31 downto 0) <= regs_write_arr(182)(REG_RB_BLOCK_IF_BUSY_31_TO_0_MSB downto REG_RB_BLOCK_IF_BUSY_31_TO_0_LSB);
+  rb_block_if_busy(49 downto 32) <= regs_write_arr(183)(REG_RB_BLOCK_IF_BUSY_49_TO_32_MSB downto REG_RB_BLOCK_IF_BUSY_49_TO_32_LSB);
 
   -- Connect write pulse signals
   trigger_ipb <= regs_write_pulse_arr(8);
@@ -3459,6 +3500,8 @@ begin
   regs_defaults(179)(REG_LT_LINK_AUTOMASK_BIT) <= REG_LT_LINK_AUTOMASK_DEFAULT;
   regs_defaults(180)(REG_GAPS_TRIG_PRESCALE_MSB downto REG_GAPS_TRIG_PRESCALE_LSB) <= REG_GAPS_TRIG_PRESCALE_DEFAULT;
   regs_defaults(181)(REG_TRACK_UMB_CENTRAL_PRESCALE_MSB downto REG_TRACK_UMB_CENTRAL_PRESCALE_LSB) <= REG_TRACK_UMB_CENTRAL_PRESCALE_DEFAULT;
+  regs_defaults(182)(REG_RB_BLOCK_IF_BUSY_31_TO_0_MSB downto REG_RB_BLOCK_IF_BUSY_31_TO_0_LSB) <= REG_RB_BLOCK_IF_BUSY_31_TO_0_DEFAULT;
+  regs_defaults(183)(REG_RB_BLOCK_IF_BUSY_49_TO_32_MSB downto REG_RB_BLOCK_IF_BUSY_49_TO_32_LSB) <= REG_RB_BLOCK_IF_BUSY_49_TO_32_DEFAULT;
 
   -- Define writable regs
   regs_writable_arr(0) <= '1';
@@ -3568,6 +3611,8 @@ begin
   regs_writable_arr(179) <= '1';
   regs_writable_arr(180) <= '1';
   regs_writable_arr(181) <= '1';
+  regs_writable_arr(182) <= '1';
+  regs_writable_arr(183) <= '1';
 
 --==== Registers end ============================================================================
 end structural;

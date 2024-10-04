@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_MT_NUM_REGS : integer := 182;
+    constant REG_MT_NUM_REGS : integer := 186;
     constant REG_MT_ADDRESS_MSB : integer := 9;
     constant REG_MT_ADDRESS_LSB : integer := 0;
     constant REG_LOOPBACK_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
@@ -1104,6 +1104,24 @@ package registers is
     constant REG_TRACK_UMB_CENTRAL_PRESCALE_MSB    : integer := 31;
     constant REG_TRACK_UMB_CENTRAL_PRESCALE_LSB     : integer := 0;
     constant REG_TRACK_UMB_CENTRAL_PRESCALE_DEFAULT : std_logic_vector(31 downto 0) := x"00000000";
+
+    constant REG_RB_BLOCK_IF_BUSY_31_TO_0_ADDR    : std_logic_vector(9 downto 0) := "10" & x"4a";
+    constant REG_RB_BLOCK_IF_BUSY_31_TO_0_MSB    : integer := 31;
+    constant REG_RB_BLOCK_IF_BUSY_31_TO_0_LSB     : integer := 0;
+    constant REG_RB_BLOCK_IF_BUSY_31_TO_0_DEFAULT : std_logic_vector(31 downto 0) := x"00000000";
+
+    constant REG_RB_BLOCK_IF_BUSY_49_TO_32_ADDR    : std_logic_vector(9 downto 0) := "10" & x"4b";
+    constant REG_RB_BLOCK_IF_BUSY_49_TO_32_MSB    : integer := 17;
+    constant REG_RB_BLOCK_IF_BUSY_49_TO_32_LSB     : integer := 0;
+    constant REG_RB_BLOCK_IF_BUSY_49_TO_32_DEFAULT : std_logic_vector(17 downto 0) := "00" & x"0000";
+
+    constant REG_RB_LOST_TRIGGER_RATE_ADDR    : std_logic_vector(9 downto 0) := "10" & x"4c";
+    constant REG_RB_LOST_TRIGGER_RATE_MSB    : integer := 23;
+    constant REG_RB_LOST_TRIGGER_RATE_LSB     : integer := 0;
+
+    constant REG_TIU_LOST_TRIGGER_RATE_ADDR    : std_logic_vector(9 downto 0) := "10" & x"4d";
+    constant REG_TIU_LOST_TRIGGER_RATE_MSB    : integer := 23;
+    constant REG_TIU_LOST_TRIGGER_RATE_LSB     : integer := 0;
 
 
 end registers;

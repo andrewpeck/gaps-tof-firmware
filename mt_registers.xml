@@ -1124,6 +1124,32 @@
           fw_default="0x00000000"
           fw_signal="track_umb_central_prescale"/>
 
+    <node id="RB_BLOCK_IF_BUSY_31_TO_0"
+          address="0x24a"
+          permission="rw"
+          mask="0xffffffff"
+          description="Bitmask to specify if a readout board is BUSY then do not trigger (RB slots 31:0)"
+          fw_default="0x00000000"
+          fw_signal="rb_block_if_busy(31 downto 0)"/>
+
+    <node id="RB_BLOCK_IF_BUSY_49_TO_32"
+          address="0x24b"
+          permission="rw"
+          mask="0x0003ffff"
+          description="Bitmask to specify if a readout board is BUSY then do not trigger (RB slots 49:32)"
+          fw_default="0x00000000"
+          fw_signal="rb_block_if_busy(49 downto 32)"/>
+
+    <node id="RB_LOST_TRIGGER_RATE" address="0x24c" permission="r"
+          description="Rate of lost triggers due to RB deadtime in Hz"
+          mask="0x00ffffff"
+          fw_signal="rb_lost_trig_rate"/>
+
+    <node id="TIU_LOST_TRIGGER_RATE" address="0x24d" permission="r"
+          description="Rate of lost triggers due to TIU deadtime in Hz"
+          mask="0x00ffffff"
+          fw_signal="tiu_lost_trig_rate"/>
+
   </node> <!--MT-->
 
   <node id="SPI"
