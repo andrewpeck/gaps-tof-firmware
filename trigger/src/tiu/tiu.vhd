@@ -76,6 +76,7 @@ architecture behavioral of tiu is
   -- Trigger Logic
   --------------------------------------------------------------------------------
 
+  signal trigger           : std_logic;
   signal pretrigger_latch  : std_logic                              := '0';
   signal ready_to_trigger  : std_logic                              := '0';
   signal event_cnt         : std_logic_vector (event_cnt_i'range)   := (others => '0');
@@ -190,6 +191,7 @@ begin
 
   tiu_busy <= tiu_emu_busy when tiu_emulation_mode = '1' else (tiu_busy_i and not tiu_busy_ignore_i);
   tiu_gps  <= tiu_emu_gps  when tiu_emulation_mode = '1' else tiu_gps_i;
+  trigger  <= pre_trigger_i and not tiu_busy;
 
   --------------------------------------------------------------------------------
   -- ACK Glitch Filter
@@ -240,7 +242,7 @@ begin
           pretrigger_latch <= '0';
 
           -- start a trigger
-          if (tiu_busy='0' and pre_trigger_i = '1') then
+          if (trigger = '1') then
             pretrigger_latch <= '1';
             tiu_timeout_cnt  <= tiu_timeout_cnt_max;
             tx_init_state    <= WAIT_FOR_ACK;
@@ -485,14 +487,14 @@ begin
 
           tiu_emu_busy <= '0';
 
-          if (ready_to_trigger = '0') then
+          if (trigger = '1') then
             tiu_emu_busy_state   <= WAITING_FOR_BUSY;
             tiu_emu_busy_cnt <= 100;
           end if;
 
         when WAITING_FOR_BUSY =>
 
-          tiu_emu_busy <= '0';
+          tiu_emu_busy <= '1';
 
           if (tiu_emu_busy_cnt > 0) then
             tiu_emu_busy_cnt <= tiu_emu_busy_cnt - 1;
@@ -523,6 +525,10 @@ begin
 
     end if;
   end process;
+
+  --------------------------------------------------------------------------------
+  -- GPS
+  --------------------------------------------------------------------------------
 
   process (clock) is
   begin
