@@ -134,7 +134,7 @@
           permission="rw"
           mask="0xffffC000"
           description="Number of 10 ns clock cyles that the emulator will remain busy"
-          fw_default="50000"
+          fw_default="0"
           fw_signal="tiu_emu_busy_cnt"/>
 
     <node id="TIU_BAD"

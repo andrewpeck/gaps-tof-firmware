@@ -70,7 +70,7 @@
     EVENT\_CNT & \texttt{0xd} & \texttt{[31:0]} & r & \texttt{} & Event Counter \\\hline
     TIU\_EMULATION\_MODE & \texttt{0xe} & \texttt{[0:0]} & rw & \texttt{0x0} & 1 to emulate the TIU \\\hline
     TIU\_USE\_AUX\_LINK & \texttt{0xe} & \texttt{[1:1]} & rw & \texttt{0x0} & 1 to use J11; 0 to use J3 \\\hline
-    TIU\_EMU\_BUSY\_CNT & \texttt{0xe} & \texttt{[31:14]} & rw & \texttt{0xC350} & Number of 10 ns clock cyles that the emulator will remain busy \\\hline
+    TIU\_EMU\_BUSY\_CNT & \texttt{0xe} & \texttt{[31:14]} & rw & \texttt{0x0} & Number of 10 ns clock cyles that the emulator will remain busy \\\hline
     TIU\_BAD & \texttt{0xf} & \texttt{[0:0]} & r & \texttt{} & 1 means that the tiu link is not working \\\hline
     TIU\_BUSY\_STUCK & \texttt{0xf} & \texttt{[1:1]} & r & \texttt{} & 1 means the TIU has been stuck high for a long time \\\hline
     TIU\_BUSY\_IGNORE & \texttt{0xf} & \texttt{[2:2]} & rw & \texttt{0x0} & 1 means the the MTB should ignore the TIU busy flag (e.g. because it is stuck) \\\hline
