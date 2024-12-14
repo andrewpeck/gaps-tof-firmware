@@ -239,9 +239,6 @@ architecture structural of gaps_mt is
   signal tiu_gps           : std_logic_vector (8*6-1 downto 0);
   signal tiu_gps_valid     : std_logic;
 
-  signal tiu_emulation_mode : std_logic;
-  signal tiu_emu_busy_cnt   : std_logic_vector (17 downto 0);
-
   signal tiu_busy_length : std_logic_vector (31 downto 0) := (others => '0');
   signal tiu_busy_i      : std_logic;
   signal tiu_serial_o    : std_logic;
@@ -1080,9 +1077,7 @@ begin
 
       -- config
       send_event_cnt_on_timeout => '1',
-      tiu_emulation_mode        => tiu_emulation_mode,
       tiu_busy_ignore_i         => tiu_busy_ignore,
-      tiu_emu_busy_cnt_i        => tiu_emu_busy_cnt,
 
       -- mt trigger signals
       pre_trigger_i     => pre_trigger or global_trigger,
@@ -1987,9 +1982,7 @@ begin
   regs_read_arr(11)(REG_TRACK_CENTRAL_IS_GLOBAL_BIT) <= track_central_is_global;
   regs_read_arr(11)(REG_TRACK_UMB_CENTRAL_IS_GLOBAL_BIT) <= track_umb_central_is_global;
   regs_read_arr(13)(REG_EVENT_CNT_MSB downto REG_EVENT_CNT_LSB) <= event_cnt;
-  regs_read_arr(14)(REG_TIU_EMULATION_MODE_BIT) <= tiu_emulation_mode;
   regs_read_arr(14)(REG_TIU_USE_AUX_LINK_BIT) <= tiu_use_aux;
-  regs_read_arr(14)(REG_TIU_EMU_BUSY_CNT_MSB downto REG_TIU_EMU_BUSY_CNT_LSB) <= tiu_emu_busy_cnt;
   regs_read_arr(15)(REG_TIU_BAD_BIT) <= tiu_bad;
   regs_read_arr(15)(REG_TIU_BUSY_STUCK_BIT) <= tiu_stuck;
   regs_read_arr(15)(REG_TIU_BUSY_IGNORE_BIT) <= tiu_busy_ignore;
@@ -2227,9 +2220,7 @@ begin
   track_trigger_is_global <= regs_write_arr(11)(REG_TRACK_TRIG_IS_GLOBAL_BIT);
   track_central_is_global <= regs_write_arr(11)(REG_TRACK_CENTRAL_IS_GLOBAL_BIT);
   track_umb_central_is_global <= regs_write_arr(11)(REG_TRACK_UMB_CENTRAL_IS_GLOBAL_BIT);
-  tiu_emulation_mode <= regs_write_arr(14)(REG_TIU_EMULATION_MODE_BIT);
   tiu_use_aux <= regs_write_arr(14)(REG_TIU_USE_AUX_LINK_BIT);
-  tiu_emu_busy_cnt <= regs_write_arr(14)(REG_TIU_EMU_BUSY_CNT_MSB downto REG_TIU_EMU_BUSY_CNT_LSB);
   tiu_busy_ignore <= regs_write_arr(15)(REG_TIU_BUSY_IGNORE_BIT);
   lt_input_stretch <= regs_write_arr(15)(REG_LT_INPUT_STRETCH_MSB downto REG_LT_INPUT_STRETCH_LSB);
   rb_window <= regs_write_arr(15)(REG_RB_INTEGRATION_WINDOW_MSB downto REG_RB_INTEGRATION_WINDOW_LSB);
@@ -3381,9 +3372,7 @@ begin
   regs_defaults(11)(REG_TRACK_TRIG_IS_GLOBAL_BIT) <= REG_TRACK_TRIG_IS_GLOBAL_DEFAULT;
   regs_defaults(11)(REG_TRACK_CENTRAL_IS_GLOBAL_BIT) <= REG_TRACK_CENTRAL_IS_GLOBAL_DEFAULT;
   regs_defaults(11)(REG_TRACK_UMB_CENTRAL_IS_GLOBAL_BIT) <= REG_TRACK_UMB_CENTRAL_IS_GLOBAL_DEFAULT;
-  regs_defaults(14)(REG_TIU_EMULATION_MODE_BIT) <= REG_TIU_EMULATION_MODE_DEFAULT;
   regs_defaults(14)(REG_TIU_USE_AUX_LINK_BIT) <= REG_TIU_USE_AUX_LINK_DEFAULT;
-  regs_defaults(14)(REG_TIU_EMU_BUSY_CNT_MSB downto REG_TIU_EMU_BUSY_CNT_LSB) <= REG_TIU_EMU_BUSY_CNT_DEFAULT;
   regs_defaults(15)(REG_TIU_BUSY_IGNORE_BIT) <= REG_TIU_BUSY_IGNORE_DEFAULT;
   regs_defaults(15)(REG_LT_INPUT_STRETCH_MSB downto REG_LT_INPUT_STRETCH_LSB) <= REG_LT_INPUT_STRETCH_DEFAULT;
   regs_defaults(15)(REG_RB_INTEGRATION_WINDOW_MSB downto REG_RB_INTEGRATION_WINDOW_LSB) <= REG_RB_INTEGRATION_WINDOW_DEFAULT;

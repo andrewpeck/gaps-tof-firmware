@@ -11,14 +11,13 @@ from cocotb_test.simulator import run
 async def tiu_test_comms(dut):
     """Test communication with the TIU"""
 
-    cocotb.start_soon(Clock(dut.clock, 5, units="ns").start())  # Create a clock
+    cocotb.start_soon(Clock(dut.clock, 10, units="ns").start())  # Create a clock
 
     dut.reset.value = 0
     dut.tiu_busy_i.value = 0
+    dut.tiu_busy_ignore_i.value = 0
     dut.tiu_gps_i.value = 0
     dut.pre_trigger_i.value = 0
-    dut.tiu_emu_busy_cnt_i.value = 0
-    dut.tiu_emulation_mode.value = 0
     dut.timestamp_i.value = 1
     dut.event_cnt_i.value = 0
     dut.tiu_busy_ignore_i.value = 0

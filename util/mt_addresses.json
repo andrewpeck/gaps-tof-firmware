@@ -101,23 +101,11 @@
         "mask": 4294967295,
         "description": "Event Counter"
     },
-    "MT.TIU_EMULATION_MODE": {
-        "adr": 14,
-        "permission": "rw",
-        "mask": 1,
-        "description": "1 to emulate the TIU"
-    },
     "MT.TIU_USE_AUX_LINK": {
         "adr": 14,
         "permission": "rw",
         "mask": 2,
         "description": "1 to use J11; 0 to use J3"
-    },
-    "MT.TIU_EMU_BUSY_CNT": {
-        "adr": 14,
-        "permission": "rw",
-        "mask": 4294950912,
-        "description": "Number of 10 ns clock cyles that the emulator will remain busy"
     },
     "MT.TIU_BAD": {
         "adr": 15,

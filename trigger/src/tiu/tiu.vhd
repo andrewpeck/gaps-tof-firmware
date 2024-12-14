@@ -27,8 +27,6 @@ entity tiu is
 
     -- config
     send_event_cnt_on_timeout : in std_logic := '1';
-    tiu_emulation_mode        : in std_logic;
-    tiu_emu_busy_cnt_i        : in std_logic_vector (17 downto 0);
     tiu_busy_ignore_i         : in std_logic;
 
     -- mt trigger signals
@@ -58,7 +56,6 @@ architecture behavioral of tiu is
 
   constant CLK_PERIOD_US          : real    := 1000000.0/real(FREQ);
   constant tiu_timeout_cnt_max : integer := integer(1.05 / CLK_PERIOD_US); -- 105 cycles
-  constant tiu_busy_cnt_max    : integer := 2**tiu_emu_busy_cnt_i'length-1;
 
   signal tiu_busy_i_rising, tiu_busy_i_falling : std_logic;
   signal tiu_busy_i_reg : std_logic := '0';
@@ -100,31 +97,6 @@ architecture behavioral of tiu is
   signal tiu_gps_buf      : std_logic_vector (GPSB-8-1 downto 0) := (others => '0');
   signal tiu_byte_cnt     : integer range 0 to tiu_gps_o'length/8;
 
-  --------------------------------------------------------------------------------
-  -- Emulation
-  --------------------------------------------------------------------------------
-
-  signal tiu_emu_busy_cnt : integer range 0 to tiu_busy_cnt_max := 0;
-  signal tiu_emu_busy     : std_logic                           := '0';
-  signal tiu_emu_byte     : std_logic_vector (7 downto 0)       := (others => '0');
-  signal tiu_emu_dav      : std_logic;
-  signal tiu_emu_tre      : std_logic;
-  signal tiu_emu_thre     : std_logic;
-  signal tiu_emu_ready    : std_logic;
-  signal tiu_emu_gps      : std_logic;
-  signal tiu_emu_word     : std_logic_vector (GPSB-1 downto 0)  := (others => '0');
-  signal tiu_emu_byte_cnt : integer range 0 to GPSB/8-1         := 0;
-
-  type emu_busy_state_t is (IDLE, WAITING_FOR_BUSY, BUSY);
-  signal tiu_emu_busy_state : emu_busy_state_t := IDLE;
-
-  type gps_rx_state_t is (IDLE, WAIT_FOR_EMPTY, LOAD, WAIT_FOR_ACK);
-  signal gps_rx_state : gps_rx_state_t := IDLE;
-
-  signal pps            : std_logic := '0';
-  signal second_cnt     : unsigned (31 downto 0);
-  signal sub_second_cnt : integer range 0 to FREQ - 1;
-
   signal tiu_busy_cnt   : unsigned (31 downto 0);
 
   constant tiu_stuck_cnt_max : integer := 1_000_000_000;
@@ -146,7 +118,7 @@ begin
       probe2(6)             => timestamp_valid_o,
       probe2(7)             => tiu_gps_valid_o,
       probe2(55 downto 8)   => tiu_gps_o,
-      probe2(57 downto 56)  => std_logic_vector(to_unsigned(gps_rx_state_t'pos(gps_rx_state), 2)),
+      probe2(57 downto 56)  => (others => '0'),
       probe2(60 downto 58)  => std_logic_vector(to_unsigned(tx_init_state_t'pos(tx_init_state), 3)),
       probe2(61)            => pretrigger_latch,
       probe2(62)            => ready_to_trigger,
@@ -154,13 +126,13 @@ begin
       probe2(64)            => tiu_timeout,
       probe2(65)            => tiu_timeout,
       probe2(74 downto 66)  => (others => '0'),
-      probe3(3 downto 0)    => std_logic_vector(to_unsigned(tiu_emu_byte_cnt, 4)),
+      probe3(3 downto 0)    => (others => '0'),
       probe3(4)             => pps,
       probe3(5)             => tiu_ack,
       probe3(6)             => '0',
       probe3(7)             => '0',
       probe4(4 downto 0)    => (others => '0'),
-      probe4(5)             => tiu_emulation_mode,
+      probe4(5)             => '0',
       probe4(6)             => '0',
       probe4(7)             => '0',
       probe5(0)             => tiu_timebyte_dav,
@@ -181,16 +153,16 @@ begin
       probe13(7)            => tiu_falling,
       probe13(15 downto 8)  => tiu_timebyte,
       probe13(19 downto 16) => std_logic_vector(to_unsigned(tiu_byte_cnt, 4)),
-      probe13(20)           => tiu_emu_busy,
-      probe13(28 downto 21) => tiu_emu_byte,
-      probe13(29)           => tiu_emu_dav,
-      probe13(30)           => tiu_emu_ready,
-      probe13(31)           => tiu_emu_gps,
+      probe13(20)           => '0',
+      probe13(28 downto 21) => (others => '0'),
+      probe13(29)           => '0',
+      probe13(30)           => '0',
+      probe13(31)           => '0',
       probe14(31 downto 0)  => (others => '0')
       );
 
-  tiu_busy <= tiu_emu_busy when tiu_emulation_mode = '1' else (tiu_busy_i and not tiu_busy_ignore_i);
-  tiu_gps  <= tiu_emu_gps  when tiu_emulation_mode = '1' else tiu_gps_i;
+  tiu_busy <= (tiu_busy_i and not tiu_busy_ignore_i);
+  tiu_gps  <= tiu_gps_i;
   trigger  <= pre_trigger_i and not tiu_busy;
 
   --------------------------------------------------------------------------------
@@ -342,21 +314,19 @@ begin
     port map (
       R    => reset,
       C    => clock,
-      TXD  => tiu_emu_gps,
+      TXD  => open,
       RXD  => tiu_gps,
 
       RR   => tiu_timebyte,     --! Receiver Holding Register Data Output
       PE   => open,             --! Parity error
       FE   => open,             --! Framing error
       DR   => tiu_timebyte_dav, --! Data Received, one clock cycle high
-      TR   => tiu_emu_byte,     --! Transmitter Holding Register Data Input
+      TR   => (others => '0'),  --! Transmitter Holding Register Data Input
 
-      THRE => tiu_emu_thre,     --! Transmitter Holding Register Empty
-      THRL => tiu_emu_dav,      --! Transmitter Holding Register Load, one clock cycle high
-      TRE  => tiu_emu_tre       --! Transmitter Register Empty
+      THRE => open,     --! Transmitter Holding Register Empty
+      THRL => '0',      --! Transmitter Holding Register Load, one clock cycle high
+      TRE  => open      --! Transmitter Register Empty
       );
-
-  tiu_emu_ready <= tiu_emu_thre and tiu_emu_tre;
 
   --------------------------------------------------------------------------------
   -- Timestamp Latch
@@ -393,54 +363,8 @@ begin
     end process;
   end generate;
 
-  -- v2gen : if (v="v2") generate
-  --   type ts_state_t is (IDLE, LATCHING);
-  --   signal ts_state : ts_state_t := IDLE;
-  -- begin
-
-  --   process (clock)
-  --   begin
-  --     if (rising_edge(clock)) then
-  --       case state is
-
-  --         when IDLE =>
-
-  --           if (tiu_falling = '1') then
-  --             tiu_byte_cnt <= 0;
-  --             ts_state     <= LATCHING;
-  --           end if;
-
-  --         when LATCHING =>
-
-  --           if (tiu_timebyte_dav = '1') then
-
-  --             if (tiu_byte_cnt < 5) then
-  --               tiu_byte_cnt <= tiu_byte_cnt + 1;
-  --               tiu_gps_buf(8*(tiu_byte_cnt+1)-1 downto 8*tiu_byte_cnt)
-  --                 <= tiu_timebyte;
-  --             else
-  --               tiu_byte_cnt    <= 0;
-  --               tiu_gps_o       <= tiu_timebyte & tiu_gps_buf;
-  --               tiu_gps_valid_o <= '1';
-  --               ts_state        <= IDLE;
-  --             end if;
-  --           end if;
-
-  --         when others =>
-
-  --       end case;
-
-  --       if (reset = '1') then
-  --         state <= IDLE;
-  --       end if;
-
-  --     end if;
-  --   end process;
-
-  -- end generate;
-
   --------------------------------------------------------------------------------
-  -- 1
+  -- Timestamp
   --------------------------------------------------------------------------------
 
   -- on the falling edge of the tiu GPS signal, latch the timestamp
@@ -465,7 +389,7 @@ begin
 
       timestamp_valid_o <= '0';
 
-      if (tiu_falling = '1' or (pps = '1' and tiu_emulation_mode = '1')) then
+      if (tiu_falling = '1') then
         timestamp_o       <= timestamp_i;
         timestamp_valid_o <= '1';
       end if;
@@ -474,131 +398,8 @@ begin
   end process;
 
   --------------------------------------------------------------------------------
-  -- TIU Emulator
+  -- Monitor
   --------------------------------------------------------------------------------
-
-  process (clock)
-  begin
-    if (rising_edge(clock)) then
-
-      case tiu_emu_busy_state is
-
-        when IDLE =>
-
-          tiu_emu_busy <= '0';
-
-          if (trigger = '1') then
-            tiu_emu_busy_state   <= WAITING_FOR_BUSY;
-            tiu_emu_busy_cnt <= 100;
-          end if;
-
-        when WAITING_FOR_BUSY =>
-
-          tiu_emu_busy <= '1';
-
-          if (tiu_emu_busy_cnt > 0) then
-            tiu_emu_busy_cnt <= tiu_emu_busy_cnt - 1;
-          elsif (tiu_emu_busy_cnt = 0) then
-            tiu_emu_busy_state   <= BUSY;
-            tiu_emu_busy_cnt <= to_integer(unsigned(tiu_emu_busy_cnt_i));
-          end if;
-
-        when BUSY =>
-
-          tiu_emu_busy <= '1';
-
-          if (tiu_emu_busy_cnt > 0) then
-            tiu_emu_busy_cnt <= tiu_emu_busy_cnt - 1;
-          elsif (tiu_emu_busy_cnt = 0) then
-            tiu_emu_busy_state <= IDLE;
-          end if;
-
-        when others =>
-
-          tiu_emu_busy_state <= IDLE;
-
-      end case;
-
-      if (reset = '1') then
-        tiu_emu_busy_state <= IDLE;
-      end if;
-
-    end if;
-  end process;
-
-  --------------------------------------------------------------------------------
-  -- GPS
-  --------------------------------------------------------------------------------
-
-  process (clock) is
-  begin
-    if (rising_edge(clock)) then
-      if (reset = '1') then
-        second_cnt     <= (others => '0');
-        sub_second_cnt <= 0;
-        pps            <= '0';
-      elsif (sub_second_cnt < FREQ-1) then
-        second_cnt     <= second_cnt;
-        sub_second_cnt <= sub_second_cnt + 1;
-        pps            <= '0';
-      else
-        second_cnt     <= second_cnt + '1';
-        sub_second_cnt <= 0;
-        pps            <= '1';
-      end if;
-    end if;
-  end process;
-
-  process (clock)
-  begin
-    if (rising_edge(clock)) then
-
-      tiu_emu_byte <= (others => '0');
-      tiu_emu_dav  <= '0';
-
-      case gps_rx_state is
-
-        when IDLE =>
-
-          if (pps = '1') then
-            gps_rx_state     <= WAIT_FOR_EMPTY;
-            tiu_emu_byte_cnt <= 0;
-            tiu_emu_word     <= x"0000" & std_logic_vector(second_cnt);
-          end if;
-
-        when WAIT_FOR_EMPTY =>
-
-          if (tiu_emu_ready = '1') then
-            gps_rx_state <= LOAD;
-          end if;
-
-        when LOAD =>
-
-          tiu_emu_byte <= tiu_emu_word(8*(1+tiu_emu_byte_cnt)-1 downto
-                                       8*tiu_emu_byte_cnt);
-          tiu_emu_dav  <= '1';
-          gps_rx_state <= WAIT_FOR_ACK;
-
-        when WAIT_FOR_ACK =>
-
-          -- it takes a few clocks from the load signal until empty goes low,
-          -- so make sure we acknowledge the load then go back to wait for idle
-          -- again
-          if (tiu_emu_byte_cnt = GPSB/8-1) then
-            gps_rx_state <= IDLE;
-          elsif (tiu_emu_ready = '0') then
-            gps_rx_state     <= WAIT_FOR_EMPTY;
-            tiu_emu_byte_cnt <= tiu_emu_byte_cnt + 1;
-          end if;
-
-      end case;
-
-      if (reset = '1') then
-        gps_rx_state <= IDLE;
-      end if;
-
-    end if;
-  end process;
 
   process (clock) is
   begin

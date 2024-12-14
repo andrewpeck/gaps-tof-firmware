@@ -113,14 +113,6 @@
           description="Event Counter"
           fw_signal="event_cnt"/>
 
-    <node id="TIU_EMULATION_MODE"
-          address="0xE"
-          permission="rw"
-          mask="0x1"
-          description="1 to emulate the TIU"
-          fw_default="0x0"
-          fw_signal="tiu_emulation_mode"/>
-
     <node id="TIU_USE_AUX_LINK"
           address="0xE"
           permission="rw"
@@ -128,14 +120,6 @@
           description="1 to use J11; 0 to use J3"
           fw_default="0x0"
           fw_signal="tiu_use_aux"/>
-
-    <node id="TIU_EMU_BUSY_CNT"
-          address="0xE"
-          permission="rw"
-          mask="0xffffC000"
-          description="Number of 10 ns clock cyles that the emulator will remain busy"
-          fw_default="0"
-          fw_signal="tiu_emu_busy_cnt"/>
 
     <node id="TIU_BAD"
           address="0xF"
