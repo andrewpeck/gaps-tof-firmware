@@ -127,7 +127,7 @@ begin
       probe2(65)            => tiu_timeout,
       probe2(74 downto 66)  => (others => '0'),
       probe3(3 downto 0)    => (others => '0'),
-      probe3(4)             => pps,
+      probe3(4)             => '0',
       probe3(5)             => tiu_ack,
       probe3(6)             => '0',
       probe3(7)             => '0',
