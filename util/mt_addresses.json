@@ -1499,6 +1499,12 @@
         "mask": 16777215,
         "description": "Rate of lost triggers due to TIU deadtime in Hz"
     },
+    "MT.TRG_LOST_TRIGGER_RATE": {
+        "adr": 590,
+        "permission": "r",
+        "mask": 16777215,
+        "description": "Rate of lost triggers due to internal TRG deadtime in Hz"
+    },
     "SPI.d0": {
         "adr": 0,
         "permission": "rw",

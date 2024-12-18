@@ -1134,6 +1134,11 @@
           mask="0x00ffffff"
           fw_signal="tiu_lost_trig_rate"/>
 
+    <node id="TRG_LOST_TRIGGER_RATE" address="0x24e" permission="r"
+          description="Rate of lost triggers due to internal TRG deadtime in Hz"
+          mask="0x00ffffff"
+          fw_signal="trg_lost_trig_rate"/>
+
   </node> <!--MT-->
 
   <node id="SPI"

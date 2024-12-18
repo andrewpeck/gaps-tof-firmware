@@ -30,6 +30,7 @@ entity trigger_top is
     track_trigger_prescale     : in std_logic_vector (31 downto 0);
     track_central_prescale     : in std_logic_vector (31 downto 0);
     track_umb_central_prescale : in std_logic_vector (31 downto 0);
+    gaps_trigger_prescale : in std_logic_vector (31 downto 0);
 
     hit_thresh : in std_logic_vector (1 downto 0);
 
@@ -465,7 +466,12 @@ entity trigger_top is
     trig_sources_o   : out std_logic_vector(15 downto 0);
     pre_trigger_o    : out std_logic;
     global_trigger_o : out std_logic;
+
     lost_trigger_o   : out std_logic;
+    rb_lost_trigger_o  : out std_logic;
+    trg_lost_trigger_o : out std_logic;
+    tiu_lost_trigger_o : out std_logic;
+
     rb_trigger_o     : out std_logic;
     rb_ch_bitmap_o   : out std_logic_vector (NUM_RBS*8-1 downto 0);
     event_cnt_o      : out std_logic_vector (31 downto 0)
@@ -900,7 +906,7 @@ begin
       hits_i                      => hits_i,
       hits_o                      => hits_o,
       gaps_trigger_en_i           => gaps_trigger_en,
-      gaps_trigger_prescale       => x"ffffffff",
+      gaps_trigger_prescale       => gaps_trigger_prescale,
       require_beta                => require_beta,
       inner_tof_thresh            => inner_tof_thresh,
       outer_tof_thresh            => outer_tof_thresh,
@@ -921,6 +927,9 @@ begin
       pre_trigger_o               => pre_trigger_o,
       global_trigger_o            => global_trigger_o,
       lost_trigger_o              => lost_trigger_o,
+      rb_lost_trigger_o           => rb_lost_trigger_o,
+      tiu_lost_trigger_o          => tiu_lost_trigger_o,
+      trg_lost_trigger_o          => trg_lost_trigger_o,
       rb_trigger_o                => rb_trigger_o,
       rb_ch_bitmap_o              => rb_ch_bitmap_o,
       event_cnt_o                 => event_cnt_o);

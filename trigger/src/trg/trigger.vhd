@@ -68,6 +68,7 @@ entity trigger is
     global_trigger_o   : out std_logic                               := '0';
     lost_trigger_o     : out std_logic;
     rb_lost_trigger_o  : out std_logic;
+    trg_lost_trigger_o : out std_logic;
     tiu_lost_trigger_o : out std_logic;
     rb_trigger_o       : out std_logic;
     rb_ch_bitmap_o     : out std_logic_vector (NUM_RBS*8-1 downto 0) := (others => '0');
@@ -231,8 +232,10 @@ architecture behavioral of trigger is
   -- Global trigger
   --------------------------------------------------------------------------------
 
-  signal pre_trigger     : std_logic := '0';
-  signal want_pretrigger : std_logic := '0';
+  signal pre_trigger                  : std_logic := '0';
+  signal want_pretrigger              : std_logic := '0';
+  signal want_pretrigger_r            : std_logic := '0';
+  signal want_pretrigger_rising       : std_logic := '0';
 
   -- flatten the 200 inputs from a threshold to just a bitmask meaning that a
   -- channel is either on or off
@@ -765,8 +768,10 @@ begin
   -- 2) we aren't in the fixed deadtime
   -- 3) and pretrigger is not high (so that we don't double trigger before the deadtime kicks in)
   want_pretrigger <= not pre_trigger
-                     and not dead
                      and or_reduce(trig_sources(10 downto 0));
+
+  want_pretrigger_r            <= want_pretrigger when rising_edge(clk);
+  want_pretrigger_rising       <= want_pretrigger and not want_pretrigger_r;
 
   busy <= busy_i or rb_busy_block;
 
@@ -785,10 +790,14 @@ begin
                        (track_umb_central and track_umb_central_is_global) or
                        read_all_channels;
 
-      pre_trigger        <= not busy and want_pretrigger;
-      lost_trigger_o     <= busy and want_pretrigger;
-      rb_lost_trigger_o  <= (not busy_i) and rb_busy_block and want_pretrigger;
-      tiu_lost_trigger_o <= busy_i and (not rb_busy_block) and want_pretrigger;
+      pre_trigger        <= not busy and want_pretrigger and not dead;
+
+      -- Monitors
+
+      lost_trigger_o     <= busy and want_pretrigger_rising;
+      trg_lost_trigger_o <= dead and want_pretrigger_rising;
+      rb_lost_trigger_o  <= (not busy_i) and rb_busy_block and want_pretrigger_rising;
+      tiu_lost_trigger_o <= busy_i and (not rb_busy_block) and want_pretrigger_rising;
 
     end if;
   end process;

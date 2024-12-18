@@ -192,6 +192,7 @@ architecture structural of gaps_mt is
   signal trig_rate          : std_logic_vector (23 downto 0) := (others => '0');
   signal lost_trig_rate     : std_logic_vector (23 downto 0) := (others => '0');
   signal tiu_lost_trig_rate : std_logic_vector (23 downto 0) := (others => '0');
+  signal trg_lost_trig_rate : std_logic_vector (23 downto 0) := (others => '0');
   signal rb_lost_trig_rate  : std_logic_vector (23 downto 0) := (others => '0');
 
   signal trig_gen_rate        : std_logic_vector (31 downto 0) := (others => '0');
@@ -849,6 +850,7 @@ begin
       lost_trigger_o     => lost_trigger,      --
       rb_lost_trigger_o  => rb_lost_trigger,   --
       tiu_lost_trigger_o => tiu_lost_trigger,  --
+      trg_lost_trigger_o => trg_lost_trigger,  --
 
       -- Generate a 1 bit flag for every RB channel in the system to indicate
       -- whether it should read out or not. A RB trigger is just the reduce_or
@@ -973,6 +975,18 @@ begin
       reset_i => reset,
       en_i    => tiu_lost_trigger,
       rate_o  => tiu_lost_trig_rate
+      );
+
+  rate_counter_trg_lost_trigger : entity work.rate_counter
+    generic map (
+      g_CLK_FREQUENCY => std_logic_vector(to_unsigned(CLK_FREQ,32)),
+      g_COUNTER_WIDTH => 24
+      )
+    port map (
+      clk_i   => clock,
+      reset_i => reset,
+      en_i    => trg_lost_trigger,
+      rate_o  => trg_lost_trig_rate
       );
 
   --------------------------------------------------------------------------------
@@ -1966,6 +1980,7 @@ begin
   regs_addresses(183)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"4b";
   regs_addresses(184)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"4c";
   regs_addresses(185)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"4d";
+  regs_addresses(186)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"4e";
 
   -- Connect read signals
   regs_read_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB) <= loopback;
@@ -2211,6 +2226,7 @@ begin
   regs_read_arr(183)(REG_RB_BLOCK_IF_BUSY_49_TO_32_MSB downto REG_RB_BLOCK_IF_BUSY_49_TO_32_LSB) <= rb_block_if_busy(49 downto 32);
   regs_read_arr(184)(REG_RB_LOST_TRIGGER_RATE_MSB downto REG_RB_LOST_TRIGGER_RATE_LSB) <= rb_lost_trig_rate;
   regs_read_arr(185)(REG_TIU_LOST_TRIGGER_RATE_MSB downto REG_TIU_LOST_TRIGGER_RATE_LSB) <= tiu_lost_trig_rate;
+  regs_read_arr(186)(REG_TRG_LOST_TRIGGER_RATE_MSB downto REG_TRG_LOST_TRIGGER_RATE_LSB) <= trg_lost_trig_rate;
 
   -- Connect write signals
   loopback <= regs_write_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB);

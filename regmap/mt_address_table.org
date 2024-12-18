@@ -611,6 +611,8 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |TIU_LOST_TRIGGER_RATE | ~0x24d~ | ~0x934~ | ~[23:0]~ | r |  | Rate of lost triggers due to TIU deadtime in Hz | 
 |------------+---+---+---------+-----+-----+----------------------------|
+|TRG_LOST_TRIGGER_RATE | ~0x24e~ | ~0x938~ | ~[23:0]~ | r |  | Rate of lost triggers due to internal TRG deadtime in Hz | 
+|------------+---+---+---------+-----+-----+----------------------------|
 
 
 * Module SPI 	 adr = ~0x1000~
