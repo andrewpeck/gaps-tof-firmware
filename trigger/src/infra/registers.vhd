@@ -10,7 +10,7 @@ package registers is
     -- Implements various control and monitoring functions of the DRS Logic
     --============================================================================
 
-    constant REG_MT_NUM_REGS : integer := 187;
+    constant REG_MT_NUM_REGS : integer := 192;
     constant REG_MT_ADDRESS_MSB : integer := 9;
     constant REG_MT_ADDRESS_LSB : integer := 0;
     constant REG_LOOPBACK_ADDR    : std_logic_vector(9 downto 0) := "00" & x"00";
@@ -1117,6 +1117,26 @@ package registers is
     constant REG_TRG_LOST_TRIGGER_RATE_ADDR    : std_logic_vector(9 downto 0) := "10" & x"4e";
     constant REG_TRG_LOST_TRIGGER_RATE_MSB    : integer := 23;
     constant REG_TRG_LOST_TRIGGER_RATE_LSB     : integer := 0;
+
+    constant REG_GAPS_TRIGGER_BLOCKED_RATE_ADDR    : std_logic_vector(9 downto 0) := "10" & x"4f";
+    constant REG_GAPS_TRIGGER_BLOCKED_RATE_MSB    : integer := 23;
+    constant REG_GAPS_TRIGGER_BLOCKED_RATE_LSB     : integer := 0;
+
+    constant REG_TRACK_TRIGGER_BLOCKED_RATE_ADDR    : std_logic_vector(9 downto 0) := "10" & x"50";
+    constant REG_TRACK_TRIGGER_BLOCKED_RATE_MSB    : integer := 23;
+    constant REG_TRACK_TRIGGER_BLOCKED_RATE_LSB     : integer := 0;
+
+    constant REG_ANY_TRIGGER_BLOCKED_RATE_ADDR    : std_logic_vector(9 downto 0) := "10" & x"51";
+    constant REG_ANY_TRIGGER_BLOCKED_RATE_MSB    : integer := 23;
+    constant REG_ANY_TRIGGER_BLOCKED_RATE_LSB     : integer := 0;
+
+    constant REG_TRACK_CENTRAL_BLOCKED_RATE_ADDR    : std_logic_vector(9 downto 0) := "10" & x"52";
+    constant REG_TRACK_CENTRAL_BLOCKED_RATE_MSB    : integer := 23;
+    constant REG_TRACK_CENTRAL_BLOCKED_RATE_LSB     : integer := 0;
+
+    constant REG_TRACK_UMB_CENTRAL_BLOCKED_RATE_ADDR    : std_logic_vector(9 downto 0) := "10" & x"53";
+    constant REG_TRACK_UMB_CENTRAL_BLOCKED_RATE_MSB    : integer := 23;
+    constant REG_TRACK_UMB_CENTRAL_BLOCKED_RATE_LSB     : integer := 0;
 
 
 end registers;

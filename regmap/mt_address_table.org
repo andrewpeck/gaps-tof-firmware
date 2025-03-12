@@ -607,11 +607,21 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |RB_BLOCK_IF_BUSY_49_TO_32 | ~0x24b~ | ~0x92c~ | ~[17:0]~ | rw | ~0x0~ | Bitmask to specify if a readout board is BUSY then do not trigger (RB slots 49:32) | 
 |------------+---+---+---------+-----+-----+----------------------------|
-|RB_LOST_TRIGGER_RATE | ~0x24c~ | ~0x930~ | ~[23:0]~ | r |  | Rate of lost triggers due to RB deadtime in Hz | 
+|RB_LOST_TRIGGER_RATE | ~0x24c~ | ~0x930~ | ~[23:0]~ | r |  | Rate of lost triggers due to RB deadtime (in Hz) | 
 |------------+---+---+---------+-----+-----+----------------------------|
-|TIU_LOST_TRIGGER_RATE | ~0x24d~ | ~0x934~ | ~[23:0]~ | r |  | Rate of lost triggers due to TIU deadtime in Hz | 
+|TIU_LOST_TRIGGER_RATE | ~0x24d~ | ~0x934~ | ~[23:0]~ | r |  | Rate of lost triggers due to TIU deadtime (in Hz) | 
 |------------+---+---+---------+-----+-----+----------------------------|
-|TRG_LOST_TRIGGER_RATE | ~0x24e~ | ~0x938~ | ~[23:0]~ | r |  | Rate of lost triggers due to internal TRG deadtime in Hz | 
+|TRG_LOST_TRIGGER_RATE | ~0x24e~ | ~0x938~ | ~[23:0]~ | r |  | Rate of lost triggers due to MTB internal trigger block deadtime (in Hz) | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|GAPS_TRIGGER_BLOCKED_RATE | ~0x24f~ | ~0x93c~ | ~[23:0]~ | r |  | Rate of this trigger blocked due to prescaler or disable | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|TRACK_TRIGGER_BLOCKED_RATE | ~0x250~ | ~0x940~ | ~[23:0]~ | r |  | Rate of this trigger blocked due to prescaler or disable | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|ANY_TRIGGER_BLOCKED_RATE | ~0x251~ | ~0x944~ | ~[23:0]~ | r |  | Rate of this trigger blocked due to prescaler or disable | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|TRACK_CENTRAL_BLOCKED_RATE | ~0x252~ | ~0x948~ | ~[23:0]~ | r |  | Rate of this trigger blocked due to prescaler or disable | 
+|------------+---+---+---------+-----+-----+----------------------------|
+|TRACK_UMB_CENTRAL_BLOCKED_RATE | ~0x253~ | ~0x94c~ | ~[23:0]~ | r |  | Rate of this trigger blocked due to prescaler or disable | 
 |------------+---+---+---------+-----+-----+----------------------------|
 
 

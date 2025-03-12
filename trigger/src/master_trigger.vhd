@@ -181,19 +181,32 @@ architecture structural of gaps_mt is
   signal lost_trigger     : std_logic;
   signal rb_lost_trigger  : std_logic;
   signal tiu_lost_trigger : std_logic;
+  signal trg_lost_trigger : std_logic;
   signal global_trigger   : std_logic;  -- single bit == the baloon triggered somewhere
   signal rb_trigger       : std_logic;  --
   signal pre_trigger      : std_logic;  -- 1 clock cycle earlier than global_trigger
   signal global_busy      : std_logic;
   signal trig_sources     : std_logic_vector(15 downto 0);
 
+  signal gaps_trigger_blocked      : std_logic;
+  signal track_trigger_blocked     : std_logic;
+  signal any_trigger_blocked       : std_logic;
+  signal track_central_blocked     : std_logic;
+  signal track_umb_central_blocked : std_logic;
+
+  signal gaps_trigger_blocked_rate      : std_logic_vector (23 downto 0);
+  signal track_trigger_blocked_rate     : std_logic_vector (23 downto 0);
+  signal any_trigger_blocked_rate       : std_logic_vector (23 downto 0);
+  signal track_central_blocked_rate     : std_logic_vector (23 downto 0);
+  signal track_umb_central_blocked_rate : std_logic_vector (23 downto 0);
+
   signal read_all_channels : std_logic := '0';
 
-  signal trig_rate          : std_logic_vector (23 downto 0) := (others => '0');
-  signal lost_trig_rate     : std_logic_vector (23 downto 0) := (others => '0');
-  signal tiu_lost_trig_rate : std_logic_vector (23 downto 0) := (others => '0');
-  signal trg_lost_trig_rate : std_logic_vector (23 downto 0) := (others => '0');
-  signal rb_lost_trig_rate  : std_logic_vector (23 downto 0) := (others => '0');
+  signal trig_rate          : std_logic_vector (23 downto 0);
+  signal lost_trig_rate     : std_logic_vector (23 downto 0);
+  signal tiu_lost_trig_rate : std_logic_vector (23 downto 0);
+  signal trg_lost_trig_rate : std_logic_vector (23 downto 0);
+  signal rb_lost_trig_rate  : std_logic_vector (23 downto 0);
 
   signal trig_gen_rate        : std_logic_vector (31 downto 0) := (others => '0');
   signal trig_gen             : std_logic                      := '0';
@@ -846,6 +859,12 @@ begin
       rb_trigger_o     => rb_trigger,
       event_cnt_o      => event_cnt,
 
+      gaps_trigger_blocked_o      => gaps_trigger_blocked,
+      track_trigger_blocked_o     => track_trigger_blocked,
+      any_trigger_blocked_o       => any_trigger_blocked,
+      track_central_blocked_o     => track_central_blocked,
+      track_umb_central_blocked_o => track_umb_central_blocked,
+
       -- Trigger could have been generated but the SiLi was dead :(
       lost_trigger_o     => lost_trigger,      --
       rb_lost_trigger_o  => rb_lost_trigger,   --
@@ -987,6 +1006,66 @@ begin
       reset_i => reset,
       en_i    => trg_lost_trigger,
       rate_o  => trg_lost_trig_rate
+      );
+
+  rate_counter_gaps_trigger_blocked : entity work.rate_counter
+    generic map (
+      g_CLK_FREQUENCY => std_logic_vector(to_unsigned(CLK_FREQ,32)),
+      g_COUNTER_WIDTH => 24
+      )
+    port map (
+      clk_i   => clock,
+      reset_i => reset,
+      en_i    => gaps_trigger_blocked,
+      rate_o  => gaps_trigger_blocked_rate
+      );
+
+  rate_counter_track_trigger_blocked : entity work.rate_counter
+    generic map (
+      g_CLK_FREQUENCY => std_logic_vector(to_unsigned(CLK_FREQ,32)),
+      g_COUNTER_WIDTH => 24
+      )
+    port map (
+      clk_i   => clock,
+      reset_i => reset,
+      en_i    => track_trigger_blocked,
+      rate_o  => track_trigger_blocked_rate
+      );
+
+  rate_counter_any_trigger_blocked : entity work.rate_counter
+    generic map (
+      g_CLK_FREQUENCY => std_logic_vector(to_unsigned(CLK_FREQ,32)),
+      g_COUNTER_WIDTH => 24
+      )
+    port map (
+      clk_i   => clock,
+      reset_i => reset,
+      en_i    => any_trigger_blocked,
+      rate_o  => any_trigger_blocked_rate
+      );
+
+  rate_counter_track_central_blocked : entity work.rate_counter
+    generic map (
+      g_CLK_FREQUENCY => std_logic_vector(to_unsigned(CLK_FREQ,32)),
+      g_COUNTER_WIDTH => 24
+      )
+    port map (
+      clk_i   => clock,
+      reset_i => reset,
+      en_i    => track_central_blocked,
+      rate_o  => track_central_blocked_rate
+      );
+
+  rate_counter_track_umb_central_blocked : entity work.rate_counter
+    generic map (
+      g_CLK_FREQUENCY => std_logic_vector(to_unsigned(CLK_FREQ,32)),
+      g_COUNTER_WIDTH => 24
+      )
+    port map (
+      clk_i   => clock,
+      reset_i => reset,
+      en_i    => track_umb_central_blocked,
+      rate_o  => track_umb_central_blocked_rate
       );
 
   --------------------------------------------------------------------------------
@@ -1981,6 +2060,11 @@ begin
   regs_addresses(184)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"4c";
   regs_addresses(185)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"4d";
   regs_addresses(186)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"4e";
+  regs_addresses(187)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"4f";
+  regs_addresses(188)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"50";
+  regs_addresses(189)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"51";
+  regs_addresses(190)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"52";
+  regs_addresses(191)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"53";
 
   -- Connect read signals
   regs_read_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB) <= loopback;
@@ -2227,6 +2311,11 @@ begin
   regs_read_arr(184)(REG_RB_LOST_TRIGGER_RATE_MSB downto REG_RB_LOST_TRIGGER_RATE_LSB) <= rb_lost_trig_rate;
   regs_read_arr(185)(REG_TIU_LOST_TRIGGER_RATE_MSB downto REG_TIU_LOST_TRIGGER_RATE_LSB) <= tiu_lost_trig_rate;
   regs_read_arr(186)(REG_TRG_LOST_TRIGGER_RATE_MSB downto REG_TRG_LOST_TRIGGER_RATE_LSB) <= trg_lost_trig_rate;
+  regs_read_arr(187)(REG_GAPS_TRIGGER_BLOCKED_RATE_MSB downto REG_GAPS_TRIGGER_BLOCKED_RATE_LSB) <= gaps_trigger_blocked_rate;
+  regs_read_arr(188)(REG_TRACK_TRIGGER_BLOCKED_RATE_MSB downto REG_TRACK_TRIGGER_BLOCKED_RATE_LSB) <= track_trigger_blocked_rate;
+  regs_read_arr(189)(REG_ANY_TRIGGER_BLOCKED_RATE_MSB downto REG_ANY_TRIGGER_BLOCKED_RATE_LSB) <= any_trigger_blocked_rate;
+  regs_read_arr(190)(REG_TRACK_CENTRAL_BLOCKED_RATE_MSB downto REG_TRACK_CENTRAL_BLOCKED_RATE_LSB) <= track_central_blocked_rate;
+  regs_read_arr(191)(REG_TRACK_UMB_CENTRAL_BLOCKED_RATE_MSB downto REG_TRACK_UMB_CENTRAL_BLOCKED_RATE_LSB) <= track_umb_central_blocked_rate;
 
   -- Connect write signals
   loopback <= regs_write_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB);

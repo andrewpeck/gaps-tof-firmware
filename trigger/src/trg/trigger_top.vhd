@@ -467,6 +467,12 @@ entity trigger_top is
     pre_trigger_o    : out std_logic;
     global_trigger_o : out std_logic;
 
+    gaps_trigger_blocked_o      : out std_logic;
+    track_trigger_blocked_o     : out std_logic;
+    any_trigger_blocked_o       : out std_logic;
+    track_central_blocked_o     : out std_logic;
+    track_umb_central_blocked_o : out std_logic;
+
     lost_trigger_o   : out std_logic;
     rb_lost_trigger_o  : out std_logic;
     trg_lost_trigger_o : out std_logic;
@@ -926,10 +932,18 @@ begin
       trig_sources_o              => trig_sources_o,
       pre_trigger_o               => pre_trigger_o,
       global_trigger_o            => global_trigger_o,
+
+      gaps_trigger_blocked_o      => gaps_trigger_blocked_o,
+      track_trigger_blocked_o     => track_trigger_blocked_o,
+      any_trigger_blocked_o       => any_trigger_blocked_o,
+      track_umb_central_blocked_o => track_umb_central_blocked_o,
+      track_central_blocked_o     => track_central_blocked_o,
+
       lost_trigger_o              => lost_trigger_o,
       rb_lost_trigger_o           => rb_lost_trigger_o,
       tiu_lost_trigger_o          => tiu_lost_trigger_o,
       trg_lost_trigger_o          => trg_lost_trigger_o,
+
       rb_trigger_o                => rb_trigger_o,
       rb_ch_bitmap_o              => rb_ch_bitmap_o,
       event_cnt_o                 => event_cnt_o);

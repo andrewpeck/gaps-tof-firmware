@@ -498,9 +498,14 @@
     TRACK\_UMB\_CENTRAL\_PRESCALE & \texttt{0x249} & \texttt{[31:0]} & rw & \texttt{0x0} & Prescale value for the Umbrella Center + Cube Top Track Trigger. 0 == 0\% (off), 2**32-1 == 100\% \\\hline
     RB\_BLOCK\_IF\_BUSY\_31\_TO\_0 & \texttt{0x24a} & \texttt{[31:0]} & rw & \texttt{0x0} & Bitmask to specify if a readout board is BUSY then do not trigger (RB slots 31:0) \\\hline
     RB\_BLOCK\_IF\_BUSY\_49\_TO\_32 & \texttt{0x24b} & \texttt{[17:0]} & rw & \texttt{0x0} & Bitmask to specify if a readout board is BUSY then do not trigger (RB slots 49:32) \\\hline
-    RB\_LOST\_TRIGGER\_RATE & \texttt{0x24c} & \texttt{[23:0]} & r & \texttt{} & Rate of lost triggers due to RB deadtime in Hz \\\hline
-    TIU\_LOST\_TRIGGER\_RATE & \texttt{0x24d} & \texttt{[23:0]} & r & \texttt{} & Rate of lost triggers due to TIU deadtime in Hz \\\hline
-    TRG\_LOST\_TRIGGER\_RATE & \texttt{0x24e} & \texttt{[23:0]} & r & \texttt{} & Rate of lost triggers due to internal TRG deadtime in Hz \\\hline
+    RB\_LOST\_TRIGGER\_RATE & \texttt{0x24c} & \texttt{[23:0]} & r & \texttt{} & Rate of lost triggers due to RB deadtime (in Hz) \\\hline
+    TIU\_LOST\_TRIGGER\_RATE & \texttt{0x24d} & \texttt{[23:0]} & r & \texttt{} & Rate of lost triggers due to TIU deadtime (in Hz) \\\hline
+    TRG\_LOST\_TRIGGER\_RATE & \texttt{0x24e} & \texttt{[23:0]} & r & \texttt{} & Rate of lost triggers due to MTB internal trigger block deadtime (in Hz) \\\hline
+    GAPS\_TRIGGER\_BLOCKED\_RATE & \texttt{0x24f} & \texttt{[23:0]} & r & \texttt{} & Rate of this trigger blocked due to prescaler or disable \\\hline
+    TRACK\_TRIGGER\_BLOCKED\_RATE & \texttt{0x250} & \texttt{[23:0]} & r & \texttt{} & Rate of this trigger blocked due to prescaler or disable \\\hline
+    ANY\_TRIGGER\_BLOCKED\_RATE & \texttt{0x251} & \texttt{[23:0]} & r & \texttt{} & Rate of this trigger blocked due to prescaler or disable \\\hline
+    TRACK\_CENTRAL\_BLOCKED\_RATE & \texttt{0x252} & \texttt{[23:0]} & r & \texttt{} & Rate of this trigger blocked due to prescaler or disable \\\hline
+    TRACK\_UMB\_CENTRAL\_BLOCKED\_RATE & \texttt{0x253} & \texttt{[23:0]} & r & \texttt{} & Rate of this trigger blocked due to prescaler or disable \\\hline
     \end{tabularx}
     \vspace{5mm}
 

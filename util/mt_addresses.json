@@ -1491,19 +1491,49 @@
         "adr": 588,
         "permission": "r",
         "mask": 16777215,
-        "description": "Rate of lost triggers due to RB deadtime in Hz"
+        "description": "Rate of lost triggers due to RB deadtime (in Hz)"
     },
     "MT.TIU_LOST_TRIGGER_RATE": {
         "adr": 589,
         "permission": "r",
         "mask": 16777215,
-        "description": "Rate of lost triggers due to TIU deadtime in Hz"
+        "description": "Rate of lost triggers due to TIU deadtime (in Hz)"
     },
     "MT.TRG_LOST_TRIGGER_RATE": {
         "adr": 590,
         "permission": "r",
         "mask": 16777215,
-        "description": "Rate of lost triggers due to internal TRG deadtime in Hz"
+        "description": "Rate of lost triggers due to MTB internal trigger block deadtime (in Hz)"
+    },
+    "MT.GAPS_TRIGGER_BLOCKED_RATE": {
+        "adr": 591,
+        "permission": "r",
+        "mask": 16777215,
+        "description": "Rate of this trigger blocked due to prescaler or disable"
+    },
+    "MT.TRACK_TRIGGER_BLOCKED_RATE": {
+        "adr": 592,
+        "permission": "r",
+        "mask": 16777215,
+        "description": "Rate of this trigger blocked due to prescaler or disable"
+    },
+    "MT.ANY_TRIGGER_BLOCKED_RATE": {
+        "adr": 593,
+        "permission": "r",
+        "mask": 16777215,
+        "description": "Rate of this trigger blocked due to prescaler or disable"
+    },
+    "MT.TRACK_CENTRAL_BLOCKED_RATE": {
+        "adr": 594,
+        "permission": "r",
+        "mask": 16777215,
+        "description": "Rate of this trigger blocked due to prescaler or disable"
+    },
+    "MT.TRACK_UMB_CENTRAL_BLOCKED_RATE": {
+        "adr": 595,
+        "permission": "r",
+        "mask": 16777215,
+        "description": "Rate of this trigger blocked due to prescaler or disable"
     },
     "SPI.d0": {
         "adr": 0,

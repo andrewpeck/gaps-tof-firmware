@@ -1125,19 +1125,44 @@
           fw_signal="rb_block_if_busy(49 downto 32)"/>
 
     <node id="RB_LOST_TRIGGER_RATE" address="0x24c" permission="r"
-          description="Rate of lost triggers due to RB deadtime in Hz"
+          description="Rate of lost triggers due to RB deadtime (in Hz)"
           mask="0x00ffffff"
           fw_signal="rb_lost_trig_rate"/>
 
     <node id="TIU_LOST_TRIGGER_RATE" address="0x24d" permission="r"
-          description="Rate of lost triggers due to TIU deadtime in Hz"
+          description="Rate of lost triggers due to TIU deadtime (in Hz)"
           mask="0x00ffffff"
           fw_signal="tiu_lost_trig_rate"/>
 
     <node id="TRG_LOST_TRIGGER_RATE" address="0x24e" permission="r"
-          description="Rate of lost triggers due to internal TRG deadtime in Hz"
+          description="Rate of lost triggers due to MTB internal trigger block deadtime (in Hz)"
           mask="0x00ffffff"
           fw_signal="trg_lost_trig_rate"/>
+
+    <node id="GAPS_TRIGGER_BLOCKED_RATE" address="0x24f" permission="r"
+          description="Rate of this trigger blocked due to prescaler or disable"
+          mask="0x00ffffff"
+          fw_signal="gaps_trigger_blocked_rate"/>
+
+    <node id="TRACK_TRIGGER_BLOCKED_RATE" address="0x250" permission="r"
+          description="Rate of this trigger blocked due to prescaler or disable"
+          mask="0x00ffffff"
+          fw_signal="track_trigger_blocked_rate"/>
+
+    <node id="ANY_TRIGGER_BLOCKED_RATE" address="0x251" permission="r"
+          description="Rate of this trigger blocked due to prescaler or disable"
+          mask="0x00ffffff"
+          fw_signal="any_trigger_blocked_rate"/>
+
+    <node id="TRACK_CENTRAL_BLOCKED_RATE" address="0x252" permission="r"
+          description="Rate of this trigger blocked due to prescaler or disable"
+          mask="0x00ffffff"
+          fw_signal="track_central_blocked_rate"/>
+
+    <node id="TRACK_UMB_CENTRAL_BLOCKED_RATE" address="0x253" permission="r"
+          description="Rate of this trigger blocked due to prescaler or disable"
+          mask="0x00ffffff"
+          fw_signal="track_umb_central_blocked_rate"/>
 
   </node> <!--MT-->
 
