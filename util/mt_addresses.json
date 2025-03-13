@@ -107,12 +107,6 @@
         "mask": 2,
         "description": "1 to use J11; 0 to use J3"
     },
-    "MT.TIU_BAD": {
-        "adr": 15,
-        "permission": "r",
-        "mask": 1,
-        "description": "1 means that the tiu link is not working"
-    },
     "MT.TIU_BUSY_STUCK": {
         "adr": 15,
         "permission": "r",

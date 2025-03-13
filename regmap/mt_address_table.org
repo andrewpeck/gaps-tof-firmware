@@ -53,8 +53,6 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |TIU_USE_AUX_LINK | ~0xe~ | ~0x38~ | ~1~ | rw | ~0x0~ | 1 to use J11; 0 to use J3 | 
 |------------+---+---+---------+-----+-----+----------------------------|
-|TIU_BAD | ~0xf~ | ~0x3c~ | ~0~ | r |  | 1 means that the tiu link is not working | 
-|------------+---+---+---------+-----+-----+----------------------------|
 |TIU_BUSY_STUCK | ~0xf~ | ~0x3c~ | ~1~ | r |  | 1 means the TIU has been stuck high for a long time | 
 |------------+---+---+---------+-----+-----+----------------------------|
 |TIU_BUSY_IGNORE | ~0xf~ | ~0x3c~ | ~2~ | rw | ~0x0~ | 1 means the the MTB should ignore the TIU busy flag (e.g. because it is stuck) | 

@@ -121,13 +121,6 @@
           fw_default="0x0"
           fw_signal="tiu_use_aux"/>
 
-    <node id="TIU_BAD"
-          address="0xF"
-          permission="r"
-          mask="0x1"
-          description="1 means that the tiu link is not working"
-          fw_signal="tiu_bad"/>
-
     <node id="TIU_BUSY_STUCK"
           address="0xF"
           permission="r"

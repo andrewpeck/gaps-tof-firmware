@@ -258,7 +258,6 @@ architecture structural of gaps_mt is
   signal tiu_serial_o    : std_logic;
   signal tiu_gps_i       : std_logic;
   signal tiu_trigger_o   : std_logic;
-  signal tiu_bad         : std_logic;
   signal tiu_stuck       : std_logic;
   signal tiu_busy_ignore : std_logic;
   signal tiu_use_aux     : std_logic := '0';
@@ -1165,8 +1164,6 @@ begin
       tiu_trigger_o => tiu_trigger_o,
 
       tiu_busy_length_o => tiu_busy_length,
-
-      tiu_bad_o     => tiu_bad,
 
       -- config
       send_event_cnt_on_timeout => '1',
@@ -2082,7 +2079,6 @@ begin
   regs_read_arr(11)(REG_TRACK_UMB_CENTRAL_IS_GLOBAL_BIT) <= track_umb_central_is_global;
   regs_read_arr(13)(REG_EVENT_CNT_MSB downto REG_EVENT_CNT_LSB) <= event_cnt;
   regs_read_arr(14)(REG_TIU_USE_AUX_LINK_BIT) <= tiu_use_aux;
-  regs_read_arr(15)(REG_TIU_BAD_BIT) <= tiu_bad;
   regs_read_arr(15)(REG_TIU_BUSY_STUCK_BIT) <= tiu_stuck;
   regs_read_arr(15)(REG_TIU_BUSY_IGNORE_BIT) <= tiu_busy_ignore;
   regs_read_arr(15)(REG_LT_INPUT_STRETCH_MSB downto REG_LT_INPUT_STRETCH_LSB) <= lt_input_stretch;
