@@ -250,13 +250,13 @@ architecture structural of gaps_mt is
 
   signal ext_trigger_holdoff : integer range 0 to 31 := 0;
 
-  signal tiu_gps           : std_logic_vector (8*6-1 downto 0);
-  signal tiu_gps_valid     : std_logic;
+  signal tiu_gps_word           : std_logic_vector (8*6-1 downto 0);
+  signal tiu_gps_word_valid     : std_logic;
 
   signal tiu_busy_length : std_logic_vector (31 downto 0) := (others => '0');
   signal tiu_busy_i      : std_logic;
   signal tiu_serial_o    : std_logic;
-  signal tiu_gps_i       : std_logic;
+  signal tiu_uart_i      : std_logic;
   signal tiu_trigger_o   : std_logic;
   signal tiu_stuck       : std_logic;
   signal tiu_busy_ignore : std_logic;
@@ -1135,7 +1135,7 @@ begin
   --------------------------------------------------------------------------------
 
   tiu_busy_i <= ext_in(0) when tiu_use_aux = '0' else ext_in(2);
-  tiu_gps_i  <= ext_in(1) when tiu_use_aux = '0' else ext_in(3);
+  tiu_uart_i <= ext_in(1) when tiu_use_aux = '0' else ext_in(3);
   ext_out(0) <= tiu_serial_o; -- pri
   ext_out(2) <= tiu_serial_o; -- aux
 
@@ -1151,7 +1151,7 @@ begin
     generic map (
       FREQ       => CLK_FREQ,
       TIMESTAMPB => timestamp'length,
-      GPSB       => tiu_gps'length,
+      GPSB       => tiu_gps_word'length,
       EVENTCNTB  => event_cnt'length)
     port map (
       clock             => clock,
@@ -1160,7 +1160,7 @@ begin
       -- tiu physical signals
       tiu_busy_i    => tiu_busy_i,
       tiu_serial_o  => tiu_serial_o,
-      tiu_gps_i     => tiu_gps_i,
+      tiu_uart_i    => tiu_uart_i,
       tiu_trigger_o => tiu_trigger_o,
 
       tiu_busy_length_o => tiu_busy_length,
@@ -1178,8 +1178,8 @@ begin
 
       global_busy_o     => global_busy,
 
-      tiu_gps_valid_o   => tiu_gps_valid,
-      tiu_gps_o         => tiu_gps,
+      tiu_gps_word_valid_o   => tiu_gps_word_valid,
+      tiu_gps_word_o         => tiu_gps_word,
 
       timestamp_o       => timestamp_latch,
       timestamp_valid_o => timestamp_valid
@@ -1260,7 +1260,7 @@ begin
       event_cnt_i     => event_cnt,
       timestamp_i     => std_logic_vector(timestamp),
       tiu_timestamp_i => timestamp_latch,
-      tiu_gps_i       => tiu_gps,
+      tiu_gps_i       => tiu_gps_word,
       hits_i          => hits_xtrig,
       rb_list_i       => rb_board_list,
       data_o          => daq_data,

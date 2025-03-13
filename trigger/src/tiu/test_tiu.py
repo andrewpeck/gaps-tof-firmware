@@ -16,7 +16,7 @@ async def tiu_test_comms(dut):
     dut.reset.value = 0
     dut.tiu_busy_i.value = 0
     dut.tiu_busy_ignore_i.value = 0
-    dut.tiu_gps_i.value = 0
+    dut.tiu_uart_i.value = 0
     dut.pre_trigger_i.value = 0
     dut.timestamp_i.value = 1
     dut.event_cnt_i.value = 0
@@ -62,6 +62,7 @@ def test_tiu():
         os.path.join(tests_dir, f"../../../common/src/uart/tiny_uart.vhd"),
         os.path.join(tests_dir, f"../infra/components.vhd"),
         os.path.join(tests_dir, f"tiu_tx.vhd"),
+        os.path.join(tests_dir, f"tiu_uart.vhd"),
         os.path.join(tests_dir, f"tiu.vhd"),
     ]
 
