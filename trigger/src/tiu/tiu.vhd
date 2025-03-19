@@ -72,7 +72,9 @@ entity tiu is
     tiu_gps_word_o       : out std_logic_vector (GPSB-1 downto 0) := (others => '0');
 
     timestamp_o       : out std_logic_vector (TIMESTAMPB-1 downto 0) := (others => '0');
-    timestamp_valid_o : out std_logic
+    timestamp_valid_o : out std_logic;
+
+    tiu_timeout_o : out std_logic
 
     );
 end tiu;
@@ -103,7 +105,6 @@ architecture behavioral of tiu is
   signal tiu_tx_busy      : std_logic;
   signal tiu_tx_done      : std_logic;
   signal tiu_init_tx      : std_logic                              := '0';
-  signal tiu_timeout      : std_logic                              := '0';
 
   --------------------------------------------------------------------------------
   -- Watchdog
@@ -145,7 +146,7 @@ begin
   --
   -- NOTE: maybe should gate this by the state of the state machine?
   -- there might be a condition where a trigger comes in before BUSY is asserted?
-  tiu_trigger_o    <= pre_trigger_i or pretrigger_latch;
+  tiu_trigger_o    <= (ready_to_trigger and pre_trigger_i) or pretrigger_latch;
   ready_to_trigger <= '1' when (tx_init_state = READY_FOR_TRIGGER) else '0';
   global_busy_o    <= (not ready_to_trigger) or tiu_busy;
 
@@ -161,7 +162,7 @@ begin
       --  4) When ACK is deasserted, ready for the next trigger
 
       tiu_init_tx <= '0';
-      tiu_timeout <= '0';
+      tiu_timeout_o <= '0';
 
       case tx_init_state is
 
@@ -193,7 +194,7 @@ begin
           -- timeout
           elsif (tiu_timeout_cnt = 0) then
 
-            tiu_timeout <= '1';
+            tiu_timeout_o <= '1';
 
             if (send_event_cnt_on_timeout = '1') then
               tx_init_state <= INIT_TX;
@@ -366,8 +367,8 @@ begin
         probe2(61)            => pretrigger_latch,
         probe2(62)            => ready_to_trigger,
         probe2(63)            => tiu_tx_done,
-        probe2(64)            => tiu_timeout,
-        probe2(65)            => tiu_timeout,
+        probe2(64)            => '0',
+        probe2(65)            => '0',
         probe2(74 downto 66)  => (others => '0'),
         probe3(3 downto 0)    => (others => '0'),
         probe3(4)             => '0',
@@ -388,7 +389,7 @@ begin
         probe12(31 downto 0)  => timestamp_i,
         probe13(0)            => '0',
         probe13(1)            => tiu_init_tx,
-        probe13(2)            => tiu_timeout,
+        probe13(2)            => tiu_timeout_o,
         probe13(3)            => tiu_busy_ignore_i,
         probe13(4)            => tiu_tx_busy,
         probe13(5)            => tiu_uart_i,
