@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 import os
+import random
 
 import cocotb
 from cocotb.clock import Clock, Timer
-from cocotb.triggers import FallingEdge, RisingEdge
+from cocotb.triggers import RisingEdge, FallingEdge
 from cocotb_test.simulator import run
 
 # monitor that the trigger signal is always asserted when the event counter increments
@@ -21,12 +22,14 @@ async def monitor_trig_width(dut):
         await RisingEdge(dut.clk)
 
 
-async def busy_logic(dut):
-    await RisingEdge(dut.rb_trigger_o)
-    await RisingEdge(dut.clk)
-    dut.busy_i.value = 1
-    await Timer(1, units="us")
+async def busy_logic(dut, timer=1):
     dut.busy_i.value = 0
+    while True:
+        await RisingEdge(dut.global_trigger_o)
+        await RisingEdge(dut.clk)
+        dut.busy_i.value = 1
+        await Timer(timer, units="us")
+        dut.busy_i.value = 0
 
 
 def set_hits(dut, value):
@@ -90,6 +93,141 @@ async def single_channel_trigger_test_global(dut):
 @cocotb.test()
 async def single_channel_trigger_test_local(dut):
     await gaps_trigger_test(dut, trig="any", is_global=0, single_channel=True)
+
+
+async def reset(dut):
+    # flush the buffers
+    dut.reset.value = 0
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)
+    dut.reset.value = 1
+    await RisingEdge(dut.clk)
+    dut.reset.value = 0
+    for _ in range(128):
+        await RisingEdge(dut.clk)
+
+
+async def init(dut):
+
+    dut.reset.value = 0
+
+    dut.event_cnt_reset.value = 1
+
+    dut.gaps_trigger_prescale.value = 0
+    dut.any_hit_trigger_prescale.value = 0
+    dut.track_trigger_prescale.value = 0
+    dut.track_central_prescale.value = 0
+    dut.track_umb_central_prescale.value = 0
+
+    dut.track_central_is_global.value = 1
+    dut.track_umb_central_is_global.value = 1
+    dut.track_trigger_is_global.value = 1
+    dut.any_hit_trigger_is_global.value = 1
+
+    dut.hit_thresh.value = 0
+
+    dut.read_all_channels.value = 0
+
+    dut.gaps_trigger_en.value = 0
+    dut.require_beta.value = 0
+    dut.cube_side_thresh.value = 0
+    dut.cube_top_thresh.value = 0
+    dut.cube_bot_thresh.value = 0
+    dut.cube_corner_thresh.value = 0
+    dut.umbrella_thresh.value = 0
+    dut.umbrella_center_thresh.value = 0
+    dut.cortina_thresh.value = 0
+
+    dut.busy_i.value = 0
+    dut.rb_busy_i.value = 0
+    dut.rb_window_i.value = 0
+
+    dut.cube_side_thresh.value = 1
+    dut.configurable_trigger_en.value = 0
+    dut.force_trigger_i.value = 0
+    set_hits(dut, [0]*200)
+
+
+# @cocotb.test()
+async def prescale_test(dut):
+
+    import matplotlib.pyplot as plt
+
+    cocotb.start_soon(Clock(dut.clk, 10, units="ns").start())  # Create a clock
+    cocotb.start_soon(busy_logic(dut, 32))
+
+    await init(dut)
+    await reset(dut)
+
+    n_steps = 10
+    n_triggers = 50
+
+    x = [0]*n_steps
+    y = [0]*n_steps
+
+    hit_rate = 200  # kHz
+    p = hit_rate/100000
+
+    set_hits(dut, [0]*200)
+
+    rands = []
+
+    for step in range(n_steps):
+
+        gate_open_cnt = 0
+        gen_trigger_cnt = 0
+        trigger_cnt = 0
+        blocked_trigger_cnt = 0
+        lost_trigger_cnt = 0
+        n_clks = 0
+        prescale = int(step / (n_steps-1) * (2**32-1))
+        dut.any_hit_trigger_prescale.value = prescale
+
+        # reseed
+        random.seed(0)
+
+        breakloop = 0
+
+        while True:
+
+            urand = dut.trigger_2.any_hit_trigger_urand.value
+            en = dut.trigger_2.any_trigger_en.value
+            rands.append(urand)
+
+            if gen_trigger_cnt < n_triggers:
+                if random.uniform(0, 1) <= p:
+                    getattr(dut, "hits_i_0").value = 1
+                    gen_trigger_cnt += 1
+                else:
+                    getattr(dut, "hits_i_0").value = 0
+            else:
+                getattr(dut, "hits_i_0").value = 0
+                breakloop += 1
+                if breakloop == 128:
+                    breakloop = 0
+                    break
+
+            await RisingEdge(dut.clk)
+            if (dut.global_trigger_o.value != 0):
+                trigger_cnt += 1
+            if (dut.lost_trigger_o.value != 0):
+                lost_trigger_cnt += 1
+            if (dut.any_trigger_blocked_o.value != 0):
+                blocked_trigger_cnt += 1
+            gate_open_cnt += en
+
+            n_clks += 1
+
+        total = trigger_cnt + blocked_trigger_cnt + lost_trigger_cnt
+        time = (n_clks * 10E-9 * 1000)
+        x[step] = prescale
+        # y[step]=trigger_cnt / n_triggers # fraction
+        y[step] = trigger_cnt / time  # kHz
+        print(f'{step=} {time=} {y[step]} gen={gen_trigger_cnt} vs account={total} ({trigger_cnt=} {blocked_trigger_cnt=} {lost_trigger_cnt=}) cycle={gate_open_cnt/n_clks * 100}', flush=True)
+
+    plt.plot(x, y)
+    plt.show()
 
 
 async def gaps_trigger_test(dut, trig="any", is_global=1, rb_window=8, n_hits=30, single_channel=False):
@@ -267,6 +405,7 @@ def test_trigger():
     vhdl_sources = [
         os.path.join(tests_dir, f"../../../common/src/types_pkg.vhd"),
         os.path.join(tests_dir, f"../../../common/src/urand_inf.vhd"),
+        os.path.join(tests_dir, f"../../../common/src/oneshot.vhd"),
         os.path.join(tests_dir, f"../infra/constants.vhd"),
         os.path.join(tests_dir, f"../infra/mt_types.vhd"),
         os.path.join(tests_dir, f"../infra/components.vhd"),
@@ -286,6 +425,7 @@ def test_trigger():
         toplevel="trigger_top",
         parameters={"DEBUG": False},
         compile_args=["--std=08"],
+        sim_args=["--ieee-asserts=disable"],
         toplevel_lang="vhdl",
         gui=1,
         waves=1,
