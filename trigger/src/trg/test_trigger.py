@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 import random
+import pytest
 
 import cocotb
 from cocotb.clock import Clock, Timer
@@ -10,6 +11,8 @@ from cocotb_test.simulator import run
 # monitor that the trigger signal is always asserted when the event counter increments
 
 # monitor that the event counter increments when the tirgger signal is asserted
+
+CLK_PERIOD = 10
 
 
 async def monitor_trig_width(dut):
@@ -110,6 +113,9 @@ async def reset(dut):
 
 async def init(dut):
 
+    cocotb.start_soon(Clock(dut.clk, CLK_PERIOD, units="ns").start())  # Create a clock
+    cocotb.start_soon(busy_logic(dut, 32))
+
     dut.reset.value = 0
 
     dut.event_cnt_reset.value = 1
@@ -126,6 +132,8 @@ async def init(dut):
     dut.any_hit_trigger_is_global.value = 1
 
     dut.hit_thresh.value = 0
+
+    set_hits(dut, [0]*200)
 
     dut.read_all_channels.value = 0
 
@@ -149,13 +157,101 @@ async def init(dut):
     set_hits(dut, [0]*200)
 
 
-# @cocotb.test()
-async def prescale_test(dut):
+@cocotb.test()
+async def prescale_test_urands(dut) -> None:
+    steps = 20
+    for i in range(steps):
+        await prescale_test_urand(dut, i/steps)
+
+
+async def prescale_test_urand(dut, rate=0.5) -> None:
+    await init(dut)
+    await reset(dut)
+
+    getattr(dut, "hits_i_0").value = 1
+
+    prescaler = int(rate * (2**32-1))
+    dut.any_hit_trigger_prescale.value = prescaler
+
+    N = 500
+    enable_cnt = 0
+    for tick in range(N):
+        enable_cnt += dut.trigger_2.any_trigger_en.value
+        await RisingEdge(dut.clk)
+    frac = (enable_cnt/N)
+    assert frac == pytest.approx(rate, rel=0.15)
+
+
+@cocotb.test()
+async def prescale_test(dut) -> None:
+    for prescale in range(5):
+        await prescale_test_single(
+            dut,
+            prescale=prescale/10.0
+        )
+
+
+async def prescale_test_single(
+        dut,
+        hit_rate: int = 1,  # kHz
+        n_triggers: int = 50,
+        prescale: float = 1.0,
+) -> dict:
+
+    await init(dut)
+    await reset(dut)
+
+    p = hit_rate/100000
+
+    tick = 0
+    gen_trig_cnt = 0
+    accept_cnt = 0
+    lost_trigger_cnt = 0
+    blocked_trigger_cnt = 0
+
+    prescaler = int(prescale * (2**32-1))
+    dut.any_hit_trigger_prescale.value = prescaler
+
+    while gen_trig_cnt < n_triggers:
+
+        if (tick % 100 == 0):
+            getattr(dut, "hits_i_0").value = 1
+            gen_trig_cnt += 1
+        else:
+            getattr(dut, "hits_i_0").value = 0
+
+        await RisingEdge(dut.clk)
+
+        accept_cnt += dut.global_trigger_o.value
+        lost_trigger_cnt += dut.lost_trigger_o.value
+        blocked_trigger_cnt += dut.any_trigger_blocked_o.value
+        tick += 1
+
+    results = {
+        'total': gen_trig_cnt,
+        'accepted': accept_cnt,
+        'blocked': blocked_trigger_cnt,
+        'lost': lost_trigger_cnt,
+        'tick': tick,
+        'gen_rate': gen_trig_cnt / (tick*CLK_PERIOD) * 100000,  # kHz
+        'accept_rate': accept_cnt / (tick*CLK_PERIOD) * 100000,  # kHz
+    }
+
+    # assert (lost_trigger_cnt + blocked_trigger_cnt + trigger_cnt) == gen_trig_cnt
+
+    print(
+        f"Prescaler set to {prescale}: gen={n_triggers} accept={accept_cnt} block={blocked_trigger_cnt} meas={accept_cnt / n_triggers * 100}%%"
+    )
+
+    print(results)
+
+    return results
+
+
+@cocotb.test()
+async def prescale_plot(dut):
 
     import matplotlib.pyplot as plt
-
-    cocotb.start_soon(Clock(dut.clk, 10, units="ns").start())  # Create a clock
-    cocotb.start_soon(busy_logic(dut, 32))
 
     await init(dut)
     await reset(dut)
@@ -170,8 +266,6 @@ async def prescale_test(dut):
     p = hit_rate/100000
 
     set_hits(dut, [0]*200)
-
-    rands = []
 
     for step in range(n_steps):
 
@@ -191,9 +285,7 @@ async def prescale_test(dut):
 
         while True:
 
-            urand = dut.trigger_2.any_hit_trigger_urand.value
             en = dut.trigger_2.any_trigger_en.value
-            rands.append(urand)
 
             if gen_trigger_cnt < n_triggers:
                 if random.uniform(0, 1) <= p:
