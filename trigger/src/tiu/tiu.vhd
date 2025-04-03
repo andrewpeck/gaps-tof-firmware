@@ -147,7 +147,7 @@ begin
   -- NOTE: maybe should gate this by the state of the state machine?
   -- there might be a condition where a trigger comes in before BUSY is asserted?
   tiu_trigger_o    <= (ready_to_trigger and pre_trigger_i) or pretrigger_latch;
-  ready_to_trigger <= '1' when (tx_init_state = READY_FOR_TRIGGER) else '0';
+  ready_to_trigger <= '1' when ((tx_init_state = READY_FOR_TRIGGER) and (tiu_busy = '0')) else '0';
   global_busy_o    <= (not ready_to_trigger) or tiu_busy;
 
   process (clock) is
