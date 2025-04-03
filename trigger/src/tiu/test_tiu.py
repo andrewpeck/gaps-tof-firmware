@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 import os
+import random
 
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import Timer
 from cocotb.triggers import RisingEdge
 from cocotb_test.simulator import run
-
+from cocotb.utils import get_sim_time
 
 async def init(dut):
     cocotb.start_soon(Clock(dut.clock, 10, units="ns").start())  # Create a clock
@@ -32,6 +33,42 @@ async def reset(dut):
     dut.reset.value = 0
     await idle(dut, 2)
 
+async def generate_random_signal(clk, signal, idle_min=100, idle_max=10000, active_min=100, active_max=1000) -> None:
+    signal.value = 0
+    while True:
+        signal.value = 0
+        idle = random.randint(idle_min, idle_max)
+        for i in range(idle):
+            await RisingEdge(clk)
+
+        signal.value = 1
+        active = random.randint(active_min, active_max)
+        for i in range(active):
+            await RisingEdge(clk)
+
+
+@cocotb.test()
+async def tiu_test_random_busy(dut, n_triggers = 10) -> None:
+    "Randomly assert busy and see what happens."
+    await init(dut)
+    await reset(dut)
+
+    cocotb.start_soon(generate_random_signal(dut.clock, dut.tiu_busy_i))
+    cocotb.start_soon(generate_random_signal(dut.clock, dut.pre_trigger_i, active_min=1, active_max=1))
+
+    for _ in range(n_triggers):
+        await RisingEdge(dut.pre_trigger_i)
+        was_already_triggered = dut.tiu_trigger_o.value
+        await RisingEdge(dut.clock)
+        if (dut.global_busy_o.value == 0 and dut.tiu_busy_i.value == 0):
+            assert dut.tiu_trigger_o.value == 1
+        elif (not was_already_triggered and (dut.global_busy_o.value == 1 or dut.tiu_busy_i.value == 1)):
+            assert dut.tiu_trigger_o.value == 0
+
+    time_ns = get_sim_time(units='ns')
+    rate = 1E9 * n_triggers/time_ns
+    print(f'{n_triggers} in {time_ns} ns. rate = {rate} Hz')
+    assert rate > 10000
 
 @cocotb.test()
 async def tiu_test_busy_length(dut) -> None:
