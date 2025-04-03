@@ -359,6 +359,14 @@
           fw_default="0x00000000"
           fw_signal="track_central_prescale"/>
 
+    <node id="FORCE_TRIGGER_PRESCALE"
+          address="0x43"
+          permission="rw"
+          mask="0xffffffff"
+          description="Prescale value for the force trigger"
+          fw_default="0xffffffff"
+          fw_signal="force_trigger_prescale"/>
+
     <node id="RB_READOUT_CNTS" address="0xf2" description="Counters">
 
       <node id="CNTS_0" address="0x0"

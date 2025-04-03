@@ -25,6 +25,7 @@ entity trigger is
     track_central_is_global     : in std_logic;
     track_umb_central_is_global : in std_logic;
 
+    force_trigger_prescale     : in std_logic_vector (31 downto 0);
     gaps_trigger_prescale      : in std_logic_vector (31 downto 0);
     any_hit_trigger_prescale   : in std_logic_vector (31 downto 0);
     track_trigger_prescale     : in std_logic_vector (31 downto 0);
@@ -188,6 +189,9 @@ architecture behavioral of trigger is
 
   signal gaps_trigger_en    : std_logic;
   signal gaps_trigger_urand : std_logic_vector (31 downto 0) := (others => '0');
+
+  signal force_trigger_en    : std_logic;
+  signal force_trigger_urand : std_logic_vector (31 downto 0) := (others => '0');
 
   signal trig_sources        : std_logic_vector(15 downto 0) := (others => '0');
   signal trig_sources_reg    : std_logic_vector(15 downto 0) := (others => '0');
@@ -711,6 +715,13 @@ begin
       rst_n => not reset,
       u     => gaps_trigger_urand);
 
+  urand_inf_force : entity work.urand_inf
+    generic map (SEED => 5)
+    port map (
+      clk   => clk,
+      rst_n => not reset,
+      u     => force_trigger_urand);
+
   urand_inf_track_trig : entity work.urand_inf
     generic map (SEED => 2)
     port map (
@@ -771,6 +782,13 @@ begin
         gaps_trigger_en <= '0';
       end if;
 
+      if (force_trigger_prescale /= x"00000000" and
+          force_trigger_prescale > force_trigger_urand) then
+        force_trigger_en <= force_trigger_i;
+      else
+        force_trigger_en <= '0';
+      end if;
+
     end if;
   end process;
 
@@ -791,7 +809,7 @@ begin
     & configurable_trigger
     & track_central
     & track_trigger
-    & force_trigger_i
+    & force_trigger_en
     & any_trigger
     & gaps_trigger
     & track_umb_central

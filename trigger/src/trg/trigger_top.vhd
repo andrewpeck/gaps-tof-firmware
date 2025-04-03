@@ -27,6 +27,7 @@ entity trigger_top is
     track_umb_central_is_global : in std_logic;
 
     any_hit_trigger_prescale   : in std_logic_vector (31 downto 0);
+    force_trigger_prescale     : in std_logic_vector (31 downto 0);
     track_trigger_prescale     : in std_logic_vector (31 downto 0);
     track_central_prescale     : in std_logic_vector (31 downto 0);
     track_umb_central_prescale : in std_logic_vector (31 downto 0);
@@ -904,6 +905,7 @@ begin
       track_central_is_global     => track_central_is_global,
       track_umb_central_is_global => track_umb_central_is_global,
       any_hit_trigger_prescale    => any_hit_trigger_prescale,
+      force_trigger_prescale      => force_trigger_prescale,
       track_trigger_prescale      => track_trigger_prescale,
       track_central_prescale      => track_central_prescale,
       track_umb_central_prescale  => track_umb_central_prescale,

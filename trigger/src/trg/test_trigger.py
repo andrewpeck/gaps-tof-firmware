@@ -120,6 +120,7 @@ async def init(dut):
 
     dut.event_cnt_reset.value = 1
 
+    dut.force_trigger_prescale.value = 0xffffffff
     dut.gaps_trigger_prescale.value = 0
     dut.any_hit_trigger_prescale.value = 0
     dut.track_trigger_prescale.value = 0
@@ -160,7 +161,7 @@ async def init(dut):
 @cocotb.test()
 async def prescale_test_urands(dut) -> None:
     steps = 20
-    for i in range(steps):
+    for i in range(steps+1):
         await prescale_test_urand(dut, i/steps)
 
 
@@ -179,6 +180,7 @@ async def prescale_test_urand(dut, rate=0.5) -> None:
         enable_cnt += dut.trigger_2.any_trigger_en.value
         await RisingEdge(dut.clk)
     frac = (enable_cnt/N)
+    print(f'prescaler={prescaler/(2**32-1):0.2f}, {frac=:0.2f}')
     assert frac == pytest.approx(rate, rel=0.15)
 
 
