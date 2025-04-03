@@ -156,21 +156,26 @@ def test_tiu():
 
     runner = get_runner('ghdl')
     toplevel = "tiu"
-    compile_args = ["--std=08"]
+    build_args = ["--std=08"]
+    test_args = ["--std=08"]
+    plus_args = ["--wave=sim.ghw", "--ieee-asserts=disable"]
 
     runner.build(
         verilog_sources=[],
         vhdl_sources=vhdl_sources,
         hdl_toplevel=toplevel,
         parameters={'DEBUG': False},
-        build_args=compile_args,
+        build_args=build_args,
+        waves=1
     )
 
     runner.test(
-        test_args=compile_args,
+        test_args=test_args,
         hdl_toplevel=toplevel,
         test_module=module,
+        plusargs = plus_args,
         parameters={'DEBUG': False},
+        waves=1
     )
 
 
