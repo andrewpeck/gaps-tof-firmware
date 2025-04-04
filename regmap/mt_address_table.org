@@ -57,6 +57,8 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |TIU_BUSY_IGNORE | ~0xf~ | ~0x3c~ | ~2~ | rw | ~0x0~ | 1 means the the MTB should ignore the TIU busy flag (e.g. because it is stuck) | 
 |------------+---+---+---------+-----+-----+----------------------------|
+|MIN_DEADTIME_MODE | ~0xf~ | ~0x3c~ | ~3~ | rw | ~0x0~ | Minimize deadtime by ignoring the TIU module. | 
+|------------+---+---+---------+-----+-----+----------------------------|
 |LT_INPUT_STRETCH | ~0xf~ | ~0x3c~ | ~[7:4]~ | rw | ~0xF~ | Number of clock cycles to stretch the LT inputs by | 
 |------------+---+---+---------+-----+-----+----------------------------|
 |RB_INTEGRATION_WINDOW | ~0xf~ | ~0x3c~ | ~[12:8]~ | rw | ~0x1~ | Number of 100MHz clock cycles to integrate the LTB hits to determine which RBs to read out. | 

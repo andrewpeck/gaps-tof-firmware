@@ -136,6 +136,14 @@
           fw_default="0x0"
           fw_signal="tiu_busy_ignore"/>
 
+    <node id="MIN_DEADTIME_MODE"
+          address="0xF"
+          permission="rw"
+          mask="0x8"
+          description="Minimize deadtime by ignoring the TIU module."
+          fw_default="0x0"
+          fw_signal="min_deadtime_mode"/>
+
     <node id="LT_INPUT_STRETCH"
           address="0xF"
           permission="rw"

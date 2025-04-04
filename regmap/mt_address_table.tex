@@ -71,6 +71,7 @@
     TIU\_USE\_AUX\_LINK & \texttt{0xe} & \texttt{[1:1]} & rw & \texttt{0x0} & 1 to use J11; 0 to use J3 \\\hline
     TIU\_BUSY\_STUCK & \texttt{0xf} & \texttt{[1:1]} & r & \texttt{} & 1 means the TIU has been stuck high for a long time \\\hline
     TIU\_BUSY\_IGNORE & \texttt{0xf} & \texttt{[2:2]} & rw & \texttt{0x0} & 1 means the the MTB should ignore the TIU busy flag (e.g. because it is stuck) \\\hline
+    MIN\_DEADTIME\_MODE & \texttt{0xf} & \texttt{[3:3]} & rw & \texttt{0x0} & Minimize deadtime by ignoring the TIU module. \\\hline
     LT\_INPUT\_STRETCH & \texttt{0xf} & \texttt{[7:4]} & rw & \texttt{0xF} & Number of clock cycles to stretch the LT inputs by \\\hline
     RB\_INTEGRATION\_WINDOW & \texttt{0xf} & \texttt{[12:8]} & rw & \texttt{0x1} & Number of 100MHz clock cycles to integrate the LTB hits to determine which RBs to read out. \\\hline
     RB\_READ\_ALL\_CHANNELS & \texttt{0xf} & \texttt{[13:13]} & rw & \texttt{0x1} & Set to 1 to read all channels from RB for any trigger \\\hline

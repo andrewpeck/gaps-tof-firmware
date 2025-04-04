@@ -263,6 +263,8 @@ architecture structural of gaps_mt is
   signal tiu_busy_ignore : std_logic;
   signal tiu_use_aux     : std_logic := '0';
 
+  signal min_deadtime_mode : std_logic;
+
   signal fb_clk, fb_clk_i : std_logic_vector (fb_clk_p'range);
   signal fb_clock_rates   : t_std32_array(fb_clk_p'range);
   signal fb_clk_ok        : std_logic_vector (fb_clk_p'range);
@@ -822,7 +824,7 @@ begin
       force_trigger_i => trigger_ipb or trig_gen or trig_cyclic, -- or ext_trigger
 
       -- busy logic from the SiLi should prevent any trigger from forming
-      busy_i => global_busy,
+      busy_i => global_busy and not min_deadtime_mode,
 
       -- NOTE: this is a placeholder for bookkeeping to keep track of which RBs
       -- are busy reading out it is a simple deadtime calculation that is just a
@@ -2084,6 +2086,7 @@ begin
   regs_read_arr(14)(REG_TIU_USE_AUX_LINK_BIT) <= tiu_use_aux;
   regs_read_arr(15)(REG_TIU_BUSY_STUCK_BIT) <= tiu_stuck;
   regs_read_arr(15)(REG_TIU_BUSY_IGNORE_BIT) <= tiu_busy_ignore;
+  regs_read_arr(15)(REG_MIN_DEADTIME_MODE_BIT) <= min_deadtime_mode;
   regs_read_arr(15)(REG_LT_INPUT_STRETCH_MSB downto REG_LT_INPUT_STRETCH_LSB) <= lt_input_stretch;
   regs_read_arr(15)(REG_RB_INTEGRATION_WINDOW_MSB downto REG_RB_INTEGRATION_WINDOW_LSB) <= rb_window;
   regs_read_arr(15)(REG_RB_READ_ALL_CHANNELS_BIT) <= read_all_channels;
@@ -2327,6 +2330,7 @@ begin
   track_umb_central_is_global <= regs_write_arr(11)(REG_TRACK_UMB_CENTRAL_IS_GLOBAL_BIT);
   tiu_use_aux <= regs_write_arr(14)(REG_TIU_USE_AUX_LINK_BIT);
   tiu_busy_ignore <= regs_write_arr(15)(REG_TIU_BUSY_IGNORE_BIT);
+  min_deadtime_mode <= regs_write_arr(15)(REG_MIN_DEADTIME_MODE_BIT);
   lt_input_stretch <= regs_write_arr(15)(REG_LT_INPUT_STRETCH_MSB downto REG_LT_INPUT_STRETCH_LSB);
   rb_window <= regs_write_arr(15)(REG_RB_INTEGRATION_WINDOW_MSB downto REG_RB_INTEGRATION_WINDOW_LSB);
   read_all_channels <= regs_write_arr(15)(REG_RB_READ_ALL_CHANNELS_BIT);
@@ -3480,6 +3484,7 @@ begin
   regs_defaults(11)(REG_TRACK_UMB_CENTRAL_IS_GLOBAL_BIT) <= REG_TRACK_UMB_CENTRAL_IS_GLOBAL_DEFAULT;
   regs_defaults(14)(REG_TIU_USE_AUX_LINK_BIT) <= REG_TIU_USE_AUX_LINK_DEFAULT;
   regs_defaults(15)(REG_TIU_BUSY_IGNORE_BIT) <= REG_TIU_BUSY_IGNORE_DEFAULT;
+  regs_defaults(15)(REG_MIN_DEADTIME_MODE_BIT) <= REG_MIN_DEADTIME_MODE_DEFAULT;
   regs_defaults(15)(REG_LT_INPUT_STRETCH_MSB downto REG_LT_INPUT_STRETCH_LSB) <= REG_LT_INPUT_STRETCH_DEFAULT;
   regs_defaults(15)(REG_RB_INTEGRATION_WINDOW_MSB downto REG_RB_INTEGRATION_WINDOW_LSB) <= REG_RB_INTEGRATION_WINDOW_DEFAULT;
   regs_defaults(15)(REG_RB_READ_ALL_CHANNELS_BIT) <= REG_RB_READ_ALL_CHANNELS_DEFAULT;

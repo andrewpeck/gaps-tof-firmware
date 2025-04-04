@@ -119,6 +119,12 @@
         "mask": 4,
         "description": "1 means the the MTB should ignore the TIU busy flag (e.g. because it is stuck)"
     },
+    "MT.MIN_DEADTIME_MODE": {
+        "adr": 15,
+        "permission": "rw",
+        "mask": 8,
+        "description": "Minimize deadtime by ignoring the TIU module."
+    },
     "MT.LT_INPUT_STRETCH": {
         "adr": 15,
         "permission": "rw",
