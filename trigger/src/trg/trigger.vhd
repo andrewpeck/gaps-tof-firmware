@@ -59,7 +59,7 @@ entity trigger is
     cortina_thresh          : in std_logic_vector (7 downto 0);
 
     busy_i      : in std_logic;
-    rb_busy_i   : in std_logic_vector(NUM_RBS-1 downto 0);
+    rb_busy_i   : in std_logic;
     rb_window_i : in std_logic_vector(4 downto 0);
 
     force_trigger_i : in std_logic;
@@ -837,7 +837,7 @@ begin
   begin
     if (rising_edge(clk)) then
 
-      rb_busy_block <= or_reduce(rb_busy_i);
+      rb_busy_block <= rb_busy_i;
 
       trig_sources_reg <= trig_sources;
 

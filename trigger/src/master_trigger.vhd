@@ -841,7 +841,7 @@ begin
       --    triggering if too many RBs are busy, but what is the threshold?
       --  + does the SiLi deadtime dominate the deadtime and the RBs don't even matter?
 
-      rb_busy_i => rb_busy and rb_block_if_busy,
+      rb_busy_i => or_reduce(rb_busy and rb_block_if_busy) and not min_deadtime_mode,
 
       -- Setting this parameter to '1' makes it so that all channels in all RBs
       -- are read for every event.. it is a global readout mode as opposed to
