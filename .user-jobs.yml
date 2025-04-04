@@ -34,13 +34,21 @@ trig-update-job:
   script: "cd trigger/src/trg && make update && git diff --exit-code"
   allow_failure: true
 
-daq-sim-job:
+trg-sim-job:
   variables:
     GIT_STRATEGY: clone
   <<: *only-default
   <<: *tag-hog
   stage: user_pre
   script: "cd trigger/src/trg && python test_trigger.py"
+
+tiu-sim-job:
+  variables:
+    GIT_STRATEGY: clone
+  <<: *only-default
+  <<: *tag-hog
+  stage: user_pre
+  script: "cd trigger/src/tiu && python test_tiu.py"
 
 # daq-sim-job:
 #   variables:
