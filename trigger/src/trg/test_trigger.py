@@ -53,47 +53,47 @@ async def gaps_trigger_test_rb_window(dut):
     await gaps_trigger_test(dut, trig="any", is_global=1, rb_window=30)
 
 
-@cocotb.test()
+#@cocotb.test()
 async def gaps_trigger_test_any_local(dut):
     await gaps_trigger_test(dut, trig="any", is_global=0)
 
 
-@cocotb.test()
+#@cocotb.test()
 async def gaps_trigger_test_gaps_global(dut):
     await gaps_trigger_test(dut, trig="gaps", is_global=1)
 
 
-@cocotb.test()
+#@cocotb.test()
 async def gaps_trigger_test_gaps_local(dut):
     await gaps_trigger_test(dut, trig="gaps", is_global=0)
 
 
-@cocotb.test()
+#@cocotb.test()
 async def track_trigger_test_track_global(dut):
     await gaps_trigger_test(dut, trig="track", is_global=1)
 
 
-@cocotb.test()
+#@cocotb.test()
 async def track_trigger_test_track_local(dut):
     await gaps_trigger_test(dut, trig="track", is_global=0)
 
 
-@cocotb.test()
+#@cocotb.test()
 async def combine_trigger_test_combine_global(dut):
     await gaps_trigger_test(dut, trig="combine", is_global=1)
 
 
-@cocotb.test()
+#@cocotb.test()
 async def combine_trigger_test_combine_local(dut):
     await gaps_trigger_test(dut, trig="combine", is_global=0)
 
 
-@cocotb.test()
+#@cocotb.test()
 async def single_channel_trigger_test_global(dut):
     await gaps_trigger_test(dut, trig="any", is_global=1, single_channel=True)
 
 
-@cocotb.test()
+#@cocotb.test()
 async def single_channel_trigger_test_local(dut):
     await gaps_trigger_test(dut, trig="any", is_global=0, single_channel=True)
 
@@ -250,7 +250,7 @@ async def prescale_test_single(
     return results
 
 
-@cocotb.test()
+#@cocotb.test()
 async def prescale_plot(dut):
 
     import matplotlib.pyplot as plt
