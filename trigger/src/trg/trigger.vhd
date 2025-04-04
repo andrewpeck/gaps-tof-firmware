@@ -64,9 +64,9 @@ entity trigger is
 
     force_trigger_i : in std_logic;
 
-    trig_sources_o     : out std_logic_vector(15 downto 0)           := (others => '0');
-    pre_trigger_o      : out std_logic;
-    global_trigger_o   : out std_logic                               := '0';
+    trig_sources_o   : out std_logic_vector(15 downto 0) := (others => '0');
+    pre_trigger_o    : out std_logic;
+    global_trigger_o : out std_logic                     := '0';
 
     gaps_trigger_blocked_o      : out std_logic;
     track_trigger_blocked_o     : out std_logic;
@@ -79,10 +79,10 @@ entity trigger is
     trg_lost_trigger_o : out std_logic;
     tiu_lost_trigger_o : out std_logic;
 
-    rb_trigger_o       : out std_logic;
-    rb_ch_bitmap_o     : out std_logic_vector (NUM_RBS*8-1 downto 0) := (others => '0');
-    rb_board_list_o    : out std_logic_vector (NUM_RBS-1 downto 0)   := (others => '0');
-    event_cnt_o        : out std_logic_vector (31 downto 0)
+    rb_trigger_o    : out std_logic;
+    rb_ch_bitmap_o  : out std_logic_vector (NUM_RBS*8-1 downto 0) := (others => '0');
+    rb_board_list_o : out std_logic_vector (NUM_RBS-1 downto 0)   := (others => '0');
+    event_cnt_o     : out std_logic_vector (31 downto 0)
     );
 end trigger;
 
@@ -175,7 +175,7 @@ architecture behavioral of trigger is
   signal or_inner_tof_beta : std_logic;
   signal or_outer_tof_beta : std_logic;
 
-  signal any_trigger_en    : std_logic;
+  signal any_trigger_en        : std_logic;
   signal any_hit_trigger_urand : std_logic_vector (31 downto 0) := (others => '0');
 
   signal track_trigger_en    : std_logic;
@@ -251,10 +251,10 @@ architecture behavioral of trigger is
   -- Global trigger
   --------------------------------------------------------------------------------
 
-  signal pre_trigger                  : std_logic := '0';
-  signal want_pretrigger              : std_logic := '0';
-  signal want_pretrigger_r            : std_logic := '0';
-  signal want_pretrigger_rising       : std_logic := '0';
+  signal pre_trigger            : std_logic := '0';
+  signal want_pretrigger        : std_logic := '0';
+  signal want_pretrigger_r      : std_logic := '0';
+  signal want_pretrigger_rising : std_logic := '0';
 
   -- flatten the 200 inputs from a threshold to just a bitmask meaning that a
   -- channel is either on or off
@@ -376,8 +376,8 @@ begin
   --------------------------------------------------------------------------------
 
   -- this needs to be delayed by 1 clock cycle compared to track trigger because the umbrella / cube top come out 1 cycle early
-  track_central_satisfied <= '1' when (umbrella_cnts >= 1 and cube_top_cnts >= 1) else '0';
-  track_central <= (track_central_en and track_central_satisfied) when rising_edge(clk);
+  track_central_satisfied <= '1'                                            when (umbrella_cnts >= 1 and cube_top_cnts >= 1) else '0';
+  track_central           <= (track_central_en and track_central_satisfied) when rising_edge(clk);
   oneshot_track_central_blocked : entity work.oneshot
     port map (clk => clk, d => (not track_central_en) and track_central_satisfied, q => track_central_blocked_o);
 
@@ -385,8 +385,8 @@ begin
   -- Track Umb
   --------------------------------------------------------------------------------
 
-  track_umb_central_satisfied <= '1' when (umbrella_center_cnts >= 1 and cube_top_cnts >= 1) else '0';
-  track_umb_central           <= (track_umb_central_en and track_umb_central_satisfied) when rising_edge(clk); -- DELAY
+  track_umb_central_satisfied <= '1'                                                    when (umbrella_center_cnts >= 1 and cube_top_cnts >= 1) else '0';
+  track_umb_central           <= (track_umb_central_en and track_umb_central_satisfied) when rising_edge(clk);  -- DELAY
   oneshot_track_umb_central_blocked : entity work.oneshot
     port map (clk => clk, d => (not track_umb_central_en) and track_umb_central_satisfied, q => track_umb_central_blocked_o);
 
@@ -395,7 +395,7 @@ begin
   --------------------------------------------------------------------------------
 
   any_trigger_satisfied <= (or_reduce(hit_bitmap));
-  any_trigger           <= (any_trigger_en and any_trigger_satisfied) when rising_edge(clk); -- DELAY
+  any_trigger           <= (any_trigger_en and any_trigger_satisfied) when rising_edge(clk);  -- DELAY
   oneshot_any_trigger_blocked : entity work.oneshot
     port map (clk => clk, d => (not any_trigger_en) and any_trigger_satisfied, q => any_trigger_blocked_o);
 
@@ -826,8 +826,8 @@ begin
   want_pretrigger <= not pre_trigger
                      and or_reduce(trig_sources(10 downto 0));
 
-  want_pretrigger_r            <= want_pretrigger when rising_edge(clk);
-  want_pretrigger_rising       <= want_pretrigger and not want_pretrigger_r;
+  want_pretrigger_r      <= want_pretrigger when rising_edge(clk);
+  want_pretrigger_rising <= want_pretrigger and not want_pretrigger_r;
 
   busy <= busy_i or rb_busy_block;
 
