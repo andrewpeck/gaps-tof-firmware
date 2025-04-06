@@ -203,6 +203,7 @@ architecture structural of gaps_mt is
   signal read_all_channels : std_logic := '0';
 
   signal trig_rate          : std_logic_vector (23 downto 0);
+  signal tiu_busy_rate      : std_logic_vector (23 downto 0);
   signal lost_trig_rate     : std_logic_vector (23 downto 0);
   signal tiu_lost_trig_rate : std_logic_vector (23 downto 0);
   signal trg_lost_trig_rate : std_logic_vector (23 downto 0);
@@ -950,6 +951,18 @@ begin
   --------------------------------------------------------------------------------
   -- Rate Counter
   --------------------------------------------------------------------------------
+
+  rate_counter_dead : entity work.rate_counter
+    generic map (
+      g_CLK_FREQUENCY => std_logic_vector(to_unsigned(CLK_FREQ,32)),
+      g_COUNTER_WIDTH => 24
+      )
+    port map (
+      clk_i   => clock,
+      reset_i => reset,
+      en_i    => tiu_busy_i,
+      rate_o  => tiu_busy_rate
+      );
 
   rate_counter_trigger : entity work.rate_counter
     generic map (
@@ -2067,6 +2080,7 @@ begin
   regs_addresses(190)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"51";
   regs_addresses(191)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"52";
   regs_addresses(192)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"53";
+  regs_addresses(193)(REG_MT_ADDRESS_MSB downto REG_MT_ADDRESS_LSB) <= "10" & x"54";
 
   -- Connect read signals
   regs_read_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB) <= loopback;
@@ -2319,6 +2333,7 @@ begin
   regs_read_arr(190)(REG_ANY_TRIGGER_BLOCKED_RATE_MSB downto REG_ANY_TRIGGER_BLOCKED_RATE_LSB) <= any_trigger_blocked_rate;
   regs_read_arr(191)(REG_TRACK_CENTRAL_BLOCKED_RATE_MSB downto REG_TRACK_CENTRAL_BLOCKED_RATE_LSB) <= track_central_blocked_rate;
   regs_read_arr(192)(REG_TRACK_UMB_CENTRAL_BLOCKED_RATE_MSB downto REG_TRACK_UMB_CENTRAL_BLOCKED_RATE_LSB) <= track_umb_central_blocked_rate;
+  regs_read_arr(193)(REG_TIU_BUSY_RATE_MSB downto REG_TIU_BUSY_RATE_LSB) <= tiu_busy_rate;
 
   -- Connect write signals
   loopback <= regs_write_arr(0)(REG_LOOPBACK_MSB downto REG_LOOPBACK_LSB);

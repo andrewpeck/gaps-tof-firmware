@@ -1541,6 +1541,12 @@
         "mask": 16777215,
         "description": "Rate of this trigger blocked due to prescaler or disable"
     },
+    "MT.TIU_BUSY_RATE": {
+        "adr": 596,
+        "permission": "r",
+        "mask": 16777215,
+        "description": "Rate of TIU asserting busy. Measures the fraction of time the TIU was busy."
+    },
     "SPI.d0": {
         "adr": 0,
         "permission": "rw",

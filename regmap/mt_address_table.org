@@ -625,6 +625,8 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |TRACK_UMB_CENTRAL_BLOCKED_RATE | ~0x253~ | ~0x94c~ | ~[23:0]~ | r |  | Rate of this trigger blocked due to prescaler or disable | 
 |------------+---+---+---------+-----+-----+----------------------------|
+|TIU_BUSY_RATE | ~0x254~ | ~0x950~ | ~[23:0]~ | r |  | Rate of TIU asserting busy. Measures the fraction of time the TIU was busy. | 
+|------------+---+---+---------+-----+-----+----------------------------|
 
 
 * Module SPI 	 adr = ~0x1000~

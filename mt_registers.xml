@@ -1173,6 +1173,11 @@
           mask="0x00ffffff"
           fw_signal="track_umb_central_blocked_rate"/>
 
+    <node id="TIU_BUSY_RATE" address="0x254" permission="r"
+          description="Rate of TIU asserting busy. Measures the fraction of time the TIU was busy."
+          mask="0x00ffffff"
+          fw_signal="tiu_busy_rate"/>
+
   </node> <!--MT-->
 
   <node id="SPI"
