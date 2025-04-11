@@ -503,6 +503,12 @@
         "mask": 4294967295,
         "description": "Prescale value for the force trigger"
     },
+    "MT.PRESCALE_BYPASS": {
+        "adr": 68,
+        "permission": "rw",
+        "mask": 1,
+        "description": "1 to bypass prescalers"
+    },
     "MT.CHANNEL_MASK.LT0": {
         "adr": 80,
         "permission": "rw",

@@ -217,6 +217,8 @@ Implements various control and monitoring functions of the DRS Logic
 |------------+---+---+---------+-----+-----+----------------------------|
 |FORCE_TRIGGER_PRESCALE | ~0x43~ | ~0x10c~ | ~[31:0]~ | rw | ~0xFFFFFFFF~ | Prescale value for the force trigger | 
 |------------+---+---+---------+-----+-----+----------------------------|
+|PRESCALE_BYPASS | ~0x44~ | ~0x110~ | ~0~ | rw | ~0x1~ | 1 to bypass prescalers | 
+|------------+---+---+---------+-----+-----+----------------------------|
 
 *MT.CHANNEL_MASK*
 

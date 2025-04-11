@@ -904,6 +904,7 @@ begin
       track_trigger_is_global     => track_trigger_is_global,
       track_central_is_global     => track_central_is_global,
       track_umb_central_is_global => track_umb_central_is_global,
+      prescale_bypass             => '0',
       any_hit_trigger_prescale    => any_hit_trigger_prescale,
       force_trigger_prescale      => force_trigger_prescale,
       track_trigger_prescale      => track_trigger_prescale,

@@ -375,6 +375,14 @@
           fw_default="0xffffffff"
           fw_signal="force_trigger_prescale"/>
 
+    <node id="PRESCALE_BYPASS"
+          address="0x44"
+          permission="rw"
+          mask="0x1"
+          description="1 to bypass prescalers"
+          fw_default="0x1"
+          fw_signal="prescale_bypass"/>
+
     <node id="RB_READOUT_CNTS" address="0xf2" description="Counters">
 
       <node id="CNTS_0" address="0x0"

@@ -25,6 +25,8 @@ entity trigger is
     track_central_is_global     : in std_logic;
     track_umb_central_is_global : in std_logic;
 
+    prescale_bypass : in std_logic;
+
     force_trigger_prescale     : in std_logic_vector (31 downto 0);
     gaps_trigger_prescale      : in std_logic_vector (31 downto 0);
     any_hit_trigger_prescale   : in std_logic_vector (31 downto 0);
@@ -747,43 +749,49 @@ begin
   begin
     if (rising_edge(clk)) then
 
-      if (any_hit_trigger_prescale /= x"00000000" and
-          any_hit_trigger_prescale >= any_hit_trigger_urand) then
+      if (prescale_bypass = '1' or
+          (any_hit_trigger_prescale /= x"00000000" and
+           any_hit_trigger_prescale >= any_hit_trigger_urand)) then
         any_trigger_en <= '1';
       else
         any_trigger_en <= '0';
       end if;
 
-      if (track_trigger_prescale /= x"00000000" and
-          track_trigger_prescale >= track_trigger_urand) then
+      if (prescale_bypass = '1' or
+          (track_trigger_prescale /= x"00000000" and
+           track_trigger_prescale >= track_trigger_urand)) then
         track_trigger_en <= '1';
       else
         track_trigger_en <= '0';
       end if;
 
-      if (track_central_prescale /= x"00000000" and
-          track_central_prescale >= track_central_urand) then
+      if (prescale_bypass = '1' or
+          (track_central_prescale /= x"00000000" and
+           track_central_prescale >= track_central_urand)) then
         track_central_en <= '1';
       else
         track_central_en <= '0';
       end if;
 
-      if (track_umb_central_prescale /= x"00000000" and
-          track_umb_central_prescale >= track_umb_central_urand) then
+      if (prescale_bypass = '1' or
+          (track_umb_central_prescale /= x"00000000" and
+           track_umb_central_prescale >= track_umb_central_urand))then
         track_umb_central_en <= '1';
       else
         track_umb_central_en <= '0';
       end if;
 
-      if (gaps_trigger_prescale /= x"00000000" and
-          gaps_trigger_prescale >= gaps_trigger_urand) then
+      if (prescale_bypass = '1' or
+          (gaps_trigger_prescale /= x"00000000" and
+           gaps_trigger_prescale >= gaps_trigger_urand)) then
         gaps_trigger_en <= gaps_trigger_en_i;
       else
         gaps_trigger_en <= '0';
       end if;
 
-      if (force_trigger_prescale /= x"00000000" and
-          force_trigger_prescale >= force_trigger_urand) then
+      if (prescale_bypass = '1' or
+          (force_trigger_prescale /= x"00000000" and
+           force_trigger_prescale >= force_trigger_urand)) then
         force_trigger_en <= force_trigger_i;
       else
         force_trigger_en <= '0';
