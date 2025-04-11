@@ -362,7 +362,7 @@ begin
                             inner_tof_over_thresh and outer_tof_over_thresh and total_tof_over_thresh;
   gaps_trigger <= gaps_trigger_en and gaps_trigger_satisfied;
   oneshot_gaps_trigger_blocked : entity work.oneshot
-    port map (clk => clk, d => (not gaps_trigger_en) and gaps_trigger_satisfied, q => gaps_trigger_blocked_o);
+    port map (clk => clk, d => ready and (not gaps_trigger_en) and gaps_trigger_satisfied, q => gaps_trigger_blocked_o);
 
   --------------------------------------------------------------------------------
   -- Track Trigger
@@ -371,7 +371,7 @@ begin
   track_trigger_satisfied <= '1' when (inner_tof_cnts >= 1 and outer_tof_cnts >= 1) else '0';
   track_trigger           <= track_trigger_en and track_trigger_satisfied;
   oneshot_track_trigger_blocked : entity work.oneshot
-    port map (clk => clk, d => (not track_trigger_en) and track_trigger_satisfied, q => track_trigger_blocked_o);
+    port map (clk => clk, d => ready and (not track_trigger_en) and track_trigger_satisfied, q => track_trigger_blocked_o);
 
   --------------------------------------------------------------------------------
   -- Track Central
@@ -381,7 +381,7 @@ begin
   track_central_satisfied <= '1'                                            when (umbrella_cnts >= 1 and cube_top_cnts >= 1) else '0';
   track_central           <= (track_central_en and track_central_satisfied) when rising_edge(clk);
   oneshot_track_central_blocked : entity work.oneshot
-    port map (clk => clk, d => (not track_central_en) and track_central_satisfied, q => track_central_blocked_o);
+    port map (clk => clk, d => ready and (not track_central_en) and track_central_satisfied, q => track_central_blocked_o);
 
   --------------------------------------------------------------------------------
   -- Track Umb
@@ -390,7 +390,7 @@ begin
   track_umb_central_satisfied <= '1'                                                    when (umbrella_center_cnts >= 1 and cube_top_cnts >= 1) else '0';
   track_umb_central           <= (track_umb_central_en and track_umb_central_satisfied) when rising_edge(clk);  -- DELAY
   oneshot_track_umb_central_blocked : entity work.oneshot
-    port map (clk => clk, d => (not track_umb_central_en) and track_umb_central_satisfied, q => track_umb_central_blocked_o);
+    port map (clk => clk, d => ready and (not track_umb_central_en) and track_umb_central_satisfied, q => track_umb_central_blocked_o);
 
   --------------------------------------------------------------------------------
   -- Any trigger
@@ -399,7 +399,7 @@ begin
   any_trigger_satisfied <= (or_reduce(hit_bitmap));
   any_trigger           <= (any_trigger_en and any_trigger_satisfied) when rising_edge(clk);  -- DELAY
   oneshot_any_trigger_blocked : entity work.oneshot
-    port map (clk => clk, d => (not any_trigger_en) and any_trigger_satisfied, q => any_trigger_blocked_o);
+    port map (clk => clk, d => ready and (not any_trigger_en) and any_trigger_satisfied, q => any_trigger_blocked_o);
 
   --------------------------------------------------------------------------------
   -- Counters
