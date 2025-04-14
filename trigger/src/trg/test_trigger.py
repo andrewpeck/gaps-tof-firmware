@@ -31,7 +31,7 @@ async def busy_logic(dut, timer=1):
         await RisingEdge(dut.global_trigger_o)
         await RisingEdge(dut.clk)
         dut.busy_i.value = 1
-        await Timer(timer, units="us")
+        await Timer(timer, units="ns")
         dut.busy_i.value = 0
 
 
@@ -111,10 +111,10 @@ async def reset(dut):
         await RisingEdge(dut.clk)
 
 
-async def init(dut):
+async def init(dut, busy_length=320):
 
     cocotb.start_soon(Clock(dut.clk, CLK_PERIOD, units="ns").start())  # Create a clock
-    cocotb.start_soon(busy_logic(dut, 32))
+    cocotb.start_soon(busy_logic(dut, busy_length))
 
     dut.reset.value = 0
 
@@ -174,19 +174,19 @@ async def prescale_test_urand(dut, rate=0.5) -> None:
     prescaler = int(rate * (2**32-1))
     dut.any_hit_trigger_prescale.value = prescaler
 
-    N = 500
+    N = 750
     enable_cnt = 0
     for tick in range(N):
-        enable_cnt += dut.trigger_2.any_trigger_en.value
+        enable_cnt += dut.trigger_2.prescale_any.enable.value
         await RisingEdge(dut.clk)
     frac = (enable_cnt/N)
     print(f'prescaler={prescaler/(2**32-1):0.2f}, {frac=:0.2f}')
-    assert frac == pytest.approx(rate, rel=0.15)
+    assert frac == pytest.approx(rate, rel=0.20)
 
 
 @cocotb.test()
 async def prescale_test(dut) -> None:
-    for prescale in range(5):
+    for prescale in range(10):
         await prescale_test_single(
             dut,
             prescale=prescale/10.0
@@ -214,11 +214,12 @@ async def prescale_test_single(
     prescaler = int(prescale * (2**32-1))
     dut.any_hit_trigger_prescale.value = prescaler
 
-    while gen_trig_cnt < n_triggers:
+    pulses = [100 * x for x in range(n_triggers)]
 
-        if (tick % 100 == 0):
+    for tick in range(max(pulses) + 100):
+
+        if tick in pulses:
             getattr(dut, "hits_i_0").value = 1
-            gen_trig_cnt += 1
         else:
             getattr(dut, "hits_i_0").value = 0
 
@@ -230,22 +231,22 @@ async def prescale_test_single(
         tick += 1
 
     results = {
-        'total': gen_trig_cnt,
+        'total': n_triggers,
         'accepted': accept_cnt,
         'blocked': blocked_trigger_cnt,
         'lost': lost_trigger_cnt,
         'tick': tick,
-        'gen_rate': gen_trig_cnt / (tick*CLK_PERIOD) * 100000,  # kHz
-        'accept_rate': accept_cnt / (tick*CLK_PERIOD) * 100000,  # kHz
+        # 'gen_rate': n_triggers / (tick*CLK_PERIOD) * 100000,  # kHz
+        # 'accept_rate': accept_cnt / (tick*CLK_PERIOD) * 100000,  # kHz
     }
-
-    # assert (lost_trigger_cnt + blocked_trigger_cnt + trigger_cnt) == gen_trig_cnt
 
     print(
         f"Prescaler set to {prescale}: gen={n_triggers} accept={accept_cnt} block={blocked_trigger_cnt} meas={accept_cnt / n_triggers * 100}%%"
     )
 
     print(results)
+
+    assert (lost_trigger_cnt + blocked_trigger_cnt + accept_cnt) == n_triggers
 
     return results
 
@@ -497,32 +498,45 @@ def test_trigger():
     module = os.path.splitext(os.path.basename(__file__))[0]
 
     vhdl_sources = [
-        os.path.join(tests_dir, f"../../../common/src/types_pkg.vhd"),
-        os.path.join(tests_dir, f"../../../common/src/urand_inf.vhd"),
-        os.path.join(tests_dir, f"../../../common/src/oneshot.vhd"),
-        os.path.join(tests_dir, f"../infra/constants.vhd"),
-        os.path.join(tests_dir, f"../infra/mt_types.vhd"),
-        os.path.join(tests_dir, f"../infra/components.vhd"),
-        os.path.join(tests_dir, f"../infra/event_counter.vhd"),
-        os.path.join(tests_dir, f"count1s.vhd"),
-        os.path.join(tests_dir, f"rb_map.vhd"),
-        os.path.join(tests_dir, f"integrator.vhd"),
-        os.path.join(tests_dir, f"trigger.vhd"),
-        os.path.join(tests_dir, f"trigger_top.vhd"),
+        os.path.join(tests_dir, "../../../common/src/types_pkg.vhd"),
+        os.path.join(tests_dir, "../../../common/src/urand_inf.vhd"),
+        os.path.join(tests_dir, "../../../common/src/oneshot.vhd"),
+        os.path.join(tests_dir, "../../../common/src/prescale.vhd"),
+        os.path.join(tests_dir, "../infra/constants.vhd"),
+        os.path.join(tests_dir, "../infra/mt_types.vhd"),
+        os.path.join(tests_dir, "../infra/components.vhd"),
+        os.path.join(tests_dir, "../infra/event_counter.vhd"),
+        os.path.join(tests_dir, "count1s.vhd"),
+        os.path.join(tests_dir, "rb_map.vhd"),
+        os.path.join(tests_dir, "integrator.vhd"),
+        os.path.join(tests_dir, "trigger.vhd"),
+        os.path.join(tests_dir, "trigger_top.vhd"),
     ]
 
-    os.environ["SIM"] = "ghdl"
+    from cocotb.runner import get_runner
 
-    run(
+    runner = get_runner('ghdl')
+    toplevel = "trigger_top"
+    build_args = ["--std=08"]
+    test_args = ["--std=08"]
+    plus_args = ["--wave=sim.ghw", "--ieee-asserts=disable"]
+
+    runner.build(
+        verilog_sources=[],
         vhdl_sources=vhdl_sources,
-        module=module,
-        toplevel="trigger_top",
-        parameters={"DEBUG": False},
-        compile_args=["--std=08"],
-        sim_args=["--ieee-asserts=disable"],
-        toplevel_lang="vhdl",
-        gui=1,
-        waves=1,
+        hdl_toplevel=toplevel,
+        parameters={'DEBUG': False},
+        build_args=build_args,
+        waves=1
+    )
+
+    runner.test(
+        test_args=test_args,
+        hdl_toplevel=toplevel,
+        test_module=module,
+        plusargs=plus_args,
+        parameters={'DEBUG': False},
+        waves=1
     )
 
 

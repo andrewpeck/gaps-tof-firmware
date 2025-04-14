@@ -119,19 +119,6 @@ architecture behavioral of trigger is
   signal busy          : std_logic;
   signal ready         : std_logic;
 
-  signal gaps_trigger                   : std_logic := '0';
-  signal gaps_trigger_satisfied         : std_logic := '0';
-  signal configurable_trigger           : std_logic := '0';
-  signal configurable_trigger_satisfied : std_logic := '0';
-  signal track_trigger                  : std_logic := '0';
-  signal track_trigger_satisfied        : std_logic := '0';
-  signal track_central                  : std_logic := '0';
-  signal track_central_satisfied        : std_logic := '0';
-  signal track_umb_central              : std_logic := '0';
-  signal track_umb_central_satisfied    : std_logic := '0';
-  signal any_trigger                    : std_logic := '0';
-  signal any_trigger_satisfied          : std_logic := '0';
-
   --------------------------------------------------------------------------------
   -- Detector Mapping
   --------------------------------------------------------------------------------
@@ -155,6 +142,7 @@ architecture behavioral of trigger is
   type hit_array_t is array (integer range <>)
     of std_logic_vector(1 downto 0);
 
+  -- s0 these signals are just combinatorial remap from hits_i
   signal cube            : hit_array_t(N_CUBE-1 downto 0);
   signal cube_bot        : hit_array_t(N_CUBE_BOT-1 downto 0);
   signal cube_top        : hit_array_t(N_CUBE_TOP-1 downto 0);
@@ -163,6 +151,7 @@ architecture behavioral of trigger is
   signal cortina         : hit_array_t(N_CORTINA-1 downto 0);
   signal umbrella_center : hit_array_t(N_UMBRELLA_CENTER-1 downto 0);
 
+  -- s1, + 1 clock cycle from hits_i
   signal cube_side_hit, cube_side_beta             : std_logic_vector(N_CUBE-1 downto 0);
   signal cube_bot_hit, cube_bot_beta               : std_logic_vector(N_CUBE_BOT-1 downto 0);
   signal cube_top_hit, cube_top_beta               : std_logic_vector(N_CUBE_TOP-1 downto 0);
@@ -174,33 +163,7 @@ architecture behavioral of trigger is
   signal inner_tof_beta                            : std_logic_vector(N_INNER_TOF-N_CUBE_BOT-N_CUBE_CORNER-1 downto 0);
   signal outer_tof_hit, outer_tof_beta             : std_logic_vector(N_OUTER_TOF-1 downto 0);
 
-  signal or_inner_tof_beta : std_logic;
-  signal or_outer_tof_beta : std_logic;
-
-  signal any_trigger_en        : std_logic;
-  signal any_hit_trigger_urand : std_logic_vector (31 downto 0) := (others => '0');
-
-  signal track_trigger_en    : std_logic;
-  signal track_trigger_urand : std_logic_vector (31 downto 0) := (others => '0');
-
-  signal track_central_en    : std_logic;
-  signal track_central_urand : std_logic_vector (31 downto 0) := (others => '0');
-
-  signal track_umb_central_en    : std_logic;
-  signal track_umb_central_urand : std_logic_vector (31 downto 0) := (others => '0');
-
-  signal gaps_trigger_en    : std_logic;
-  signal gaps_trigger_urand : std_logic_vector (31 downto 0) := (others => '0');
-
-  signal force_trigger_en    : std_logic;
-  signal force_trigger_urand : std_logic_vector (31 downto 0) := (others => '0');
-
-  signal trig_sources        : std_logic_vector(15 downto 0) := (others => '0');
-  signal trig_sources_reg    : std_logic_vector(15 downto 0) := (others => '0');
-  signal pedestal_trig       : std_logic;
-  signal pedestal_trig_latch : std_logic                     := '0';
-  signal rb_trigger          : std_logic                     := '0';
-
+  -- s2, + 2 clock cycle from hits_i
   signal cube_side_cnts       : integer range 0 to N_CUBE;
   signal cube_bot_cnts        : integer range 0 to N_CUBE_BOT;
   signal cube_top_cnts        : integer range 0 to N_CUBE_BOT;
@@ -212,6 +175,9 @@ architecture behavioral of trigger is
   signal outer_tof_cnts       : integer range 0 to N_OUTER_TOF;
   signal total_tof_cnts       : integer range 0 to N_OUTER_TOF + N_INNER_TOF;
 
+  signal or_inner_tof_beta : std_logic;
+  signal or_outer_tof_beta : std_logic;
+
   signal inner_tof_over_thresh       : std_logic := '0';
   signal outer_tof_over_thresh       : std_logic := '0';
   signal total_tof_over_thresh       : std_logic := '0';
@@ -222,6 +188,39 @@ architecture behavioral of trigger is
   signal umbrella_over_thresh        : std_logic := '0';
   signal umbrella_center_over_thresh : std_logic := '0';
   signal cortina_over_thresh         : std_logic := '0';
+
+  -- s3, +3 clock cycle from hits_i
+  signal gaps_trigger_satisfied         : std_logic := '0';
+  signal configurable_trigger_satisfied : std_logic := '0';
+  signal track_trigger_satisfied        : std_logic := '0';
+  signal track_central_satisfied        : std_logic := '0';
+  signal track_umb_central_satisfied    : std_logic := '0';
+  signal any_trigger_satisfied_s3       : std_logic := '0';
+  signal any_trigger_satisfied_s2       : std_logic := '0';
+  signal any_trigger_satisfied_s1       : std_logic := '0';
+
+  signal gaps_trigger         : std_logic := '0';
+  signal configurable_trigger : std_logic := '0';
+  signal track_trigger        : std_logic := '0';
+  signal track_central        : std_logic := '0';
+  signal track_umb_central    : std_logic := '0';
+  signal any_trigger          : std_logic := '0';
+  signal force_trigger        : std_logic;
+
+  signal gaps_trigger_blocked      : std_logic;
+  signal track_trigger_blocked     : std_logic;
+  signal any_trigger_blocked       : std_logic;
+  signal track_central_blocked     : std_logic;
+  signal track_umb_central_blocked : std_logic;
+
+  -- result
+
+  signal trig_sources        : std_logic_vector(15 downto 0) := (others => '0');
+  signal trig_sources_reg    : std_logic_vector(15 downto 0) := (others => '0');
+  signal pedestal_trig       : std_logic;
+  signal pedestal_trig_latch : std_logic                     := '0';
+  signal rb_trigger          : std_logic                     := '0';
+
 
   function map_beta (d : hit_array_t)
     return std_logic_vector is
@@ -354,52 +353,29 @@ begin
                            cortina_over_thresh);
 
   --------------------------------------------------------------------------------
-  -- GAPS Trigger
+  -- Trigger Logic
   --------------------------------------------------------------------------------
 
-  gaps_trigger_satisfied <= (not require_beta or or_inner_tof_beta) and
-                            (not require_beta or or_outer_tof_beta) and
-                            inner_tof_over_thresh and outer_tof_over_thresh and total_tof_over_thresh;
-  gaps_trigger <= gaps_trigger_en and gaps_trigger_satisfied;
-  oneshot_gaps_trigger_blocked : entity work.oneshot
-    port map (clk => clk, d => ready and (not gaps_trigger_en) and gaps_trigger_satisfied, q => gaps_trigger_blocked_o);
+  process (clk) is
+  begin
+    if (rising_edge(clk)) then
 
-  --------------------------------------------------------------------------------
-  -- Track Trigger
-  --------------------------------------------------------------------------------
+      gaps_trigger_satisfied <= (not require_beta or or_inner_tof_beta) and
+                                (not require_beta or or_outer_tof_beta) and
+                                inner_tof_over_thresh and outer_tof_over_thresh and total_tof_over_thresh;
 
-  track_trigger_satisfied <= '1' when (inner_tof_cnts >= 1 and outer_tof_cnts >= 1) else '0';
-  track_trigger           <= track_trigger_en and track_trigger_satisfied;
-  oneshot_track_trigger_blocked : entity work.oneshot
-    port map (clk => clk, d => ready and (not track_trigger_en) and track_trigger_satisfied, q => track_trigger_blocked_o);
+      track_trigger_satisfied <= '1' when (inner_tof_cnts >= 1 and outer_tof_cnts >= 1) else '0';
 
-  --------------------------------------------------------------------------------
-  -- Track Central
-  --------------------------------------------------------------------------------
+      track_central_satisfied <= '1' when (umbrella_cnts >= 1 and cube_top_cnts >= 1) else '0';
 
-  -- this needs to be delayed by 1 clock cycle compared to track trigger because the umbrella / cube top come out 1 cycle early
-  track_central_satisfied <= '1'                                            when (umbrella_cnts >= 1 and cube_top_cnts >= 1) else '0';
-  track_central           <= (track_central_en and track_central_satisfied) when rising_edge(clk);
-  oneshot_track_central_blocked : entity work.oneshot
-    port map (clk => clk, d => ready and (not track_central_en) and track_central_satisfied, q => track_central_blocked_o);
+      track_umb_central_satisfied <= '1' when (umbrella_center_cnts >= 1 and cube_top_cnts >= 1) else '0';
 
-  --------------------------------------------------------------------------------
-  -- Track Umb
-  --------------------------------------------------------------------------------
+      any_trigger_satisfied_s1 <= (or_reduce(hit_bitmap));
+      any_trigger_satisfied_s2 <= any_trigger_satisfied_s1;
+      any_trigger_satisfied_s3 <= any_trigger_satisfied_s2;
 
-  track_umb_central_satisfied <= '1'                                                    when (umbrella_center_cnts >= 1 and cube_top_cnts >= 1) else '0';
-  track_umb_central           <= (track_umb_central_en and track_umb_central_satisfied) when rising_edge(clk);  -- DELAY
-  oneshot_track_umb_central_blocked : entity work.oneshot
-    port map (clk => clk, d => ready and (not track_umb_central_en) and track_umb_central_satisfied, q => track_umb_central_blocked_o);
-
-  --------------------------------------------------------------------------------
-  -- Any trigger
-  --------------------------------------------------------------------------------
-
-  any_trigger_satisfied <= (or_reduce(hit_bitmap));
-  any_trigger           <= (any_trigger_en and any_trigger_satisfied) when rising_edge(clk);  -- DELAY
-  oneshot_any_trigger_blocked : entity work.oneshot
-    port map (clk => clk, d => ready and (not any_trigger_en) and any_trigger_satisfied, q => any_trigger_blocked_o);
+    end if;
+  end process;
 
   --------------------------------------------------------------------------------
   -- Counters
@@ -703,102 +679,83 @@ begin
   --
   --------------------------------------------------------------------------------
 
-  urand_inf_single_hit : entity work.urand_inf
-    generic map (SEED => 0)
+  prescale_force : entity work.prescale
+    generic map (SEED => 10)
     port map (
-      clk   => clk,
-      rst_n => not reset,
-      u     => any_hit_trigger_urand);
+      clk     => clk,
+      rst     => reset,
+      en      => '1',
+      setting => force_trigger_prescale,
+      din     => force_trigger_i,
+      accept  => force_trigger,
+      drop    => open
+      );
 
-  urand_inf_gaps : entity work.urand_inf
-    generic map (SEED => 1)
+  prescale_any : entity work.prescale
+    generic map (SEED => 11)
     port map (
-      clk   => clk,
-      rst_n => not reset,
-      u     => gaps_trigger_urand);
+      clk     => clk,
+      rst     => reset,
+      en      => '1',
+      setting => any_hit_trigger_prescale,
+      din     => any_trigger_satisfied_s3,
+      accept  => any_trigger,
+      drop    => any_trigger_blocked
+      );
 
-  urand_inf_force : entity work.urand_inf
-    generic map (SEED => 5)
+  prescale_gaps : entity work.prescale
+    generic map (SEED => 12)
     port map (
-      clk   => clk,
-      rst_n => not reset,
-      u     => force_trigger_urand);
+      clk     => clk,
+      rst     => reset,
+      en      => gaps_trigger_en_i,
+      setting => gaps_trigger_prescale,
+      din     => gaps_trigger_satisfied,
+      accept  => gaps_trigger,
+      drop    => gaps_trigger_blocked
+      );
 
-  urand_inf_track_trig : entity work.urand_inf
-    generic map (SEED => 2)
+  prescale_track : entity work.prescale
+    generic map (SEED => 13)
     port map (
-      clk   => clk,
-      rst_n => not reset,
-      u     => track_trigger_urand);
+      clk     => clk,
+      rst     => reset,
+      en      => '1',
+      setting => track_trigger_prescale,
+      din     => track_trigger_satisfied,
+      accept  => track_trigger,
+      drop    => track_trigger_blocked
+      );
 
-  urand_inf_track_central : entity work.urand_inf
-    generic map (SEED => 3)
+  prescale_track_central : entity work.prescale
+    generic map (SEED => 14)
     port map (
-      clk   => clk,
-      rst_n => not reset,
-      u     => track_central_urand);
+      clk     => clk,
+      rst     => reset,
+      en      => '1',
+      setting => track_central_prescale,
+      din     => track_central_satisfied,
+      accept  => track_central,
+      drop    => track_central_blocked
+      );
 
-  urand_inf_track_umb_central : entity work.urand_inf
-    generic map (SEED => 3)
+  prescale_track_umb_central : entity work.prescale
+    generic map (SEED => 15)
     port map (
-      clk   => clk,
-      rst_n => not reset,
-      u     => track_umb_central_urand);
+      clk     => clk,
+      rst     => reset,
+      en      => '1',
+      setting => track_umb_central_prescale,
+      din     => track_umb_central_satisfied,
+      accept  => track_umb_central,
+      drop    => track_umb_central_blocked
+      );
 
-  process (clk) is
-  begin
-    if (rising_edge(clk)) then
-
-      if (prescale_bypass = '1' or
-          (any_hit_trigger_prescale /= x"00000000" and
-           any_hit_trigger_prescale >= any_hit_trigger_urand)) then
-        any_trigger_en <= '1';
-      else
-        any_trigger_en <= '0';
-      end if;
-
-      if (prescale_bypass = '1' or
-          (track_trigger_prescale /= x"00000000" and
-           track_trigger_prescale >= track_trigger_urand)) then
-        track_trigger_en <= '1';
-      else
-        track_trigger_en <= '0';
-      end if;
-
-      if (prescale_bypass = '1' or
-          (track_central_prescale /= x"00000000" and
-           track_central_prescale >= track_central_urand)) then
-        track_central_en <= '1';
-      else
-        track_central_en <= '0';
-      end if;
-
-      if (prescale_bypass = '1' or
-          (track_umb_central_prescale /= x"00000000" and
-           track_umb_central_prescale >= track_umb_central_urand))then
-        track_umb_central_en <= '1';
-      else
-        track_umb_central_en <= '0';
-      end if;
-
-      if (prescale_bypass = '1' or
-          (gaps_trigger_prescale /= x"00000000" and
-           gaps_trigger_prescale >= gaps_trigger_urand)) then
-        gaps_trigger_en <= gaps_trigger_en_i;
-      else
-        gaps_trigger_en <= '0';
-      end if;
-
-      if (prescale_bypass = '1' or
-          (force_trigger_prescale /= x"00000000" and
-           force_trigger_prescale >= force_trigger_urand)) then
-        force_trigger_en <= force_trigger_i;
-      else
-        force_trigger_en <= '0';
-      end if;
-
-    end if;
-  end process;
+  gaps_trigger_blocked_o      <= gaps_trigger_blocked      when ready = '1' else '0';
+  track_trigger_blocked_o     <= track_trigger_blocked     when ready = '1' else '0';
+  any_trigger_blocked_o       <= any_trigger_blocked       when ready = '1' else '0';
+  track_central_blocked_o     <= track_central_blocked     when ready = '1' else '0';
+  track_umb_central_blocked_o <= track_umb_central_blocked when ready = '1' else '0';
 
   --------------------------------------------------------------------------------
   -- Trigger Source OR
@@ -817,7 +774,7 @@ begin
     & configurable_trigger
     & track_central
     & track_trigger
-    & force_trigger_en
+    & force_trigger
     & any_trigger
     & gaps_trigger
     & track_umb_central
